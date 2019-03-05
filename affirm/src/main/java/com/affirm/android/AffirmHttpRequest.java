@@ -1,6 +1,6 @@
-package com.affirm.android.http;
+package com.affirm.android;
 
-public final class AffirmHttpRequest {
+final class AffirmHttpRequest {
     private final String url;
     private final Method method;
     private final AffirmHttpBody body;

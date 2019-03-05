@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Message;
-import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
@@ -14,7 +13,7 @@ import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 
-class PopUpWebChromeClient extends WebChromeClient {
+class AffirmWebChromeClient extends WebChromeClient {
 
     interface Callbacks {
         void chromeLoadCompleted();
@@ -22,7 +21,7 @@ class PopUpWebChromeClient extends WebChromeClient {
 
     private final Callbacks callback;
 
-    PopUpWebChromeClient(@NonNull Callbacks callback) {
+    AffirmWebChromeClient(@NonNull Callbacks callback) {
         this.callback = callback;
     }
 
@@ -39,8 +38,8 @@ class PopUpWebChromeClient extends WebChromeClient {
 
     @Override
     public boolean onConsoleMessage(ConsoleMessage cm) {
-        if (BuildConfig.DEBUG && cm.messageLevel() == ConsoleMessage.MessageLevel.ERROR) {
-            Log.e("Affirm", cm.message() + " -- From line " + cm.lineNumber() + " of " + cm.sourceId());
+        if (BuildConfig.DEBUG) {
+            AffirmLog.d("Affirm", cm.message() + " -- From line " + cm.lineNumber() + " of " + cm.sourceId());
             return true;
         }
         return false;
@@ -48,7 +47,7 @@ class PopUpWebChromeClient extends WebChromeClient {
 
     @Override
     public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
-        new AlertDialog.Builder(view.getContext()).setTitle("Affirm")
+        new AlertDialog.Builder(view.getContext()).setTitle(R.string.affirm)
                 .setMessage(message)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -65,6 +64,7 @@ class PopUpWebChromeClient extends WebChromeClient {
         return true;
     }
 
+    @Override
     public void onProgressChanged(WebView view, int progress) {
         if (progress > 99) {
             callback.chromeLoadCompleted();

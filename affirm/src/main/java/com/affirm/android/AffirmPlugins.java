@@ -11,7 +11,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class AffirmPlugins {
+class AffirmPlugins {
 
     private static final Object LOCK = new Object();
     private static AffirmPlugins instance;
@@ -70,7 +70,6 @@ public class AffirmPlugins {
     public String trackerBaseUrl() {
         return configuration.environment.trackerBaseUrl;
     }
-
 
     Gson gson() {
         if (gson == null) {

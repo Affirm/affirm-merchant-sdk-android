@@ -10,11 +10,11 @@ import java.net.URLDecoder;
 
 import androidx.annotation.NonNull;
 
-public final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
+final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     private final Gson gson;
     private final Callbacks callbacks;
 
-    public VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull Callbacks callbacks) {
+    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull Callbacks callbacks) {
         super(callbacks);
         this.gson = gson;
         this.callbacks = callbacks;

@@ -1,12 +1,6 @@
 package com.affirm.android;
 
-import com.affirm.android.http.AffirmHttpBody;
-import com.affirm.android.http.AffirmHttpRequest;
-import com.affirm.android.http.AffirmHttpResponse;
-import com.affirm.android.model.ErrorResponse;
-
 import java.io.IOException;
-import java.io.InputStream;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,48 +36,49 @@ class AffirmHttpClient<T> {
         return new AffirmHttpClient(builder);
     }
 
-    void execute(final AffirmHttpRequest request, @NonNull final Class<T> clazz, final Callback<T> callback) {
+    AffirmHttpResponse execute(final AffirmHttpRequest request) throws IOException {
         Request okHttpRequest = getRequest(request);
         Call call = okHttpClient.newCall(okHttpRequest);
+        Response response = call.execute();
+        return getResponse(response);
 
-        call.enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onFailure(e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    if (response.code() == 403) {
-                        callback.onFailure(
-                                new Exception("Got error for request: " + response.code()));
-                    } else if (response.code() >= 400 && response.code() < 500 && response.code() != 404) {
-                        final ErrorResponse errorResponse =
-                                AffirmPlugins.get().gson().fromJson(response.body().string(), ErrorResponse.class);
-
-                        callback.onFailure(new AffirmError(errorResponse));
-                    } else {
-                        callback.onFailure(
-                                new Exception("Got error for request: " + response.code()));
-                    }
-
-                    return;
-                }
-                final String bodyString = response.body().string();
-                final T res = AffirmPlugins.get().gson().fromJson(bodyString, clazz);
-                callback.onSuccess(res);
-            }
-        });
-
+//        call.enqueue(new okhttp3.Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                callback.onFailure(e);
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                if (!response.isSuccessful()) {
+//                    if (response.code() == 403) {
+//                        callback.onFailure(
+//                                new Exception("Got error for request: " + response.code()));
+//                    } else if (response.code() >= 400 && response.code() < 500 && response.code() != 404) {
+//                        final ErrorResponse errorResponse =
+//                                AffirmPlugins.get().gson().fromJson(response.body().string(), ErrorResponse.class);
+//
+//                        callback.onFailure(new AffirmError(errorResponse));
+//                    } else {
+//                        callback.onFailure(
+//                                new Exception("Got error for request: " + response.code()));
+//                    }
+//
+//                    return;
+//                }
+//                final String bodyString = response.body().string();
+//                final T res = AffirmPlugins.get().gson().fromJson(bodyString, clazz);
+//                callback.onSuccess(res);
+//            }
+//        });
     }
 
-    AffirmHttpResponse getResponse(Response response) {
+    private AffirmHttpResponse getResponse(Response response) throws IOException {
         // Status code
         int statusCode = response.code();
 
         // Content
-        InputStream content = response.body().byteStream();
+        String content = response.body().string();
 
         // Total size
         int totalSize = (int) response.body().contentLength();
@@ -103,7 +98,7 @@ class AffirmHttpClient<T> {
                 .build();
     }
 
-    Request getRequest(AffirmHttpRequest request) {
+    private Request getRequest(AffirmHttpRequest request) {
         Request.Builder okHttpRequestBuilder = new Request.Builder();
         AffirmHttpRequest.Method method = request.getMethod();
         // Set method

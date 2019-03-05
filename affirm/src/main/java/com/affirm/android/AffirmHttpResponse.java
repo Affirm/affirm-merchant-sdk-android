@@ -1,10 +1,8 @@
-package com.affirm.android.http;
+package com.affirm.android;
 
-import java.io.InputStream;
-
-public final class AffirmHttpResponse {
+final class AffirmHttpResponse {
     private final int statusCode;
-    private final InputStream content;
+    private final String content;
     private final long totalSize;
     private final String contentType;
 
@@ -19,7 +17,7 @@ public final class AffirmHttpResponse {
         return statusCode;
     }
 
-    public InputStream getContent() {
+    public String getContent() {
         return content;
     }
 
@@ -34,7 +32,7 @@ public final class AffirmHttpResponse {
     public static final class Builder {
 
         private int statusCode;
-        private InputStream content;
+        private String content;
         private long totalSize;
         private String contentType;
 
@@ -55,7 +53,7 @@ public final class AffirmHttpResponse {
             return this;
         }
 
-        public Builder setContent(InputStream content) {
+        public Builder setContent(String content) {
             this.content = content;
             return this;
         }

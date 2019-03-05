@@ -3,22 +3,21 @@ package com.affirm.android;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 
-import com.affirm.android.http.AffirmHttpBody;
-import com.affirm.android.http.AffirmHttpRequest;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
-import com.affirm.android.model.Merchant;
-import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-public class VcnCheckoutActivity extends CheckoutBaseActivity implements PopUpWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
+class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
 
     public static final String CREDIT_DETAILS = "credit_details";
 
@@ -30,42 +29,19 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity implements PopUpWe
 
     @Override
     void startCheckout() {
-        AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
-
-        final Merchant merchant = Merchant.builder()
-                .setPublicApiKey(AffirmPlugins.get().publicKey())
-                .setUseVcn(true)
-                .setName(AffirmPlugins.get().name())
-                .build();
-
-        final JsonObject jsonRequest = buildJsonRequest(checkout, merchant);
-
-        AffirmHttpRequest request = new AffirmHttpRequest.Builder()
-                .setUrl("https://sandbox.affirm.com/api/v2/checkout/")
-                .setMethod(AffirmHttpRequest.Method.POST)
-                .setBody(new AffirmHttpBody("application/json; charset=utf-8", jsonRequest.toString()))
-                .build();
-
-        httpClient.execute(request, CheckoutResponse.class, new AffirmHttpClient.Callback<CheckoutResponse>() {
+        new VcnCheckoutTask(checkout, new CheckoutCallback() {
             @Override
-            public void onSuccess(final CheckoutResponse response) {
+            public void onError(Exception exception) {
+                onWebViewError(exception);
+            }
 
+            @Override
+            public void onSuccess(CheckoutResponse response) {
                 final String html = initialHtml(response);
                 final Uri uri = Uri.parse(response.redirectUrl());
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        webView.loadDataWithBaseURL("https://" + uri.getHost(), html, "text/html", "utf-8", null);
-                    }
-                });
+                webView.loadDataWithBaseURL("https://" + uri.getHost(), html, "text/html", "utf-8", null);
             }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                onWebViewError(throwable);
-            }
-        });
+        }).execute();
     }
 
     @Override
@@ -73,7 +49,7 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity implements PopUpWe
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(
                 new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
-        webView.setWebChromeClient(new PopUpWebChromeClient(this));
+        webView.setWebChromeClient(new AffirmWebChromeClient(this));
         clearCookies();
     }
 
@@ -102,5 +78,36 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity implements PopUpWe
         intent.putExtra(CREDIT_DETAILS, cardDetails);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    private static class VcnCheckoutTask extends AsyncTask<Void, Void, CheckoutResponseWrapper> {
+        @NonNull
+        private final Checkout checkout;
+        @NonNull
+        private final WeakReference<CheckoutCallback> mCallbackRef;
+
+        VcnCheckoutTask(@NonNull final Checkout checkout,
+                        @Nullable final CheckoutCallback callback) {
+            this.checkout = checkout;
+            this.mCallbackRef = new WeakReference<>(callback);
+        }
+
+        @Override
+        protected CheckoutResponseWrapper doInBackground(Void... params) {
+            try {
+                return new CheckoutResponseWrapper(AffirmApiHandler.executeVcnCheckout(checkout), null);
+            } catch (IOException e) {
+                return new CheckoutResponseWrapper(null, e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(CheckoutResponseWrapper result) {
+            if (result.response != null && mCallbackRef.get() != null) {
+                mCallbackRef.get().onSuccess(result.response);
+            } else {
+                mCallbackRef.get().onError(result.exception);
+            }
+        }
     }
 }

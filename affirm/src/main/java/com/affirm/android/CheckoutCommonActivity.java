@@ -8,15 +8,13 @@ import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 
 import com.affirm.android.model.Checkout;
-import com.affirm.android.model.Merchant;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.affirm.android.model.CheckoutResponse;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public abstract class CheckoutBaseActivity extends AppCompatActivity implements AffirmWebViewClient.Callbacks, PopUpWebChromeClient.Callbacks {
+abstract class CheckoutCommonActivity extends AppCompatActivity implements AffirmWebViewClient.Callbacks, AffirmWebChromeClient.Callbacks {
 
     public static final int RESULT_ERROR = -8575;
 
@@ -28,29 +26,6 @@ public abstract class CheckoutBaseActivity extends AppCompatActivity implements 
 
     WebView webView;
     View progressIndicator;
-
-    JsonObject buildJsonRequest(Checkout checkout, Merchant merchant) {
-        final JsonObject configJson = new JsonObject();
-        final JsonObject metadataJson = new JsonObject();
-        final JsonObject jsonRequest = new JsonObject();
-        final JsonParser jsonParser = new JsonParser();
-
-        final JsonObject checkoutJson = jsonParser.parse(AffirmPlugins.get().gson().toJson(checkout)).getAsJsonObject();
-        final JsonObject merchantJson = jsonParser.parse(AffirmPlugins.get().gson().toJson(merchant)).getAsJsonObject();
-
-        configJson.addProperty("user_confirmation_url_action", "GET");
-        metadataJson.addProperty("platform_type", "Affirm Android SDK");
-        metadataJson.addProperty("platform_affirm", BuildConfig.VERSION_NAME);
-
-        checkoutJson.add("merchant", merchantJson);
-        checkoutJson.add("config", configJson);
-        checkoutJson.addProperty("api_version", "v2");
-        checkoutJson.add("metadata", metadataJson);
-
-        jsonRequest.add("checkout", checkoutJson);
-
-        return jsonRequest;
-    }
 
     abstract void startCheckout();
 
@@ -119,5 +94,24 @@ public abstract class CheckoutBaseActivity extends AppCompatActivity implements 
     @Override
     public void chromeLoadCompleted() {
         progressIndicator.setVisibility(View.GONE);
+    }
+
+    public interface CheckoutCallback {
+
+        void onError(Exception exception);
+
+        void onSuccess(CheckoutResponse response);
+    }
+
+    static class CheckoutResponseWrapper {
+
+        CheckoutResponse response;
+
+        Exception exception;
+
+        CheckoutResponseWrapper(CheckoutResponse checkoutResponse, Exception exception) {
+            this.response = checkoutResponse;
+            this.exception = exception;
+        }
     }
 }

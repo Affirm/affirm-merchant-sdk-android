@@ -1,6 +1,6 @@
-package com.affirm.android.http;
+package com.affirm.android;
 
-public class AffirmHttpBody {
+class AffirmHttpBody {
 
     private final String contentType;
     private final String content;

@@ -14,15 +14,9 @@ import okhttp3.ResponseBody;
 import okhttp3.internal.Util;
 import okio.BufferedSink;
 
-class AffirmHttpClient<T> {
+class AffirmHttpClient {
 
     private OkHttpClient okHttpClient;
-
-    interface Callback<T> {
-        void onSuccess(T result);
-
-        void onFailure(Throwable throwable);
-    }
 
     private AffirmHttpClient(@Nullable OkHttpClient.Builder builder) {
         if (builder == null) {
@@ -41,36 +35,6 @@ class AffirmHttpClient<T> {
         Call call = okHttpClient.newCall(okHttpRequest);
         Response response = call.execute();
         return getResponse(response);
-
-//        call.enqueue(new okhttp3.Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                callback.onFailure(e);
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                if (!response.isSuccessful()) {
-//                    if (response.code() == 403) {
-//                        callback.onFailure(
-//                                new Exception("Got error for request: " + response.code()));
-//                    } else if (response.code() >= 400 && response.code() < 500 && response.code() != 404) {
-//                        final ErrorResponse errorResponse =
-//                                AffirmPlugins.get().gson().fromJson(response.body().string(), ErrorResponse.class);
-//
-//                        callback.onFailure(new AffirmError(errorResponse));
-//                    } else {
-//                        callback.onFailure(
-//                                new Exception("Got error for request: " + response.code()));
-//                    }
-//
-//                    return;
-//                }
-//                final String bodyString = response.body().string();
-//                final T res = AffirmPlugins.get().gson().fromJson(bodyString, clazz);
-//                callback.onSuccess(res);
-//            }
-//        });
     }
 
     private AffirmHttpResponse getResponse(Response response) throws IOException {

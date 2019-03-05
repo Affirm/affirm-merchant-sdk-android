@@ -13,6 +13,8 @@ public abstract class AffirmWebViewClient extends WebViewClient {
 
     private final Callbacks callbacks;
 
+    abstract boolean hasCallbackUrl(WebView view, String url);
+
     AffirmWebViewClient(@NonNull Callbacks callbacks) {
         this.callbacks = callbacks;
     }
@@ -36,8 +38,6 @@ public abstract class AffirmWebViewClient extends WebViewClient {
 
         return !url.startsWith("http");
     }
-
-    abstract boolean hasCallbackUrl(WebView view, String url);
 
     @Override
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {

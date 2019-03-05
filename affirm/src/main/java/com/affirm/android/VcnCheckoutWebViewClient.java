@@ -40,7 +40,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
         return false;
     }
 
-    public interface Callbacks extends AffirmWebViewClient.Callbacks {
+    interface Callbacks extends AffirmWebViewClient.Callbacks {
         void onWebViewConfirmation(@NonNull CardDetails cardDetails);
     }
 }

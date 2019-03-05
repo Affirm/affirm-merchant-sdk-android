@@ -26,7 +26,7 @@ final class CheckoutWebViewClient extends AffirmWebViewClient {
         return false;
     }
 
-    public interface Callbacks extends AffirmWebViewClient.Callbacks {
+    interface Callbacks extends AffirmWebViewClient.Callbacks {
         void onWebViewConfirmation(@NonNull String token);
     }
 }

@@ -3,7 +3,6 @@ package com.affirm.android;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
@@ -11,11 +10,9 @@ import com.affirm.android.model.CheckoutResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
 
@@ -29,7 +26,7 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
 
     @Override
     void startCheckout() {
-        new VcnCheckoutTask(checkout, new CheckoutCallback() {
+        CheckoutCallback checkoutCallback = new CheckoutCallback() {
             @Override
             public void onError(Exception exception) {
                 onWebViewError(exception);
@@ -41,7 +38,9 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
                 final Uri uri = Uri.parse(response.redirectUrl());
                 webView.loadDataWithBaseURL("https://" + uri.getHost(), html, "text/html", "utf-8", null);
             }
-        }).execute();
+        };
+
+        taskCreator.create(this, checkout, checkoutCallback);
     }
 
     @Override
@@ -51,6 +50,11 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
                 new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
         clearCookies();
+    }
+
+    @Override
+    CheckoutResponse executeTask(Checkout checkout) throws IOException {
+        return AffirmApiHandler.executeVcnCheckout(checkout);
     }
 
     private String initialHtml(CheckoutResponse response) {
@@ -78,36 +82,5 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
         intent.putExtra(CREDIT_DETAILS, cardDetails);
         setResult(RESULT_OK, intent);
         finish();
-    }
-
-    private static class VcnCheckoutTask extends AsyncTask<Void, Void, CheckoutResponseWrapper> {
-        @NonNull
-        private final Checkout checkout;
-        @NonNull
-        private final WeakReference<CheckoutCallback> mCallbackRef;
-
-        VcnCheckoutTask(@NonNull final Checkout checkout,
-                        @Nullable final CheckoutCallback callback) {
-            this.checkout = checkout;
-            this.mCallbackRef = new WeakReference<>(callback);
-        }
-
-        @Override
-        protected CheckoutResponseWrapper doInBackground(Void... params) {
-            try {
-                return new CheckoutResponseWrapper(AffirmApiHandler.executeVcnCheckout(checkout), null);
-            } catch (IOException e) {
-                return new CheckoutResponseWrapper(null, e);
-            }
-        }
-
-        @Override
-        protected void onPostExecute(CheckoutResponseWrapper result) {
-            if (result.response != null && mCallbackRef.get() != null) {
-                mCallbackRef.get().onSuccess(result.response);
-            } else {
-                mCallbackRef.get().onError(result.exception);
-            }
-        }
     }
 }

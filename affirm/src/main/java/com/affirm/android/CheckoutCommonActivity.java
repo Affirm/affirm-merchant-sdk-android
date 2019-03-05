@@ -1,6 +1,8 @@
 package com.affirm.android;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -10,15 +12,19 @@ import android.webkit.WebView;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.concurrent.Executor;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 abstract class CheckoutCommonActivity extends AppCompatActivity implements AffirmWebViewClient.Callbacks, AffirmWebChromeClient.Callbacks {
 
-    public static final int RESULT_ERROR = -8575;
+    static final int RESULT_ERROR = -8575;
 
-    public static final String CHECKOUT_ERROR = "checkout_error";
+    static final String CHECKOUT_ERROR = "checkout_error";
 
     static final String CHECKOUT_EXTRA = "checkout_extra";
 
@@ -27,9 +33,18 @@ abstract class CheckoutCommonActivity extends AppCompatActivity implements Affir
     WebView webView;
     View progressIndicator;
 
+    final TaskCreator taskCreator = new TaskCreator() {
+        @Override
+        public void create(@NonNull Context context, @NonNull Checkout checkout, @Nullable CheckoutCallback callback) {
+            executeTask(null, new CheckoutTask(context, checkout, callback));
+        }
+    };
+
     abstract void startCheckout();
 
     abstract void setupWebView();
+
+    abstract CheckoutResponse executeTask(Checkout checkout) throws IOException;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,22 +111,85 @@ abstract class CheckoutCommonActivity extends AppCompatActivity implements Affir
         progressIndicator.setVisibility(View.GONE);
     }
 
-    public interface CheckoutCallback {
+    interface CheckoutCallback {
 
         void onError(Exception exception);
 
         void onSuccess(CheckoutResponse response);
     }
 
-    static class CheckoutResponseWrapper {
 
-        CheckoutResponse response;
+    interface TaskCreator {
+        void create(
+                @NonNull final Context context,
+                @NonNull final Checkout checkout,
+                @Nullable final CheckoutCallback callback);
+    }
 
-        Exception exception;
+    void executeTask(@Nullable Executor executor,
+                     @NonNull AsyncTask<Void, Void, CheckoutResponseWrapper> task) {
+        if (executor != null) {
+            task.executeOnExecutor(executor);
+        } else {
+            task.execute();
+        }
+    }
 
-        CheckoutResponseWrapper(CheckoutResponse checkoutResponse, Exception exception) {
-            this.response = checkoutResponse;
-            this.exception = exception;
+    private static class CheckoutTask extends AsyncTask<Void, Void, CheckoutResponseWrapper> {
+        @NonNull
+        private final Checkout checkout;
+        @NonNull
+        private final WeakReference<CheckoutCallback> mCallbackRef;
+
+        @NonNull
+        private final WeakReference<Context> mContextRef;
+
+        CheckoutTask(@NonNull Context context,
+                     @NonNull final Checkout checkout,
+                     @Nullable final CheckoutCallback callback) {
+            this.mContextRef = new WeakReference<>(context);
+            this.checkout = checkout;
+            this.mCallbackRef = new WeakReference<>(callback);
+        }
+
+        @Override
+        protected CheckoutResponseWrapper doInBackground(Void... params) {
+            if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutCommonActivity) {
+                try {
+                    return new CheckoutResponseWrapper(((CheckoutCommonActivity) mContextRef.get()).executeTask(checkout));
+                } catch (IOException e) {
+                    return new CheckoutResponseWrapper(e);
+                }
+            } else {
+                return new CheckoutResponseWrapper(new Exception());
+            }
+        }
+
+        @Override
+        protected void onPostExecute(CheckoutResponseWrapper result) {
+            final CheckoutCallback checkoutCallback = mCallbackRef.get();
+            if (checkoutCallback != null) {
+                if (result.source != null) {
+                    checkoutCallback.onSuccess(result.source);
+                } else if (result.error != null) {
+                    checkoutCallback.onError(result.error);
+                }
+            }
+        }
+    }
+
+    private static class CheckoutResponseWrapper {
+
+        CheckoutResponse source;
+
+        Exception error;
+
+        CheckoutResponseWrapper(CheckoutResponse source) {
+            this.source = source;
+        }
+
+        CheckoutResponseWrapper(Exception error) {
+            this.error = error;
         }
     }
 }

@@ -1,8 +1,8 @@
-package com.affirm.android.log;
+package com.affirm.android;
 
 import android.util.Log;
 
-public class AffirmLog {
+class AffirmLog {
 
     private static int logLevel = Integer.MAX_VALUE;
 

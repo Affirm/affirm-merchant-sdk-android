@@ -1,8 +1,9 @@
-package com.affirm.android.utils;
+package com.affirm.android;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
+import android.view.Window;
 import android.webkit.WebView;
 
 import java.io.BufferedReader;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 public final class AffirmUtils {
 
@@ -58,4 +60,14 @@ public final class AffirmUtils {
             WebView.setWebContentsDebuggingEnabled(true);
         }
     }
+
+    static void hideActionBar(AppCompatActivity activity) {
+        activity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        if (activity.getActionBar() != null) {
+            activity.getActionBar().hide();
+        } else if (activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().hide();
+        }
+    }
+
 }

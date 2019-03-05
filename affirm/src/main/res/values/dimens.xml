@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="progressbar_dimen">80dp</dimen>
+</resources>

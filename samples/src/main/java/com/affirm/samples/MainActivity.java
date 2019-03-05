@@ -3,6 +3,17 @@ package com.affirm.samples;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.affirm.android.Affirm;
+import com.affirm.android.model.Address;
+import com.affirm.android.model.Checkout;
+import com.affirm.android.model.Item;
+import com.affirm.android.model.Name;
+import com.affirm.android.model.Shipping;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,6 +27,54 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        findViewById(R.id.checkbox).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Affirm.startCheckout(MainActivity.this, checkoutModel());
+            }
+        });
+
+        findViewById(R.id.vcn_checkout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Affirm.startVcnCheckout(MainActivity.this, checkoutModel());
+            }
+        });
+    }
+
+    private Checkout checkoutModel() {
+        final Item item = Item.builder()
+                .setDisplayName("Great Deal Wheel")
+                .setImageUrl(
+                        "http://www.m2motorsportinc.com/media/catalog/product/cache/1/thumbnail/9df78eab33525d08d6e5fb8d27136e95/v/e/velocity-vw125-wheels-rims.jpg")
+                .setQty(1)
+                .setSku("wheel")
+                .setUnitPrice(1000f)
+                .setUrl("http://merchant.com/great_deal_wheel")
+                .build();
+
+        final Map<String, Item> items = new HashMap<>();
+        items.put("wheel", item);
+
+        final Name name = Name.builder().setFull("John Smith").build();
+        final Address address = Address.builder()
+                .setCity("San Francisco")
+                .setCountry("USA")
+                .setLine1("333 Kansas st")
+                .setState("CA")
+                .setZipcode("94107")
+                .build();
+
+        final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
+
+        return Checkout.builder()
+                .setItems(items)
+                .setBilling(shipping)
+                .setShipping(shipping)
+                .setShippingAmount(0f)
+                .setTaxAmount(100f)
+                .setTotal(1100f)
+                .build();
     }
 
     @Override

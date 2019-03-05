@@ -24,6 +24,13 @@ dependencies {
     implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"
     testImplementation "junit:junit:${rootProject.ext.junitVersion}"
 
+    api "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
+    api "com.google.code.gson:gson:${rootProject.ext.gsonVersion}"
+
+    annotationProcessor "com.ryanharter.auto.value:auto-value-gson:${rootProject.ext.autoValueGsonVersion}"
+    compileOnly "com.ryanharter.auto.value:auto-value-gson:${rootProject.ext.autoValueGsonVersion}"
+    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${rootProject.ext.autoValueParcelVersion}"
+
     androidTestImplementation "com.android.support.test:runner:${rootProject.ext.testRunnerVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.ext.testEspressoVersion}"
 }

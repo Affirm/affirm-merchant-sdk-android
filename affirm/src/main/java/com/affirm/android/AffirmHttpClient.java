@@ -42,18 +42,22 @@ class AffirmHttpClient {
         int statusCode = response.code();
 
         // Content
-        String content = response.body().string();
-
+        String content = null;
         // Total size
-        int totalSize = (int) response.body().contentLength();
-
+        int totalSize = 0;
         // Content type
         String contentType = null;
-        ResponseBody body = response.body();
-        if (body != null && body.contentType() != null) {
-            contentType = body.contentType().toString();
-        }
 
+        ResponseBody body = response.body();
+        if (body != null) {
+            content = body.string();
+            totalSize = (int) body.contentLength();
+
+            MediaType mediaType = body.contentType();
+            if (mediaType != null) {
+                contentType = mediaType.toString();
+            }
+        }
         return new AffirmHttpResponse.Builder()
                 .setStatusCode(statusCode)
                 .setContent(content)
@@ -89,15 +93,18 @@ class AffirmHttpClient {
         if (body != null) {
             okHttpRequestBody = new AffirmOkHttpRequestBody(body);
         }
-        switch (method) {
-            case PUT:
-                okHttpRequestBuilder.put(okHttpRequestBody);
-                break;
-            case POST:
-                okHttpRequestBuilder.post(okHttpRequestBody);
-                break;
-            case DELETE:
-                okHttpRequestBuilder.delete(okHttpRequestBody);
+
+        if (okHttpRequestBody != null) {
+            switch (method) {
+                case PUT:
+                    okHttpRequestBuilder.put(okHttpRequestBody);
+                    break;
+                case POST:
+                    okHttpRequestBuilder.post(okHttpRequestBody);
+                    break;
+                case DELETE:
+                    okHttpRequestBuilder.delete(okHttpRequestBody);
+            }
         }
         return okHttpRequestBuilder.build();
     }

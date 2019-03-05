@@ -1,14 +1,43 @@
 package com.affirm.android;
 
+import android.text.TextUtils;
+
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 import com.affirm.android.model.Merchant;
+import com.affirm.android.model.PromoResponse;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.IOException;
+import java.util.Locale;
 
 class AffirmApiHandler {
+
+    private static final String CHECKOUT_PATH = "/api/v2/checkout/";
+
+    static PromoResponse getNewPromo(String promoId, float dollarAmount, boolean showCta) throws IOException {
+        AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
+        int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
+        String path;
+        if (TextUtils.isEmpty(promoId)) {
+            path = String.format(Locale.getDefault(),
+                    "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d&show_cta=%s",
+                    AffirmPlugins.get().publicKey(), centAmount, showCta);
+        } else {
+            path = String.format(Locale.getDefault(),
+                    "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d&show_cta=%s&promo_external_id=%s",
+                    AffirmPlugins.get().publicKey(), centAmount, showCta, promoId);
+        }
+
+        AffirmHttpRequest request = new AffirmHttpRequest.Builder()
+                .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + path)
+                .setMethod(AffirmHttpRequest.Method.GET)
+                .build();
+
+        AffirmHttpResponse response = httpClient.execute(request);
+        return AffirmPlugins.get().gson().fromJson(response.getContent(), PromoResponse.class);
+    }
 
     static CheckoutResponse executeVcnCheckout(Checkout checkout) throws IOException {
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
@@ -22,7 +51,7 @@ class AffirmApiHandler {
         final JsonObject jsonRequest = buildCheckoutJsonRequest(checkout, merchant);
 
         AffirmHttpRequest request = new AffirmHttpRequest.Builder()
-                .setUrl("https://sandbox.affirm.com/api/v2/checkout/")
+                .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + CHECKOUT_PATH)
                 .setMethod(AffirmHttpRequest.Method.POST)
                 .setBody(new AffirmHttpBody("application/json; charset=utf-8", jsonRequest.toString()))
                 .build();
@@ -44,13 +73,17 @@ class AffirmApiHandler {
         final JsonObject jsonRequest = buildCheckoutJsonRequest(checkout, merchant);
 
         AffirmHttpRequest request = new AffirmHttpRequest.Builder()
-                .setUrl("https://sandbox.affirm.com/api/v2/checkout/")
+                .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + CHECKOUT_PATH)
                 .setMethod(AffirmHttpRequest.Method.POST)
                 .setBody(new AffirmHttpBody("application/json; charset=utf-8", jsonRequest.toString()))
                 .build();
 
         AffirmHttpResponse response = httpClient.execute(request);
         return AffirmPlugins.get().gson().fromJson(response.getContent(), CheckoutResponse.class);
+    }
+
+    private static String getProtocol() {
+        return AffirmPlugins.get().baseUrl().contains("http") ? "" : "https://";
     }
 
     private static JsonObject buildCheckoutJsonRequest(Checkout checkout, Merchant merchant) {

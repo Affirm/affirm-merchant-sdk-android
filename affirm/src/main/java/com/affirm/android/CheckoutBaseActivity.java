@@ -16,11 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public abstract class CheckoutBaseActivity extends AppCompatActivity implements CheckoutWebViewClient.Callbacks, PopUpWebChromeClient.Callbacks {
+public abstract class CheckoutBaseActivity extends AppCompatActivity implements AffirmWebViewClient.Callbacks, PopUpWebChromeClient.Callbacks {
 
     public static final int RESULT_ERROR = -8575;
 
-    public static final String CHECKOUT_TOKEN = "checkout_token";
     public static final String CHECKOUT_ERROR = "checkout_error";
 
     static final String CHECKOUT_EXTRA = "checkout_extra";
@@ -30,18 +29,11 @@ public abstract class CheckoutBaseActivity extends AppCompatActivity implements 
     WebView webView;
     View progressIndicator;
 
-    JsonObject buildJsonRequest(Checkout checkout) {
+    JsonObject buildJsonRequest(Checkout checkout, Merchant merchant) {
         final JsonObject configJson = new JsonObject();
         final JsonObject metadataJson = new JsonObject();
         final JsonObject jsonRequest = new JsonObject();
         final JsonParser jsonParser = new JsonParser();
-
-        final Merchant merchant = Merchant.builder()
-                .setPublicApiKey(AffirmPlugins.get().publicKey())
-                .setConfirmationUrl(AffirmWebViewClient.AFFIRM_CONFIRMATION_URL)
-                .setCancelUrl(AffirmWebViewClient.AFFIRM_CANCELLATION_URL)
-                .setName(AffirmPlugins.get().name())
-                .build();
 
         final JsonObject checkoutJson = jsonParser.parse(AffirmPlugins.get().gson().toJson(checkout)).getAsJsonObject();
         final JsonObject merchantJson = jsonParser.parse(AffirmPlugins.get().gson().toJson(merchant)).getAsJsonObject();
@@ -61,6 +53,8 @@ public abstract class CheckoutBaseActivity extends AppCompatActivity implements 
     }
 
     abstract void startCheckout();
+
+    abstract void setupWebView();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,12 +84,6 @@ public abstract class CheckoutBaseActivity extends AppCompatActivity implements 
         outState.putParcelable(CHECKOUT_EXTRA, checkout);
     }
 
-    void setupWebView() {
-        AffirmUtils.debuggableWebView(this);
-        webView.setWebViewClient(new CheckoutWebViewClient(this));
-        webView.setWebChromeClient(new PopUpWebChromeClient(this));
-    }
-
     @Override
     protected void onDestroy() {
         clearCookies();
@@ -107,14 +95,6 @@ public abstract class CheckoutBaseActivity extends AppCompatActivity implements 
         final CookieManager cookieManager = CookieManager.getInstance();
         final CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(this);
         CookiesUtil.clearCookieByUrl("https://" + AffirmPlugins.get().baseUrl(), cookieManager, cookieSyncManager);
-    }
-
-    @Override
-    public void onWebViewConfirmation(@NonNull String token) {
-        final Intent intent = new Intent();
-        intent.putExtra(CHECKOUT_TOKEN, token);
-        setResult(RESULT_OK, intent);
-        finish();
     }
 
     @Override

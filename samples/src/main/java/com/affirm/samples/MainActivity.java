@@ -1,12 +1,15 @@
 package com.affirm.samples;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.affirm.android.Affirm;
 import com.affirm.android.model.Address;
+import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
@@ -15,10 +18,12 @@ import com.affirm.android.model.Shipping;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +83,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Affirm.handleAffirmData(this, requestCode, resultCode, data);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -97,5 +108,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAffirmCheckoutSuccess(String token) {
+        Toast.makeText(this, "Checkout token: " + token, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmCheckoutCancelled() {
+        Toast.makeText(this, "Checkout Cancelled", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmCheckoutError(String message) {
+        Toast.makeText(this, "Checkout Error: " + message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmVcnCheckoutCancelled() {
+        Toast.makeText(this, "Vcn Checkout Cancelled", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmVcnCheckoutError(@Nullable String message) {
+        Toast.makeText(this, "Vcn Checkout Error: " + message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails) {
+        Toast.makeText(this, "Vcn Checkout Card: " + cardDetails.toString(), Toast.LENGTH_LONG).show();
     }
 }

@@ -1,11 +1,17 @@
 package com.affirm.android;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 
+import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class Affirm {
 
@@ -18,6 +24,20 @@ public class Affirm {
 
     private static final int CHECKOUT_REQUEST = 8076;
     private static final int VCN_CHECKOUT_REQUEST = 8077;
+
+    public interface CheckoutCallbacks {
+        void onAffirmCheckoutError(@Nullable String message);
+
+        void onAffirmCheckoutCancelled();
+
+        void onAffirmCheckoutSuccess(@NonNull String token);
+
+        void onAffirmVcnCheckoutError(@Nullable String message);
+
+        void onAffirmVcnCheckoutCancelled();
+
+        void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails);
+    }
 
     /**
      * Returns the level of logging that will be displayed.
@@ -40,6 +60,44 @@ public class Affirm {
 
     public static void startVcnCheckout(@NonNull Activity activity, Checkout checkout) {
         VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
+    }
+
+    public static boolean handleAffirmData(CheckoutCallbacks callbacks, int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == CHECKOUT_REQUEST) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    callbacks.onAffirmCheckoutSuccess(data.getStringExtra(CheckoutActivity.CHECKOUT_TOKEN));
+                    break;
+                case RESULT_CANCELED:
+                    callbacks.onAffirmCheckoutCancelled();
+                    break;
+                case CheckoutActivity.RESULT_ERROR:
+                    callbacks.onAffirmCheckoutError(data.getStringExtra(CheckoutActivity.CHECKOUT_ERROR));
+                    break;
+                default:
+            }
+
+            return true;
+        } else if (requestCode == VCN_CHECKOUT_REQUEST) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    callbacks.onAffirmVcnCheckoutSuccess(
+                            (CardDetails) data.getParcelableExtra(VcnCheckoutActivity.CREDIT_DETAILS));
+                    break;
+                case RESULT_CANCELED:
+                    callbacks.onAffirmVcnCheckoutCancelled();
+                    break;
+                case CheckoutActivity.RESULT_ERROR:
+                    callbacks.onAffirmVcnCheckoutError(
+                            data.getStringExtra(VcnCheckoutActivity.CHECKOUT_ERROR));
+                    break;
+                default:
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     public enum Environment {

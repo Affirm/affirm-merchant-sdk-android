@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -14,18 +13,28 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/WhiteToolbarTheme"
-        app:popupTheme="@style/AppTheme.PopupOverlay"/>
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 
     <Button
-        android:text="@string/checkout"
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="@string/checkout" />
 
     <Button
-        android:text="@string/vcn_checkout"
         android:id="@+id/vcn_checkout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="@string/vcn_checkout" />
+
+    <com.affirm.android.view.AffirmPromoLabel
+        android:id="@+id/affirm_promo_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="16sp"
+        app:affirmColor="AffirmColorTypeBlue"
+        app:affirmLogoType="AffirmDisplayTypeLogo"
+        app:showCta="true" />
 </LinearLayout>

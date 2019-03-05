@@ -14,6 +14,7 @@ import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.Shipping;
+import com.affirm.android.view.AffirmPromoLabel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,10 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 Affirm.startVcnCheckout(MainActivity.this, checkoutModel());
             }
         });
+
+
+        AffirmPromoLabel label = findViewById(R.id.affirm_promo_label);
+        label.setLabel("Test {affirm_logo}");
     }
 
     private Checkout checkoutModel() {

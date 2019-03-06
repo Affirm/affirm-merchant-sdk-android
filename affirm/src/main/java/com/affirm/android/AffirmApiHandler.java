@@ -87,7 +87,6 @@ class AffirmApiHandler {
     }
 
     private static JsonObject buildCheckoutJsonRequest(Checkout checkout, Merchant merchant) {
-        final JsonObject configJson = new JsonObject();
         final JsonObject metadataJson = new JsonObject();
         final JsonObject jsonRequest = new JsonObject();
         final JsonParser jsonParser = new JsonParser();
@@ -95,12 +94,11 @@ class AffirmApiHandler {
         final JsonObject checkoutJson = jsonParser.parse(AffirmPlugins.get().gson().toJson(checkout)).getAsJsonObject();
         final JsonObject merchantJson = jsonParser.parse(AffirmPlugins.get().gson().toJson(merchant)).getAsJsonObject();
 
-        configJson.addProperty("user_confirmation_url_action", "GET");
+        merchantJson.addProperty("user_confirmation_url_action", "GET");
         metadataJson.addProperty("platform_type", "Affirm Android SDK");
         metadataJson.addProperty("platform_affirm", BuildConfig.VERSION_NAME);
 
         checkoutJson.add("merchant", merchantJson);
-        checkoutJson.add("config", configJson);
         checkoutJson.addProperty("api_version", "v2");
         checkoutJson.add("metadata", metadataJson);
 

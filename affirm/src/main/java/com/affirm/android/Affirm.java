@@ -55,7 +55,6 @@ public class Affirm {
         AffirmPlugins.initialize(configuration);
     }
 
-
     public static void launchCheckout(@NonNull Activity activity, @NonNull Checkout checkout) {
         CheckoutActivity.startActivity(activity, CHECKOUT_REQUEST, checkout);
     }

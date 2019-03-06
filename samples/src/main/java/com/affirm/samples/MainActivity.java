@@ -8,13 +8,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
+import com.affirm.android.AffirmPromoLabel;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.Shipping;
-import com.affirm.android.AffirmPromoLabel;
 
 import java.util.HashMap;
 import java.util.Map;

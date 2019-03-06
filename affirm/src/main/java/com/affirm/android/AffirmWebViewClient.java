@@ -8,8 +8,8 @@ import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 
 public abstract class AffirmWebViewClient extends WebViewClient {
-    static final String AFFIRM_CONFIRMATION_URL = "affirm://checkout/confirmed";
-    static final String AFFIRM_CANCELLATION_URL = "affirm://checkout/cancelled";
+    public static final String AFFIRM_CONFIRMATION_URL = "affirm://checkout/confirmed";
+    public static final String AFFIRM_CANCELLATION_URL = "affirm://checkout/cancelled";
 
     private final Callbacks callbacks;
 

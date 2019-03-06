@@ -22,7 +22,7 @@ class AffirmPlugins {
 
     private final Object lock = new Object();
 
-    private AffirmPlugins(Affirm.Configuration configuration) {
+    AffirmPlugins(Affirm.Configuration configuration) {
         this.configuration = configuration;
     }
 

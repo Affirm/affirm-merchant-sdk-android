@@ -1,6 +1,4 @@
-package com.affirm.android.view;
-
-import com.affirm.android.R;
+package com.affirm.android;
 
 import androidx.annotation.DrawableRes;
 

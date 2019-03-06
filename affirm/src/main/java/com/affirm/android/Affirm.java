@@ -8,13 +8,13 @@ import android.view.View;
 
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
-import com.affirm.android.view.AffirmPromoLabel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
 
 public class Affirm {
 
@@ -56,55 +56,66 @@ public class Affirm {
     }
 
 
-    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout) {
+    public static void launchCheckout(@NonNull Activity activity, @NonNull Checkout checkout) {
         CheckoutActivity.startActivity(activity, CHECKOUT_REQUEST, checkout);
-
     }
 
-    public static void startVcnCheckout(@NonNull Activity activity, Checkout checkout) {
+    public static void launchVcnCheckout(@NonNull Activity activity, Checkout checkout) {
         VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
     }
 
     public static void launchPrequal(@NonNull Context context, float amount,
                                      @Nullable String promoId) {
-//        PrequalActivity.launch(context, merchant, amount, promoId, environment.baseUrl1);
+        PrequalActivity.startActivity(context, amount, promoId);
     }
 
     public static void launchProductModal(@NonNull Context context, float amount,
                                           @Nullable String modalId) {
-//        ModalActivity.launch(context, merchant, amount, environment.baseUrl1, PRODUCT, modalId);
+        ModalActivity.startActivity(context, amount, PRODUCT, modalId);
     }
 
-    public static CancellableRequest writePromoToTextView(@NonNull final AffirmPromoLabel promoLabel,
-                                                          @Nullable final String promoId,
-                                                          final float amount,
-                                                          boolean showCta,
-                                                          final SpannablePromoCallback promoCallback) {
-        promoLabel.setOnClickListener(promoId, amount);
-
+    public static void writePromoToTextView(@NonNull final AffirmPromoLabel promoLabel,
+                                            @Nullable final String promoId,
+                                            final float amount,
+                                            final boolean showCta) {
         AffirmPromoRequest affirmPromoRequest = new AffirmPromoRequest();
-        SpannablePromoCallback callback = new SpannablePromoCallback() {
+        final PromoCallback callback = new PromoCallback() {
             @Override
             public void onPromoWritten(final String promo, final boolean showPrequal) {
                 promoLabel.post(new Runnable() {
                     @Override
                     public void run() {
                         promoLabel.setLabel(promo, showPrequal);
-                        if (promoCallback != null) {
-                            promoCallback.onPromoWritten(promo, showPrequal);
-                        }
                     }
                 });
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                if (promoCallback != null) {
-                    promoCallback.onFailure(throwable);
-                }
+                AffirmLog.e("Failed to write promo...", throwable);
             }
         };
-        return affirmPromoRequest.getNewPromo(promoId, amount, showCta, callback);
+        final CancellableRequest request = affirmPromoRequest.getNewPromo(promoId, amount, showCta, callback);
+
+        promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+                AffirmLog.d("PromoLabel attached to window...");
+                if (request != null) {
+                    request.executeRequest();
+                }
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                AffirmLog.d("PromoLabel detached to window...");
+                if (request != null) {
+                    request.cancelRequest();
+                }
+            }
+        });
+
+        promoLabel.setOnClickListener(promoId, amount);
     }
 
     public static boolean handleAffirmData(CheckoutCallbacks callbacks, int requestCode,
@@ -128,14 +139,14 @@ public class Affirm {
             switch (resultCode) {
                 case RESULT_OK:
                     callbacks.onAffirmVcnCheckoutSuccess(
-                        (CardDetails) data.getParcelableExtra(VcnCheckoutActivity.CREDIT_DETAILS));
+                            (CardDetails) data.getParcelableExtra(VcnCheckoutActivity.CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmVcnCheckoutCancelled();
                     break;
                 case CheckoutActivity.RESULT_ERROR:
                     callbacks.onAffirmVcnCheckoutError(
-                        data.getStringExtra(VcnCheckoutActivity.CHECKOUT_ERROR));
+                            data.getStringExtra(VcnCheckoutActivity.CHECKOUT_ERROR));
                     break;
                 default:
             }

@@ -4,6 +4,8 @@ import android.util.Log;
 
 class AffirmLog {
 
+    private static final String TAG = "Affirm";
+
     private static int logLevel = Integer.MAX_VALUE;
 
     public static int getLogLevel() {
@@ -14,53 +16,53 @@ class AffirmLog {
         AffirmLog.logLevel = logLevel;
     }
 
-    private static void log(int messageLogLevel, String tag, String message, Throwable tr) {
+    private static void log(int messageLogLevel, String message, Throwable tr) {
         if (messageLogLevel >= logLevel) {
             if (tr == null) {
-                Log.println(logLevel, tag, message);
+                Log.println(logLevel, TAG, message);
             } else {
-                Log.println(logLevel, tag, message + '\n' + Log.getStackTraceString(tr));
+                Log.println(logLevel, TAG, message + '\n' + Log.getStackTraceString(tr));
             }
         }
     }
 
-    public static void v(String tag, String message, Throwable tr) {
-        log(Log.VERBOSE, tag, message, tr);
+    public static void v(String message, Throwable tr) {
+        log(Log.VERBOSE, message, tr);
     }
 
-    public static void v(String tag, String message) {
-        v(tag, message, null);
+    public static void v(String message) {
+        v(message, null);
     }
 
-    public static void d(String tag, String message, Throwable tr) {
-        log(Log.DEBUG, tag, message, tr);
+    public static void d(String message, Throwable tr) {
+        log(Log.DEBUG, message, tr);
     }
 
-    public static void d(String tag, String message) {
-        d(tag, message, null);
+    public static void d(String message) {
+        d(message, null);
     }
 
-    public static void i(String tag, String message, Throwable tr) {
-        log(Log.INFO, tag, message, tr);
+    public static void i(String message, Throwable tr) {
+        log(Log.INFO, message, tr);
     }
 
-    public static void i(String tag, String message) {
-        i(tag, message, null);
+    public static void i(String message) {
+        i(message, null);
     }
 
-    public static void w(String tag, String message, Throwable tr) {
-        log(Log.WARN, tag, message, tr);
+    public static void w(String message, Throwable tr) {
+        log(Log.WARN, message, tr);
     }
 
-    public static void w(String tag, String message) {
-        w(tag, message, null);
+    public static void w(String message) {
+        w(message, null);
     }
 
-    public static void e(String tag, String message, Throwable tr) {
-        log(Log.ERROR, tag, message, tr);
+    public static void e(String message, Throwable tr) {
+        log(Log.ERROR, message, tr);
     }
 
-    public static void e(String tag, String message) {
-        e(tag, message, null);
+    public static void e(String message) {
+        e(message, null);
     }
 }

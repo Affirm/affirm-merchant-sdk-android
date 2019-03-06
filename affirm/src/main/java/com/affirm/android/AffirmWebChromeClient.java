@@ -39,7 +39,7 @@ class AffirmWebChromeClient extends WebChromeClient {
     @Override
     public boolean onConsoleMessage(ConsoleMessage cm) {
         if (BuildConfig.DEBUG) {
-            AffirmLog.d("Affirm", cm.message() + " -- From line " + cm.lineNumber() + " of " + cm.sourceId());
+            AffirmLog.d(cm.message() + " -- From line " + cm.lineNumber() + " of " + cm.sourceId());
             return true;
         }
         return false;

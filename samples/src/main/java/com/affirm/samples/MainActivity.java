@@ -8,15 +8,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
-import com.affirm.android.CancellableRequest;
-import com.affirm.android.SpannablePromoCallback;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.Shipping;
-import com.affirm.android.view.AffirmPromoLabel;
+import com.affirm.android.AffirmPromoLabel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +26,6 @@ import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks {
 
-    private CancellableRequest mCancellableRequest;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,73 +36,55 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.checkbox).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startCheckout(MainActivity.this, checkoutModel());
+                Affirm.launchCheckout(MainActivity.this, checkoutModel());
             }
         });
 
         findViewById(R.id.vcn_checkout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startVcnCheckout(MainActivity.this, checkoutModel());
+                Affirm.launchVcnCheckout(MainActivity.this, checkoutModel());
             }
         });
 
-
         AffirmPromoLabel label = findViewById(R.id.affirm_promo_label);
-        mCancellableRequest = Affirm.writePromoToTextView(label, null, 1100, true,
-            new SpannablePromoCallback() {
-                @Override
-                public void onPromoWritten(String promo, boolean showPrequal) {
-
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-
-                }
-            });
-    }
-
-    @Override
-    protected void onDestroy() {
-        mCancellableRequest.cancelRequest();
-        super.onDestroy();
+        Affirm.writePromoToTextView(label, null, 1100, true);
     }
 
     private Checkout checkoutModel() {
         final Item item = Item.builder()
-            .setDisplayName("Great Deal Wheel")
-            .setImageUrl(
-                "http://www.m2motorsportinc.com/media/catalog/product/cache/1/thumbnail" +
-                    "/9df78eab33525d08d6e5fb8d27136e95/v/e/velocity-vw125-wheels-rims.jpg")
-            .setQty(1)
-            .setSku("wheel")
-            .setUnitPrice(1000f)
-            .setUrl("http://merchant.com/great_deal_wheel")
-            .build();
+                .setDisplayName("Great Deal Wheel")
+                .setImageUrl(
+                        "http://www.m2motorsportinc.com/media/catalog/product/cache/1/thumbnail" +
+                                "/9df78eab33525d08d6e5fb8d27136e95/v/e/velocity-vw125-wheels-rims.jpg")
+                .setQty(1)
+                .setSku("wheel")
+                .setUnitPrice(1000f)
+                .setUrl("http://merchant.com/great_deal_wheel")
+                .build();
 
         final Map<String, Item> items = new HashMap<>();
         items.put("wheel", item);
 
         final Name name = Name.builder().setFull("John Smith").build();
         final Address address = Address.builder()
-            .setCity("San Francisco")
-            .setCountry("USA")
-            .setLine1("333 Kansas st")
-            .setState("CA")
-            .setZipcode("94107")
-            .build();
+                .setCity("San Francisco")
+                .setCountry("USA")
+                .setLine1("333 Kansas st")
+                .setState("CA")
+                .setZipcode("94107")
+                .build();
 
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
 
         return Checkout.builder()
-            .setItems(items)
-            .setBilling(shipping)
-            .setShipping(shipping)
-            .setShippingAmount(0f)
-            .setTaxAmount(100f)
-            .setTotal(1100f)
-            .build();
+                .setItems(items)
+                .setBilling(shipping)
+                .setShipping(shipping)
+                .setShippingAmount(0f)
+                .setTaxAmount(100f)
+                .setTotal(1100f)
+                .build();
     }
 
     @Override

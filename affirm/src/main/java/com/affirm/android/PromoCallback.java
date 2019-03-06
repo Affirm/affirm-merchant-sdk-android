@@ -1,8 +1,6 @@
 package com.affirm.android;
 
-import android.text.SpannableString;
-
-public interface SpannablePromoCallback {
+interface PromoCallback {
     void onPromoWritten(final String promo, final boolean showPrequal);
 
     void onFailure(Throwable throwable);

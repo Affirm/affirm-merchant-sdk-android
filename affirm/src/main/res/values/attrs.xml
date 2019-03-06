@@ -2,15 +2,15 @@
 <resources>
     <declare-styleable name="AffirmPromoLabel">
         <attr name="affirmLogoType" format="enum">
-            <enum name="AffirmDisplayTypeLogo" value="0" />
-            <enum name="AffirmDisplayTypeText" value="1" />
-            <enum name="AffirmDisplayTypeSymbol" value="2" />
-            <enum name="AffirmDisplayTypeSymbolHollow" value="3" />
+            <enum name="AffirmDisplayTypeLogo" value="0"/>
+            <enum name="AffirmDisplayTypeText" value="1"/>
+            <enum name="AffirmDisplayTypeSymbol" value="2"/>
+            <enum name="AffirmDisplayTypeSymbolHollow" value="3"/>
         </attr>
         <attr name="affirmColor" format="enum">
-            <enum name="AffirmColorTypeBlue" value="0" />
-            <enum name="AffirmColorTypeBlack" value="1" />
-            <enum name="AffirmColorTypeWhite" value="2" />
+            <enum name="AffirmColorTypeBlue" value="0"/>
+            <enum name="AffirmColorTypeBlack" value="1"/>
+            <enum name="AffirmColorTypeWhite" value="2"/>
         </attr>
     </declare-styleable>
 </resources>

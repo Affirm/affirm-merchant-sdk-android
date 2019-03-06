@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:text="@string/vcn_checkout" />
 
-    <com.affirm.android.view.AffirmPromoLabel
+    <com.affirm.android.AffirmPromoLabel
         android:id="@+id/affirm_promo_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

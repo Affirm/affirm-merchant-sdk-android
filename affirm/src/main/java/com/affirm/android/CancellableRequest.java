@@ -1,5 +1,7 @@
 package com.affirm.android;
 
-public interface CancellableRequest {
+interface CancellableRequest {
     void cancelRequest();
+
+    void executeRequest();
 }

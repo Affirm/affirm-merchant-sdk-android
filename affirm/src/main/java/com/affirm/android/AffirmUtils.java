@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -43,9 +42,8 @@ public final class AffirmUtils {
     }
 
     static String replacePlaceholders(@NonNull String text, @NonNull Map<String, String> map) {
-        final Iterator it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
+        for (Object o : map.entrySet()) {
+            Map.Entry pair = (Map.Entry) o;
 
             final String placeholder = PLACEHOLDER_START + pair.getKey() + PLACEHOLDER_END;
             text = text.replace(placeholder, (String) pair.getValue());
@@ -70,4 +68,18 @@ public final class AffirmUtils {
         }
     }
 
+    static void showCloseActionBar(AppCompatActivity activity) {
+        activity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        if (activity.getActionBar() != null) {
+            activity.getActionBar().show();
+            activity.getActionBar().setDisplayShowTitleEnabled(false);
+            activity.getActionBar().setDisplayHomeAsUpEnabled(true);
+//            activity.getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close);
+        } else if (activity.getSupportActionBar() != null) {
+            activity.getSupportActionBar().show();
+            activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close);
+        }
+    }
 }

@@ -16,15 +16,14 @@ import okio.BufferedSink;
 
 class AffirmHttpClient {
 
-    private OkHttpClient mOkHttpClient;
-    private Call mCall;
+    private OkHttpClient okHttpClient;
 
     private AffirmHttpClient(@Nullable OkHttpClient.Builder builder) {
         if (builder == null) {
             builder = new OkHttpClient.Builder();
         }
 
-        mOkHttpClient = builder.build();
+        okHttpClient = builder.build();
     }
 
     static AffirmHttpClient createClient(@Nullable OkHttpClient.Builder builder) {
@@ -33,14 +32,23 @@ class AffirmHttpClient {
 
     AffirmHttpResponse execute(final AffirmHttpRequest request) throws IOException {
         Request okHttpRequest = getRequest(request);
-        mCall = mOkHttpClient.newCall(okHttpRequest);
-        Response response = mCall.execute();
+        Call call = okHttpClient.newCall(okHttpRequest);
+        Response response = call.execute();
         return getResponse(response);
     }
 
-    void cancel() {
-        if (mCall != null) {
-            mCall.cancel();
+    void cancelCallWithTag(String tag) {
+        for (Call call : okHttpClient.dispatcher().queuedCalls()) {
+            Object requestTag = call.request().tag();
+            if (requestTag != null && requestTag.equals(tag)) {
+                call.cancel();
+            }
+        }
+        for (Call call : okHttpClient.dispatcher().runningCalls()) {
+            Object requestTag = call.request().tag();
+            if (requestTag != null && requestTag.equals(tag)) {
+                call.cancel();
+            }
         }
     }
 
@@ -66,11 +74,11 @@ class AffirmHttpClient {
             }
         }
         return new AffirmHttpResponse.Builder()
-            .setStatusCode(statusCode)
-            .setContent(content)
-            .setTotalSize(totalSize)
-            .setContentType(contentType)
-            .build();
+                .setStatusCode(statusCode)
+                .setContent(content)
+                .setTotalSize(totalSize)
+                .setContentType(contentType)
+                .build();
     }
 
     private Request getRequest(AffirmHttpRequest request) {
@@ -101,6 +109,9 @@ class AffirmHttpClient {
         if (body != null) {
             okHttpRequestBody = new AffirmOkHttpRequestBody(body);
         }
+
+        // set tag
+        okHttpRequestBuilder.tag(request.getTag());
 
         if (okHttpRequestBody != null) {
             switch (method) {

@@ -4,11 +4,13 @@ final class AffirmHttpRequest {
     private final String url;
     private final Method method;
     private final AffirmHttpBody body;
+    private final String tag;
 
     private AffirmHttpRequest(Builder builder) {
         this.url = builder.url;
         this.method = builder.method;
         this.body = builder.body;
+        this.tag = builder.tag;
     }
 
     public String getUrl() {
@@ -23,6 +25,10 @@ final class AffirmHttpRequest {
         return body;
     }
 
+    public String getTag() {
+        return tag;
+    }
+
     public enum Method {
         GET, POST, PUT, DELETE
     }
@@ -32,6 +38,7 @@ final class AffirmHttpRequest {
         private String url;
         private Method method;
         private AffirmHttpBody body;
+        private String tag;
 
         public Builder() {
         }
@@ -55,6 +62,11 @@ final class AffirmHttpRequest {
 
         public Builder setBody(AffirmHttpBody body) {
             this.body = body;
+            return this;
+        }
+
+        public Builder setTag(String tag) {
+            this.tag = tag;
             return this;
         }
 

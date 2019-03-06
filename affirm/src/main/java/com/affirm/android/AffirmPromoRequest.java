@@ -24,10 +24,10 @@ class AffirmPromoRequest {
             public void run() {
                 try {
                     PromoResponse response = AffirmApiHandler.getNewPromo(promoId, dollarAmount,
-                        showCta);
+                            showCta);
                     if (promoCallback != null && !isRequestCancelled) {
                         boolean showPrequal =
-                            !response.promo().promoConfig().promoStyle().equals("fast");
+                                !response.promo().promoConfig().promoStyle().equals("fast");
                         String promo = response.promo().ala();
                         promoCallback.onPromoWritten(promo, showPrequal);
                     }
@@ -43,8 +43,7 @@ class AffirmPromoRequest {
             @Override
             public void cancelRequest() {
                 isRequestCancelled = true;
-                AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
-                httpClient.cancel();
+                AffirmApiHandler.cancelNewPromoCall();
             }
         };
     }

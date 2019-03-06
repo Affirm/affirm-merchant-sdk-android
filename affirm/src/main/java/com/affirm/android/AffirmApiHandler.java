@@ -16,6 +16,14 @@ class AffirmApiHandler {
 
     private static final String CHECKOUT_PATH = "/api/v2/checkout/";
 
+    private static final String TAG_GET_NEW_PROMO = "GET_NEW_PROMO";
+    private static final String TAG_CHECKOUT = "CHECKOUT";
+    private static final String TAG_VCN_CHECKOUT = "VCN_CHECKOUT";
+
+    static void cancelNewPromoCall() {
+        AffirmPlugins.get().restClient().cancelCallWithTag(TAG_GET_NEW_PROMO);
+    }
+
     static PromoResponse getNewPromo(String promoId, float dollarAmount, boolean showCta) throws IOException {
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
         int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
@@ -33,10 +41,15 @@ class AffirmApiHandler {
         AffirmHttpRequest request = new AffirmHttpRequest.Builder()
                 .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + path)
                 .setMethod(AffirmHttpRequest.Method.GET)
+                .setTag(TAG_GET_NEW_PROMO)
                 .build();
 
         AffirmHttpResponse response = httpClient.execute(request);
         return AffirmPlugins.get().gson().fromJson(response.getContent(), PromoResponse.class);
+    }
+
+    static void cancelVcnCheckoutCall() {
+        AffirmPlugins.get().restClient().cancelCallWithTag(TAG_VCN_CHECKOUT);
     }
 
     static CheckoutResponse executeVcnCheckout(Checkout checkout) throws IOException {
@@ -54,10 +67,15 @@ class AffirmApiHandler {
                 .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + CHECKOUT_PATH)
                 .setMethod(AffirmHttpRequest.Method.POST)
                 .setBody(new AffirmHttpBody("application/json; charset=utf-8", jsonRequest.toString()))
+                .setTag(TAG_CHECKOUT)
                 .build();
 
         AffirmHttpResponse response = httpClient.execute(request);
         return AffirmPlugins.get().gson().fromJson(response.getContent(), CheckoutResponse.class);
+    }
+
+    static void cancelCheckoutCall() {
+        AffirmPlugins.get().restClient().cancelCallWithTag(TAG_CHECKOUT);
     }
 
     static CheckoutResponse executeCheckout(Checkout checkout) throws IOException {
@@ -76,6 +94,7 @@ class AffirmApiHandler {
                 .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + CHECKOUT_PATH)
                 .setMethod(AffirmHttpRequest.Method.POST)
                 .setBody(new AffirmHttpBody("application/json; charset=utf-8", jsonRequest.toString()))
+                .setTag(TAG_VCN_CHECKOUT)
                 .build();
 
         AffirmHttpResponse response = httpClient.execute(request);

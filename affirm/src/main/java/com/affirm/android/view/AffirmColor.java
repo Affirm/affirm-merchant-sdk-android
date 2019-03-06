@@ -4,7 +4,7 @@ import com.affirm.android.R;
 
 import androidx.annotation.ColorRes;
 
-public enum AffirmColor {
+enum AffirmColor {
     AFFIRM_COLOR_TYPE_BLUE(0),
     AFFIRM_COLOR_TYPE_BLACK(1),
     AFFIRM_COLOR_TYPE_WHITE(2);

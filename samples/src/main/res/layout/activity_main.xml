@@ -35,6 +35,5 @@
         android:layout_marginTop="20dp"
         android:textSize="16sp"
         app:affirmColor="AffirmColorTypeBlue"
-        app:affirmLogoType="AffirmDisplayTypeLogo"
-        app:showCta="true" />
+        app:affirmLogoType="AffirmDisplayTypeLogo" />
 </LinearLayout>

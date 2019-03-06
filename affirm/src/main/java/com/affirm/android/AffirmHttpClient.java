@@ -16,14 +16,15 @@ import okio.BufferedSink;
 
 class AffirmHttpClient {
 
-    private OkHttpClient okHttpClient;
+    private OkHttpClient mOkHttpClient;
+    private Call mCall;
 
     private AffirmHttpClient(@Nullable OkHttpClient.Builder builder) {
         if (builder == null) {
             builder = new OkHttpClient.Builder();
         }
 
-        okHttpClient = builder.build();
+        mOkHttpClient = builder.build();
     }
 
     static AffirmHttpClient createClient(@Nullable OkHttpClient.Builder builder) {
@@ -32,9 +33,15 @@ class AffirmHttpClient {
 
     AffirmHttpResponse execute(final AffirmHttpRequest request) throws IOException {
         Request okHttpRequest = getRequest(request);
-        Call call = okHttpClient.newCall(okHttpRequest);
-        Response response = call.execute();
+        mCall = mOkHttpClient.newCall(okHttpRequest);
+        Response response = mCall.execute();
         return getResponse(response);
+    }
+
+    void cancel() {
+        if (mCall != null) {
+            mCall.cancel();
+        }
     }
 
     private AffirmHttpResponse getResponse(Response response) throws IOException {
@@ -59,11 +66,11 @@ class AffirmHttpClient {
             }
         }
         return new AffirmHttpResponse.Builder()
-                .setStatusCode(statusCode)
-                .setContent(content)
-                .setTotalSize(totalSize)
-                .setContentType(contentType)
-                .build();
+            .setStatusCode(statusCode)
+            .setContent(content)
+            .setTotalSize(totalSize)
+            .setContentType(contentType)
+            .build();
     }
 
     private Request getRequest(AffirmHttpRequest request) {
@@ -77,7 +84,8 @@ class AffirmHttpClient {
             case DELETE:
             case POST:
             case PUT:
-                // Since we need to set body and method at the same time for DELETE, POST, PUT, we will do it in
+                // Since we need to set body and method at the same time for DELETE, POST, PUT,
+                // we will do it in
                 // the following.
                 break;
             default:

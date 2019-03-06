@@ -4,7 +4,7 @@ import com.affirm.android.R;
 
 import androidx.annotation.DrawableRes;
 
-public enum AffirmLogoType {
+enum AffirmLogoType {
 
     AFFIRM_DISPLAY_TYPE_LOGO(0),
     AFFIRM_DISPLAY_TYPE_TEXT(1),

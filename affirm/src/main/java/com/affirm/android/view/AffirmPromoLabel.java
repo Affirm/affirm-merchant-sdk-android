@@ -12,7 +12,9 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.util.AttributeSet;
+import android.view.View;
 
+import com.affirm.android.Affirm;
 import com.affirm.android.R;
 
 import androidx.annotation.NonNull;
@@ -28,7 +30,6 @@ public class AffirmPromoLabel extends AppCompatTextView {
     private Paint mPaint;
     private AffirmLogoType mAffirmLogoType;
     private AffirmColor mAffirmColor;
-    private boolean mShowCta;
 
     public AffirmPromoLabel(Context context) {
         this(context, null);
@@ -56,19 +57,37 @@ public class AffirmPromoLabel extends AppCompatTextView {
         mAffirmLogoType = AffirmLogoType.getAffirmLogoType(affirmLogoTypeOrdinal);
         mAffirmColor = AffirmColor.getAffirmColor(affirmColorOrdinal);
 
-        mShowCta = typedArray.getBoolean(R.styleable.AffirmPromoLabel_showCta, false);
         typedArray.recycle();
 
         mPaint = new Paint();
         mPaint.setStyle(Paint.Style.FILL);
     }
 
-    public void setLabel(String text) {
-        setText(updateSpan(text));
+    public void setOnClickListener(@Nullable final String promoId,
+                                   final float amount) {
+        setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean showPrequal = (boolean) v.getTag();
+                Context context = getContext();
+                if (showPrequal) {
+                    Affirm.launchPrequal(context, amount, promoId);
+                } else {
+                    Affirm.launchProductModal(context, amount, null);
+                }
+            }
+        });
     }
 
-    public boolean isShowCta() {
-        return mShowCta;
+    public void setLabel(@NonNull String text) {
+        setLabel(text, null);
+    }
+
+    public void setLabel(@NonNull String text, @Nullable Object tag) {
+        setText(updateSpan(text));
+        if (tag != null) {
+            setTag(tag);
+        }
     }
 
     public void setAffirmLogoType(AffirmLogoType affirmLogoType) {
@@ -76,10 +95,10 @@ public class AffirmPromoLabel extends AppCompatTextView {
     }
 
     public void setAffirmColor(AffirmColor affirmColor) {
-       mAffirmColor = affirmColor;
+        mAffirmColor = affirmColor;
     }
 
-    private SpannableString updateSpan(String template) {
+    private SpannableString updateSpan(@NonNull String template) {
         float textSize = getTextSize();
         Typeface typeface = getTypeface();
         return spannableFromEditText(template, textSize, typeface);

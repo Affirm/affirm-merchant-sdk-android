@@ -12,6 +12,5 @@
             <enum name="AffirmColorTypeBlack" value="1" />
             <enum name="AffirmColorTypeWhite" value="2" />
         </attr>
-        <attr name="showCta" format="boolean" />
     </declare-styleable>
 </resources>

@@ -1,11 +1,14 @@
 package com.affirm.android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
+import com.affirm.android.view.AffirmPromoLabel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,7 +65,50 @@ public class Affirm {
         VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
     }
 
-    public static boolean handleAffirmData(CheckoutCallbacks callbacks, int requestCode, int resultCode, @Nullable Intent data) {
+    public static void launchPrequal(@NonNull Context context, float amount,
+                                     @Nullable String promoId) {
+//        PrequalActivity.launch(context, merchant, amount, promoId, environment.baseUrl1);
+    }
+
+    public static void launchProductModal(@NonNull Context context, float amount,
+                                          @Nullable String modalId) {
+//        ModalActivity.launch(context, merchant, amount, environment.baseUrl1, PRODUCT, modalId);
+    }
+
+    public static CancellableRequest writePromoToTextView(@NonNull final AffirmPromoLabel promoLabel,
+                                                          @Nullable final String promoId,
+                                                          final float amount,
+                                                          boolean showCta,
+                                                          final SpannablePromoCallback promoCallback) {
+        promoLabel.setOnClickListener(promoId, amount);
+
+        AffirmPromoRequest affirmPromoRequest = new AffirmPromoRequest();
+        SpannablePromoCallback callback = new SpannablePromoCallback() {
+            @Override
+            public void onPromoWritten(final String promo, final boolean showPrequal) {
+                promoLabel.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        promoLabel.setLabel(promo, showPrequal);
+                        if (promoCallback != null) {
+                            promoCallback.onPromoWritten(promo, showPrequal);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                if (promoCallback != null) {
+                    promoCallback.onFailure(throwable);
+                }
+            }
+        };
+        return affirmPromoRequest.getNewPromo(promoId, amount, showCta, callback);
+    }
+
+    public static boolean handleAffirmData(CheckoutCallbacks callbacks, int requestCode,
+                                           int resultCode, @Nullable Intent data) {
         if (requestCode == CHECKOUT_REQUEST) {
             switch (resultCode) {
                 case RESULT_OK:
@@ -82,14 +128,14 @@ public class Affirm {
             switch (resultCode) {
                 case RESULT_OK:
                     callbacks.onAffirmVcnCheckoutSuccess(
-                            (CardDetails) data.getParcelableExtra(VcnCheckoutActivity.CREDIT_DETAILS));
+                        (CardDetails) data.getParcelableExtra(VcnCheckoutActivity.CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmVcnCheckoutCancelled();
                     break;
                 case CheckoutActivity.RESULT_ERROR:
                     callbacks.onAffirmVcnCheckoutError(
-                            data.getStringExtra(VcnCheckoutActivity.CHECKOUT_ERROR));
+                        data.getStringExtra(VcnCheckoutActivity.CHECKOUT_ERROR));
                     break;
                 default:
             }
@@ -148,9 +194,12 @@ public class Affirm {
             }
 
             /**
-             * Sets the level of logging to display, where each level includes all those below it. The default
-             * level is {@link #LOG_LEVEL_NONE}. Please ensure this is set to {@link #LOG_LEVEL_ERROR}
-             * or {@link #LOG_LEVEL_NONE} before deploying your app to ensure no sensitive information is
+             * Sets the level of logging to display, where each level includes all those below it
+             * . The default
+             * level is {@link #LOG_LEVEL_NONE}. Please ensure this is set to
+             * {@link #LOG_LEVEL_ERROR}
+             * or {@link #LOG_LEVEL_NONE} before deploying your app to ensure no sensitive
+             * information is
              * logged. The levels are:
              * <ul>
              * <li>{@link #LOG_LEVEL_VERBOSE}</li>

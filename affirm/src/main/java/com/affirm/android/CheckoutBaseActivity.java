@@ -4,11 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.WebView;
 
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
@@ -19,9 +14,8 @@ import java.util.concurrent.Executor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
-abstract class CheckoutCommonActivity extends AppCompatActivity implements AffirmWebViewClient.Callbacks, AffirmWebChromeClient.Callbacks {
+abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebViewClient.Callbacks {
 
     static final int RESULT_ERROR = -8575;
 
@@ -29,15 +23,13 @@ abstract class CheckoutCommonActivity extends AppCompatActivity implements Affir
 
     static final String CHECKOUT_EXTRA = "checkout_extra";
 
-    private AsyncTask task;
+    private AsyncTask checkoutTask;
 
     Checkout checkout;
 
-    ViewGroup container;
-    WebView webView;
-    View progressIndicator;
+    abstract CheckoutResponse executeTask(Checkout checkout) throws IOException;
 
-    final TaskCreator taskCreator = new TaskCreator() {
+    final CheckoutTaskCreator taskCreator = new CheckoutTaskCreator() {
         @Override
         public void create(@NonNull Context context, @NonNull Checkout checkout, @Nullable CheckoutCallback callback) {
             executeTask(null, new CheckoutTask(context, checkout, callback));
@@ -45,39 +37,25 @@ abstract class CheckoutCommonActivity extends AppCompatActivity implements Affir
 
         @Override
         public void cancel() {
-            if (task != null && !task.isCancelled()) {
-                task.cancel(true);
-                task = null;
+            if (checkoutTask != null && !checkoutTask.isCancelled()) {
+                checkoutTask.cancel(true);
+                checkoutTask = null;
             }
         }
     };
 
-    abstract void startCheckout();
-
-    abstract void setupWebView();
-
-    abstract CheckoutResponse executeTask(Checkout checkout) throws IOException;
+    @Override
+    void beforeOnCreate() {
+        AffirmUtils.hideActionBar(this);
+    }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        AffirmUtils.hideActionBar(this);
-
+    void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             checkout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
         } else {
             checkout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
         }
-
-        setContentView(R.layout.activity_webview);
-        container = findViewById(R.id.container);
-        webView = findViewById(R.id.webview);
-        progressIndicator = findViewById(R.id.progressIndicator);
-
-        setupWebView();
-
-        startCheckout();
     }
 
     @Override
@@ -90,17 +68,7 @@ abstract class CheckoutCommonActivity extends AppCompatActivity implements Affir
     @Override
     protected void onDestroy() {
         taskCreator.cancel();
-        clearCookies();
-        container.removeView(webView);
-        webView.removeAllViews();
-        webView.destroy();
         super.onDestroy();
-    }
-
-    public void clearCookies() {
-        final CookieManager cookieManager = CookieManager.getInstance();
-        final CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(this);
-        CookiesUtil.clearCookieByUrl("https://" + AffirmPlugins.get().baseUrl(), cookieManager, cookieSyncManager);
     }
 
     @Override
@@ -117,16 +85,6 @@ abstract class CheckoutCommonActivity extends AppCompatActivity implements Affir
         finish();
     }
 
-    @Override
-    public void onWebViewPageLoaded() {
-        // ignore this
-    }
-
-    @Override
-    public void chromeLoadCompleted() {
-        progressIndicator.setVisibility(View.GONE);
-    }
-
     interface CheckoutCallback {
 
         void onError(Exception exception);
@@ -134,19 +92,9 @@ abstract class CheckoutCommonActivity extends AppCompatActivity implements Affir
         void onSuccess(CheckoutResponse response);
     }
 
-
-    interface TaskCreator {
-        void create(
-                @NonNull final Context context,
-                @NonNull final Checkout checkout,
-                @Nullable final CheckoutCallback callback);
-
-        void cancel();
-    }
-
     void executeTask(@Nullable Executor executor,
                      @NonNull AsyncTask<Void, Void, CheckoutResponseWrapper> task) {
-        this.task = task;
+        this.checkoutTask = task;
         if (executor != null) {
             task.executeOnExecutor(executor);
         } else {
@@ -173,9 +121,9 @@ abstract class CheckoutCommonActivity extends AppCompatActivity implements Affir
 
         @Override
         protected CheckoutResponseWrapper doInBackground(Void... params) {
-            if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutCommonActivity) {
+            if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutBaseActivity) {
                 try {
-                    return new CheckoutResponseWrapper(((CheckoutCommonActivity) mContextRef.get()).executeTask(checkout));
+                    return new CheckoutResponseWrapper(((CheckoutBaseActivity) mContextRef.get()).executeTask(checkout));
                 } catch (IOException e) {
                     return new CheckoutResponseWrapper(e);
                 }

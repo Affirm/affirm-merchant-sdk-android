@@ -63,13 +63,13 @@ public class Affirm {
         VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
     }
 
-    public static void launchPrequal(@NonNull Context context, float amount,
-                                     @Nullable String promoId) {
+    static void launchPrequal(@NonNull Context context, float amount,
+                              @Nullable String promoId) {
         PrequalActivity.startActivity(context, amount, promoId);
     }
 
-    public static void launchProductModal(@NonNull Context context, float amount,
-                                          @Nullable String modalId) {
+    static void launchProductModal(@NonNull Context context, float amount,
+                                   @Nullable String modalId) {
         ModalActivity.startActivity(context, amount, PRODUCT, modalId);
     }
 
@@ -77,7 +77,7 @@ public class Affirm {
                                             @Nullable final String promoId,
                                             final float amount,
                                             final boolean showCta) {
-        AffirmPromoRequest affirmPromoRequest = new AffirmPromoRequest();
+        PromoRequest affirmPromoRequest = new PromoRequest();
         final PromoCallback callback = new PromoCallback() {
             @Override
             public void onPromoWritten(final String promo, final boolean showPrequal) {
@@ -101,7 +101,7 @@ public class Affirm {
             public void onViewAttachedToWindow(View v) {
                 AffirmLog.d("PromoLabel attached to window...");
                 if (request != null) {
-                    request.executeRequest();
+                    request.execute();
                 }
             }
 
@@ -109,7 +109,7 @@ public class Affirm {
             public void onViewDetachedFromWindow(View v) {
                 AffirmLog.d("PromoLabel detached to window...");
                 if (request != null) {
-                    request.cancelRequest();
+                    request.cancel();
                 }
             }
         });
@@ -119,6 +119,9 @@ public class Affirm {
 
     public static boolean handleAffirmData(CheckoutCallbacks callbacks, int requestCode,
                                            int resultCode, @Nullable Intent data) {
+        if (data == null) {
+            return false;
+        }
         if (requestCode == CHECKOUT_REQUEST) {
             switch (resultCode) {
                 case RESULT_OK:
@@ -127,7 +130,7 @@ public class Affirm {
                 case RESULT_CANCELED:
                     callbacks.onAffirmCheckoutCancelled();
                     break;
-                case CheckoutActivity.RESULT_ERROR:
+                case CheckoutBaseActivity.RESULT_ERROR:
                     callbacks.onAffirmCheckoutError(data.getStringExtra(CheckoutActivity.CHECKOUT_ERROR));
                     break;
                 default:
@@ -143,7 +146,7 @@ public class Affirm {
                 case RESULT_CANCELED:
                     callbacks.onAffirmVcnCheckoutCancelled();
                     break;
-                case CheckoutActivity.RESULT_ERROR:
+                case CheckoutBaseActivity.RESULT_ERROR:
                     callbacks.onAffirmVcnCheckoutError(
                             data.getStringExtra(VcnCheckoutActivity.CHECKOUT_ERROR));
                     break;

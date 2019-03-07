@@ -3,98 +3,71 @@ package com.affirm.android;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.MenuItem;
-import android.view.View;
-import android.webkit.WebView;
-
-import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
-class PrequalActivity extends AppCompatActivity
-        implements AffirmWebViewClient.Callbacks, AffirmWebChromeClient.Callbacks {
-    private static final String PROTOCOL = "https://";
-    private static final String REFERRING_URL = "https://androidsdk/";
+class PrequalActivity extends AffirmActivity
+        implements AffirmWebViewClient.Callbacks, PrequalWebViewClient.Callbacks {
 
     private static final String AMOUNT = "AMOUNT";
     private static final String PROMO_ID = "PROMO_ID";
-    private static final String MAP_EXTRA = "MAP_EXTRA";
 
-    private WebView webView;
-    private View progressIndicator;
-
-    private HashMap<String, String> map;
+    private String amount;
+    private String promoId;
 
     static void startActivity(@NonNull Context context, float amount, @Nullable String promoId) {
         final Intent intent = new Intent(context, PrequalActivity.class);
-
-        final HashMap<String, String> map = new HashMap<>();
-        map.put(AMOUNT, String.valueOf(amount));
-        map.put(PROMO_ID, promoId);
-
-        intent.putExtra(MAP_EXTRA, map);
+        intent.putExtra(AMOUNT, String.valueOf(amount));
+        intent.putExtra(PROMO_ID, promoId);
         context.startActivity(intent);
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    void beforeOnCreate() {
         AffirmUtils.showCloseActionBar(this);
+    }
 
+    @Override
+    void initViews() {
+        AffirmUtils.debuggableWebView(this);
+        webView.setWebViewClient(new PrequalWebViewClient(this));
+        webView.setWebChromeClient(new AffirmWebChromeClient(this));
+    }
+
+    @Override
+    void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            map = (HashMap<String, String>) savedInstanceState.getSerializable(MAP_EXTRA);
+            amount = savedInstanceState.getString(AMOUNT);
+            promoId = savedInstanceState.getString(PROMO_ID);
         } else {
-            map = (HashMap<String, String>) getIntent().getSerializableExtra(MAP_EXTRA);
+            amount = getIntent().getStringExtra(AMOUNT);
+            promoId = getIntent().getStringExtra(PROMO_ID);
         }
+    }
 
-        setContentView(R.layout.activity_webview);
-        webView = findViewById(R.id.webview);
-        progressIndicator = findViewById(R.id.progressIndicator);
+    @Override
+    void onAttached() {
+        String publicKey = AffirmPlugins.get().publicKey();
+        String path = String.format(
+                "/apps/prequal?public_api_key=%s" +
+                        "&unit_price=%s" +
+                        "&promo_external_id=%s" +
+                        "&isSDK=true" +
+                        "&use_promo=True" +
+                        "&referring_url=%s",
+                publicKey, amount, promoId, PrequalWebViewClient.REFERRING_URL);
 
-        setupWebview();
-
-        loadWebview();
+        webView.loadUrl(PROTOCOL + AffirmPlugins.get().baseUrl() + path);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(MAP_EXTRA, map);
-    }
-
-    private void setupWebview() {
-        AffirmUtils.debuggableWebView(this);
-        webView.setWebViewClient(new AffirmWebViewClient(this) {
-            @Override
-            boolean hasCallbackUrl(WebView view, String url) {
-                if (url.equals(REFERRING_URL)) {
-                    finish();
-                    return true;
-                }
-                return false;
-            }
-        });
-        webView.setWebChromeClient(new AffirmWebChromeClient(this));
-    }
-
-    private void loadWebview() {
-        String path;
-        if (TextUtils.isEmpty(map.get(PROMO_ID))) {
-            path = String.format(
-                    "/apps/prequal?public_api_key=%s&unit_price=%s&isSDK=true&use_promo=True"
-                            + "&referring_url=%s",
-                    map.get(AffirmPlugins.get().publicKey()), map.get(AMOUNT), REFERRING_URL);
-        } else {
-            path = String.format(
-                    "/apps/prequal?public_api_key=%s&unit_price=%s&promo_external_id=%s&isSDK=true"
-                            + "&use_promo=True&referring_url=%s",
-                    map.get(AffirmPlugins.get().publicKey()), map.get(AMOUNT), map.get(PROMO_ID), REFERRING_URL);
-        }
-        webView.loadUrl(PROTOCOL + AffirmPlugins.get().baseUrl() + path);
+        outState.putString(AMOUNT, amount);
+        outState.putString(PROMO_ID, promoId);
     }
 
     @Override
@@ -108,16 +81,6 @@ class PrequalActivity extends AppCompatActivity
     }
 
     @Override
-    public void onWebViewPageLoaded() {
-        // ignore this
-    }
-
-    @Override
-    public void chromeLoadCompleted() {
-        progressIndicator.setVisibility(View.GONE);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -127,5 +90,10 @@ class PrequalActivity extends AppCompatActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onWebViewConfirmation() {
+        finish();
     }
 }

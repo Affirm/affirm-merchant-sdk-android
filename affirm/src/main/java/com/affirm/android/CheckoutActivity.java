@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import androidx.annotation.NonNull;
 
-class CheckoutActivity extends CheckoutCommonActivity implements CheckoutWebViewClient.Callbacks {
+class CheckoutActivity extends CheckoutBaseActivity implements CheckoutWebViewClient.Callbacks {
 
     public static final String CHECKOUT_TOKEN = "checkout_token";
 
@@ -21,7 +21,14 @@ class CheckoutActivity extends CheckoutCommonActivity implements CheckoutWebView
     }
 
     @Override
-    void startCheckout() {
+    void initViews() {
+        AffirmUtils.debuggableWebView(this);
+        webView.setWebViewClient(new CheckoutWebViewClient(this));
+        webView.setWebChromeClient(new AffirmWebChromeClient(this));
+    }
+
+    @Override
+    void onAttached() {
         CheckoutCallback checkoutCallback = new CheckoutCallback() {
             @Override
             public void onError(Exception exception) {
@@ -35,13 +42,6 @@ class CheckoutActivity extends CheckoutCommonActivity implements CheckoutWebView
         };
 
         taskCreator.create(this, checkout, checkoutCallback);
-    }
-
-    @Override
-    void setupWebView() {
-        AffirmUtils.debuggableWebView(this);
-        webView.setWebViewClient(new CheckoutWebViewClient(this));
-        webView.setWebChromeClient(new AffirmWebChromeClient(this));
     }
 
     @Override

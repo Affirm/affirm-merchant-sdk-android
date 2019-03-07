@@ -3,8 +3,6 @@ package com.affirm.android;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.webkit.WebView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,18 +11,17 @@ import java.util.HashMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
-import androidx.appcompat.app.AppCompatActivity;
 
 import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 
-class ModalActivity extends AppCompatActivity
-        implements AffirmWebViewClient.Callbacks, AffirmWebChromeClient.Callbacks {
+class ModalActivity extends AffirmActivity
+        implements AffirmWebViewClient.Callbacks {
+
     private static final String MAP_EXTRA = "MAP_EXTRA";
     private static final String TYPE_EXTRA = "TYPE_EXTRA";
 
     private static final String JS_PATH = "/js/v2/affirm.js";
-    private static final String PROTOCOL = "https://";
 
     private static final String AMOUNT = "AMOUNT";
     private static final String API_KEY = "API_KEY";
@@ -32,8 +29,6 @@ class ModalActivity extends AppCompatActivity
     private static final String CANCEL_URL = "CANCEL_URL";
     private static final String MODAL_ID = "MODAL_ID";
 
-    private WebView webView;
-    private View progressIndicator;
     private ModalType type;
     private HashMap<String, String> map;
 
@@ -70,10 +65,19 @@ class ModalActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    void beforeOnCreate() {
         AffirmUtils.hideActionBar(this);
+    }
 
+    @Override
+    void initViews() {
+        AffirmUtils.debuggableWebView(this);
+        webView.setWebViewClient(new ModalWebViewClient(this));
+        webView.setWebChromeClient(new AffirmWebChromeClient(this));
+    }
+
+    @Override
+    void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             map = (HashMap<String, String>) savedInstanceState.getSerializable(MAP_EXTRA);
             type = (ModalType) savedInstanceState.getSerializable(TYPE_EXTRA);
@@ -81,14 +85,12 @@ class ModalActivity extends AppCompatActivity
             map = (HashMap<String, String>) getIntent().getSerializableExtra(MAP_EXTRA);
             type = (ModalType) getIntent().getSerializableExtra(TYPE_EXTRA);
         }
+    }
 
-        setContentView(R.layout.activity_webview);
-        webView = findViewById(R.id.webview);
-        progressIndicator = findViewById(R.id.progressIndicator);
-
-        setupWebView();
-
-        loadWebView();
+    @Override
+    void onAttached() {
+        final String html = initialHtml();
+        webView.loadDataWithBaseURL(PROTOCOL + AffirmPlugins.get().baseUrl(), html, "text/html", "utf-8", null);
     }
 
     @Override
@@ -97,12 +99,6 @@ class ModalActivity extends AppCompatActivity
 
         outState.putInt(TYPE_EXTRA, type.templateRes);
         outState.putSerializable(MAP_EXTRA, map);
-    }
-
-    private void setupWebView() {
-        AffirmUtils.debuggableWebView(this);
-        webView.setWebViewClient(new ModalWebViewClient(this));
-        webView.setWebChromeClient(new AffirmWebChromeClient(this));
     }
 
     private String initialHtml() {
@@ -117,11 +113,6 @@ class ModalActivity extends AppCompatActivity
         return AffirmUtils.replacePlaceholders(html, map);
     }
 
-    private void loadWebView() {
-        final String html = initialHtml();
-        webView.loadDataWithBaseURL(PROTOCOL + AffirmPlugins.get().baseUrl(), html, "text/html", "utf-8", null);
-    }
-
     @Override
     public void onWebViewCancellation() {
         finish();
@@ -130,18 +121,6 @@ class ModalActivity extends AppCompatActivity
     @Override
     public void onWebViewError(@NonNull Throwable error) {
         finish();
-    }
-
-    @Override
-    public void onWebViewPageLoaded() {
-
-    }
-
-    // -- PopUpWebChromeClient.Callbacks
-
-    @Override
-    public void chromeLoadCompleted() {
-        progressIndicator.setVisibility(View.GONE);
     }
 }
 

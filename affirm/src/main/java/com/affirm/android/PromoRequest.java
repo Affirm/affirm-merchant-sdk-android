@@ -9,18 +9,13 @@ import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
 
-/**
- * Affirm
- * Created by gerry on 05/03/2019
- * Copyright © 2017 Affirm. All rights reserved.
- */
-class AffirmPromoRequest {
+class PromoRequest {
 
     private static boolean isRequestCancelled = false;
 
     private PromoTask promoTask;
 
-    AffirmPromoRequest() {
+    PromoRequest() {
     }
 
     CancellableRequest getNewPromo(final String promoId, final float dollarAmount,
@@ -28,7 +23,7 @@ class AffirmPromoRequest {
                                    final PromoCallback promoCallback) {
         return new CancellableRequest() {
             @Override
-            public void cancelRequest() {
+            public void cancel() {
                 if (promoTask != null && !promoTask.isCancelled()) {
                     promoTask.cancel(true);
                     promoTask = null;
@@ -38,7 +33,7 @@ class AffirmPromoRequest {
             }
 
             @Override
-            public void executeRequest() {
+            public void execute() {
                 promoTask = new PromoTask(promoId, dollarAmount, showCta, promoCallback);
                 promoTask.execute();
             }

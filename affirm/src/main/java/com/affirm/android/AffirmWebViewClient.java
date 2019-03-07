@@ -20,12 +20,6 @@ public abstract class AffirmWebViewClient extends WebViewClient {
     }
 
     @Override
-    public void onPageFinished(WebView view, String url) {
-        super.onPageFinished(view, url);
-        callbacks.onWebViewPageLoaded();
-    }
-
-    @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (url.contains(AFFIRM_CANCELLATION_URL)) {
             callbacks.onWebViewCancellation();
@@ -48,7 +42,5 @@ public abstract class AffirmWebViewClient extends WebViewClient {
         void onWebViewError(@NonNull Throwable error);
 
         void onWebViewCancellation();
-
-        void onWebViewPageLoaded();
     }
 }

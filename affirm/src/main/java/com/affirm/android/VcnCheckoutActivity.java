@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 
-class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
+class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
 
     public static final String CREDIT_DETAILS = "credit_details";
 
@@ -25,7 +25,16 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
     }
 
     @Override
-    void startCheckout() {
+    void initViews() {
+        AffirmUtils.debuggableWebView(this);
+        webView.setWebViewClient(
+                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
+        webView.setWebChromeClient(new AffirmWebChromeClient(this));
+        clearCookies();
+    }
+
+    @Override
+    void onAttached() {
         CheckoutCallback checkoutCallback = new CheckoutCallback() {
             @Override
             public void onError(Exception exception) {
@@ -41,15 +50,6 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
         };
 
         taskCreator.create(this, checkout, checkoutCallback);
-    }
-
-    @Override
-    void setupWebView() {
-        AffirmUtils.debuggableWebView(this);
-        webView.setWebViewClient(
-                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
-        webView.setWebChromeClient(new AffirmWebChromeClient(this));
-        clearCookies();
     }
 
     @Override

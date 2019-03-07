@@ -1,7 +1,5 @@
 package com.affirm.android;
 
-import android.text.TextUtils;
-
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 import com.affirm.android.model.Merchant;
@@ -27,16 +25,9 @@ class AffirmApiHandler {
     static PromoResponse getNewPromo(String promoId, float dollarAmount, boolean showCta) throws IOException {
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
         int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
-        String path;
-        if (TextUtils.isEmpty(promoId)) {
-            path = String.format(Locale.getDefault(),
-                    "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d&show_cta=%s",
-                    AffirmPlugins.get().publicKey(), centAmount, showCta);
-        } else {
-            path = String.format(Locale.getDefault(),
-                    "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d&show_cta=%s&promo_external_id=%s",
-                    AffirmPlugins.get().publicKey(), centAmount, showCta, promoId);
-        }
+        String path = String.format(Locale.getDefault(),
+                "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d&show_cta=%s&promo_external_id=%s",
+                AffirmPlugins.get().publicKey(), centAmount, showCta, promoId);
 
         AffirmHttpRequest request = new AffirmHttpRequest.Builder()
                 .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + path)

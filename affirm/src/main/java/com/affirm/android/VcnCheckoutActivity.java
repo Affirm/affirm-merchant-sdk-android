@@ -83,4 +83,10 @@ class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChrom
         setResult(RESULT_OK, intent);
         finish();
     }
+
+    @Override
+    protected void onDestroy() {
+        AffirmApiHandler.cancelVcnCheckoutCall();
+        super.onDestroy();
+    }
 }

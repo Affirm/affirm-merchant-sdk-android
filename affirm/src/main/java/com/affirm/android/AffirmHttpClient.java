@@ -55,7 +55,6 @@ class AffirmHttpClient {
     private AffirmHttpResponse getResponse(Response response) throws IOException {
         // Status code
         int statusCode = response.code();
-
         // Content
         String content = null;
         // Total size

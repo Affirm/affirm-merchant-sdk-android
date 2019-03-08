@@ -5,16 +5,16 @@ class AffirmHttpBody {
     private final String contentType;
     private final String content;
 
-    public AffirmHttpBody(String contentType, String content) {
+    AffirmHttpBody(String contentType, String content) {
         this.contentType = contentType;
         this.content = content;
     }
 
-    public String getContent() {
+    String getContent() {
         return content;
     }
 
-    public String getContentType() {
+    String getContentType() {
         return contentType;
     }
 }

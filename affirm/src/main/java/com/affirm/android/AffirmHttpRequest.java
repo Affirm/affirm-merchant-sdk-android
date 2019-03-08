@@ -13,40 +13,34 @@ final class AffirmHttpRequest {
         this.tag = builder.tag;
     }
 
-    public String getUrl() {
+    String getUrl() {
         return url;
     }
 
-    public Method getMethod() {
+    Method getMethod() {
         return method;
     }
 
-    public AffirmHttpBody getBody() {
+    AffirmHttpBody getBody() {
         return body;
     }
 
-    public String getTag() {
+    String getTag() {
         return tag;
     }
 
-    public enum Method {
+    enum Method {
         GET, POST, PUT, DELETE
     }
 
-    public static final class Builder {
+    static final class Builder {
 
         private String url;
         private Method method;
         private AffirmHttpBody body;
         private String tag;
 
-        public Builder() {
-        }
-
-        public Builder(AffirmHttpRequest request) {
-            this.url = request.url;
-            this.method = request.method;
-            this.body = request.body;
+        Builder() {
         }
 
         public Builder setUrl(String url) {
@@ -55,22 +49,22 @@ final class AffirmHttpRequest {
         }
 
 
-        public Builder setMethod(AffirmHttpRequest.Method method) {
+        Builder setMethod(AffirmHttpRequest.Method method) {
             this.method = method;
             return this;
         }
 
-        public Builder setBody(AffirmHttpBody body) {
+        Builder setBody(AffirmHttpBody body) {
             this.body = body;
             return this;
         }
 
-        public Builder setTag(String tag) {
+        Builder setTag(String tag) {
             this.tag = tag;
             return this;
         }
 
-        public AffirmHttpRequest build() {
+        AffirmHttpRequest build() {
             return new AffirmHttpRequest(this);
         }
     }

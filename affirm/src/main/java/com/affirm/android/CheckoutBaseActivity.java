@@ -31,7 +31,8 @@ abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebV
 
     final CheckoutTaskCreator taskCreator = new CheckoutTaskCreator() {
         @Override
-        public void create(@NonNull Context context, @NonNull Checkout checkout, @Nullable CheckoutCallback callback) {
+        public void create(@NonNull Context context, @NonNull Checkout checkout,
+                           @Nullable CheckoutCallback callback) {
             executeTask(null, new CheckoutTask(context, checkout, callback));
         }
 
@@ -93,7 +94,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebV
     }
 
     void executeTask(@Nullable Executor executor,
-                     @NonNull AsyncTask<Void, Void, CheckoutResponseWrapper> task) {
+                     @NonNull AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> task) {
         this.checkoutTask = task;
         if (executor != null) {
             task.executeOnExecutor(executor);
@@ -102,7 +103,8 @@ abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebV
         }
     }
 
-    private static class CheckoutTask extends AsyncTask<Void, Void, CheckoutResponseWrapper> {
+    private static class CheckoutTask extends AsyncTask<Void, Void,
+        ResponseWrapper<CheckoutResponse>> {
         @NonNull
         private final Checkout checkout;
         @NonNull
@@ -120,20 +122,23 @@ abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebV
         }
 
         @Override
-        protected CheckoutResponseWrapper doInBackground(Void... params) {
+        protected ResponseWrapper<CheckoutResponse> doInBackground(Void... params) {
             if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutBaseActivity) {
                 try {
-                    return new CheckoutResponseWrapper(((CheckoutBaseActivity) mContextRef.get()).executeTask(checkout));
+                    CheckoutBaseActivity checkoutBaseActivity =
+                        (CheckoutBaseActivity) mContextRef.get();
+                    CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
+                    return new ResponseWrapper<>(checkoutResponse);
                 } catch (IOException e) {
-                    return new CheckoutResponseWrapper(e);
+                    return new ResponseWrapper<>(e);
                 }
             } else {
-                return new CheckoutResponseWrapper(new Exception());
+                return new ResponseWrapper<>(new Exception());
             }
         }
 
         @Override
-        protected void onPostExecute(CheckoutResponseWrapper result) {
+        protected void onPostExecute(ResponseWrapper<CheckoutResponse> result) {
             final CheckoutCallback checkoutCallback = mCallbackRef.get();
             if (checkoutCallback != null) {
                 if (result.source != null) {
@@ -142,21 +147,6 @@ abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebV
                     checkoutCallback.onError(result.error);
                 }
             }
-        }
-    }
-
-    private static class CheckoutResponseWrapper {
-
-        CheckoutResponse source;
-
-        Exception error;
-
-        CheckoutResponseWrapper(CheckoutResponse source) {
-            this.source = source;
-        }
-
-        CheckoutResponseWrapper(Exception error) {
-            this.error = error;
         }
     }
 }

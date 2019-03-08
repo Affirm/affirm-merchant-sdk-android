@@ -40,22 +40,7 @@ class PromoRequest {
         };
     }
 
-    private static class PromoResponseWrapper {
-
-        PromoResponse source;
-
-        Exception error;
-
-        PromoResponseWrapper(PromoResponse source) {
-            this.source = source;
-        }
-
-        PromoResponseWrapper(Exception error) {
-            this.error = error;
-        }
-    }
-
-    private static class PromoTask extends AsyncTask<Void, Void, PromoResponseWrapper> {
+    private static class PromoTask extends AsyncTask<Void, Void, ResponseWrapper<PromoResponse>> {
         @NonNull
         private final String promoId;
         private final float dollarAmount;
@@ -74,20 +59,23 @@ class PromoRequest {
         }
 
         @Override
-        protected PromoResponseWrapper doInBackground(Void... params) {
+        protected ResponseWrapper<PromoResponse> doInBackground(Void... params) {
             try {
-                return new PromoResponseWrapper(AffirmApiHandler.getNewPromo(promoId, dollarAmount, showCta));
+                PromoResponse promoResponse = AffirmApiHandler.getNewPromo(promoId, dollarAmount,
+                    showCta);
+                return new ResponseWrapper<>(promoResponse);
             } catch (IOException e) {
-                return new PromoResponseWrapper(e);
+                return new ResponseWrapper<>(e);
             }
         }
 
         @Override
-        protected void onPostExecute(PromoResponseWrapper result) {
+        protected void onPostExecute(ResponseWrapper<PromoResponse> result) {
             final PromoCallback callback = mCallbackRef.get();
             if (callback != null && !isRequestCancelled) {
                 if (result.source != null) {
-                    boolean showPrequal = !result.source.promo().promoConfig().promoStyle().equals("fast");
+                    boolean showPrequal =
+                        !result.source.promo().promoConfig().promoStyle().equals("fast");
                     String promo = result.source.promo().ala();
                     callback.onPromoWritten(promo, showPrequal);
                 } else if (result.error != null) {

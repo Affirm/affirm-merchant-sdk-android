@@ -34,6 +34,7 @@ class PromoRequest {
 
             @Override
             public void execute() {
+                isRequestCancelled = false;
                 promoTask = new PromoTask(promoId, dollarAmount, showCta, promoCallback);
                 promoTask.execute();
             }

@@ -10,9 +10,6 @@ import java.util.Vector;
 
 final class CookiesUtil {
 
-    private CookiesUtil() {
-    }
-
     static void clearCookieByUrl(String url, CookieManager cookieManager,
                                  CookieSyncManager cookieSyncManager) {
         Uri uri = Uri.parse(url);
@@ -52,14 +49,14 @@ final class CookiesUtil {
             cookieField[i] = cookieField[i].trim();
         }
         Vector<String> allCookieField = new Vector<>();
-        for (int i = 0; i < len; i++) {
-            if (TextUtils.isEmpty(cookieField[i])) {
+        for (String aCookieField : cookieField) {
+            if (TextUtils.isEmpty(aCookieField)) {
                 continue;
             }
-            if (!cookieField[i].contains("=")) {
+            if (!aCookieField.contains("=")) {
                 continue;
             }
-            String[] singleCookieField = cookieField[i].split("=");
+            String[] singleCookieField = aCookieField.split("=");
             allCookieField.add(singleCookieField[0]);
         }
         if (allCookieField.isEmpty()) {

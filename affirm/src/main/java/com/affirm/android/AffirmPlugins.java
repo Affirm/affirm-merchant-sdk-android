@@ -30,7 +30,7 @@ class AffirmPlugins {
         AffirmPlugins.set(new AffirmPlugins(configuration));
     }
 
-    static void set(AffirmPlugins plugins) {
+    private static void set(AffirmPlugins plugins) {
         synchronized (LOCK) {
             if (instance != null) {
                 throw new IllegalStateException("AffirmPlugins is already initialized");

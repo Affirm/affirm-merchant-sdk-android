@@ -60,7 +60,7 @@ public class AffirmPromoLabel extends AppCompatTextView {
         mPaint.setStyle(Paint.Style.FILL);
     }
 
-    public void setOnClickListener(@Nullable final String promoId,
+    protected void setOnClickListener(@Nullable final String promoId,
                                    final float amount) {
         setOnClickListener(new OnClickListener() {
             @Override
@@ -80,7 +80,7 @@ public class AffirmPromoLabel extends AppCompatTextView {
         setLabel(text, null);
     }
 
-    public void setLabel(@NonNull String text, @Nullable Object tag) {
+    protected void setLabel(@NonNull String text, @Nullable Object tag) {
         setText(updateSpan(text));
         if (tag != null) {
             setTag(tag);

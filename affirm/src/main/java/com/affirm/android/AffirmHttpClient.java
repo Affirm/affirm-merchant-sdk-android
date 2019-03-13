@@ -17,6 +17,7 @@ import okhttp3.ResponseBody;
 import okhttp3.internal.Util;
 import okio.BufferedSink;
 
+import static com.affirm.android.AffirmPlugins.createTrackingNetworkJsonObj;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 
@@ -48,7 +49,7 @@ class AffirmHttpClient {
 
             boolean responseSuccess = response.isSuccessful();
             if (!responseSuccess && sendTrackEvent) {
-                AffirmTracker.track(NETWORK_ERROR, ERROR, createNetworkJsonObj(okHttpRequest,
+                AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(okHttpRequest,
                     response));
             }
 
@@ -56,7 +57,7 @@ class AffirmHttpClient {
 
         } catch (IOException e) {
             if (sendTrackEvent) {
-                AffirmTracker.track(NETWORK_ERROR, ERROR, createNetworkJsonObj(okHttpRequest,
+                AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(okHttpRequest,
                     null));
             }
 
@@ -186,23 +187,4 @@ class AffirmHttpClient {
         }
     }
 
-    private static JsonObject createNetworkJsonObj(@NonNull Request request,
-                                                   @Nullable Response response) {
-        final JsonObject jsonObject = new JsonObject();
-        final String affirmRequestIDHeader = "X-Affirm-Request-Id";
-        jsonObject.addProperty("url", request.url().toString());
-        jsonObject.addProperty("method", request.method());
-        if (response != null) {
-            final Headers headers = response.headers();
-            jsonObject.addProperty("status_code", response.code());
-            jsonObject.addProperty(affirmRequestIDHeader, headers.get(affirmRequestIDHeader));
-            jsonObject.addProperty("x-amz-cf-id", headers.get("x-amz-cf-id"));
-            jsonObject.addProperty("x-affirm-using-cdn", headers.get("x-affirm-using-cdn"));
-            jsonObject.addProperty("x-cache", headers.get("x-cache"));
-        } else {
-            jsonObject.add("status_code", null);
-            jsonObject.add(affirmRequestIDHeader, null);
-        }
-        return jsonObject;
-    }
 }

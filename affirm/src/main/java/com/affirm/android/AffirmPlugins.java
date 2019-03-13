@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -133,5 +134,25 @@ class AffirmPlugins {
         data.addProperty("environment", environmentName().toLowerCase());
         data.addProperty("event_name", eventName);
         data.addProperty("level", level.getLevel());
+    }
+
+    static JsonObject createTrackingNetworkJsonObj(@NonNull Request request,
+                                                   @Nullable Response response) {
+        final JsonObject jsonObject = new JsonObject();
+        final String affirmRequestIDHeader = "X-Affirm-Request-Id";
+        jsonObject.addProperty("url", request.url().toString());
+        jsonObject.addProperty("method", request.method());
+        if (response != null) {
+            final Headers headers = response.headers();
+            jsonObject.addProperty("status_code", response.code());
+            jsonObject.addProperty(affirmRequestIDHeader, headers.get(affirmRequestIDHeader));
+            jsonObject.addProperty("x-amz-cf-id", headers.get("x-amz-cf-id"));
+            jsonObject.addProperty("x-affirm-using-cdn", headers.get("x-affirm-using-cdn"));
+            jsonObject.addProperty("x-cache", headers.get("x-cache"));
+        } else {
+            jsonObject.add("status_code", null);
+            jsonObject.add(affirmRequestIDHeader, null);
+        }
+        return jsonObject;
     }
 }

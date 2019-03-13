@@ -65,7 +65,7 @@ class AffirmApiHandler {
                 .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + CHECKOUT_PATH)
                 .setMethod(AffirmHttpRequest.Method.POST)
                 .setBody(new AffirmHttpBody(CONTENT_TYPE, jsonRequest.toString()))
-                .setTag(TAG_CHECKOUT)
+                .setTag(TAG_VCN_CHECKOUT)
                 .build();
 
         AffirmHttpResponse response = httpClient.execute(request);
@@ -92,7 +92,7 @@ class AffirmApiHandler {
                 .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + CHECKOUT_PATH)
                 .setMethod(AffirmHttpRequest.Method.POST)
                 .setBody(new AffirmHttpBody(CONTENT_TYPE, jsonRequest.toString()))
-                .setTag(TAG_VCN_CHECKOUT)
+                .setTag(TAG_CHECKOUT)
                 .build();
 
         AffirmHttpResponse response = httpClient.execute(request);

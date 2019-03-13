@@ -19,9 +19,9 @@ class AffirmLog {
     private static void log(int messageLogLevel, String message, Throwable tr) {
         if (messageLogLevel >= logLevel) {
             if (tr == null) {
-                Log.println(logLevel, TAG, message);
+                Log.println(messageLogLevel, TAG, message);
             } else {
-                Log.println(logLevel, TAG, message + '\n' + Log.getStackTraceString(tr));
+                Log.println(messageLogLevel, TAG, message + '\n' + Log.getStackTraceString(tr));
             }
         }
     }

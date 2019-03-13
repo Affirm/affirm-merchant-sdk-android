@@ -32,13 +32,17 @@ public class TrackerTest {
     OkHttpClient client;
     @Mock
     Call call;
-    AffirmTracker tracker;
     @Captor
     ArgumentCaptor<Request> requestCaptor;
 
     @Before
     public void setUp() {
-        tracker = new AffirmTracker(client, Affirm.Environment.SANDBOX, "111");
+        if (AffirmPlugins.get() == null) {
+            Affirm.initialize(new Affirm.Configuration.Builder()
+                .setPublicKey("sdf")
+                .build()
+            );
+        }
     }
 
     @Test
@@ -48,7 +52,7 @@ public class TrackerTest {
         final JsonObject data = new JsonObject();
         data.addProperty("a", 1);
         data.addProperty("b", "b");
-        tracker.track(NETWORK_ERROR, ERROR, data);
+        AffirmTracker.track(NETWORK_ERROR, ERROR, data);
 
         Mockito.verify(client, times(1)).newCall(requestCaptor.capture());
         final Request request = requestCaptor.getValue();

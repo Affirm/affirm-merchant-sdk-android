@@ -1,11 +1,18 @@
 package com.affirm.android;
 
+import android.os.Build;
+
 import com.affirm.android.model.MyAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,6 +28,7 @@ class AffirmPlugins {
     private Gson gson;
 
     private final Object lock = new Object();
+    private final AtomicInteger mLocalLogCounter = new AtomicInteger();
 
     AffirmPlugins(Affirm.Configuration configuration) {
         this.configuration = configuration;
@@ -51,23 +59,27 @@ class AffirmPlugins {
         }
     }
 
-    public String publicKey() {
+    String publicKey() {
         return configuration.publicKey;
     }
 
-    public String name() {
+    String name() {
         return configuration.name;
     }
 
-    public Affirm.Environment environment() {
+    Affirm.Environment environment() {
         return configuration.environment;
     }
 
-    public String baseUrl() {
+    String environmentName() {
+        return configuration.environment.name();
+    }
+
+    String baseUrl() {
         return configuration.environment.baseUrl;
     }
 
-    public String trackerBaseUrl() {
+    String trackerBaseUrl() {
         return configuration.environment.trackerBaseUrl;
     }
 
@@ -87,19 +99,39 @@ class AffirmPlugins {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         final Request request = chain.request()
-                                .newBuilder()
-                                .addHeader("Accept", "application/json")
-                                .addHeader("Content-Type", "application/json")
-                                .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
-                                .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
-                                .build();
+                            .newBuilder()
+                            .addHeader("Accept", "application/json")
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
+                            .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
+                            .build();
 
                         return chain.proceed(request);
                     }
                 });
+                clientBuilder.connectTimeout(5, TimeUnit.SECONDS);
+                clientBuilder.readTimeout(30, TimeUnit.SECONDS);
+                clientBuilder.followRedirects(false);
                 restClient = AffirmHttpClient.createClient(clientBuilder);
             }
             return restClient;
         }
+    }
+
+    void addTrackingData(@NonNull String eventName,
+                         @NonNull JsonObject data,
+                         @NonNull AffirmTracker.TrackingLevel level) {
+        final long timeStamp = System.currentTimeMillis();
+        // Set the log counter and then increment the logCounter
+        data.addProperty("local_log_counter", mLocalLogCounter.getAndIncrement());
+        data.addProperty("ts", timeStamp);
+        data.addProperty("app_id", "Android SDK");
+        data.addProperty("release", BuildConfig.VERSION_NAME);
+        data.addProperty("android_sdk", Build.VERSION.SDK_INT);
+        data.addProperty("device_name", Build.MODEL);
+        data.addProperty("merchant_key", publicKey());
+        data.addProperty("environment", environmentName().toLowerCase());
+        data.addProperty("event_name", eventName);
+        data.addProperty("level", level.getLevel());
     }
 }

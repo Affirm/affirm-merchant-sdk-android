@@ -36,7 +36,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
         @Override
         public void create(@NonNull Context context, @NonNull Checkout checkout,
                            @Nullable CheckoutCallback callback) {
-            executeTask(null, new CheckoutTask(context, checkout, callback));
+            executeTask(AsyncTask.THREAD_POOL_EXECUTOR, new CheckoutTask(context, checkout, callback));
         }
 
         @Override

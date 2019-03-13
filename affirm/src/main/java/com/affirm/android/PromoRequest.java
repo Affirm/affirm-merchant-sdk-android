@@ -39,7 +39,7 @@ class PromoRequest {
             public void execute() {
                 isRequestCancelled = false;
                 promoTask = new PromoTask(promoId, dollarAmount, showCta, promoCallback);
-                promoTask.execute();
+                promoTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         };
     }

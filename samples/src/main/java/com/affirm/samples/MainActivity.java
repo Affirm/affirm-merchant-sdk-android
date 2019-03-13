@@ -2,6 +2,7 @@ package com.affirm.samples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,8 @@ import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks {
 
+    private static final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +51,19 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         });
 
         AffirmPromoLabel label = findViewById(R.id.affirm_promo_label);
-        Affirm.writePromoToTextView(label, null, 1100, true);
+        Affirm.writePromoToTextView(label, null, 1100, true, new Affirm.PromoCallback() {
+            @Override
+            public void onSuccess(String promo) {
+
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                Log.e(TAG, "As low as label failed...", throwable);
+                Toast.makeText(MainActivity.this, "As low as label : " + throwable.getMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private Checkout checkoutModel() {

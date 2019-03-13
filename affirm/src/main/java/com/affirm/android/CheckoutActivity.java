@@ -3,13 +3,15 @@ package com.affirm.android;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.InvalidRequestException;
+import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 
 import java.io.IOException;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_CREATION_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_CREATION_SUCCESS;
@@ -56,7 +58,7 @@ class CheckoutActivity extends CheckoutBaseActivity implements CheckoutWebViewCl
     }
 
     @Override
-    CheckoutResponse executeTask(Checkout checkout) throws IOException {
+    CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException, PermissionException, InvalidRequestException {
         return AffirmApiHandler.executeCheckout(checkout);
     }
 

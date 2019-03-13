@@ -13,6 +13,10 @@ final class AffirmHttpResponse {
         this.contentType = builder.contentType;
     }
 
+    public boolean isSuccessful() {
+        return statusCode >= 200 && statusCode < 300;
+    }
+
     public int getStatusCode() {
         return statusCode;
     }

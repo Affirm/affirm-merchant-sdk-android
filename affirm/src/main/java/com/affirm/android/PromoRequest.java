@@ -2,6 +2,9 @@ package com.affirm.android;
 
 import android.os.AsyncTask;
 
+import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.InvalidRequestException;
+import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.PromoResponse;
 
 import java.io.IOException;
@@ -20,7 +23,7 @@ class PromoRequest {
 
     CancellableRequest getNewPromo(final String promoId, final float dollarAmount,
                                    final boolean showCta,
-                                   final PromoCallback promoCallback) {
+                                   final SpannablePromoCallback promoCallback) {
         return new CancellableRequest() {
             @Override
             public void cancel() {
@@ -47,12 +50,12 @@ class PromoRequest {
         private final float dollarAmount;
         private final boolean showCta;
         @NonNull
-        private final WeakReference<PromoCallback> mCallbackRef;
+        private final WeakReference<SpannablePromoCallback> mCallbackRef;
 
         PromoTask(@NonNull String promoId,
                   float dollarAmount,
                   boolean showCta,
-                  @NonNull PromoCallback callback) {
+                  @NonNull SpannablePromoCallback callback) {
             this.promoId = promoId;
             this.dollarAmount = dollarAmount;
             this.showCta = showCta;
@@ -66,12 +69,18 @@ class PromoRequest {
                 return new ResponseWrapper<>(promoResponse);
             } catch (IOException e) {
                 return new ResponseWrapper<>(e);
+            } catch (APIException e) {
+                return new ResponseWrapper<>(e);
+            } catch (PermissionException e) {
+                return new ResponseWrapper<>(e);
+            } catch (InvalidRequestException e) {
+                return new ResponseWrapper<>(e);
             }
         }
 
         @Override
         protected void onPostExecute(ResponseWrapper<PromoResponse> result) {
-            final PromoCallback callback = mCallbackRef.get();
+            final SpannablePromoCallback callback = mCallbackRef.get();
             if (callback != null && !isRequestCancelled) {
                 if (result.source != null) {
                     boolean showPrequal = !result.source.promo().promoConfig().promoStyle().equals("fast");

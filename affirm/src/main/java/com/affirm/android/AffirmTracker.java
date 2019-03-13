@@ -2,6 +2,9 @@ package com.affirm.android;
 
 import android.os.AsyncTask;
 
+import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.InvalidRequestException;
+import com.affirm.android.exception.PermissionException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -78,7 +81,12 @@ class AffirmTracker {
             try {
                 AffirmApiHandler.sendTrackRequest(mTrackingData);
             } catch (IOException e) {
-                e.printStackTrace();
+                AffirmLog.e(toString());
+            } catch (APIException e) {
+                AffirmLog.e(toString());
+            } catch (PermissionException e) {
+                AffirmLog.e(toString());
+            } catch (InvalidRequestException e) {
                 AffirmLog.e(toString());
             }
             return null;

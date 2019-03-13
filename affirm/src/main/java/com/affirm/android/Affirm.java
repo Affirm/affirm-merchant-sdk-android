@@ -42,6 +42,12 @@ public class Affirm {
         void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails);
     }
 
+    public interface PromoCallback {
+        void onSuccess(String promo);
+
+        void onFailure(Throwable throwable);
+    }
+
     /**
      * Returns the level of logging that will be displayed.
      */
@@ -76,9 +82,10 @@ public class Affirm {
     public static void writePromoToTextView(@NonNull final AffirmPromoLabel promoLabel,
                                             @Nullable final String promoId,
                                             final float amount,
-                                            final boolean showCta) {
+                                            final boolean showCta,
+                                            final PromoCallback promoCallback) {
         PromoRequest affirmPromoRequest = new PromoRequest();
-        final PromoCallback callback = new PromoCallback() {
+        final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(final String promo, final boolean showPrequal) {
                 promoLabel.post(new Runnable() {
@@ -87,11 +94,12 @@ public class Affirm {
                         promoLabel.setLabel(promo, showPrequal);
                     }
                 });
+                promoCallback.onSuccess(promo);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                AffirmLog.e("Failed to write promo...", throwable);
+                promoCallback.onFailure(throwable);
             }
         };
         final CancellableRequest request = affirmPromoRequest.getNewPromo(promoId, amount, showCta, callback);

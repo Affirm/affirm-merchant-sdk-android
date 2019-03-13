@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.InvalidRequestException;
+import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
@@ -65,7 +68,7 @@ class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChrom
     }
 
     @Override
-    CheckoutResponse executeTask(Checkout checkout) throws IOException {
+    CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException, PermissionException, InvalidRequestException {
         return AffirmApiHandler.executeVcnCheckout(checkout);
     }
 

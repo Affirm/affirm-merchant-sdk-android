@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.InvalidRequestException;
+import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 
@@ -27,7 +30,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
     Checkout checkout;
 
-    abstract CheckoutResponse executeTask(Checkout checkout) throws IOException;
+    abstract CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException, PermissionException, InvalidRequestException;
 
     final CheckoutTaskCreator taskCreator = new CheckoutTaskCreator() {
         @Override
@@ -128,6 +131,12 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
                     CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
                     return new ResponseWrapper<>(checkoutResponse);
                 } catch (IOException e) {
+                    return new ResponseWrapper<>(e);
+                } catch (APIException e) {
+                    return new ResponseWrapper<>(e);
+                } catch (PermissionException e) {
+                    return new ResponseWrapper<>(e);
+                } catch (InvalidRequestException e) {
                     return new ResponseWrapper<>(e);
                 }
             } else {

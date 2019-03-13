@@ -1,6 +1,6 @@
 package com.affirm.android;
 
-interface PromoCallback {
+interface SpannablePromoCallback {
     void onPromoWritten(final String promo, final boolean showPrequal);
 
     void onFailure(Throwable throwable);

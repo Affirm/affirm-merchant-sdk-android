@@ -6,13 +6,19 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
 @AutoValue
-public abstract class ErrorResponse {
+public abstract class AffirmError {
     public abstract String message();
 
     @SerializedName("status_code")
     public abstract Integer status();
 
-    public static TypeAdapter<ErrorResponse> typeAdapter(Gson gson) {
-        return new AutoValue_ErrorResponse.GsonTypeAdapter(gson);
+    public abstract String field();
+
+    public abstract String code();
+
+    public abstract String type();
+
+    public static TypeAdapter<AffirmError> typeAdapter(Gson gson) {
+        return new AutoValue_AffirmError.GsonTypeAdapter(gson);
     }
 }

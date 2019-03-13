@@ -1,6 +1,9 @@
 package com.affirm.android;
 
-import com.google.gson.JsonObject;
+import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.InvalidRequestException;
+import com.affirm.android.exception.PermissionException;
+import com.affirm.android.model.AffirmError;
 
 import java.io.IOException;
 
@@ -37,11 +40,11 @@ class AffirmHttpClient {
         return new AffirmHttpClient(builder);
     }
 
-    AffirmHttpResponse execute(final AffirmHttpRequest request) throws IOException {
+    AffirmHttpResponse execute(final AffirmHttpRequest request) throws IOException, APIException, PermissionException, InvalidRequestException {
         return execute(request, true);
     }
 
-    AffirmHttpResponse execute(final AffirmHttpRequest request, boolean sendTrackEvent) throws IOException {
+    AffirmHttpResponse execute(final AffirmHttpRequest request, boolean sendTrackEvent) throws IOException, APIException, PermissionException, InvalidRequestException {
         Request okHttpRequest = getRequest(request);
         Call call = okHttpClient.newCall(okHttpRequest);
         try {
@@ -50,7 +53,15 @@ class AffirmHttpClient {
             boolean responseSuccess = response.isSuccessful();
             if (!responseSuccess && sendTrackEvent) {
                 AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(okHttpRequest,
-                    response));
+                        response));
+            }
+
+            final Headers headers = response.headers();
+            String requestId = headers.get("X-Affirm-Request-Id");
+            if (response.code() < 200 || response.code() >= 300) {
+                final AffirmError affirmError =
+                        AffirmPlugins.get().gson().fromJson(response.body().string(), AffirmError.class);
+                handleAPIError(affirmError, response.code(), requestId);
             }
 
             return getResponse(response);
@@ -58,12 +69,37 @@ class AffirmHttpClient {
         } catch (IOException e) {
             if (sendTrackEvent) {
                 AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(okHttpRequest,
-                    null));
+                        null));
             }
 
             throw e;
         }
+    }
 
+    private static void handleAPIError(@NonNull AffirmError affirmError, int responseCode,
+                                       @Nullable String requestId) throws APIException, PermissionException, InvalidRequestException {
+
+        switch (responseCode) {
+            case 400:
+            case 404: {
+                throw new InvalidRequestException(
+                        affirmError.message(),
+                        affirmError.type(),
+                        affirmError.field(),
+                        requestId,
+                        affirmError.status(),
+                        affirmError,
+                        null);
+            }
+            case 403: {
+                throw new PermissionException(affirmError.message(), requestId, responseCode,
+                        affirmError);
+            }
+            default: {
+                throw new APIException(affirmError.message(), requestId, responseCode, affirmError,
+                        null);
+            }
+        }
     }
 
     void cancelCallWithTag(String tag) {
@@ -102,11 +138,11 @@ class AffirmHttpClient {
             }
         }
         return new AffirmHttpResponse.Builder()
-            .setStatusCode(statusCode)
-            .setContent(content)
-            .setTotalSize(totalSize)
-            .setContentType(contentType)
-            .build();
+                .setStatusCode(statusCode)
+                .setContent(content)
+                .setTotalSize(totalSize)
+                .setContentType(contentType)
+                .build();
     }
 
     private Request getRequest(AffirmHttpRequest request) {

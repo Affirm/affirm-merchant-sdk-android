@@ -25,7 +25,7 @@ import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
 class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChromeClient.Callbacks
-    , VcnCheckoutWebViewClient.Callbacks {
+        , VcnCheckoutWebViewClient.Callbacks {
 
     public static final String CREDIT_DETAILS = "credit_details";
 
@@ -40,7 +40,7 @@ class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChrom
     void initViews() {
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(
-            new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
+                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
         clearCookies();
     }
@@ -60,7 +60,7 @@ class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChrom
                 final String html = initialHtml(response);
                 final Uri uri = Uri.parse(response.redirectUrl());
                 webView.loadDataWithBaseURL("https://" + uri.getHost(), html, "text/html", "utf-8"
-                    , null);
+                        , null);
             }
         };
 

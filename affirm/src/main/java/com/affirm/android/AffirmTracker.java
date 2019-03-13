@@ -61,7 +61,7 @@ class AffirmTracker {
 
         final Gson gson = new Gson();
         final JsonObject data = eventData == null ? new JsonObject()
-            : gson.fromJson(gson.toJson(eventData, JsonObject.class), JsonObject.class);
+                : gson.fromJson(gson.toJson(eventData, JsonObject.class), JsonObject.class);
 
         AffirmPlugins plugins = AffirmPlugins.get();
         plugins.addTrackingData(eventName, data, level);

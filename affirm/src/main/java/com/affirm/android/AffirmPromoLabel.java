@@ -61,7 +61,7 @@ public class AffirmPromoLabel extends AppCompatTextView {
     }
 
     protected void setOnClickListener(@Nullable final String promoId,
-                                   final float amount) {
+                                      final float amount) {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

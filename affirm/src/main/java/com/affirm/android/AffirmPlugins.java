@@ -100,12 +100,12 @@ class AffirmPlugins {
                     @Override
                     public Response intercept(Chain chain) throws IOException {
                         final Request request = chain.request()
-                            .newBuilder()
-                            .addHeader("Accept", "application/json")
-                            .addHeader("Content-Type", "application/json")
-                            .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
-                            .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
-                            .build();
+                                .newBuilder()
+                                .addHeader("Accept", "application/json")
+                                .addHeader("Content-Type", "application/json")
+                                .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
+                                .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
+                                .build();
 
                         return chain.proceed(request);
                     }

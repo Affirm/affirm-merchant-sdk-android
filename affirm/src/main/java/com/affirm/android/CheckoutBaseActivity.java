@@ -105,7 +105,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
     }
 
     private static class CheckoutTask extends AsyncTask<Void, Void,
-        ResponseWrapper<CheckoutResponse>> {
+            ResponseWrapper<CheckoutResponse>> {
         @NonNull
         private final Checkout checkout;
         @NonNull
@@ -127,7 +127,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
             if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutBaseActivity) {
                 try {
                     CheckoutBaseActivity checkoutBaseActivity =
-                        (CheckoutBaseActivity) mContextRef.get();
+                            (CheckoutBaseActivity) mContextRef.get();
                     CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
                     return new ResponseWrapper<>(checkoutResponse);
                 } catch (IOException e) {

@@ -5,7 +5,6 @@ import com.affirm.android.model.AffirmError;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-
 public abstract class AffirmException extends Exception {
 
     protected static final long serialVersionUID = 1L;

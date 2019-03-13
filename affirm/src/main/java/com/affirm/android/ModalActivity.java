@@ -17,7 +17,7 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 
 class ModalActivity extends AffirmActivity
-    implements AffirmWebViewClient.Callbacks {
+        implements AffirmWebViewClient.Callbacks {
 
     private static final String MAP_EXTRA = "MAP_EXTRA";
     private static final String TYPE_EXTRA = "TYPE_EXTRA";
@@ -51,7 +51,7 @@ class ModalActivity extends AffirmActivity
                               @Nullable String modalId) {
         final Intent intent = new Intent(context, ModalActivity.class);
         final String stringAmount =
-            String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
+                String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
         final String fullPath = PROTOCOL + AffirmPlugins.get().baseUrl() + JS_PATH;
 
         final HashMap<String, String> map = new HashMap<>();
@@ -94,7 +94,7 @@ class ModalActivity extends AffirmActivity
     void onAttached() {
         final String html = initialHtml();
         webView.loadDataWithBaseURL(PROTOCOL + AffirmPlugins.get().baseUrl(), html, "text/html",
-            "utf-8", null);
+                "utf-8", null);
     }
 
     @Override

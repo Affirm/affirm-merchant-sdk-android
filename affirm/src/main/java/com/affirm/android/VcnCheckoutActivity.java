@@ -14,11 +14,20 @@ import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 
-class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_SUCCESS;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_SUCCESS;
+import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
+import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
+
+class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChromeClient.Callbacks
+    , VcnCheckoutWebViewClient.Callbacks {
 
     public static final String CREDIT_DETAILS = "credit_details";
 
-    static void startActivity(@NonNull Activity activity, int requestCode, @NonNull Checkout checkout) {
+    static void startActivity(@NonNull Activity activity, int requestCode,
+                              @NonNull Checkout checkout) {
         final Intent intent = new Intent(activity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         activity.startActivityForResult(intent, requestCode);
@@ -28,7 +37,7 @@ class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChrom
     void initViews() {
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(
-                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
+            new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
         clearCookies();
     }
@@ -38,14 +47,17 @@ class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChrom
         CheckoutCallback checkoutCallback = new CheckoutCallback() {
             @Override
             public void onError(Exception exception) {
-                onWebViewError(exception);
+                AffirmTracker.track(VCN_CHECKOUT_CREATION_FAIL, ERROR, null);
+                finishWithError(exception);
             }
 
             @Override
             public void onSuccess(CheckoutResponse response) {
+                AffirmTracker.track(VCN_CHECKOUT_CREATION_SUCCESS, INFO, null);
                 final String html = initialHtml(response);
                 final Uri uri = Uri.parse(response.redirectUrl());
-                webView.loadDataWithBaseURL("https://" + uri.getHost(), html, "text/html", "utf-8", null);
+                webView.loadDataWithBaseURL("https://" + uri.getHost(), html, "text/html", "utf-8"
+                    , null);
             }
         };
 
@@ -78,10 +90,24 @@ class VcnCheckoutActivity extends CheckoutBaseActivity implements AffirmWebChrom
 
     @Override
     public void onWebViewConfirmation(@NonNull CardDetails cardDetails) {
+        AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
+
         final Intent intent = new Intent();
         intent.putExtra(CREDIT_DETAILS, cardDetails);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    public void onWebViewError(@NonNull Throwable error) {
+        AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_FAIL, ERROR, null);
+
+        finishWithError(error);
+    }
+
+    @Override
+    public void onWebViewCancellation() {
+        super.onWebViewCancellation();
     }
 
     @Override

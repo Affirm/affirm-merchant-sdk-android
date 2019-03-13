@@ -1,18 +1,14 @@
 package com.affirm.android;
 
 import android.os.AsyncTask;
-import android.os.Build;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import static java.sql.DriverManager.println;
 
 class AffirmTracker {
 

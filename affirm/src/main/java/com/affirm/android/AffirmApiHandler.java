@@ -108,7 +108,7 @@ class AffirmApiHandler {
             .setTag(TAG_TRACKER)
             .build();
 
-        httpClient.execute(request);
+        httpClient.execute(request, false);
     }
 
     private static String getTrackerProtocol() {

@@ -15,7 +15,7 @@ import java.util.concurrent.Executor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebViewClient.Callbacks {
+abstract class CheckoutBaseActivity extends AffirmActivity {
 
     static final int RESULT_ERROR = -8575;
 
@@ -72,16 +72,14 @@ abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebV
         super.onDestroy();
     }
 
-    @Override
-    public void onWebViewError(@NonNull Throwable error) {
+    protected void finishWithError(@NonNull Throwable error) {
         final Intent intent = new Intent();
         intent.putExtra(CHECKOUT_ERROR, error.toString());
         setResult(RESULT_ERROR, intent);
         finish();
     }
 
-    @Override
-    public void onWebViewCancellation() {
+    protected void onWebViewCancellation() {
         setResult(RESULT_CANCELED);
         finish();
     }
@@ -104,7 +102,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebV
     }
 
     private static class CheckoutTask extends AsyncTask<Void, Void,
-            ResponseWrapper<CheckoutResponse>> {
+        ResponseWrapper<CheckoutResponse>> {
         @NonNull
         private final Checkout checkout;
         @NonNull
@@ -126,7 +124,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity implements AffirmWebV
             if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutBaseActivity) {
                 try {
                     CheckoutBaseActivity checkoutBaseActivity =
-                            (CheckoutBaseActivity) mContextRef.get();
+                        (CheckoutBaseActivity) mContextRef.get();
                     CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
                     return new ResponseWrapper<>(checkoutResponse);
                 } catch (IOException e) {

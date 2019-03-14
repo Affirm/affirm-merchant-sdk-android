@@ -92,7 +92,8 @@ final class AffirmTracker {
         data.addProperty("android_sdk", Build.VERSION.SDK_INT);
         data.addProperty("device_name", Build.MODEL);
         data.addProperty("merchant_key", AffirmPlugins.get().publicKey());
-        data.addProperty("environment", AffirmPlugins.get().environmentName().toLowerCase(Locale.getDefault()));
+        data.addProperty("environment",
+                AffirmPlugins.get().environmentName().toLowerCase(Locale.getDefault()));
         data.addProperty("event_name", eventName);
         data.addProperty("level", level.getLevel());
     }

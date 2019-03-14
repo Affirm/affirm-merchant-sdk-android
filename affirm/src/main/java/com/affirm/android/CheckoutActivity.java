@@ -48,13 +48,13 @@ class CheckoutActivity extends CheckoutCommonActivity implements CheckoutWebView
     void onAttached() {
         CheckoutCallback checkoutCallback = new CheckoutCallback() {
             @Override
-            public void onError(Exception exception) {
+            public void onError(@NonNull Exception exception) {
                 AffirmTracker.get().track(CHECKOUT_CREATION_FAIL, ERROR, null);
                 finishWithError(exception);
             }
 
             @Override
-            public void onSuccess(CheckoutResponse response) {
+            public void onSuccess(@NonNull CheckoutResponse response) {
                 AffirmTracker.get().track(CHECKOUT_CREATION_SUCCESS, INFO, null);
                 webView.loadUrl(response.redirectUrl());
             }

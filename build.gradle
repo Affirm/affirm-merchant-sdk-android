@@ -37,6 +37,7 @@ ext {
     testRunnerVersion = "1.0.2"
     testEspressoVersion = "3.0.2"
     okhttpVersion = '3.12.1'
+    okhttpLogVersion = '3.12.0'
     gsonVersion = '2.8.0'
     autoValueGsonVersion = '0.4.6'
     autoValueParcelVersion = '0.2.5'

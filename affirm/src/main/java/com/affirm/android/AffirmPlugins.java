@@ -6,12 +6,12 @@ import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 class AffirmPlugins {
 
@@ -106,6 +106,10 @@ class AffirmPlugins {
                 clientBuilder.connectTimeout(5, TimeUnit.SECONDS);
                 clientBuilder.readTimeout(30, TimeUnit.SECONDS);
                 clientBuilder.followRedirects(false);
+                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+                loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY
+                        : HttpLoggingInterceptor.Level.NONE);
+                clientBuilder.addInterceptor(loggingInterceptor);
                 restClient = AffirmHttpClient.createClient(clientBuilder);
             }
             return restClient;

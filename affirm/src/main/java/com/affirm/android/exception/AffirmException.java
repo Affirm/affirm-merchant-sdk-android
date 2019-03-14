@@ -51,7 +51,7 @@ public abstract class AffirmException extends Exception {
     }
 
     @Nullable
-    public AffirmError getStripeError() {
+    public AffirmError getAffirmError() {
         return affirmError;
     }
 

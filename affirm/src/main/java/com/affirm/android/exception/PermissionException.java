@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 public class PermissionException extends AffirmException {
 
     public PermissionException(@Nullable String message, @Nullable String requestId,
-                               @Nullable Integer statusCode, @Nullable AffirmError stripeError) {
-        super(stripeError, message, requestId, statusCode);
+                               @Nullable Integer statusCode, @Nullable AffirmError affirmError) {
+        super(affirmError, message, requestId, statusCode);
     }
 }

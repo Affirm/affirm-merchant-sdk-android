@@ -10,6 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion rootProject.ext.compileSdkVersion
+        versionCode VERSION_CODE.toInteger()
+        versionName project.VERSION_NAME
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -85,6 +87,7 @@ dependencies {
     testImplementation "junit:junit:${rootProject.ext.junitVersion}"
 
     api "com.squareup.okhttp3:okhttp:${rootProject.ext.okhttpVersion}"
+    api "com.squareup.okhttp3:logging-interceptor:${rootProject.ext.okhttpLogVersion}"
     api "com.google.code.gson:gson:${rootProject.ext.gsonVersion}"
 
     annotationProcessor "com.ryanharter.auto.value:auto-value-gson:${rootProject.ext.autoValueGsonVersion}"

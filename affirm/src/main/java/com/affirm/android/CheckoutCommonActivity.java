@@ -28,8 +28,8 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
 
     CheckoutRequest.CheckoutType checkoutType;
 
-    abstract CheckoutResponse executeTask(@NonNull Checkout checkout) throws IOException, APIException,
-            PermissionException, InvalidRequestException;
+    abstract CheckoutResponse executeTask(@NonNull Checkout checkout)
+            throws IOException, APIException, PermissionException, InvalidRequestException;
 
     @Override
     void beforeOnCreate() {

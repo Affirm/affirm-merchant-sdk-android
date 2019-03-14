@@ -68,9 +68,10 @@ final class AffirmTracker {
         trackerRequest.create(trackingData);
     }
 
-    private @NonNull JsonObject addTrackingData(@NonNull String eventName,
-                                       @Nullable JsonObject eventData,
-                                       @NonNull TrackingLevel level) {
+    private @NonNull
+    JsonObject addTrackingData(@NonNull String eventName,
+                               @Nullable JsonObject eventData,
+                               @NonNull TrackingLevel level) {
 
         final Gson gson = new Gson();
         final JsonObject data = eventData == null ? new JsonObject()

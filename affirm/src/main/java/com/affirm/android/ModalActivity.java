@@ -93,8 +93,12 @@ class ModalActivity extends AffirmActivity
     @Override
     void onAttached() {
         final String html = initialHtml();
-        webView.loadDataWithBaseURL(PROTOCOL + AffirmPlugins.get().baseUrl(), html, "text/html",
-                "utf-8", null);
+        webView.loadDataWithBaseURL(
+                PROTOCOL + AffirmPlugins.get().baseUrl(),
+                html,
+                "text/html",
+                "utf-8",
+                null);
     }
 
     @Override

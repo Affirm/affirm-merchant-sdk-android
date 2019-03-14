@@ -24,7 +24,7 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIE
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
-class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChromeClient.Callbacks,
+public class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChromeClient.Callbacks,
         VcnCheckoutWebViewClient.Callbacks {
 
     public static final String CREDIT_DETAILS = "credit_details";

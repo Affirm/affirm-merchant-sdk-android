@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
     }
 
     @Override
-    public void onAffirmCheckoutSuccess(String token) {
+    public void onAffirmCheckoutSuccess(@NonNull String token) {
         Toast.makeText(this, "Checkout token: " + token, Toast.LENGTH_LONG).show();
     }
 

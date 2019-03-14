@@ -1,5 +1,6 @@
 package com.affirm.android;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.webkit.WebView;
@@ -12,6 +13,7 @@ final class AffirmWebView extends WebView {
         this(context, null);
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     public AffirmWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
 

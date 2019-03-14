@@ -22,13 +22,13 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
 
     static final String CHECKOUT_EXTRA = "checkout_extra";
 
-    CheckoutRequest.CheckoutType checkoutType;
-
     CheckoutRequest checkoutRequest = new CheckoutRequest();
 
     Checkout checkout;
 
-    abstract CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException,
+    CheckoutRequest.CheckoutType checkoutType;
+
+    abstract CheckoutResponse executeTask(@NonNull Checkout checkout) throws IOException, APIException,
             PermissionException, InvalidRequestException;
 
     @Override

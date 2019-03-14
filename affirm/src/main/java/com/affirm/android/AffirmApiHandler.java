@@ -13,6 +13,8 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.util.Locale;
 
+import androidx.annotation.Nullable;
+
 final class AffirmApiHandler {
 
     private AffirmApiHandler() {
@@ -32,7 +34,7 @@ final class AffirmApiHandler {
         AffirmPlugins.get().restClient().cancelCallWithTag(TAG_GET_NEW_PROMO);
     }
 
-    static PromoResponse getNewPromo(String promoId, float dollarAmount, boolean showCta)
+    static PromoResponse getNewPromo(@Nullable String promoId, float dollarAmount, boolean showCta)
             throws IOException, APIException, PermissionException, InvalidRequestException {
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
         int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);

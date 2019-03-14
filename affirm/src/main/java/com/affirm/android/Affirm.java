@@ -105,13 +105,12 @@ public final class Affirm {
                 promoCallback.onFailure(throwable);
             }
         };
-        affirmPromoRequest.create(promoId, amount, showCta, callback);
 
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
                 AffirmLog.d("PromoLabel attached to window...");
-                affirmPromoRequest.cancel();
+                affirmPromoRequest.create(promoId, amount, showCta, callback);
             }
 
             @Override

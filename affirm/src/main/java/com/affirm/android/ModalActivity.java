@@ -124,7 +124,7 @@ class ModalActivity extends AffirmActivity
 
     @Override
     public void onWebViewError(@NonNull Throwable error) {
-        AffirmTracker.track(type.failureEvent, ERROR, null);
+        AffirmTracker.get().track(type.failureEvent, ERROR, null);
         finish();
     }
 }

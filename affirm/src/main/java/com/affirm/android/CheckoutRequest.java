@@ -28,7 +28,7 @@ class CheckoutRequest extends Request {
         checkoutCreator.create(context, checkout, callback);
     }
 
-    void cancel(CheckoutType type) {
+    void cancel(@NonNull CheckoutType type) {
         checkoutCreator.cancel(type);
     }
 
@@ -39,7 +39,7 @@ class CheckoutRequest extends Request {
                 @NonNull final Checkout checkout,
                 @Nullable final CheckoutCallback callback);
 
-        void cancel(CheckoutType type);
+        void cancel(@NonNull CheckoutType type);
     }
 
     private final CheckoutCreator checkoutCreator = new CheckoutCreator() {
@@ -52,7 +52,7 @@ class CheckoutRequest extends Request {
         }
 
         @Override
-        public void cancel(CheckoutType type) {
+        public void cancel(@NonNull CheckoutType type) {
             if (checkoutTask != null && !checkoutTask.isCancelled()) {
                 checkoutTask.cancel(true);
                 checkoutTask = null;

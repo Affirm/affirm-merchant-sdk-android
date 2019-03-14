@@ -2,10 +2,12 @@ package com.affirm.android;
 
 import com.affirm.android.model.CheckoutResponse;
 
+import androidx.annotation.NonNull;
+
 interface CheckoutCallback {
 
-    void onError(Exception exception);
+    void onError(@NonNull Exception exception);
 
-    void onSuccess(CheckoutResponse response);
+    void onSuccess(@NonNull CheckoutResponse response);
 }
 

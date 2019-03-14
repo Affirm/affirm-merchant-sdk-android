@@ -55,14 +55,14 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
     void onAttached() {
         CheckoutCallback checkoutCallback = new CheckoutCallback() {
             @Override
-            public void onError(Exception exception) {
-                AffirmTracker.track(VCN_CHECKOUT_CREATION_FAIL, ERROR, null);
+            public void onError(@NonNull Exception exception) {
+                AffirmTracker.get().track(VCN_CHECKOUT_CREATION_FAIL, ERROR, null);
                 finishWithError(exception);
             }
 
             @Override
-            public void onSuccess(CheckoutResponse response) {
-                AffirmTracker.track(VCN_CHECKOUT_CREATION_SUCCESS, INFO, null);
+            public void onSuccess(@NonNull CheckoutResponse response) {
+                AffirmTracker.get().track(VCN_CHECKOUT_CREATION_SUCCESS, INFO, null);
                 final String html = initialHtml(response);
                 final Uri uri = Uri.parse(response.redirectUrl());
                 webView.loadDataWithBaseURL("https://" + uri.getHost(), html,
@@ -74,7 +74,7 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
     }
 
     @Override
-    CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException,
+    CheckoutResponse executeTask(@NonNull Checkout checkout) throws IOException, APIException,
             PermissionException, InvalidRequestException {
         return AffirmApiHandler.executeVcnCheckout(checkout);
     }
@@ -100,7 +100,7 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
 
     @Override
     public void onWebViewConfirmation(@NonNull CardDetails cardDetails) {
-        AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
+        AffirmTracker.get().track(VCN_CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
 
         final Intent intent = new Intent();
         intent.putExtra(CREDIT_DETAILS, cardDetails);
@@ -110,7 +110,7 @@ class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChr
 
     @Override
     public void onWebViewError(@NonNull Throwable error) {
-        AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_FAIL, ERROR, null);
+        AffirmTracker.get().track(VCN_CHECKOUT_WEBVIEW_FAIL, ERROR, null);
 
         finishWithError(error);
     }

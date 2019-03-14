@@ -1,19 +1,29 @@
 package com.affirm.android;
 
-import android.os.AsyncTask;
+import android.os.Build;
 
-import com.affirm.android.exception.APIException;
-import com.affirm.android.exception.InvalidRequestException;
-import com.affirm.android.exception.PermissionException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import okhttp3.Headers;
+import okhttp3.Request;
+import okhttp3.Response;
 
 final class AffirmTracker {
+
+    private static AffirmTracker instance = new AffirmTracker();
+
+    public static AffirmTracker get() {
+        return instance;
+    }
+
+    private TrackerRequest trackerRequest = new TrackerRequest();
+    private final AtomicInteger localLogCounter = new AtomicInteger();
 
     private AffirmTracker() {
     }
@@ -31,10 +41,10 @@ final class AffirmTracker {
         SITE_WEBVIEW_FAIL("Site webView failed"),
         NETWORK_ERROR("network error");
 
-        private final String mName;
+        private final String name;
 
         TrackingEvent(String name) {
-            this.mName = name;
+            this.name = name;
         }
     }
 
@@ -52,53 +62,58 @@ final class AffirmTracker {
         }
     }
 
-    static void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
-                      @Nullable JsonObject data) {
-        final JsonObject trackingData = addTrackingData(event.mName, data, level);
-        new TrackerTask(trackingData).execute();
+    void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
+               @Nullable JsonObject data) {
+        final JsonObject trackingData = addTrackingData(event.name, data, level);
+        trackerRequest.create(trackingData);
     }
 
-    private static JsonObject addTrackingData(@NonNull String eventName,
-                                              @Nullable JsonObject eventData,
-                                              @NonNull TrackingLevel level) {
+    private @NonNull JsonObject addTrackingData(@NonNull String eventName,
+                                       @Nullable JsonObject eventData,
+                                       @NonNull TrackingLevel level) {
 
         final Gson gson = new Gson();
         final JsonObject data = eventData == null ? new JsonObject()
                 : gson.fromJson(gson.toJson(eventData, JsonObject.class), JsonObject.class);
 
-        AffirmPlugins plugins = AffirmPlugins.get();
-        plugins.addTrackingData(eventName, data, level);
+        fillTrackingData(eventName, data, level);
         return data;
     }
 
-    private static class TrackerTask extends AsyncTask<Void, Void, Void> {
+    private void fillTrackingData(@NonNull String eventName,
+                                  @NonNull JsonObject data,
+                                  @NonNull AffirmTracker.TrackingLevel level) {
+        final long timeStamp = System.currentTimeMillis();
+        // Set the log counter and then increment the logCounter
+        data.addProperty("local_log_counter", localLogCounter.getAndIncrement());
+        data.addProperty("ts", timeStamp);
+        data.addProperty("app_id", "Android SDK");
+        data.addProperty("release", BuildConfig.VERSION_NAME);
+        data.addProperty("android_sdk", Build.VERSION.SDK_INT);
+        data.addProperty("device_name", Build.MODEL);
+        data.addProperty("merchant_key", AffirmPlugins.get().publicKey());
+        data.addProperty("environment", AffirmPlugins.get().environmentName().toLowerCase(Locale.getDefault()));
+        data.addProperty("event_name", eventName);
+        data.addProperty("level", level.getLevel());
+    }
 
-        final JsonObject mTrackingData;
-
-        TrackerTask(JsonObject trackingData) {
-            this.mTrackingData = trackingData;
+    static JsonObject createTrackingNetworkJsonObj(@NonNull Request request,
+                                                   @Nullable Response response) {
+        final JsonObject jsonObject = new JsonObject();
+        final String affirmRequestIDHeader = "X-Affirm-Request-Id";
+        jsonObject.addProperty("url", request.url().toString());
+        jsonObject.addProperty("method", request.method());
+        if (response != null) {
+            final Headers headers = response.headers();
+            jsonObject.addProperty("status_code", response.code());
+            jsonObject.addProperty(affirmRequestIDHeader, headers.get(affirmRequestIDHeader));
+            jsonObject.addProperty("x-amz-cf-id", headers.get("x-amz-cf-id"));
+            jsonObject.addProperty("x-affirm-using-cdn", headers.get("x-affirm-using-cdn"));
+            jsonObject.addProperty("x-cache", headers.get("x-cache"));
+        } else {
+            jsonObject.add("status_code", null);
+            jsonObject.add(affirmRequestIDHeader, null);
         }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                AffirmApiHandler.sendTrackRequest(mTrackingData);
-            } catch (IOException e) {
-                AffirmLog.e(toString());
-            } catch (APIException e) {
-                AffirmLog.e(toString());
-            } catch (PermissionException e) {
-                AffirmLog.e(toString());
-            } catch (InvalidRequestException e) {
-                AffirmLog.e(toString());
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            AffirmLog.d(toString());
-        }
+        return jsonObject;
     }
 }

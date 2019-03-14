@@ -17,7 +17,7 @@ class PromoRequest extends Request {
 
     private AsyncTask promoTask;
 
-    void create(final String promoId, final float dollarAmount,
+    void create(@Nullable final String promoId, final float dollarAmount,
                 final boolean showCta, @Nullable SpannablePromoCallback callback) {
         promoCreator.create(promoId, dollarAmount, showCta, callback);
     }
@@ -28,7 +28,7 @@ class PromoRequest extends Request {
 
     interface PromoCreator {
 
-        void create(final String promoId, final float dollarAmount,
+        void create(@Nullable final String promoId, final float dollarAmount,
                     final boolean showCta, @Nullable SpannablePromoCallback callback);
 
         void cancel();
@@ -36,7 +36,7 @@ class PromoRequest extends Request {
 
     private final PromoCreator promoCreator = new PromoCreator() {
         @Override
-        public void create(final String promoId, final float dollarAmount,
+        public void create(@Nullable final String promoId, final float dollarAmount,
                            final boolean showCta, @Nullable SpannablePromoCallback callback) {
 
             isRequestCancelled = false;
@@ -57,14 +57,14 @@ class PromoRequest extends Request {
 
     private static class PromoTask extends
             AsyncTask<Void, Void, ResponseWrapper<PromoResponse>> {
-        @NonNull
+        @Nullable
         private final String promoId;
         private final float dollarAmount;
         private final boolean showCta;
         @NonNull
         private final WeakReference<SpannablePromoCallback> mCallbackRef;
 
-        PromoTask(@NonNull String promoId,
+        PromoTask(@Nullable String promoId,
                   float dollarAmount,
                   boolean showCta,
                   @NonNull SpannablePromoCallback callback) {

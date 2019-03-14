@@ -10,6 +10,9 @@ import java.util.Vector;
 
 final class CookiesUtil {
 
+    private CookiesUtil() {
+    }
+
     static void clearCookieByUrl(String url, CookieManager cookieManager,
                                  CookieSyncManager cookieSyncManager) {
         Uri uri = Uri.parse(url);

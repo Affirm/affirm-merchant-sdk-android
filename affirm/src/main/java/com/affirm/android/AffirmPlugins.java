@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -131,7 +132,7 @@ class AffirmPlugins {
         data.addProperty("android_sdk", Build.VERSION.SDK_INT);
         data.addProperty("device_name", Build.MODEL);
         data.addProperty("merchant_key", publicKey());
-        data.addProperty("environment", environmentName().toLowerCase());
+        data.addProperty("environment", environmentName().toLowerCase(Locale.getDefault()));
         data.addProperty("event_name", eventName);
         data.addProperty("level", level.getLevel());
     }

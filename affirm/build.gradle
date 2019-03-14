@@ -1,4 +1,7 @@
 apply plugin: 'com.android.library'
+apply plugin: 'pmd'
+apply plugin: 'findbugs'
+apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -18,7 +21,64 @@ android {
         }
     }
 
+    lintOptions {
+        disable 'HardcoedText', 'ContentDescription'
+    }
+
+    lintOptions {
+        abortOnError false
+    }
 }
+
+pmd {
+    toolVersion = '5.5.2'
+}
+
+findbugs {
+    toolVersion = "3.0.1"
+}
+
+checkstyle {
+    toolVersion = '7.3'
+}
+
+task findbugs(type: FindBugs) {
+    excludeFilter file('config/findbugs/exclude.xml')
+    classes = files("$project.buildDir/intermediates/classes")
+    source = fileTree('src/main/java')
+    classpath = files()
+    effort = 'max'
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+task pmd(type: Pmd) {
+    ruleSets = ["java-android",
+                "java-basic",
+                "java-braces",
+                "java-strings",
+                "java-unnecessary",
+                "java-unusedcode",
+                "java-sunsecure"]
+    source = fileTree('src/main/java')
+}
+
+task checkstyle(type: Checkstyle) {
+    configFile file('config/checkstyle/checkstyle.xml')
+    source 'src/main/java'
+    include '**/*.java'
+    classpath = files()
+}
+
+task findbugsWrapper(dependsOn: 'findbugs') {}
+task pmdWrapper(dependsOn: 'pmd') {}
+task checkstyleWrapper(dependsOn: 'checkstyle') {}
+
+build.dependsOn findbugsWrapper
+check.dependsOn pmdWrapper
+check.dependsOn checkstyleWrapper
 
 dependencies {
     implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"

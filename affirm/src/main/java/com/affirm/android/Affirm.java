@@ -16,7 +16,10 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
 
-public class Affirm {
+public final class Affirm {
+
+    private Affirm() {
+    }
 
     public static final int LOG_LEVEL_VERBOSE = Log.VERBOSE;
     public static final int LOG_LEVEL_DEBUG = Log.DEBUG;
@@ -102,7 +105,8 @@ public class Affirm {
                 promoCallback.onFailure(throwable);
             }
         };
-        final CancellableRequest request = affirmPromoRequest.getNewPromo(promoId, amount, showCta, callback);
+        final CancellableRequest request = affirmPromoRequest.getNewPromo(promoId, amount,
+                showCta, callback);
 
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -133,13 +137,15 @@ public class Affirm {
         if (requestCode == CHECKOUT_REQUEST) {
             switch (resultCode) {
                 case RESULT_OK:
-                    callbacks.onAffirmCheckoutSuccess(data.getStringExtra(CheckoutActivity.CHECKOUT_TOKEN));
+                    callbacks.onAffirmCheckoutSuccess(
+                            data.getStringExtra(CheckoutActivity.CHECKOUT_TOKEN));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmCheckoutCancelled();
                     break;
                 case CheckoutBaseActivity.RESULT_ERROR:
-                    callbacks.onAffirmCheckoutError(data.getStringExtra(CheckoutActivity.CHECKOUT_ERROR));
+                    callbacks.onAffirmCheckoutError(
+                            data.getStringExtra(CheckoutActivity.CHECKOUT_ERROR));
                     break;
                 default:
             }
@@ -149,7 +155,8 @@ public class Affirm {
             switch (resultCode) {
                 case RESULT_OK:
                     callbacks.onAffirmVcnCheckoutSuccess(
-                            (CardDetails) data.getParcelableExtra(VcnCheckoutActivity.CREDIT_DETAILS));
+                            (CardDetails) data.getParcelableExtra(
+                                    VcnCheckoutActivity.CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmVcnCheckoutCancelled();

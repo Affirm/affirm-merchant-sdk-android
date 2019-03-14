@@ -14,6 +14,8 @@ import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.Locale;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -124,7 +126,8 @@ public class AffirmPromoLabel extends AppCompatTextView {
         mPaint.setTextSize(textSize);
         mPaint.setTypeface(typeface);
         Rect result = new Rect();
-        mPaint.getTextBounds(template.toUpperCase(), 0, template.length(), result);
+        mPaint.getTextBounds(template.toUpperCase(Locale.getDefault()),
+                0, template.length(), result);
 
         SpannableString spannableString;
 

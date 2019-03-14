@@ -13,7 +13,10 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.util.Locale;
 
-class AffirmApiHandler {
+final class AffirmApiHandler {
+
+    private AffirmApiHandler() {
+    }
 
     private static final String CHECKOUT_PATH = "/api/v2/checkout/";
     private static final String TRACKER_PATH = "/collect";
@@ -29,11 +32,16 @@ class AffirmApiHandler {
         AffirmPlugins.get().restClient().cancelCallWithTag(TAG_GET_NEW_PROMO);
     }
 
-    static PromoResponse getNewPromo(String promoId, float dollarAmount, boolean showCta) throws IOException, APIException, PermissionException, InvalidRequestException {
+    static PromoResponse getNewPromo(String promoId, float dollarAmount, boolean showCta)
+            throws IOException, APIException, PermissionException, InvalidRequestException {
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
         int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
         String path = String.format(Locale.getDefault(),
-                "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d&show_cta=%s&promo_external_id=%s",
+                "/api/promos/v2/%s?is_sdk=true"
+                        + "&field=ala"
+                        + "&amount=%d"
+                        + "&show_cta=%s"
+                        + "&promo_external_id=%s",
                 AffirmPlugins.get().publicKey(), centAmount, showCta, promoId);
 
         AffirmHttpRequest request = new AffirmHttpRequest.Builder()
@@ -50,7 +58,8 @@ class AffirmApiHandler {
         AffirmPlugins.get().restClient().cancelCallWithTag(TAG_VCN_CHECKOUT);
     }
 
-    static CheckoutResponse executeVcnCheckout(Checkout checkout) throws IOException, APIException, PermissionException, InvalidRequestException {
+    static CheckoutResponse executeVcnCheckout(Checkout checkout) throws IOException, APIException,
+            PermissionException, InvalidRequestException {
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
 
         final Merchant merchant = Merchant.builder()
@@ -76,7 +85,8 @@ class AffirmApiHandler {
         AffirmPlugins.get().restClient().cancelCallWithTag(TAG_CHECKOUT);
     }
 
-    static CheckoutResponse executeCheckout(Checkout checkout) throws IOException, APIException, PermissionException, InvalidRequestException {
+    static CheckoutResponse executeCheckout(Checkout checkout) throws IOException, APIException,
+            PermissionException, InvalidRequestException {
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
 
         final Merchant merchant = Merchant.builder()
@@ -99,7 +109,8 @@ class AffirmApiHandler {
         return AffirmPlugins.get().gson().fromJson(response.getContent(), CheckoutResponse.class);
     }
 
-    static void sendTrackRequest(JsonObject trackData) throws IOException, APIException, PermissionException, InvalidRequestException {
+    static void sendTrackRequest(JsonObject trackData) throws IOException, APIException,
+            PermissionException, InvalidRequestException {
         AffirmPlugins plugins = AffirmPlugins.get();
         AffirmHttpClient httpClient = plugins.restClient();
 

@@ -58,7 +58,8 @@ class CheckoutActivity extends CheckoutBaseActivity implements CheckoutWebViewCl
     }
 
     @Override
-    CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException, PermissionException, InvalidRequestException {
+    CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException,
+            PermissionException, InvalidRequestException {
         return AffirmApiHandler.executeCheckout(checkout);
     }
 
@@ -80,7 +81,7 @@ class CheckoutActivity extends CheckoutBaseActivity implements CheckoutWebViewCl
 
     @Override
     public void onWebViewCancellation() {
-        super.onWebViewCancellation();
+        webViewCancellation();
     }
 
     @Override

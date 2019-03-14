@@ -51,12 +51,12 @@ class PrequalActivity extends AffirmActivity
     void onAttached() {
         String publicKey = AffirmPlugins.get().publicKey();
         String path = String.format(
-                "/apps/prequal?public_api_key=%s" +
-                        "&unit_price=%s" +
-                        "&promo_external_id=%s" +
-                        "&isSDK=true" +
-                        "&use_promo=True" +
-                        "&referring_url=%s",
+                "/apps/prequal?public_api_key=%s"
+                        + "&unit_price=%s"
+                        + "&promo_external_id=%s"
+                        + "&isSDK=true"
+                        + "&use_promo=True"
+                        + "&referring_url=%s",
                 publicKey, amount, promoId, PrequalWebViewClient.REFERRING_URL);
 
         webView.loadUrl(PROTOCOL + AffirmPlugins.get().baseUrl() + path);

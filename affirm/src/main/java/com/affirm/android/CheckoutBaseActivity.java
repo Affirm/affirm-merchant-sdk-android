@@ -30,13 +30,15 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
     Checkout checkout;
 
-    abstract CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException, PermissionException, InvalidRequestException;
+    abstract CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException,
+            PermissionException, InvalidRequestException;
 
     final CheckoutTaskCreator taskCreator = new CheckoutTaskCreator() {
         @Override
         public void create(@NonNull Context context, @NonNull Checkout checkout,
                            @Nullable CheckoutCallback callback) {
-            executeTask(AsyncTask.THREAD_POOL_EXECUTOR, new CheckoutTask(context, checkout, callback));
+            executeTask(AsyncTask.THREAD_POOL_EXECUTOR,
+                    new CheckoutTask(context, checkout, callback));
         }
 
         @Override
@@ -82,7 +84,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
         finish();
     }
 
-    protected void onWebViewCancellation() {
+    protected void webViewCancellation() {
         setResult(RESULT_CANCELED);
         finish();
     }

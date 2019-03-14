@@ -54,7 +54,8 @@ abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChro
     public void clearCookies() {
         final CookieManager cookieManager = CookieManager.getInstance();
         final CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(this);
-        CookiesUtil.clearCookieByUrl("https://" + AffirmPlugins.get().baseUrl(), cookieManager, cookieSyncManager);
+        CookiesUtil.clearCookieByUrl("https://" + AffirmPlugins.get().baseUrl(),
+                cookieManager, cookieSyncManager);
     }
 
     @Override

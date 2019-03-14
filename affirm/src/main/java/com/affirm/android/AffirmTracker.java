@@ -13,7 +13,10 @@ import java.io.IOException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class AffirmTracker {
+final class AffirmTracker {
+
+    private AffirmTracker() {
+    }
 
     enum TrackingEvent {
         CHECKOUT_CREATION_FAIL("Checkout creation failed"),

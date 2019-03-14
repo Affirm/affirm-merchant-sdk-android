@@ -65,7 +65,8 @@ class PromoRequest {
         @Override
         protected ResponseWrapper<PromoResponse> doInBackground(Void... params) {
             try {
-                PromoResponse promoResponse = AffirmApiHandler.getNewPromo(promoId, dollarAmount, showCta);
+                PromoResponse promoResponse =
+                        AffirmApiHandler.getNewPromo(promoId, dollarAmount, showCta);
                 return new ResponseWrapper<>(promoResponse);
             } catch (IOException e) {
                 return new ResponseWrapper<>(e);
@@ -83,7 +84,8 @@ class PromoRequest {
             final SpannablePromoCallback callback = mCallbackRef.get();
             if (callback != null && !isRequestCancelled) {
                 if (result.source != null) {
-                    boolean showPrequal = !result.source.promo().promoConfig().promoStyle().equals("fast");
+                    boolean showPrequal =
+                            !result.source.promo().promoConfig().promoStyle().equals("fast");
                     String promo = result.source.promo().ala();
                     callback.onPromoWritten(promo, showPrequal);
                 } else if (result.error != null) {

@@ -2,7 +2,10 @@ package com.affirm.android;
 
 import android.util.Log;
 
-class AffirmLog {
+final class AffirmLog {
+
+    private AffirmLog() {
+    }
 
     private static final String TAG = "Affirm";
 

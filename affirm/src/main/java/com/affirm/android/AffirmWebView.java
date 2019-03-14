@@ -5,7 +5,8 @@ import android.util.AttributeSet;
 import android.webkit.WebView;
 
 final class AffirmWebView extends WebView {
-    private static final String USER_AGENT_PREFIX = "Affirm-SDK:Android-" + BuildConfig.VERSION_NAME;
+    private static final String USER_AGENT_PREFIX = "Affirm-SDK:Android-"
+            + BuildConfig.VERSION_NAME;
 
     public AffirmWebView(Context context) {
         this(context, null);

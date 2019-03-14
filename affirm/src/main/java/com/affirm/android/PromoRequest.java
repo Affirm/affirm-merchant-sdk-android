@@ -11,40 +11,52 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-class PromoRequest {
+class PromoRequest extends Request {
 
-    private static boolean isRequestCancelled = false;
+    private AsyncTask promoTask;
 
-    private PromoTask promoTask;
-
-    PromoRequest() {
+    void create(final String promoId, final float dollarAmount,
+                final boolean showCta, @Nullable SpannablePromoCallback callback) {
+        promoCreator.create(promoId, dollarAmount, showCta, callback);
     }
 
-    CancellableRequest getNewPromo(final String promoId, final float dollarAmount,
-                                   final boolean showCta,
-                                   final SpannablePromoCallback promoCallback) {
-        return new CancellableRequest() {
-            @Override
-            public void cancel() {
-                if (promoTask != null && !promoTask.isCancelled()) {
-                    promoTask.cancel(true);
-                    promoTask = null;
-                }
-                isRequestCancelled = true;
-                AffirmApiHandler.cancelNewPromoCall();
-            }
-
-            @Override
-            public void execute() {
-                isRequestCancelled = false;
-                promoTask = new PromoTask(promoId, dollarAmount, showCta, promoCallback);
-                promoTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-        };
+    void cancel() {
+        promoCreator.cancel();
     }
 
-    private static class PromoTask extends AsyncTask<Void, Void, ResponseWrapper<PromoResponse>> {
+    interface PromoCreator {
+
+        void create(final String promoId, final float dollarAmount,
+                    final boolean showCta, @Nullable SpannablePromoCallback callback);
+
+        void cancel();
+    }
+
+    private final PromoCreator promoCreator = new PromoCreator() {
+        @Override
+        public void create(final String promoId, final float dollarAmount,
+                           final boolean showCta, @Nullable SpannablePromoCallback callback) {
+
+            isRequestCancelled = false;
+            promoTask = new PromoTask(promoId, dollarAmount, showCta, callback);
+            executeTask(AsyncTask.THREAD_POOL_EXECUTOR, promoTask);
+        }
+
+        @Override
+        public void cancel() {
+            if (promoTask != null && !promoTask.isCancelled()) {
+                promoTask.cancel(true);
+                promoTask = null;
+            }
+            isRequestCancelled = true;
+            AffirmApiHandler.cancelNewPromoCall();
+        }
+    };
+
+    private static class PromoTask extends
+            AsyncTask<Void, Void, ResponseWrapper<PromoResponse>> {
         @NonNull
         private final String promoId;
         private final float dollarAmount;

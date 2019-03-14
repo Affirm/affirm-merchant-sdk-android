@@ -1,9 +1,7 @@
 package com.affirm.android;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.InvalidRequestException;
@@ -13,101 +11,69 @@ import com.affirm.android.model.CheckoutResponse;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.concurrent.Executor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-abstract class CheckoutBaseActivity extends AffirmActivity {
+class CheckoutRequest extends Request {
 
-    static final int RESULT_ERROR = -8575;
-
-    static final String CHECKOUT_ERROR = "checkout_error";
-
-    static final String CHECKOUT_EXTRA = "checkout_extra";
+    public enum CheckoutType {
+        REGULAR, VCN
+    }
 
     private AsyncTask checkoutTask;
 
-    Checkout checkout;
+    void create(@NonNull Context context, @NonNull Checkout checkout,
+                @Nullable CheckoutCallback callback) {
+        checkoutCreator.create(context, checkout, callback);
+    }
 
-    abstract CheckoutResponse executeTask(Checkout checkout) throws IOException, APIException,
-            PermissionException, InvalidRequestException;
+    void cancel(CheckoutType type) {
+        checkoutCreator.cancel(type);
+    }
 
-    final CheckoutTaskCreator taskCreator = new CheckoutTaskCreator() {
+    interface CheckoutCreator {
+
+        void create(
+                @NonNull final Context context,
+                @NonNull final Checkout checkout,
+                @Nullable final CheckoutCallback callback);
+
+        void cancel(CheckoutType type);
+    }
+
+    private final CheckoutCreator checkoutCreator = new CheckoutCreator() {
         @Override
         public void create(@NonNull Context context, @NonNull Checkout checkout,
                            @Nullable CheckoutCallback callback) {
-            executeTask(AsyncTask.THREAD_POOL_EXECUTOR,
-                    new CheckoutTask(context, checkout, callback));
+            isRequestCancelled = false;
+            checkoutTask = new CheckoutTask(context, checkout, callback);
+            executeTask(AsyncTask.THREAD_POOL_EXECUTOR, checkoutTask);
         }
 
         @Override
-        public void cancel() {
+        public void cancel(CheckoutType type) {
             if (checkoutTask != null && !checkoutTask.isCancelled()) {
                 checkoutTask.cancel(true);
                 checkoutTask = null;
             }
+
+            isRequestCancelled = true;
+            switch (type) {
+                case REGULAR:
+                    AffirmApiHandler.cancelCheckoutCall();
+                    break;
+                case VCN:
+                    AffirmApiHandler.cancelVcnCheckoutCall();
+                    break;
+                default:
+                    break;
+            }
         }
     };
 
-    @Override
-    void beforeOnCreate() {
-        AffirmUtils.hideActionBar(this);
-    }
-
-    @Override
-    void initData(@Nullable Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            checkout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
-        } else {
-            checkout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putParcelable(CHECKOUT_EXTRA, checkout);
-    }
-
-    @Override
-    protected void onDestroy() {
-        taskCreator.cancel();
-        super.onDestroy();
-    }
-
-    protected void finishWithError(@NonNull Throwable error) {
-        final Intent intent = new Intent();
-        intent.putExtra(CHECKOUT_ERROR, error.toString());
-        setResult(RESULT_ERROR, intent);
-        finish();
-    }
-
-    protected void webViewCancellation() {
-        setResult(RESULT_CANCELED);
-        finish();
-    }
-
-    interface CheckoutCallback {
-
-        void onError(Exception exception);
-
-        void onSuccess(CheckoutResponse response);
-    }
-
-    void executeTask(@Nullable Executor executor,
-                     @NonNull AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> task) {
-        this.checkoutTask = task;
-        if (executor != null) {
-            task.executeOnExecutor(executor);
-        } else {
-            task.execute();
-        }
-    }
-
-    private static class CheckoutTask extends AsyncTask<Void, Void,
-            ResponseWrapper<CheckoutResponse>> {
+    private static class CheckoutTask extends
+            AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> {
         @NonNull
         private final Checkout checkout;
         @NonNull
@@ -126,10 +92,10 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
         @Override
         protected ResponseWrapper<CheckoutResponse> doInBackground(Void... params) {
-            if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutBaseActivity) {
+            if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutCommonActivity) {
                 try {
-                    CheckoutBaseActivity checkoutBaseActivity =
-                            (CheckoutBaseActivity) mContextRef.get();
+                    CheckoutCommonActivity checkoutBaseActivity =
+                            (CheckoutCommonActivity) mContextRef.get();
                     CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
                     return new ResponseWrapper<>(checkoutResponse);
                 } catch (IOException e) {
@@ -149,7 +115,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
         @Override
         protected void onPostExecute(ResponseWrapper<CheckoutResponse> result) {
             final CheckoutCallback checkoutCallback = mCallbackRef.get();
-            if (checkoutCallback != null) {
+            if (checkoutCallback != null && !isRequestCancelled) {
                 if (result.source != null) {
                     checkoutCallback.onSuccess(result.source);
                 } else if (result.error != null) {

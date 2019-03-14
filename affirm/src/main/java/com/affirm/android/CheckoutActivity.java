@@ -20,7 +20,7 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_SU
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
-class CheckoutActivity extends CheckoutBaseActivity implements CheckoutWebViewClient.Callbacks {
+class CheckoutActivity extends CheckoutCommonActivity implements CheckoutWebViewClient.Callbacks {
 
     public static final String CHECKOUT_TOKEN = "checkout_token";
 
@@ -29,6 +29,12 @@ class CheckoutActivity extends CheckoutBaseActivity implements CheckoutWebViewCl
         final Intent intent = new Intent(activity, CheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         activity.startActivityForResult(intent, requestCode);
+    }
+
+    @Override
+    void beforeOnCreate() {
+        super.beforeOnCreate();
+        checkoutType = CheckoutRequest.CheckoutType.REGULAR;
     }
 
     @Override
@@ -54,7 +60,7 @@ class CheckoutActivity extends CheckoutBaseActivity implements CheckoutWebViewCl
             }
         };
 
-        taskCreator.create(this, checkout, checkoutCallback);
+        checkoutRequest.create(this, checkout, checkoutCallback);
     }
 
     @Override
@@ -82,11 +88,5 @@ class CheckoutActivity extends CheckoutBaseActivity implements CheckoutWebViewCl
     @Override
     public void onWebViewCancellation() {
         webViewCancellation();
-    }
-
-    @Override
-    protected void onDestroy() {
-        AffirmApiHandler.cancelCheckoutCall();
-        super.onDestroy();
     }
 }

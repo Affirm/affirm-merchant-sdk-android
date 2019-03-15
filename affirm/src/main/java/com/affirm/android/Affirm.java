@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 
+import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 
@@ -87,7 +88,6 @@ public final class Affirm {
                                             final float amount,
                                             final boolean showCta,
                                             final PromoCallback promoCallback) {
-        final PromoRequest affirmPromoRequest = new PromoRequest();
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(final String promo, final boolean showPrequal) {
@@ -101,16 +101,17 @@ public final class Affirm {
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
-                promoCallback.onFailure(throwable);
+            public void onFailure(AffirmException exception) {
+                promoCallback.onFailure(exception);
             }
         };
-
+        final PromoRequest affirmPromoRequest =
+                new PromoRequest(promoId, amount, showCta, callback);
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
                 AffirmLog.d("PromoLabel attached to window...");
-                affirmPromoRequest.create(promoId, amount, showCta, callback);
+                affirmPromoRequest.create();
             }
 
             @Override

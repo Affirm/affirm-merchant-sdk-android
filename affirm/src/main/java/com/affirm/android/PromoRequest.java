@@ -3,11 +3,11 @@ package com.affirm.android;
 import android.os.AsyncTask;
 
 import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.PromoResponse;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
@@ -15,45 +15,31 @@ import androidx.annotation.Nullable;
 
 class PromoRequest extends Request {
 
-    private AsyncTask promoTask;
+    @Nullable
+    private final String promoId;
+    private final float dollarAmount;
+    private final boolean showCta;
+    @NonNull
+    private SpannablePromoCallback callback;
 
-    void create(@Nullable final String promoId, final float dollarAmount,
-                final boolean showCta, @Nullable SpannablePromoCallback callback) {
-        promoCreator.create(promoId, dollarAmount, showCta, callback);
+    PromoRequest(@Nullable final String promoId, final float dollarAmount,
+                 final boolean showCta, @NonNull SpannablePromoCallback callback) {
+        this.promoId = promoId;
+        this.dollarAmount = dollarAmount;
+        this.showCta = showCta;
+        this.callback = callback;
     }
 
+    @Override
     void cancel() {
-        promoCreator.cancel();
+        super.cancel();
+        AffirmApiHandler.cancelNewPromoCall();
     }
 
-    interface PromoCreator {
-
-        void create(@Nullable final String promoId, final float dollarAmount,
-                    final boolean showCta, @Nullable SpannablePromoCallback callback);
-
-        void cancel();
+    @Override
+    AsyncTask createTask() {
+        return new PromoTask(promoId, dollarAmount, showCta, callback);
     }
-
-    private final PromoCreator promoCreator = new PromoCreator() {
-        @Override
-        public void create(@Nullable final String promoId, final float dollarAmount,
-                           final boolean showCta, @Nullable SpannablePromoCallback callback) {
-
-            isRequestCancelled = false;
-            promoTask = new PromoTask(promoId, dollarAmount, showCta, callback);
-            executeTask(AsyncTask.THREAD_POOL_EXECUTOR, promoTask);
-        }
-
-        @Override
-        public void cancel() {
-            if (promoTask != null && !promoTask.isCancelled()) {
-                promoTask.cancel(true);
-                promoTask = null;
-            }
-            isRequestCancelled = true;
-            AffirmApiHandler.cancelNewPromoCall();
-        }
-    };
 
     private static class PromoTask extends
             AsyncTask<Void, Void, ResponseWrapper<PromoResponse>> {
@@ -80,7 +66,7 @@ class PromoRequest extends Request {
                 PromoResponse promoResponse =
                         AffirmApiHandler.getNewPromo(promoId, dollarAmount, showCta);
                 return new ResponseWrapper<>(promoResponse);
-            } catch (IOException e) {
+            } catch (ConnectionException e) {
                 return new ResponseWrapper<>(e);
             } catch (APIException e) {
                 return new ResponseWrapper<>(e);

@@ -1,6 +1,7 @@
 package com.affirm.android;
 
 import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.AffirmError;
@@ -40,13 +41,13 @@ final class AffirmHttpClient {
         return new AffirmHttpClient(builder);
     }
 
-    AffirmHttpResponse execute(final AffirmHttpRequest request) throws IOException, APIException,
-            PermissionException, InvalidRequestException {
+    AffirmHttpResponse execute(final AffirmHttpRequest request) throws APIException,
+            PermissionException, InvalidRequestException, ConnectionException {
         return execute(request, true);
     }
 
     AffirmHttpResponse execute(final AffirmHttpRequest request, boolean sendTrackEvent)
-            throws IOException, APIException, PermissionException, InvalidRequestException {
+            throws APIException, PermissionException, InvalidRequestException, ConnectionException {
         Request okHttpRequest = getRequest(request);
         Call call = okHttpClient.newCall(okHttpRequest);
         try {
@@ -74,7 +75,7 @@ final class AffirmHttpClient {
                         createTrackingNetworkJsonObj(okHttpRequest, null));
             }
 
-            throw e;
+            throw new ConnectionException("i/o failure", e);
         }
     }
 

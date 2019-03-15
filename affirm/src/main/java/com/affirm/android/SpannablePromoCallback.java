@@ -1,7 +1,9 @@
 package com.affirm.android;
 
+import com.affirm.android.exception.AffirmException;
+
 interface SpannablePromoCallback {
     void onPromoWritten(final String promo, final boolean showPrequal);
 
-    void onFailure(Throwable throwable);
+    void onFailure(AffirmException exception);
 }

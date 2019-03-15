@@ -17,7 +17,6 @@ ext {
     autoValueParcelVersion = '0.2.5'
     truthVersion = '0.28'
     mockitoCoreVersion = '2.21.0'
-    okhttpLogVersion = '3.12.0'
 }
 
 android {
@@ -105,7 +104,6 @@ dependencies {
 
     api "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     api "com.google.code.gson:gson:${gsonVersion}"
-    api "com.squareup.okhttp3:logging-interceptor:${okhttpLogVersion}"
 
     annotationProcessor "com.ryanharter.auto.value:auto-value-gson:${autoValueGsonVersion}"
     compileOnly "com.ryanharter.auto.value:auto-value-gson:${autoValueGsonVersion}"

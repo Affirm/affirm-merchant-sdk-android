@@ -2,32 +2,23 @@ package com.affirm.android;
 
 import android.os.AsyncTask;
 
-import com.affirm.android.exception.APIException;
-import com.affirm.android.exception.InvalidRequestException;
-import com.affirm.android.exception.PermissionException;
 import com.google.gson.JsonObject;
-
-import java.io.IOException;
 
 import androidx.annotation.NonNull;
 
 class TrackerRequest extends Request {
 
-    void create(@NonNull JsonObject trackingData) {
-        trackerCreator.create(trackingData);
+    private @NonNull
+    JsonObject trackingData;
+
+    TrackerRequest(@NonNull JsonObject trackingData) {
+        this.trackingData = trackingData;
     }
 
-    interface TrackerCreator {
-
-        void create(@NonNull JsonObject trackingData);
+    @Override
+    AsyncTask createTask() {
+        return new TrackerTask(trackingData);
     }
-
-    private final TrackerCreator trackerCreator = new TrackerCreator() {
-        @Override
-        public void create(@NonNull JsonObject trackingData) {
-            new TrackerTask(trackingData).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
-    };
 
     private static class TrackerTask extends AsyncTask<Void, Void, Void> {
 
@@ -42,13 +33,7 @@ class TrackerRequest extends Request {
         protected Void doInBackground(Void... voids) {
             try {
                 AffirmApiHandler.sendTrackRequest(mTrackingData);
-            } catch (IOException e) {
-                AffirmLog.e(toString());
-            } catch (APIException e) {
-                AffirmLog.e(toString());
-            } catch (PermissionException e) {
-                AffirmLog.e(toString());
-            } catch (InvalidRequestException e) {
+            } catch (Exception e) {
                 AffirmLog.e(toString());
             }
             return null;

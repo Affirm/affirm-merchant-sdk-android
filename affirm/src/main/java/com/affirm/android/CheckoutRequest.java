@@ -4,12 +4,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
@@ -21,59 +21,46 @@ class CheckoutRequest extends Request {
         REGULAR, VCN
     }
 
-    private AsyncTask checkoutTask;
+    @NonNull
+    private Context context;
+    @NonNull
+    private Checkout checkout;
+    @Nullable
+    private CheckoutCallback callback;
+    @NonNull
+    private CheckoutType checkoutType;
 
-    void create(@NonNull Context context, @NonNull Checkout checkout,
-                @Nullable CheckoutCallback callback) {
-        checkoutCreator.create(context, checkout, callback);
+    CheckoutRequest(@NonNull Context context, @NonNull Checkout checkout,
+                    @Nullable CheckoutCallback callback,
+                    @NonNull CheckoutType checkoutType) {
+        this.context = context;
+        this.checkout = checkout;
+        this.callback = callback;
+        this.checkoutType = checkoutType;
     }
 
-    void cancel(@NonNull CheckoutType type) {
-        checkoutCreator.cancel(type);
-    }
-
-    interface CheckoutCreator {
-
-        void create(
-                @NonNull final Context context,
-                @NonNull final Checkout checkout,
-                @Nullable final CheckoutCallback callback);
-
-        void cancel(@NonNull CheckoutType type);
-    }
-
-    private final CheckoutCreator checkoutCreator = new CheckoutCreator() {
-        @Override
-        public void create(@NonNull Context context, @NonNull Checkout checkout,
-                           @Nullable CheckoutCallback callback) {
-            isRequestCancelled = false;
-            checkoutTask = new CheckoutTask(context, checkout, callback);
-            executeTask(AsyncTask.THREAD_POOL_EXECUTOR, checkoutTask);
+    @Override
+    void cancel() {
+        super.cancel();
+        switch (this.checkoutType) {
+            case REGULAR:
+                AffirmApiHandler.cancelCheckoutCall();
+                break;
+            case VCN:
+                AffirmApiHandler.cancelVcnCheckoutCall();
+                break;
+            default:
+                break;
         }
+    }
 
-        @Override
-        public void cancel(@NonNull CheckoutType type) {
-            if (checkoutTask != null && !checkoutTask.isCancelled()) {
-                checkoutTask.cancel(true);
-                checkoutTask = null;
-            }
-
-            isRequestCancelled = true;
-            switch (type) {
-                case REGULAR:
-                    AffirmApiHandler.cancelCheckoutCall();
-                    break;
-                case VCN:
-                    AffirmApiHandler.cancelVcnCheckoutCall();
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
+    @Override
+    AsyncTask createTask() {
+        return new CheckoutTask(context, checkout, callback);
+    }
 
     private static class CheckoutTask extends
-            AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> {
+        AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> {
         @NonNull
         private final Checkout checkout;
         @NonNull
@@ -92,23 +79,19 @@ class CheckoutRequest extends Request {
 
         @Override
         protected ResponseWrapper<CheckoutResponse> doInBackground(Void... params) {
-            if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutCommonActivity) {
-                try {
-                    CheckoutCommonActivity checkoutBaseActivity =
-                            (CheckoutCommonActivity) mContextRef.get();
-                    CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
-                    return new ResponseWrapper<>(checkoutResponse);
-                } catch (IOException e) {
-                    return new ResponseWrapper<>(e);
-                } catch (APIException e) {
-                    return new ResponseWrapper<>(e);
-                } catch (PermissionException e) {
-                    return new ResponseWrapper<>(e);
-                } catch (InvalidRequestException e) {
-                    return new ResponseWrapper<>(e);
-                }
-            } else {
-                return new ResponseWrapper<>(new Exception());
+            try {
+                CheckoutCommonActivity checkoutBaseActivity =
+                    (CheckoutCommonActivity) mContextRef.get();
+                CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
+                return new ResponseWrapper<>(checkoutResponse);
+            } catch (ConnectionException e) {
+                return new ResponseWrapper<>(e);
+            } catch (APIException e) {
+                return new ResponseWrapper<>(e);
+            } catch (PermissionException e) {
+                return new ResponseWrapper<>(e);
+            } catch (InvalidRequestException e) {
+                return new ResponseWrapper<>(e);
             }
         }
 

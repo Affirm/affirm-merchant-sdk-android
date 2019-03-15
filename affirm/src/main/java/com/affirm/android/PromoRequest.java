@@ -3,11 +3,11 @@ package com.affirm.android;
 import android.os.AsyncTask;
 
 import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.PromoResponse;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
@@ -23,7 +23,7 @@ class PromoRequest extends Request {
     private SpannablePromoCallback callback;
 
     PromoRequest(@Nullable final String promoId, final float dollarAmount,
-                        final boolean showCta, @NonNull SpannablePromoCallback callback) {
+                 final boolean showCta, @NonNull SpannablePromoCallback callback) {
         this.promoId = promoId;
         this.dollarAmount = dollarAmount;
         this.showCta = showCta;
@@ -75,7 +75,7 @@ class PromoRequest extends Request {
                 PromoResponse promoResponse =
                         AffirmApiHandler.getNewPromo(promoId, dollarAmount, showCta);
                 return new ResponseWrapper<>(promoResponse);
-            } catch (IOException e) {
+            } catch (ConnectionException e) {
                 return new ResponseWrapper<>(e);
             } catch (APIException e) {
                 return new ResponseWrapper<>(e);

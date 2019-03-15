@@ -4,12 +4,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
@@ -88,23 +88,19 @@ class CheckoutRequest extends Request {
 
         @Override
         protected ResponseWrapper<CheckoutResponse> doInBackground(Void... params) {
-            if (mContextRef.get() != null && mContextRef.get() instanceof CheckoutCommonActivity) {
-                try {
-                    CheckoutCommonActivity checkoutBaseActivity =
-                            (CheckoutCommonActivity) mContextRef.get();
-                    CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
-                    return new ResponseWrapper<>(checkoutResponse);
-                } catch (IOException e) {
-                    return new ResponseWrapper<>(e);
-                } catch (APIException e) {
-                    return new ResponseWrapper<>(e);
-                } catch (PermissionException e) {
-                    return new ResponseWrapper<>(e);
-                } catch (InvalidRequestException e) {
-                    return new ResponseWrapper<>(e);
-                }
-            } else {
-                return new ResponseWrapper<>(new Exception());
+            try {
+                CheckoutCommonActivity checkoutBaseActivity =
+                        (CheckoutCommonActivity) mContextRef.get();
+                CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
+                return new ResponseWrapper<>(checkoutResponse);
+            } catch (ConnectionException e) {
+                return new ResponseWrapper<>(e);
+            } catch (APIException e) {
+                return new ResponseWrapper<>(e);
+            } catch (PermissionException e) {
+                return new ResponseWrapper<>(e);
+            } catch (InvalidRequestException e) {
+                return new ResponseWrapper<>(e);
             }
         }
 

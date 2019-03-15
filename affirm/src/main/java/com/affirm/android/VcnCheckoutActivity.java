@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.AffirmException;
+import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.CardDetails;
@@ -24,8 +26,8 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIE
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
-public class VcnCheckoutActivity extends CheckoutCommonActivity implements AffirmWebChromeClient.Callbacks,
-        VcnCheckoutWebViewClient.Callbacks {
+public class VcnCheckoutActivity extends CheckoutCommonActivity
+        implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
 
     public static final String CREDIT_DETAILS = "credit_details";
 
@@ -55,7 +57,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity implements Affir
     void onAttached() {
         CheckoutCallback checkoutCallback = new CheckoutCallback() {
             @Override
-            public void onError(@NonNull Exception exception) {
+            public void onError(@NonNull AffirmException exception) {
                 AffirmTracker.get().track(VCN_CHECKOUT_CREATION_FAIL, ERROR, null);
                 finishWithError(exception);
             }
@@ -70,13 +72,14 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity implements Affir
             }
         };
 
-        checkoutRequest = new CheckoutRequest(this, checkout, checkoutCallback, CheckoutRequest.CheckoutType.VCN);
+        checkoutRequest = new CheckoutRequest(this, checkout,
+                checkoutCallback, CheckoutRequest.CheckoutType.VCN);
         checkoutRequest.create();
     }
 
     @Override
-    CheckoutResponse executeTask(@NonNull Checkout checkout) throws IOException, APIException,
-            PermissionException, InvalidRequestException {
+    CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
+            PermissionException, InvalidRequestException, ConnectionException {
         return AffirmApiHandler.executeVcnCheckout(checkout);
     }
 

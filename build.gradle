@@ -31,13 +31,4 @@ ext {
     compileSdkVersion = 28
 
     androidxAppCompatVersion = '1.0.2'
-
-    junitVersion = "4.12"
-    robolectricVersion = "4.1"
-    testRunnerVersion = "1.0.2"
-    testEspressoVersion = "3.0.2"
-    okhttpVersion = '3.12.1'
-    gsonVersion = '2.8.0'
-    autoValueGsonVersion = '0.4.6'
-    autoValueParcelVersion = '0.2.5'
 }

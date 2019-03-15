@@ -40,22 +40,8 @@ class CheckoutRequest extends Request {
     }
 
     @Override
-    void create() {
-        requestCreate.create();
-    }
-
-    @Override
     void cancel() {
-        requestCreate.cancel();
-    }
-
-    @Override
-    AsyncTask createTask() {
-        return new CheckoutTask(context, checkout, callback);
-    }
-
-    @Override
-    void cancelTask() {
+        super.cancel();
         switch (this.checkoutType) {
             case REGULAR:
                 AffirmApiHandler.cancelCheckoutCall();
@@ -68,8 +54,13 @@ class CheckoutRequest extends Request {
         }
     }
 
+    @Override
+    AsyncTask createTask() {
+        return new CheckoutTask(context, checkout, callback);
+    }
+
     private static class CheckoutTask extends
-            AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> {
+        AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> {
         @NonNull
         private final Checkout checkout;
         @NonNull
@@ -90,7 +81,7 @@ class CheckoutRequest extends Request {
         protected ResponseWrapper<CheckoutResponse> doInBackground(Void... params) {
             try {
                 CheckoutCommonActivity checkoutBaseActivity =
-                        (CheckoutCommonActivity) mContextRef.get();
+                    (CheckoutCommonActivity) mContextRef.get();
                 CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
                 return new ResponseWrapper<>(checkoutResponse);
             } catch (ConnectionException e) {

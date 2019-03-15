@@ -11,35 +11,36 @@ abstract class Request<T> {
         void cancel();
     }
 
-    abstract void create();
-
-    abstract void cancel();
-
     abstract AsyncTask<Void, Void, T> createTask();
 
-    abstract void cancelTask();
-
-    private AsyncTask<Void, Void, T> task;
+    private AsyncTask<Void, Void, T> mTask;
 
     static boolean isRequestCancelled = false;
 
-    final RequestCreate requestCreate = new RequestCreate() {
+    private final RequestCreate mRequestCreate = new RequestCreate() {
 
         @Override
         public void create() {
             isRequestCancelled = false;
-            task = createTask();
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            mTask = createTask();
+            mTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
         @Override
         public void cancel() {
-            if (task != null && !task.isCancelled()) {
-                task.cancel(true);
-                task = null;
+            if (mTask != null && !mTask.isCancelled()) {
+                mTask.cancel(true);
+                mTask = null;
             }
             isRequestCancelled = true;
-            cancelTask();
         }
     };
+
+    void create() {
+        mRequestCreate.create();
+    }
+
+    void cancel() {
+        mRequestCreate.cancel();
+    }
 }

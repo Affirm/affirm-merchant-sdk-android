@@ -31,23 +31,14 @@ class PromoRequest extends Request {
     }
 
     @Override
-    void create() {
-        requestCreate.create();
-    }
-
-    @Override
     void cancel() {
-        requestCreate.cancel();
+        super.cancel();
+        AffirmApiHandler.cancelNewPromoCall();
     }
 
     @Override
     AsyncTask createTask() {
         return new PromoTask(promoId, dollarAmount, showCta, callback);
-    }
-
-    @Override
-    void cancelTask() {
-        AffirmApiHandler.cancelNewPromoCall();
     }
 
     private static class PromoTask extends

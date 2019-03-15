@@ -16,23 +16,8 @@ class TrackerRequest extends Request {
     }
 
     @Override
-    void create() {
-        requestCreate.create();
-    }
-
-    @Override
-    void cancel() {
-        requestCreate.cancel();
-    }
-
-    @Override
     AsyncTask createTask() {
         return new TrackerTask(trackingData);
-    }
-
-    @Override
-    void cancelTask() {
-        requestCreate.cancel();
     }
 
     private static class TrackerTask extends AsyncTask<Void, Void, Void> {

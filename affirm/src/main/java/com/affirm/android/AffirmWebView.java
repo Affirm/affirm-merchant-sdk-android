@@ -2,7 +2,9 @@ package com.affirm.android;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 final class AffirmWebView extends WebView {
@@ -24,5 +26,8 @@ final class AffirmWebView extends WebView {
         getSettings().setDomStorageEnabled(true);
         getSettings().setSupportMultipleWindows(true);
         setVerticalScrollBarEnabled(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        }
     }
 }

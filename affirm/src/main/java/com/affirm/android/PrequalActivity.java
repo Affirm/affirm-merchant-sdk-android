@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class PrequalActivity extends AffirmActivity
+public class PrequalActivity extends AffirmActivity
         implements AffirmWebViewClient.Callbacks, PrequalWebViewClient.Callbacks {
 
     private static final String AMOUNT = "AMOUNT";

@@ -20,9 +20,9 @@ import okhttp3.ResponseBody;
 import okhttp3.internal.Util;
 import okio.BufferedSink;
 
-import static com.affirm.android.AffirmPlugins.createTrackingNetworkJsonObj;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
+import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 
 final class AffirmHttpClient {
 
@@ -54,7 +54,7 @@ final class AffirmHttpClient {
 
             boolean responseSuccess = response.isSuccessful();
             if (!responseSuccess && sendTrackEvent) {
-                AffirmTracker.track(NETWORK_ERROR, ERROR,
+                AffirmTracker.get().track(NETWORK_ERROR, ERROR,
                         createTrackingNetworkJsonObj(okHttpRequest, response));
             }
 
@@ -70,7 +70,7 @@ final class AffirmHttpClient {
 
         } catch (IOException e) {
             if (sendTrackEvent) {
-                AffirmTracker.track(NETWORK_ERROR, ERROR,
+                AffirmTracker.get().track(NETWORK_ERROR, ERROR,
                         createTrackingNetworkJsonObj(okHttpRequest, null));
             }
 

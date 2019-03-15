@@ -87,7 +87,7 @@ public final class Affirm {
                                             final float amount,
                                             final boolean showCta,
                                             final PromoCallback promoCallback) {
-        PromoRequest affirmPromoRequest = new PromoRequest();
+        final PromoRequest affirmPromoRequest = new PromoRequest();
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(final String promo, final boolean showPrequal) {
@@ -105,24 +105,18 @@ public final class Affirm {
                 promoCallback.onFailure(throwable);
             }
         };
-        final CancellableRequest request = affirmPromoRequest.getNewPromo(promoId, amount,
-                showCta, callback);
 
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
                 AffirmLog.d("PromoLabel attached to window...");
-                if (request != null) {
-                    request.execute();
-                }
+                affirmPromoRequest.create(promoId, amount, showCta, callback);
             }
 
             @Override
             public void onViewDetachedFromWindow(View v) {
                 AffirmLog.d("PromoLabel detached to window...");
-                if (request != null) {
-                    request.cancel();
-                }
+                affirmPromoRequest.cancel();
             }
         });
 
@@ -143,7 +137,7 @@ public final class Affirm {
                 case RESULT_CANCELED:
                     callbacks.onAffirmCheckoutCancelled();
                     break;
-                case CheckoutBaseActivity.RESULT_ERROR:
+                case CheckoutCommonActivity.RESULT_ERROR:
                     callbacks.onAffirmCheckoutError(
                             data.getStringExtra(CheckoutActivity.CHECKOUT_ERROR));
                     break;
@@ -161,7 +155,7 @@ public final class Affirm {
                 case RESULT_CANCELED:
                     callbacks.onAffirmVcnCheckoutCancelled();
                     break;
-                case CheckoutBaseActivity.RESULT_ERROR:
+                case CheckoutCommonActivity.RESULT_ERROR:
                     callbacks.onAffirmVcnCheckoutError(
                             data.getStringExtra(VcnCheckoutActivity.CHECKOUT_ERROR));
                     break;

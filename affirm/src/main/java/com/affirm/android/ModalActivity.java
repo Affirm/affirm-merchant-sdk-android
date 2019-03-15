@@ -16,7 +16,7 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAI
 import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 
-class ModalActivity extends AffirmActivity
+public class ModalActivity extends AffirmActivity
         implements AffirmWebViewClient.Callbacks {
 
     private static final String MAP_EXTRA = "MAP_EXTRA";
@@ -93,8 +93,12 @@ class ModalActivity extends AffirmActivity
     @Override
     void onAttached() {
         final String html = initialHtml();
-        webView.loadDataWithBaseURL(PROTOCOL + AffirmPlugins.get().baseUrl(), html, "text/html",
-                "utf-8", null);
+        webView.loadDataWithBaseURL(
+                PROTOCOL + AffirmPlugins.get().baseUrl(),
+                html,
+                "text/html",
+                "utf-8",
+                null);
     }
 
     @Override
@@ -124,7 +128,7 @@ class ModalActivity extends AffirmActivity
 
     @Override
     public void onWebViewError(@NonNull Throwable error) {
-        AffirmTracker.track(type.failureEvent, ERROR, null);
+        AffirmTracker.get().track(type.failureEvent, ERROR, null);
         finish();
     }
 }

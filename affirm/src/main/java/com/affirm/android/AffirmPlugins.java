@@ -1,24 +1,17 @@
 package com.affirm.android;
 
-import android.os.Build;
-
 import com.affirm.android.model.MyAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 class AffirmPlugins {
 
@@ -30,7 +23,6 @@ class AffirmPlugins {
     private Gson gson;
 
     private final Object lock = new Object();
-    private final AtomicInteger mLocalLogCounter = new AtomicInteger();
 
     AffirmPlugins(Affirm.Configuration configuration) {
         this.configuration = configuration;
@@ -114,46 +106,13 @@ class AffirmPlugins {
                 clientBuilder.connectTimeout(5, TimeUnit.SECONDS);
                 clientBuilder.readTimeout(30, TimeUnit.SECONDS);
                 clientBuilder.followRedirects(false);
+                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+                loggingInterceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY
+                        : HttpLoggingInterceptor.Level.NONE);
+                clientBuilder.addInterceptor(loggingInterceptor);
                 restClient = AffirmHttpClient.createClient(clientBuilder);
             }
             return restClient;
         }
-    }
-
-    void addTrackingData(@NonNull String eventName,
-                         @NonNull JsonObject data,
-                         @NonNull AffirmTracker.TrackingLevel level) {
-        final long timeStamp = System.currentTimeMillis();
-        // Set the log counter and then increment the logCounter
-        data.addProperty("local_log_counter", mLocalLogCounter.getAndIncrement());
-        data.addProperty("ts", timeStamp);
-        data.addProperty("app_id", "Android SDK");
-        data.addProperty("release", BuildConfig.VERSION_NAME);
-        data.addProperty("android_sdk", Build.VERSION.SDK_INT);
-        data.addProperty("device_name", Build.MODEL);
-        data.addProperty("merchant_key", publicKey());
-        data.addProperty("environment", environmentName().toLowerCase(Locale.getDefault()));
-        data.addProperty("event_name", eventName);
-        data.addProperty("level", level.getLevel());
-    }
-
-    static JsonObject createTrackingNetworkJsonObj(@NonNull Request request,
-                                                   @Nullable Response response) {
-        final JsonObject jsonObject = new JsonObject();
-        final String affirmRequestIDHeader = "X-Affirm-Request-Id";
-        jsonObject.addProperty("url", request.url().toString());
-        jsonObject.addProperty("method", request.method());
-        if (response != null) {
-            final Headers headers = response.headers();
-            jsonObject.addProperty("status_code", response.code());
-            jsonObject.addProperty(affirmRequestIDHeader, headers.get(affirmRequestIDHeader));
-            jsonObject.addProperty("x-amz-cf-id", headers.get("x-amz-cf-id"));
-            jsonObject.addProperty("x-affirm-using-cdn", headers.get("x-affirm-using-cdn"));
-            jsonObject.addProperty("x-cache", headers.get("x-cache"));
-        } else {
-            jsonObject.add("status_code", null);
-            jsonObject.add(affirmRequestIDHeader, null);
-        }
-        return jsonObject;
     }
 }

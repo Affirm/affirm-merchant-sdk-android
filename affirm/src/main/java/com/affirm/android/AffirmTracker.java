@@ -22,7 +22,6 @@ final class AffirmTracker {
         return instance;
     }
 
-    private TrackerRequest trackerRequest = new TrackerRequest();
     private final AtomicInteger localLogCounter = new AtomicInteger();
 
     private AffirmTracker() {
@@ -65,7 +64,7 @@ final class AffirmTracker {
     void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
                @Nullable JsonObject data) {
         final JsonObject trackingData = addTrackingData(event.name, data, level);
-        trackerRequest.create(trackingData);
+        new TrackerRequest(trackingData).create();
     }
 
     private @NonNull

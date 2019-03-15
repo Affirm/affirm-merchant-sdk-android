@@ -60,7 +60,8 @@ public class CheckoutActivity extends CheckoutCommonActivity implements Checkout
             }
         };
 
-        checkoutRequest.create(this, checkout, checkoutCallback);
+        checkoutRequest = new CheckoutRequest(this, checkout, checkoutCallback, CheckoutRequest.CheckoutType.REGULAR);
+        checkoutRequest.create();
     }
 
     @Override

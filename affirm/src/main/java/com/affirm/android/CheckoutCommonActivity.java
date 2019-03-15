@@ -22,7 +22,7 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
 
     static final String CHECKOUT_EXTRA = "checkout_extra";
 
-    CheckoutRequest checkoutRequest = new CheckoutRequest();
+    CheckoutRequest checkoutRequest;
 
     Checkout checkout;
 
@@ -54,7 +54,7 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
 
     @Override
     protected void onDestroy() {
-        checkoutRequest.cancel(checkoutType);
+        checkoutRequest.cancel();
         super.onDestroy();
     }
 

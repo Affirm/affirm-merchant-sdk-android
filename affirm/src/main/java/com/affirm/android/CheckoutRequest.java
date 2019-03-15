@@ -21,56 +21,52 @@ class CheckoutRequest extends Request {
         REGULAR, VCN
     }
 
-    private AsyncTask checkoutTask;
+    @NonNull
+    private Context context;
+    @NonNull
+    private Checkout checkout;
+    @Nullable
+    private CheckoutCallback callback;
+    @NonNull
+    private CheckoutType checkoutType;
 
-    void create(@NonNull Context context, @NonNull Checkout checkout,
-                @Nullable CheckoutCallback callback) {
-        checkoutCreator.create(context, checkout, callback);
+    CheckoutRequest(@NonNull Context context, @NonNull Checkout checkout,
+                    @Nullable CheckoutCallback callback,
+                    @NonNull CheckoutType checkoutType) {
+        this.context = context;
+        this.checkout = checkout;
+        this.callback = callback;
+        this.checkoutType = checkoutType;
     }
 
-    void cancel(@NonNull CheckoutType type) {
-        checkoutCreator.cancel(type);
+    @Override
+    void create() {
+        requestCreate.create();
     }
 
-    interface CheckoutCreator {
-
-        void create(
-                @NonNull final Context context,
-                @NonNull final Checkout checkout,
-                @Nullable final CheckoutCallback callback);
-
-        void cancel(@NonNull CheckoutType type);
+    @Override
+    void cancel() {
+        requestCreate.cancel();
     }
 
-    private final CheckoutCreator checkoutCreator = new CheckoutCreator() {
-        @Override
-        public void create(@NonNull Context context, @NonNull Checkout checkout,
-                           @Nullable CheckoutCallback callback) {
-            isRequestCancelled = false;
-            checkoutTask = new CheckoutTask(context, checkout, callback);
-            executeTask(AsyncTask.THREAD_POOL_EXECUTOR, checkoutTask);
+    @Override
+    AsyncTask createTask() {
+        return new CheckoutTask(context, checkout, callback);
+    }
+
+    @Override
+    void cancelTask() {
+        switch (this.checkoutType) {
+            case REGULAR:
+                AffirmApiHandler.cancelCheckoutCall();
+                break;
+            case VCN:
+                AffirmApiHandler.cancelVcnCheckoutCall();
+                break;
+            default:
+                break;
         }
-
-        @Override
-        public void cancel(@NonNull CheckoutType type) {
-            if (checkoutTask != null && !checkoutTask.isCancelled()) {
-                checkoutTask.cancel(true);
-                checkoutTask = null;
-            }
-
-            isRequestCancelled = true;
-            switch (type) {
-                case REGULAR:
-                    AffirmApiHandler.cancelCheckoutCall();
-                    break;
-                case VCN:
-                    AffirmApiHandler.cancelVcnCheckoutCall();
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
+    }
 
     private static class CheckoutTask extends
             AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> {

@@ -2,21 +2,44 @@ package com.affirm.android;
 
 import android.os.AsyncTask;
 
-import java.util.concurrent.Executor;
+abstract class Request<T> {
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+    interface RequestCreate {
 
-class Request {
+        void create();
+
+        void cancel();
+    }
+
+    abstract void create();
+
+    abstract void cancel();
+
+    abstract AsyncTask<Void, Void, T> createTask();
+
+    abstract void cancelTask();
+
+    private AsyncTask<Void, Void, T> task;
 
     static boolean isRequestCancelled = false;
 
-    void executeTask(@Nullable Executor executor,
-                     @NonNull AsyncTask<Void, Void, ResponseWrapper> task) {
-        if (executor != null) {
-            task.executeOnExecutor(executor);
-        } else {
-            task.execute();
+    final RequestCreate requestCreate = new RequestCreate() {
+
+        @Override
+        public void create() {
+            isRequestCancelled = false;
+            task = createTask();
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
-    }
+
+        @Override
+        public void cancel() {
+            if (task != null && !task.isCancelled()) {
+                task.cancel(true);
+                task = null;
+            }
+            isRequestCancelled = true;
+            cancelTask();
+        }
+    };
 }

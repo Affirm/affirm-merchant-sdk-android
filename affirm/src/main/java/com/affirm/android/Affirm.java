@@ -87,7 +87,6 @@ public final class Affirm {
                                             final float amount,
                                             final boolean showCta,
                                             final PromoCallback promoCallback) {
-        final PromoRequest affirmPromoRequest = new PromoRequest();
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(final String promo, final boolean showPrequal) {
@@ -105,12 +104,12 @@ public final class Affirm {
                 promoCallback.onFailure(throwable);
             }
         };
-
+        final PromoRequest affirmPromoRequest = new PromoRequest(promoId, amount, showCta, callback);
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
                 AffirmLog.d("PromoLabel attached to window...");
-                affirmPromoRequest.create(promoId, amount, showCta, callback);
+                affirmPromoRequest.create();
             }
 
             @Override

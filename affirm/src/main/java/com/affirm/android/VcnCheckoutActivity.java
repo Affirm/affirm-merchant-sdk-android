@@ -70,7 +70,8 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity implements Affir
             }
         };
 
-        checkoutRequest.create(this, checkout, checkoutCallback);
+        checkoutRequest = new CheckoutRequest(this, checkout, checkoutCallback, CheckoutRequest.CheckoutType.VCN);
+        checkoutRequest.create();
     }
 
     @Override

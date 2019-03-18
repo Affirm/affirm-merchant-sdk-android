@@ -66,8 +66,10 @@ Override onActivityResult so that affirm can handle the result.
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    if (Affirm.handleCheckoutData(this, requestCode, resultCode, data)) {
+        return;
+    }
     super.onActivityResult(requestCode, resultCode, data);
-    Affirm.handleAffirmData(this, requestCode, resultCode, data);
 }
 ```
 
@@ -112,8 +114,10 @@ Override onActivityResult so that affirm can handle the result.
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    if (Affirm.handleVcnCheckoutData(this, requestCode, resultCode, data)) {
+        return;
+    }
     super.onActivityResult(requestCode, resultCode, data);
-    Affirm.handleAffirmData(this, requestCode, resultCode, data);
 }
 ```
 

@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks {
+public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks, Affirm.VcnCheckoutCallbacks {
 
     private static final String TAG = "MainActivity";
 
@@ -105,8 +105,15 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (Affirm.handleCheckoutData(this, requestCode, resultCode, data)) {
+            return;
+        }
+
+        if (Affirm.handleVcnCheckoutData(this, requestCode, resultCode, data)) {
+            return;
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
-        Affirm.handleAffirmData(this, requestCode, resultCode, data);
     }
 
     @Override

@@ -11,7 +11,7 @@ import com.affirm.android.Affirm
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks {
+class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCheckoutCallbacks {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -71,8 +71,15 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (Affirm.handleCheckoutData(this, requestCode, resultCode, data)) {
+            return
+        }
+
+        if (Affirm.handleVcnCheckoutData(this, requestCode, resultCode, data)) {
+            return
+        }
+
         super.onActivityResult(requestCode, resultCode, data)
-        Affirm.handleAffirmData(this, requestCode, resultCode, data)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

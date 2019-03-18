@@ -40,7 +40,9 @@ public final class Affirm {
         void onAffirmCheckoutCancelled();
 
         void onAffirmCheckoutSuccess(@NonNull String token);
+    }
 
+    public interface VcnCheckoutCallbacks {
         void onAffirmVcnCheckoutError(@Nullable String message);
 
         void onAffirmVcnCheckoutCancelled();
@@ -143,8 +145,10 @@ public final class Affirm {
         promoLabel.setOnClickListener(onClickListener);
     }
 
-    public static boolean handleAffirmData(CheckoutCallbacks callbacks, int requestCode,
-                                           int resultCode, @Nullable Intent data) {
+    public static boolean handleCheckoutData(@NonNull CheckoutCallbacks callbacks,
+                                             int requestCode,
+                                             int resultCode,
+                                             @Nullable Intent data) {
         if (data == null) {
             return false;
         }
@@ -165,7 +169,19 @@ public final class Affirm {
             }
 
             return true;
-        } else if (requestCode == VCN_CHECKOUT_REQUEST) {
+        }
+
+        return false;
+    }
+
+    public static boolean handleVcnCheckoutData(@NonNull VcnCheckoutCallbacks callbacks,
+                                                int requestCode,
+                                                int resultCode,
+                                                @Nullable Intent data) {
+        if (data == null) {
+            return false;
+        }
+        if (requestCode == VCN_CHECKOUT_REQUEST) {
             switch (resultCode) {
                 case RESULT_OK:
                     callbacks.onAffirmVcnCheckoutSuccess(

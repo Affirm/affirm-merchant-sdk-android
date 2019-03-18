@@ -10,6 +10,8 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 
+import java.lang.ref.WeakReference;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -83,7 +85,7 @@ public final class Affirm {
         ModalActivity.startActivity(context, amount, PRODUCT, modalId);
     }
 
-    public static void writePromoToTextView(@NonNull final Context context,
+    public static void writePromoToTextView(@NonNull Context context,
                                             @NonNull final AffirmPromoLabel promoLabel,
                                             @Nullable final String promoId,
                                             final float amount,
@@ -109,7 +111,6 @@ public final class Affirm {
 
         final PromoRequest affirmPromoRequest =
                 new PromoRequest(promoId, amount, showCta, callback);
-
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
@@ -124,9 +125,14 @@ public final class Affirm {
             }
         });
 
-        View.OnClickListener onClickListener = new View.OnClickListener() {
+        final WeakReference contextRef = new WeakReference<>(context);
+        final View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Context context = (Context) contextRef.get();
+                if (context == null) {
+                    return;
+                }
                 boolean showPrequal = (boolean) v.getTag();
                 if (showPrequal) {
                     Affirm.launchPrequal(context, amount, promoId);

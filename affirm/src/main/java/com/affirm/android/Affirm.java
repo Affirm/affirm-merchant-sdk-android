@@ -75,13 +75,13 @@ public final class Affirm {
         VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
     }
 
-    static void launchPrequal(@NonNull Context context, float amount,
-                              @Nullable String promoId) {
+    private static void launchPrequal(@NonNull Context context, float amount,
+                                      @Nullable String promoId) {
         PrequalActivity.startActivity(context, amount, promoId);
     }
 
-    static void launchProductModal(@NonNull Context context, float amount,
-                                   @Nullable String modalId) {
+    private static void launchProductModal(@NonNull Context context, float amount,
+                                           @Nullable String modalId) {
         ModalActivity.startActivity(context, amount, PRODUCT, modalId);
     }
 
@@ -114,14 +114,13 @@ public final class Affirm {
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
-                AffirmLog.d("PromoLabel attached to window...");
                 affirmPromoRequest.create();
             }
 
             @Override
             public void onViewDetachedFromWindow(View v) {
-                AffirmLog.d("PromoLabel detached to window...");
                 affirmPromoRequest.cancel();
+                promoLabel.removeOnAttachStateChangeListener(this);
             }
         });
 
@@ -135,9 +134,9 @@ public final class Affirm {
                 }
                 boolean showPrequal = (boolean) v.getTag();
                 if (showPrequal) {
-                    Affirm.launchPrequal(context, amount, promoId);
+                    launchPrequal(context, amount, promoId);
                 } else {
-                    Affirm.launchProductModal(context, amount, null);
+                    launchProductModal(context, amount, null);
                 }
             }
         };

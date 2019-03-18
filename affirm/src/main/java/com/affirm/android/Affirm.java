@@ -87,22 +87,26 @@ public final class Affirm {
                                             @Nullable final String promoId,
                                             final float amount,
                                             final boolean showCta,
-                                            final PromoCallback promoCallback) {
+                                            @Nullable final PromoCallback promoCallback) {
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(final String promo, final boolean showPrequal) {
+            public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
                 promoLabel.post(new Runnable() {
                     @Override
                     public void run() {
                         promoLabel.setLabel(promo, showPrequal);
                     }
                 });
-                promoCallback.onSuccess(promo);
+                if (promoCallback != null) {
+                    promoCallback.onSuccess(promo);
+                }
             }
 
             @Override
-            public void onFailure(AffirmException exception) {
-                promoCallback.onFailure(exception);
+            public void onFailure(@NonNull AffirmException exception) {
+                if (promoCallback != null) {
+                    promoCallback.onFailure(exception);
+                }
             }
         };
         final PromoRequest affirmPromoRequest =

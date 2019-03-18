@@ -2,8 +2,10 @@ package com.affirm.android;
 
 import com.affirm.android.exception.AffirmException;
 
-interface SpannablePromoCallback {
-    void onPromoWritten(final String promo, final boolean showPrequal);
+import androidx.annotation.NonNull;
 
-    void onFailure(AffirmException exception);
+interface SpannablePromoCallback {
+    void onPromoWritten(@NonNull final String promo, final boolean showPrequal);
+
+    void onFailure(@NonNull AffirmException exception);
 }

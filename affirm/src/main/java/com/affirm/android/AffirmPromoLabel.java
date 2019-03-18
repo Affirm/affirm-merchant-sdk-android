@@ -29,6 +29,7 @@ public class AffirmPromoLabel extends AppCompatTextView {
     private Paint mPaint;
     private AffirmLogoType mAffirmLogoType;
     private AffirmColor mAffirmColor;
+    private boolean mShowPrequal;
 
     public AffirmPromoLabel(Context context) {
         this(context, null);
@@ -67,9 +68,11 @@ public class AffirmPromoLabel extends AppCompatTextView {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean showPrequal = (boolean) v.getTag();
                 Context context = getContext();
-                if (showPrequal) {
+                if (context == null) {
+                    return;
+                }
+                if (mShowPrequal) {
                     Affirm.launchPrequal(context, amount, promoId);
                 } else {
                     Affirm.launchProductModal(context, amount, null);
@@ -78,15 +81,9 @@ public class AffirmPromoLabel extends AppCompatTextView {
         });
     }
 
-    public void setLabel(@NonNull String text) {
-        setLabel(text, null);
-    }
-
-    protected void setLabel(@NonNull String text, @Nullable Object tag) {
+    protected void setLabel(@NonNull String text, boolean showPrequal) {
         setText(updateSpan(text));
-        if (tag != null) {
-            setTag(tag);
-        }
+        this.mShowPrequal = showPrequal;
     }
 
     public void setAffirmLogoType(AffirmLogoType affirmLogoType) {

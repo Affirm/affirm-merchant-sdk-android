@@ -5,6 +5,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.affirm.android.exception.ConnectionException;
+
 import androidx.annotation.NonNull;
 
 public abstract class AffirmWebViewClient extends WebViewClient {
@@ -35,11 +37,11 @@ public abstract class AffirmWebViewClient extends WebViewClient {
 
     @Override
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-        callbacks.onWebViewError(new Exception(error.toString()));
+        callbacks.onWebViewError(new ConnectionException(error.toString()));
     }
 
     public interface Callbacks {
-        void onWebViewError(@NonNull Throwable error);
+        void onWebViewError(@NonNull ConnectionException error);
 
         void onWebViewCancellation();
     }

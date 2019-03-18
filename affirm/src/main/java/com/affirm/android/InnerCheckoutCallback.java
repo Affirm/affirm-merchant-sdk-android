@@ -5,7 +5,7 @@ import com.affirm.android.model.CheckoutResponse;
 
 import androidx.annotation.NonNull;
 
-interface CheckoutCallback {
+interface InnerCheckoutCallback {
 
     void onError(@NonNull AffirmException exception);
 

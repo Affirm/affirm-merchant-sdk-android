@@ -74,7 +74,9 @@ public final class AffirmUtils {
             activity.getActionBar().show();
             activity.getActionBar().setDisplayShowTitleEnabled(false);
             activity.getActionBar().setDisplayHomeAsUpEnabled(true);
-//            activity.getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                activity.getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close);
+            }
         } else if (activity.getSupportActionBar() != null) {
             activity.getSupportActionBar().show();
             activity.getSupportActionBar().setDisplayShowTitleEnabled(false);

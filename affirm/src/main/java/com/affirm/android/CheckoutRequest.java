@@ -26,12 +26,12 @@ class CheckoutRequest extends Request {
     @NonNull
     private Checkout checkout;
     @Nullable
-    private CheckoutCallback callback;
+    private InnerCheckoutCallback callback;
     @NonNull
     private CheckoutType checkoutType;
 
     CheckoutRequest(@NonNull Context context, @NonNull Checkout checkout,
-                    @Nullable CheckoutCallback callback,
+                    @Nullable InnerCheckoutCallback callback,
                     @NonNull CheckoutType checkoutType) {
         this.context = context;
         this.checkout = checkout;
@@ -64,14 +64,14 @@ class CheckoutRequest extends Request {
         @NonNull
         private final Checkout checkout;
         @NonNull
-        private final WeakReference<CheckoutCallback> mCallbackRef;
+        private final WeakReference<InnerCheckoutCallback> mCallbackRef;
 
         @NonNull
         private final WeakReference<Context> mContextRef;
 
         CheckoutTask(@NonNull Context context,
                      @NonNull final Checkout checkout,
-                     @Nullable final CheckoutCallback callback) {
+                     @Nullable final InnerCheckoutCallback callback) {
             this.mContextRef = new WeakReference<>(context);
             this.checkout = checkout;
             this.mCallbackRef = new WeakReference<>(callback);
@@ -97,7 +97,7 @@ class CheckoutRequest extends Request {
 
         @Override
         protected void onPostExecute(ResponseWrapper<CheckoutResponse> result) {
-            final CheckoutCallback checkoutCallback = mCallbackRef.get();
+            final InnerCheckoutCallback checkoutCallback = mCallbackRef.get();
             if (checkoutCallback != null && !isRequestCancelled) {
                 if (result.source != null) {
                     checkoutCallback.onSuccess(result.source);

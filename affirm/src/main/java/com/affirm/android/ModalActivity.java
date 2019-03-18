@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.affirm.android.exception.ConnectionException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -127,7 +129,7 @@ public class ModalActivity extends AffirmActivity
     }
 
     @Override
-    public void onWebViewError(@NonNull Throwable error) {
+    public void onWebViewError(@NonNull ConnectionException error) {
         AffirmTracker.get().track(type.failureEvent, ERROR, null);
         finish();
     }

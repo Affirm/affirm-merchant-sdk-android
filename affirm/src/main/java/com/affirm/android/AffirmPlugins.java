@@ -21,8 +21,6 @@ class AffirmPlugins {
     private AffirmHttpClient restClient;
     private Gson gson;
 
-    private final Object lock = new Object();
-
     AffirmPlugins(Affirm.Configuration configuration) {
         this.configuration = configuration;
     }
@@ -83,31 +81,29 @@ class AffirmPlugins {
         return gson;
     }
 
-    AffirmHttpClient restClient() {
-        synchronized (lock) {
-            if (restClient == null) {
-                OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-                //add it as the first interceptor
-                clientBuilder.interceptors().add(0, new Interceptor() {
-                    @Override
-                    public Response intercept(Chain chain) throws IOException {
-                        final Request request = chain.request()
-                                .newBuilder()
-                                .addHeader("Accept", "application/json")
-                                .addHeader("Content-Type", "application/json")
-                                .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
-                                .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
-                                .build();
+    synchronized AffirmHttpClient restClient() {
+        if (restClient == null) {
+            OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+            //add it as the first interceptor
+            clientBuilder.interceptors().add(0, new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    final Request request = chain.request()
+                            .newBuilder()
+                            .addHeader("Accept", "application/json")
+                            .addHeader("Content-Type", "application/json")
+                            .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
+                            .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
+                            .build();
 
-                        return chain.proceed(request);
-                    }
-                });
-                clientBuilder.connectTimeout(5, TimeUnit.SECONDS);
-                clientBuilder.readTimeout(30, TimeUnit.SECONDS);
-                clientBuilder.followRedirects(false);
-                restClient = AffirmHttpClient.createClient(clientBuilder);
-            }
-            return restClient;
+                    return chain.proceed(request);
+                }
+            });
+            clientBuilder.connectTimeout(5, TimeUnit.SECONDS);
+            clientBuilder.readTimeout(30, TimeUnit.SECONDS);
+            clientBuilder.followRedirects(false);
+            restClient = AffirmHttpClient.createClient(clientBuilder);
         }
+        return restClient;
     }
 }

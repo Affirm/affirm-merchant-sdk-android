@@ -4,6 +4,8 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 
+import com.affirm.android.exception.ConnectionException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -53,6 +55,6 @@ public class CheckoutWebViewClientTest {
         when(error.toString()).thenReturn("error msg");
 
         affirmWebViewClient.onReceivedError(webview, resourceRequest, error);
-        Mockito.verify(callbacks, never()).onWebViewError(new Exception("error msg"));
+        Mockito.verify(callbacks, never()).onWebViewError(new ConnectionException("error msg"));
     }
 }

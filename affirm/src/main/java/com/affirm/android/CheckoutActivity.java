@@ -47,7 +47,7 @@ public class CheckoutActivity extends CheckoutCommonActivity
 
     @Override
     void onAttached() {
-        CheckoutCallback checkoutCallback = new CheckoutCallback() {
+        InnerCheckoutCallback checkoutCallback = new InnerCheckoutCallback() {
             @Override
             public void onError(@NonNull AffirmException exception) {
                 AffirmTracker.get().track(CHECKOUT_CREATION_FAIL, ERROR, null);
@@ -73,7 +73,7 @@ public class CheckoutActivity extends CheckoutCommonActivity
     }
 
     @Override
-    public void onWebViewError(@NonNull Throwable error) {
+    public void onWebViewError(@NonNull ConnectionException error) {
         AffirmTracker.get().track(CHECKOUT_WEBVIEW_FAIL, ERROR, null);
         finishWithError(error);
     }

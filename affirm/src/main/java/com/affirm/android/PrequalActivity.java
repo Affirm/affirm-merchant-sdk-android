@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.affirm.android.exception.ConnectionException;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -76,7 +78,7 @@ public class PrequalActivity extends AffirmActivity
     }
 
     @Override
-    public void onWebViewError(@NonNull Throwable error) {
+    public void onWebViewError(@NonNull ConnectionException error) {
         finish();
     }
 

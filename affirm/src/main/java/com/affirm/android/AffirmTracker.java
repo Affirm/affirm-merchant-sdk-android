@@ -98,6 +98,7 @@ final class AffirmTracker {
         data.addProperty("level", level.getLevel());
     }
 
+    @NonNull
     static JsonObject createTrackingNetworkJsonObj(@NonNull Request request,
                                                    @Nullable Response response) {
         final JsonObject jsonObject = new JsonObject();

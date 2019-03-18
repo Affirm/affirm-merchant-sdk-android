@@ -83,7 +83,8 @@ public final class Affirm {
         ModalActivity.startActivity(context, amount, PRODUCT, modalId);
     }
 
-    public static void writePromoToTextView(@NonNull final AffirmPromoLabel promoLabel,
+    public static void writePromoToTextView(@NonNull final Context context,
+                                            @NonNull final AffirmPromoLabel promoLabel,
                                             @Nullable final String promoId,
                                             final float amount,
                                             final boolean showCta,
@@ -91,12 +92,8 @@ public final class Affirm {
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
-                promoLabel.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        promoLabel.setLabel(promo, showPrequal);
-                    }
-                });
+                promoLabel.setTag(showPrequal);
+                promoLabel.setLabel(promo);
                 if (promoCallback != null) {
                     promoCallback.onSuccess(promo);
                 }
@@ -109,8 +106,10 @@ public final class Affirm {
                 }
             }
         };
+
         final PromoRequest affirmPromoRequest =
                 new PromoRequest(promoId, amount, showCta, callback);
+
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
@@ -125,7 +124,18 @@ public final class Affirm {
             }
         });
 
-        promoLabel.setOnClickListener(promoId, amount);
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean showPrequal = (boolean) v.getTag();
+                if (showPrequal) {
+                    Affirm.launchPrequal(context, amount, promoId);
+                } else {
+                    Affirm.launchProductModal(context, amount, null);
+                }
+            }
+        };
+        promoLabel.setOnClickListener(onClickListener);
     }
 
     public static boolean handleAffirmData(CheckoutCallbacks callbacks, int requestCode,

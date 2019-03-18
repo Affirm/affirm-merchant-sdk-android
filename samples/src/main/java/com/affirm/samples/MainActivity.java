@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         });
 
         AffirmPromoLabel label = findViewById(R.id.affirm_promo_label);
-        Affirm.writePromoToTextView(label, null, 1100, true, new Affirm.PromoCallback() {
+        Affirm.writePromoToTextView(this, label, null, 1100, true, new Affirm.PromoCallback() {
             @Override
             public void onSuccess(String promo) {
 
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                         Toast.LENGTH_LONG).show();
             }
         });
+
     }
 
     private Checkout checkoutModel() {

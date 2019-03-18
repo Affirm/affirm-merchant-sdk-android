@@ -12,7 +12,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.util.AttributeSet;
-import android.view.View;
 
 import java.util.Locale;
 
@@ -29,7 +28,6 @@ public class AffirmPromoLabel extends AppCompatTextView {
     private Paint mPaint;
     private AffirmLogoType mAffirmLogoType;
     private AffirmColor mAffirmColor;
-    private boolean mShowPrequal;
 
     public AffirmPromoLabel(Context context) {
         this(context, null);
@@ -63,27 +61,8 @@ public class AffirmPromoLabel extends AppCompatTextView {
         mPaint.setStyle(Paint.Style.FILL);
     }
 
-    protected void setOnClickListener(@Nullable final String promoId,
-                                      final float amount) {
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Context context = getContext();
-                if (context == null) {
-                    return;
-                }
-                if (mShowPrequal) {
-                    Affirm.launchPrequal(context, amount, promoId);
-                } else {
-                    Affirm.launchProductModal(context, amount, null);
-                }
-            }
-        });
-    }
-
-    protected void setLabel(@NonNull String text, boolean showPrequal) {
+    protected void setLabel(@NonNull String text) {
         setText(updateSpan(text));
-        this.mShowPrequal = showPrequal;
     }
 
     public void setAffirmLogoType(AffirmLogoType affirmLogoType) {

@@ -25,7 +25,7 @@ class MainActivityInKotlin : AppCompatActivity(), Affirm.CheckoutCallbacks {
             Affirm.launchCheckout(this,checkoutModel())
         }
         vcn_checkout.setOnClickListener { Affirm.launchVcnCheckout(this,checkoutModel()) }
-        Affirm.writePromoToTextView(affirm_promo_label,null,1100f,true,object :Affirm.PromoCallback{
+        Affirm.writePromoToTextView(this, affirm_promo_label,null,1100f,true,object :Affirm.PromoCallback{
 
             override fun onSuccess(promo: String?) {
 

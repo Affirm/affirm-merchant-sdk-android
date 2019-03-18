@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'pmd'
 apply plugin: 'findbugs'
 apply plugin: 'checkstyle'
+apply from: 'maven-push.gradle'
 
 ext {
     BUILD_TOOLS_VERSION = "28.0.3"

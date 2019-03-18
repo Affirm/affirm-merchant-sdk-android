@@ -41,11 +41,11 @@ android {
     }
 
     lintOptions {
-        disable 'HardcoedText', 'ContentDescription'
+        abortOnError false
     }
 
     lintOptions {
-        abortOnError false
+        disable 'ContentDescription'
     }
 }
 

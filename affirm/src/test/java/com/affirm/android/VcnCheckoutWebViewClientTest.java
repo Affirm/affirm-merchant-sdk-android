@@ -4,6 +4,7 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 
+import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.CardDetails;
 import com.google.gson.Gson;
 
@@ -77,6 +78,6 @@ public class VcnCheckoutWebViewClientTest {
         when(error.toString()).thenReturn("error msg");
 
         affirmWebViewClient.onReceivedError(webview, resourceRequest, error);
-        Mockito.verify(callbacks, never()).onWebViewError(new Exception("error msg"));
+        Mockito.verify(callbacks, never()).onWebViewError(new ConnectionException("error msg"));
     }
 }

@@ -1,4 +1,4 @@
-package com.affirm.samples
+package com.affirm.sampleskt
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,10 +11,10 @@ import com.affirm.android.Affirm
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivityInKotlin : AppCompatActivity(), Affirm.CheckoutCallbacks {
+class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks {
 
     companion object {
-        private const val TAG = "MainActivityInKotlin"
+        private const val TAG = "MainActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,17 +22,18 @@ class MainActivityInKotlin : AppCompatActivity(), Affirm.CheckoutCallbacks {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         checkbox.setOnClickListener {
-            Affirm.launchCheckout(this,checkoutModel())
+            Affirm.launchCheckout(this, checkoutModel())
         }
-        vcn_checkout.setOnClickListener { Affirm.launchVcnCheckout(this,checkoutModel()) }
-        Affirm.writePromoToTextView(this, affirm_promo_label,null,1100f,true,object :Affirm.PromoCallback{
+        vcn_checkout.setOnClickListener { Affirm.launchVcnCheckout(this, checkoutModel()) }
+        Affirm.writePromoToTextView(this, affirm_promo_label, null, 1100f, true, object : Affirm.PromoCallback {
 
             override fun onSuccess(promo: String?) {
 
             }
+
             override fun onFailure(throwable: Throwable?) {
-                Log.e(TAG,"As low as label failed...", throwable)
-                Toast.makeText(this@MainActivityInKotlin, "As low as label : ${throwable?.message}",Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "As low as label failed...", throwable)
+                Toast.makeText(this@MainActivity, "As low as label : ${throwable?.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -71,12 +72,12 @@ class MainActivityInKotlin : AppCompatActivity(), Affirm.CheckoutCallbacks {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Affirm.handleAffirmData(this,requestCode, resultCode, data)
+        Affirm.handleAffirmData(this, requestCode, resultCode, data)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main,menu)
+        menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
@@ -84,7 +85,7 @@ class MainActivityInKotlin : AppCompatActivity(), Affirm.CheckoutCallbacks {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        val id = item?.itemId?:0
+        val id = item?.itemId ?: 0
         //noinspection SimplifiableIfStatement
         return if (id == R.id.action_settings) true else super.onOptionsItemSelected(item)
     }

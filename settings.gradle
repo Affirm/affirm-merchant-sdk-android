@@ -1,1 +1,1 @@
-include ':samples', ':affirm'
+include ':samples-java', ':affirm', ':samples-kotlin'

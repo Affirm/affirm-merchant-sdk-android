@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Affirm Samples Java</string>
-    <string name="action_settings">Settings</string>
     <string name="checkout">Checkout</string>
     <string name="vcn_checkout">VCN Checkout</string>
 </resources>

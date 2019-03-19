@@ -81,7 +81,6 @@ public class AffirmPromoLabel extends AppCompatTextView {
 
     private SpannableString spannableFromEditText(@NonNull String template, float textSize,
                                                   @NonNull Typeface typeface) {
-
         Resources resources = getResources();
 
         Drawable logoDrawable = null;
@@ -89,7 +88,7 @@ public class AffirmPromoLabel extends AppCompatTextView {
             logoDrawable = resources.getDrawable(affirmLogoType.getDrawableRes());
         }
 
-        int color = resources.getColor(affirmColor.getColorRes());
+        final int color = resources.getColor(affirmColor.getColorRes());
 
         return getSpannable(template, textSize, logoDrawable, typeface, color);
     }

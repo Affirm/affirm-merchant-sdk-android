@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    // - Affirm.CheckoutCallbacks
     override fun onAffirmCheckoutError(message: String?) {
         Toast.makeText(this, "Checkout Error: $message", Toast.LENGTH_LONG).show()
     }
@@ -85,6 +86,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         Toast.makeText(this, "Checkout token: $token", Toast.LENGTH_LONG).show()
     }
 
+    // - Affirm.VcnCheckoutCallbacks
     override fun onAffirmVcnCheckoutError(message: String?) {
         Toast.makeText(this, "Vcn Checkout Error: $message", Toast.LENGTH_LONG).show()
     }

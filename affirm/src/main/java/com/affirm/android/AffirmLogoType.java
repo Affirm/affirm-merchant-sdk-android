@@ -16,7 +16,7 @@ enum AffirmLogoType {
     }
 
     protected static AffirmLogoType getAffirmLogoType(int ordinal) {
-        AffirmLogoType[] types = values();
+        final AffirmLogoType[] types = values();
         for (AffirmLogoType type : types) {
             if (type.mOrdinal == ordinal) {
                 return type;

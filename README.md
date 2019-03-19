@@ -21,14 +21,14 @@ Start by initialize Affirm SDK.
 Affirm.initialize(new Affirm.Configuration.Builder()
         .setEnvironment(Affirm.Environment.SANDBOX)
         .setPublicKey("Y8CQXFF044903JC0")
-        .setName("")
+        .setName(null)
         .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
         .build()
 ```
 
-### Promo Message & Prequal
+### Promo Message & Prequal Flow
 ```java
-Affirm.writePromoToTextView(this, label, null, 1100, true, new Affirm.PromoCallback() {
+Affirm.writePromo(this, label, null, 1100, true, new Affirm.PromoCallback() {
     @Override
     public void onSuccess(String promo) {
 
@@ -43,7 +43,7 @@ Affirm.writePromoToTextView(this, label, null, 1100, true, new Affirm.PromoCallb
 });
 ```
 
-### Checkout 
+### Checkout Flow
 When you are ready to checkout with affirm create a checkout object
 and launch the affirm checkout.
 
@@ -58,7 +58,7 @@ final Checkout checkout = Checkout.builder()
         .setTotal(1100f)
         .build();
 
-Affirm.launchCheckout(this, checkout);
+Affirm.startCheckout(this, checkout);
 ```
 
 Override onActivityResult so that affirm can handle the result.
@@ -92,7 +92,7 @@ public void onAffirmCheckoutError(String message) {
 }
 ```
 
-### VCN Checkout
+### VCN Checkout Flow
 When you are ready to VCN checkout with affirm create a checkout object
 and launch the affirm VCN checkout.
 
@@ -106,7 +106,7 @@ final Checkout checkout = Checkout.builder()
         .setTotal(1100f)
         .build();
 
-Affirm.launchVcnCheckout(this, checkout);
+Affirm.startVcnCheckout(this, checkout);
 ```
 
 Override onActivityResult so that affirm can handle the result.

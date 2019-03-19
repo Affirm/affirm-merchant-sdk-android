@@ -59,8 +59,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
             }
         });
 
-        AffirmPromoLabel label = findViewById(R.id.promo);
-        Affirm.writePromo(this, label, null, 1100, true, new Affirm.PromoCallback() {
+        Affirm.writePromo(this, (AffirmPromoLabel) findViewById(R.id.promo), null, 1100, true, new Affirm.PromoCallback() {
             @Override
             public void onFailure(Throwable throwable) {
                 Log.e(TAG, "As low as label failed...", throwable);
@@ -120,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    // - Affirm.CheckoutCallbacks
     @Override
     public void onAffirmCheckoutSuccess(@NonNull String token) {
         Toast.makeText(this, "Checkout token: " + token, Toast.LENGTH_LONG).show();
@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         Toast.makeText(this, "Checkout Error: " + message, Toast.LENGTH_LONG).show();
     }
 
+    // - Affirm.VcnCheckoutCallbacks
     @Override
     public void onAffirmVcnCheckoutCancelled() {
         Toast.makeText(this, "Vcn Checkout Cancelled", Toast.LENGTH_LONG).show();

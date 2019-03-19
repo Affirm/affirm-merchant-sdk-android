@@ -42,7 +42,8 @@ class VcnCheckoutActivity extends CheckoutCommonActivity
     @Override
     void initViews() {
         AffirmUtils.debuggableWebView(this);
-        webView.setWebViewClient(new VcnCheckoutWebViewClient(this));
+        webView.setWebViewClient(
+                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
         clearCookies();
     }

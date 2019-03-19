@@ -1,7 +1,6 @@
 package com.affirm.android;
 
 import android.os.Build;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -18,6 +17,9 @@ import okhttp3.Response;
 final class AffirmTracker {
 
     private static final AtomicInteger mLocalLogCounter = new AtomicInteger();
+
+    private AffirmTracker() {
+    }
 
     enum TrackingEvent {
         CHECKOUT_CREATION_FAIL("Checkout creation failed"),

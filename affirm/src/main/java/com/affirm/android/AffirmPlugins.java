@@ -19,7 +19,6 @@ class AffirmPlugins {
     private static AffirmPlugins mInstance;
     private final Affirm.Configuration mConfiguration;
 
-    private AffirmTracker mAffirmTracker;
     private AffirmHttpClient mRestClient;
     private Gson mGson;
 

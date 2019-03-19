@@ -9,7 +9,7 @@ import com.affirm.android.exception.ConnectionException;
 
 import androidx.annotation.NonNull;
 
-abstract class AffirmWebViewClient extends WebViewClient {
+public abstract class AffirmWebViewClient extends WebViewClient {
     public static final String AFFIRM_CONFIRMATION_URL = "affirm://checkout/confirmed";
     public static final String AFFIRM_CANCELLATION_URL = "affirm://checkout/cancelled";
 

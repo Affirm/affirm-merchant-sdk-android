@@ -12,10 +12,12 @@ import androidx.annotation.NonNull;
 
 final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     private final Callbacks mCallbacks;
+    private final Gson mGson;
 
-    VcnCheckoutWebViewClient(@NonNull Callbacks callbacks) {
+    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull Callbacks callbacks) {
         super(callbacks);
         mCallbacks = callbacks;
+        mGson = gson;
     }
 
     @Override
@@ -24,8 +26,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
             final String encodedString = url.split("data=")[1];
             try {
                 final String json = URLDecoder.decode(encodedString, "UTF-8");
-                Gson gson = AffirmPlugins.get().gson();
-                final CardDetails cardDetails = gson.fromJson(json, CardDetails.class);
+                final CardDetails cardDetails = mGson.fromJson(json, CardDetails.class);
                 mCallbacks.onWebViewConfirmation(cardDetails);
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);

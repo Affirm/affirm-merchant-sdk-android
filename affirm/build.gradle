@@ -45,7 +45,7 @@ android {
     }
 
     lintOptions {
-        disable 'ContentDescription'
+        disable 'ContentDescription', 'Instantiatable'
     }
 }
 

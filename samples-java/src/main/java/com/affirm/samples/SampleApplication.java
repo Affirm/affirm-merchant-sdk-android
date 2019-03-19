@@ -16,7 +16,7 @@ public class SampleApplication extends Application {
         Affirm.initialize(new Affirm.Configuration.Builder()
                 .setEnvironment(Affirm.Environment.SANDBOX)
                 .setPublicKey("Y8CQXFF044903JC0")
-                .setName("")
+                .setName(null)
                 .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
                 .build()
         );

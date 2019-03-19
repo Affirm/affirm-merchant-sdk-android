@@ -16,16 +16,7 @@ import okhttp3.Response;
 
 final class AffirmTracker {
 
-    private static AffirmTracker instance = new AffirmTracker();
-
-    public static AffirmTracker get() {
-        return instance;
-    }
-
     private final AtomicInteger localLogCounter = new AtomicInteger();
-
-    private AffirmTracker() {
-    }
 
     enum TrackingEvent {
         CHECKOUT_CREATION_FAIL("Checkout creation failed"),
@@ -67,10 +58,10 @@ final class AffirmTracker {
         new TrackerRequest(trackingData).create();
     }
 
-    private @NonNull
-    JsonObject addTrackingData(@NonNull String eventName,
-                               @Nullable JsonObject eventData,
-                               @NonNull TrackingLevel level) {
+    @NonNull
+    private JsonObject addTrackingData(@NonNull String eventName,
+                                       @Nullable JsonObject eventData,
+                                       @NonNull TrackingLevel level) {
 
         final Gson gson = new Gson();
         final JsonObject data = eventData == null ? new JsonObject()

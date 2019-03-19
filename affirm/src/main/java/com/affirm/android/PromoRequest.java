@@ -82,9 +82,9 @@ class PromoRequest extends Request {
             final SpannablePromoCallback callback = mCallbackRef.get();
             if (callback != null && !isRequestCancelled) {
                 if (result.source != null) {
-                    boolean showPrequal =
+                    final boolean showPrequal =
                             !result.source.promo().promoConfig().promoStyle().equals("fast");
-                    String promo = result.source.promo().ala();
+                    final String promo = result.source.promo().ala();
                     callback.onPromoWritten(promo, showPrequal);
                 } else if (result.error != null) {
                     AffirmLog.e("Get new promo failed...", result.error);

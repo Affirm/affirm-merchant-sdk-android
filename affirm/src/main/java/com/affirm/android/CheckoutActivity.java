@@ -50,13 +50,13 @@ public class CheckoutActivity extends CheckoutCommonActivity
         InnerCheckoutCallback checkoutCallback = new InnerCheckoutCallback() {
             @Override
             public void onError(@NonNull AffirmException exception) {
-                AffirmTracker.get().track(CHECKOUT_CREATION_FAIL, ERROR, null);
+                AffirmPlugins.get().tracker().track(CHECKOUT_CREATION_FAIL, ERROR, null);
                 finishWithError(exception);
             }
 
             @Override
             public void onSuccess(@NonNull CheckoutResponse response) {
-                AffirmTracker.get().track(CHECKOUT_CREATION_SUCCESS, INFO, null);
+                AffirmPlugins.get().tracker().track(CHECKOUT_CREATION_SUCCESS, INFO, null);
                 webView.loadUrl(response.redirectUrl());
             }
         };
@@ -74,13 +74,13 @@ public class CheckoutActivity extends CheckoutCommonActivity
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmTracker.get().track(CHECKOUT_WEBVIEW_FAIL, ERROR, null);
+        AffirmPlugins.get().tracker().track(CHECKOUT_WEBVIEW_FAIL, ERROR, null);
         finishWithError(error);
     }
 
     @Override
     public void onWebViewConfirmation(@NonNull String token) {
-        AffirmTracker.get().track(CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
+        AffirmPlugins.get().tracker().track(CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
 
         final Intent intent = new Intent();
         intent.putExtra(CHECKOUT_TOKEN, token);

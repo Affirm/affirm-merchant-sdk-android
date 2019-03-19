@@ -58,13 +58,13 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
         InnerCheckoutCallback checkoutCallback = new InnerCheckoutCallback() {
             @Override
             public void onError(@NonNull AffirmException exception) {
-                AffirmTracker.get().track(VCN_CHECKOUT_CREATION_FAIL, ERROR, null);
+                AffirmPlugins.get().tracker().track(VCN_CHECKOUT_CREATION_FAIL, ERROR, null);
                 finishWithError(exception);
             }
 
             @Override
             public void onSuccess(@NonNull CheckoutResponse response) {
-                AffirmTracker.get().track(VCN_CHECKOUT_CREATION_SUCCESS, INFO, null);
+                AffirmPlugins.get().tracker().track(VCN_CHECKOUT_CREATION_SUCCESS, INFO, null);
                 final String html = initialHtml(response);
                 final Uri uri = Uri.parse(response.redirectUrl());
                 webView.loadDataWithBaseURL("https://" + uri.getHost(), html,
@@ -104,7 +104,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
 
     @Override
     public void onWebViewConfirmation(@NonNull CardDetails cardDetails) {
-        AffirmTracker.get().track(VCN_CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
+        AffirmPlugins.get().tracker().track(VCN_CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
 
         final Intent intent = new Intent();
         intent.putExtra(CREDIT_DETAILS, cardDetails);
@@ -114,7 +114,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmTracker.get().track(VCN_CHECKOUT_WEBVIEW_FAIL, ERROR, null);
+        AffirmPlugins.get().tracker().track(VCN_CHECKOUT_WEBVIEW_FAIL, ERROR, null);
 
         finishWithError(error);
     }

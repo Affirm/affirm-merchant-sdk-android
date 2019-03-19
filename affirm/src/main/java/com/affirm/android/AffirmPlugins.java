@@ -20,6 +20,7 @@ class AffirmPlugins {
 
     private AffirmHttpClient restClient;
     private Gson gson;
+    private AffirmTracker affirmTracker;
 
     AffirmPlugins(Affirm.Configuration configuration) {
         this.configuration = configuration;
@@ -74,11 +75,18 @@ class AffirmPlugins {
         return configuration.environment.trackerBaseUrl;
     }
 
-    Gson gson() {
+    synchronized Gson gson() {
         if (gson == null) {
             gson = new GsonBuilder().registerTypeAdapterFactory(MyAdapterFactory.create()).create();
         }
         return gson;
+    }
+
+    synchronized AffirmTracker tracker() {
+        if (affirmTracker == null) {
+            affirmTracker = new AffirmTracker();
+        }
+        return affirmTracker;
     }
 
     synchronized AffirmHttpClient restClient() {

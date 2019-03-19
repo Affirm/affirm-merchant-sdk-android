@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
+import static com.affirm.android.ModalActivity.ModalType.SITE;
 
 public final class Affirm {
 
@@ -51,8 +52,6 @@ public final class Affirm {
     }
 
     public interface PromoCallback {
-        void onSuccess(String promo);
-
         void onFailure(Throwable throwable);
     }
 
@@ -88,8 +87,12 @@ public final class Affirm {
         PrequalActivity.startActivity(context, amount, promoId);
     }
 
-    private static void startProductModal(@NonNull Context context, float amount,
-                                          @Nullable String modalId) {
+    public static void startSiteModal(@NonNull Context context, @Nullable String modalId) {
+        ModalActivity.startActivity(context, 0f, SITE, modalId);
+    }
+
+    public static void startProductModal(@NonNull Context context, float amount,
+                                         @Nullable String modalId) {
         ModalActivity.startActivity(context, amount, PRODUCT, modalId);
     }
 
@@ -104,9 +107,6 @@ public final class Affirm {
             public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
                 promoLabel.setTag(showPrequal);
                 promoLabel.setLabel(promo);
-                if (promoCallback != null) {
-                    promoCallback.onSuccess(promo);
-                }
             }
 
             @Override

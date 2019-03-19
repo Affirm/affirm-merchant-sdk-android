@@ -3,8 +3,6 @@ package com.affirm.sampleskt
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
@@ -20,22 +18,15 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
-        checkbox.setOnClickListener {
-            Affirm.startCheckout(this, checkoutModel())
+        checkout.setOnClickListener { Affirm.startCheckout(this, checkoutModel()) }
+        vcnCheckout.setOnClickListener { Affirm.startVcnCheckout(this, checkoutModel()) }
+        siteModalButton.setOnClickListener { Affirm.startSiteModal(this@MainActivity, "5LNMQ33SEUYHLNUC") }
+        productModalButton.setOnClickListener { Affirm.startProductModal(this@MainActivity, 1100f, "0Q97G0Z4Y4TLGHGB") }
+
+        Affirm.writePromo(this, promo, null, 1100f, true) { throwable ->
+            Log.e(TAG, "As low as label failed...", throwable)
+            Toast.makeText(this@MainActivity, "As low as label : ${throwable?.message}", Toast.LENGTH_SHORT).show()
         }
-        vcn_checkout.setOnClickListener { Affirm.startVcnCheckout(this, checkoutModel()) }
-        Affirm.writePromo(this, affirm_promo_label, null, 1100f, true, object : Affirm.PromoCallback {
-
-            override fun onSuccess(promo: String?) {
-
-            }
-
-            override fun onFailure(throwable: Throwable?) {
-                Log.e(TAG, "As low as label failed...", throwable)
-                Toast.makeText(this@MainActivity, "As low as label : ${throwable?.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
     }
 
     private fun checkoutModel(): Checkout {
@@ -80,21 +71,6 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         }
 
         super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item?.itemId ?: 0
-        //noinspection SimplifiableIfStatement
-        return if (id == R.id.action_settings) true else super.onOptionsItemSelected(item)
     }
 
     override fun onAffirmCheckoutError(message: String?) {

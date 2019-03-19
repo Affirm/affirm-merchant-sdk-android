@@ -49,7 +49,7 @@ public class AffirmTest {
 
         Mockito.when(intent.getStringExtra(Mockito.any(String.class))).thenReturn("error");
 
-        Affirm.handleCheckoutData(callbacks, 8076, CheckoutActivity.RESULT_ERROR, intent);
+        Affirm.handleCheckoutData(callbacks, 8076, Affirm.RESULT_ERROR, intent);
 
         Mockito.verify(callbacks).onAffirmCheckoutError("error");
     }

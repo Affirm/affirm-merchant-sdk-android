@@ -184,13 +184,16 @@ public final class Affirm {
     }
 
     /**
-     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult to get the processed result
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
      *
      * @param activity your current activity. Cannot be null.
      * @param checkout checkout object that contains address & shipping info & others...
      */
-    public static void startCheckoutFlow(@NonNull Activity activity, @NonNull Checkout checkout, boolean useVcn) {
-        CheckoutActivity.startActivity(activity, useVcn ? VCN_CHECKOUT_REQUEST : CHECKOUT_REQUEST, checkout);
+    public static void startCheckoutFlow(@NonNull Activity activity, @NonNull Checkout checkout,
+                                         boolean useVcn) {
+        int requestCode = useVcn ? VCN_CHECKOUT_REQUEST : CHECKOUT_REQUEST;
+        CheckoutActivity.startActivity(activity, requestCode, checkout);
     }
 
     /**

@@ -1,8 +1,11 @@
 package com.affirm.android;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.affirm.android.exception.ConnectionException;
@@ -86,12 +89,37 @@ class PrequalActivity extends AffirmActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                actionHome();
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void actionHome() {
+        String defaultName;
+        if (AffirmPlugins.get().environment() == Affirm.Environment.SANDBOX) {
+            defaultName = getString(R.string.affirm_name_default_sandbox);
+        } else {
+            defaultName = getString(R.string.affirm_name_default_production);
+        }
+        String name = TextUtils.isEmpty(AffirmPlugins.get().name()) ?
+                defaultName : AffirmPlugins.get().name();
+        new AlertDialog.Builder(this).setTitle(R.string.affirm)
+                .setMessage(getString(R.string.affirm_prequal_quit_confirm, name))
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create()
+                .show();
     }
 
     @Override

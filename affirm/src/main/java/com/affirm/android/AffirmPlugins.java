@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -15,15 +16,15 @@ import okhttp3.Response;
 class AffirmPlugins {
 
     private static final Object LOCK = new Object();
-    private static AffirmPlugins instance;
-    private final Affirm.Configuration configuration;
+    private static AffirmPlugins mInstance;
+    private final Affirm.Configuration mConfiguration;
 
-    private AffirmHttpClient restClient;
-    private Gson gson;
-    private AffirmTracker affirmTracker;
+    private AffirmTracker mAffirmTracker;
+    private AffirmHttpClient mRestClient;
+    private Gson mGson;
 
     AffirmPlugins(Affirm.Configuration configuration) {
-        this.configuration = configuration;
+        mConfiguration = configuration;
     }
 
     static void initialize(Affirm.Configuration configuration) {
@@ -32,77 +33,79 @@ class AffirmPlugins {
 
     private static void set(AffirmPlugins plugins) {
         synchronized (LOCK) {
-            if (instance != null) {
+            if (mInstance != null) {
                 throw new IllegalStateException("AffirmPlugins is already initialized");
             }
-            instance = plugins;
+            mInstance = plugins;
         }
     }
 
     public static AffirmPlugins get() {
         synchronized (LOCK) {
-            return instance;
+            return mInstance;
         }
     }
 
     static void reset() {
         synchronized (LOCK) {
-            instance = null;
+            mInstance = null;
         }
     }
 
     String publicKey() {
-        return configuration.publicKey;
+        return mConfiguration.publicKey;
     }
 
     String name() {
-        return configuration.name;
+        return mConfiguration.name;
     }
 
     Affirm.Environment environment() {
-        return configuration.environment;
+        return mConfiguration.environment;
     }
 
     String environmentName() {
-        return configuration.environment.name();
+        return mConfiguration.environment.name();
     }
 
     String baseUrl() {
-        return configuration.environment.baseUrl;
+        return mConfiguration.environment.baseUrl;
     }
 
     String trackerBaseUrl() {
-        return configuration.environment.trackerBaseUrl;
+        return mConfiguration.environment.trackerBaseUrl;
     }
 
     synchronized Gson gson() {
-        if (gson == null) {
-            gson = new GsonBuilder().registerTypeAdapterFactory(MyAdapterFactory.create()).create();
+        if (mGson == null) {
+            mGson =
+                new GsonBuilder().registerTypeAdapterFactory(MyAdapterFactory.create()).create();
         }
-        return gson;
+        return mGson;
     }
 
     synchronized AffirmTracker tracker() {
-        if (affirmTracker == null) {
-            affirmTracker = new AffirmTracker();
+        if (mAffirmTracker == null) {
+            mAffirmTracker = new AffirmTracker();
         }
-        return affirmTracker;
+        return mAffirmTracker;
     }
 
     synchronized AffirmHttpClient restClient() {
-        if (restClient == null) {
+        if (mRestClient == null) {
             OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
             //add it as the first interceptor
             clientBuilder.interceptors().add(0, new Interceptor() {
                 @Override
-                public Response intercept(Chain chain) throws IOException {
+                @NonNull
+                public Response intercept(@NonNull Chain chain) throws IOException {
                     final Request request = chain.request()
-                            .newBuilder()
-                            .addHeader("Accept", "application/json")
-                            .addHeader("Content-Type", "application/json")
-                            .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
-                            .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
-                            .build();
+                        .newBuilder()
+                        .addHeader("Accept", "application/json")
+                        .addHeader("Content-Type", "application/json")
+                        .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
+                        .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
+                        .build();
 
                     return chain.proceed(request);
                 }
@@ -110,8 +113,8 @@ class AffirmPlugins {
             clientBuilder.connectTimeout(5, TimeUnit.SECONDS);
             clientBuilder.readTimeout(30, TimeUnit.SECONDS);
             clientBuilder.followRedirects(false);
-            restClient = AffirmHttpClient.createClient(clientBuilder);
+            mRestClient = AffirmHttpClient.createClient(clientBuilder);
         }
-        return restClient;
+        return mRestClient;
     }
 }

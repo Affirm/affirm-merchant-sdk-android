@@ -27,14 +27,14 @@ import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 
 final class AffirmHttpClient {
 
-    private OkHttpClient okHttpClient;
+    private OkHttpClient mOkHttpClient;
 
     private AffirmHttpClient(@Nullable OkHttpClient.Builder builder) {
         if (builder == null) {
             builder = new OkHttpClient.Builder();
         }
 
-        okHttpClient = builder.build();
+        mOkHttpClient = builder.build();
     }
 
     static AffirmHttpClient createClient(@Nullable OkHttpClient.Builder builder) {
@@ -49,7 +49,7 @@ final class AffirmHttpClient {
     AffirmHttpResponse execute(final AffirmHttpRequest request, boolean sendTrackEvent)
             throws APIException, PermissionException, InvalidRequestException, ConnectionException {
         Request okHttpRequest = getRequest(request);
-        Call call = okHttpClient.newCall(okHttpRequest);
+        Call call = mOkHttpClient.newCall(okHttpRequest);
         try {
             Response response = call.execute();
 
@@ -107,13 +107,13 @@ final class AffirmHttpClient {
     }
 
     void cancelCallWithTag(String tag) {
-        for (Call call : okHttpClient.dispatcher().queuedCalls()) {
+        for (Call call : mOkHttpClient.dispatcher().queuedCalls()) {
             Object requestTag = call.request().tag();
             if (requestTag != null && requestTag.equals(tag)) {
                 call.cancel();
             }
         }
-        for (Call call : okHttpClient.dispatcher().runningCalls()) {
+        for (Call call : mOkHttpClient.dispatcher().runningCalls()) {
             Object requestTag = call.request().tag();
             if (requestTag != null && requestTag.equals(tag)) {
                 call.cancel();

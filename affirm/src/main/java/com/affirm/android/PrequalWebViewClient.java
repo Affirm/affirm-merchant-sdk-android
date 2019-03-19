@@ -8,17 +8,17 @@ final class PrequalWebViewClient extends AffirmWebViewClient {
 
     static final String REFERRING_URL = "https://androidsdk/";
 
-    private final Callbacks callbacks;
+    private final Callbacks mCallbacks;
 
     PrequalWebViewClient(@NonNull Callbacks callbacks) {
         super(callbacks);
-        this.callbacks = callbacks;
+        mCallbacks = callbacks;
     }
 
     @Override
     boolean hasCallbackUrl(WebView view, String url) {
         if (url.equals(REFERRING_URL)) {
-            callbacks.onWebViewConfirmation();
+            mCallbacks.onWebViewConfirmation();
             return true;
         }
         return false;

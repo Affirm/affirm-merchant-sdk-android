@@ -19,10 +19,10 @@ class AffirmWebChromeClient extends WebChromeClient {
         void chromeLoadCompleted();
     }
 
-    private final Callbacks callback;
+    private final Callbacks mCallback;
 
     AffirmWebChromeClient(@NonNull Callbacks callback) {
-        this.callback = callback;
+        mCallback = callback;
     }
 
     @Override
@@ -67,7 +67,7 @@ class AffirmWebChromeClient extends WebChromeClient {
     @Override
     public void onProgressChanged(WebView view, int progress) {
         if (progress > 99) {
-            callback.chromeLoadCompleted();
+            mCallback.chromeLoadCompleted();
         }
     }
 }

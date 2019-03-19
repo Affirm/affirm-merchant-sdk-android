@@ -22,27 +22,27 @@ class CheckoutRequest extends Request {
     }
 
     @NonNull
-    private Context context;
+    private Context mContext;
     @NonNull
-    private Checkout checkout;
+    private Checkout mCheckout;
     @Nullable
-    private InnerCheckoutCallback callback;
+    private InnerCheckoutCallback mCallback;
     @NonNull
-    private CheckoutType checkoutType;
+    private CheckoutType mCheckoutType;
 
     CheckoutRequest(@NonNull Context context, @NonNull Checkout checkout,
                     @Nullable InnerCheckoutCallback callback,
                     @NonNull CheckoutType checkoutType) {
-        this.context = context;
-        this.checkout = checkout;
-        this.callback = callback;
-        this.checkoutType = checkoutType;
+        mContext = context;
+        mCheckout = checkout;
+        mCallback = callback;
+        mCheckoutType = checkoutType;
     }
 
     @Override
     void cancel() {
         super.cancel();
-        switch (this.checkoutType) {
+        switch (this.mCheckoutType) {
             case REGULAR:
                 AffirmApiHandler.cancelCheckoutCall();
                 break;
@@ -56,13 +56,13 @@ class CheckoutRequest extends Request {
 
     @Override
     AsyncTask createTask() {
-        return new CheckoutTask(context, checkout, callback);
+        return new CheckoutTask(mContext, mCheckout, mCallback);
     }
 
     private static class CheckoutTask extends
             AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> {
         @NonNull
-        private final Checkout checkout;
+        private final Checkout mCheckout;
         @NonNull
         private final WeakReference<InnerCheckoutCallback> mCallbackRef;
 
@@ -72,9 +72,9 @@ class CheckoutRequest extends Request {
         CheckoutTask(@NonNull Context context,
                      @NonNull final Checkout checkout,
                      @Nullable final InnerCheckoutCallback callback) {
-            this.mContextRef = new WeakReference<>(context);
-            this.checkout = checkout;
-            this.mCallbackRef = new WeakReference<>(callback);
+            mContextRef = new WeakReference<>(context);
+            mCheckout = checkout;
+            mCallbackRef = new WeakReference<>(callback);
         }
 
         @Override
@@ -82,7 +82,7 @@ class CheckoutRequest extends Request {
             try {
                 CheckoutCommonActivity checkoutBaseActivity =
                         (CheckoutCommonActivity) mContextRef.get();
-                CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
+                CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(mCheckout);
                 return new ResponseWrapper<>(checkoutResponse);
             } catch (ConnectionException e) {
                 return new ResponseWrapper<>(e);

@@ -9,22 +9,22 @@ import com.affirm.android.exception.ConnectionException;
 
 import androidx.annotation.NonNull;
 
-public abstract class AffirmWebViewClient extends WebViewClient {
+abstract class AffirmWebViewClient extends WebViewClient {
     public static final String AFFIRM_CONFIRMATION_URL = "affirm://checkout/confirmed";
     public static final String AFFIRM_CANCELLATION_URL = "affirm://checkout/cancelled";
 
-    private final Callbacks callbacks;
+    private final Callbacks mCallbacks;
 
     abstract boolean hasCallbackUrl(WebView view, String url);
 
     AffirmWebViewClient(@NonNull Callbacks callbacks) {
-        this.callbacks = callbacks;
+        mCallbacks = callbacks;
     }
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         if (url.contains(AFFIRM_CANCELLATION_URL)) {
-            callbacks.onWebViewCancellation();
+            mCallbacks.onWebViewCancellation();
             return true;
         }
 
@@ -37,7 +37,7 @@ public abstract class AffirmWebViewClient extends WebViewClient {
 
     @Override
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-        callbacks.onWebViewError(new ConnectionException(error.toString()));
+        mCallbacks.onWebViewError(new ConnectionException(error.toString()));
     }
 
     public interface Callbacks {

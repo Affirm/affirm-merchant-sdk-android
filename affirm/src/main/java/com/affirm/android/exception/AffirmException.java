@@ -10,11 +10,11 @@ public abstract class AffirmException extends Exception {
     protected static final long serialVersionUID = 1L;
 
     @Nullable
-    private final String requestId;
+    private final String mRequestId;
     @Nullable
-    private final Integer statusCode;
+    private final Integer mStatusCode;
     @Nullable
-    private final AffirmError affirmError;
+    private final AffirmError mAffirmError;
 
     public AffirmException(@Nullable String message, @Nullable String requestId,
                            @Nullable Integer statusCode) {
@@ -35,32 +35,32 @@ public abstract class AffirmException extends Exception {
                            @Nullable String requestId, @Nullable Integer statusCode,
                            @Nullable Throwable e) {
         super(message, e);
-        this.affirmError = affirmError;
-        this.statusCode = statusCode;
-        this.requestId = requestId;
+        mAffirmError = affirmError;
+        mStatusCode = statusCode;
+        mRequestId = requestId;
     }
 
     @Nullable
     public String getRequestId() {
-        return requestId;
+        return mRequestId;
     }
 
     @Nullable
     public Integer getStatusCode() {
-        return statusCode;
+        return mStatusCode;
     }
 
     @Nullable
     public AffirmError getAffirmError() {
-        return affirmError;
+        return mAffirmError;
     }
 
     @NonNull
     @Override
     public String toString() {
         final String reqIdStr;
-        if (requestId != null) {
-            reqIdStr = ", request-id: " + requestId;
+        if (mRequestId != null) {
+            reqIdStr = ", request-id: " + mRequestId;
         } else {
             reqIdStr = "";
         }

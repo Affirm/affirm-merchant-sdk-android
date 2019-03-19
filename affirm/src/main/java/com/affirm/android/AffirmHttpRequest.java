@@ -1,32 +1,32 @@
 package com.affirm.android;
 
 final class AffirmHttpRequest {
-    private final String url;
-    private final Method method;
-    private final AffirmHttpBody body;
-    private final String tag;
+    private final String mUrl;
+    private final Method mMethod;
+    private final AffirmHttpBody mBody;
+    private final String mTag;
 
     private AffirmHttpRequest(Builder builder) {
-        this.url = builder.url;
-        this.method = builder.method;
-        this.body = builder.body;
-        this.tag = builder.tag;
+        mUrl = builder.mUrl;
+        mMethod = builder.mMethod;
+        mBody = builder.mBody;
+        mTag = builder.mTag;
     }
 
     String getUrl() {
-        return url;
+        return mUrl;
     }
 
     Method getMethod() {
-        return method;
+        return mMethod;
     }
 
     AffirmHttpBody getBody() {
-        return body;
+        return mBody;
     }
 
     String getTag() {
-        return tag;
+        return mTag;
     }
 
     enum Method {
@@ -35,32 +35,32 @@ final class AffirmHttpRequest {
 
     static final class Builder {
 
-        private String url;
-        private Method method;
-        private AffirmHttpBody body;
-        private String tag;
+        private String mUrl;
+        private Method mMethod;
+        private AffirmHttpBody mBody;
+        private String mTag;
 
         Builder() {
         }
 
         public Builder setUrl(String url) {
-            this.url = url;
+            mUrl = url;
             return this;
         }
 
 
         Builder setMethod(AffirmHttpRequest.Method method) {
-            this.method = method;
+            mMethod = method;
             return this;
         }
 
         Builder setBody(AffirmHttpBody body) {
-            this.body = body;
+            mBody = body;
             return this;
         }
 
         Builder setTag(String tag) {
-            this.tag = tag;
+            mTag = tag;
             return this;
         }
 

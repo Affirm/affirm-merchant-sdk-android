@@ -1,79 +1,79 @@
 package com.affirm.android;
 
 final class AffirmHttpResponse {
-    private final int statusCode;
-    private final String content;
-    private final long totalSize;
-    private final String contentType;
+    private final int mStatusCode;
+    private final String mContent;
+    private final long mTotalSize;
+    private final String mContentType;
 
     private AffirmHttpResponse(Builder builder) {
-        this.statusCode = builder.statusCode;
-        this.content = builder.content;
-        this.totalSize = builder.totalSize;
-        this.contentType = builder.contentType;
+        mStatusCode = builder.mStatusCode;
+        mContent = builder.mContent;
+        mTotalSize = builder.mTotalSize;
+        mContentType = builder.mContentType;
     }
 
-    public boolean isSuccessful() {
-        return statusCode >= 200 && statusCode < 300;
+    boolean isSuccessful() {
+        return mStatusCode >= 200 && mStatusCode < 300;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    int getStatusCode() {
+        return mStatusCode;
     }
 
-    public String getContent() {
-        return content;
+    String getContent() {
+        return mContent;
     }
 
-    public long getTotalSize() {
-        return totalSize;
+    long getTotalSize() {
+        return mTotalSize;
     }
 
-    public String getContentType() {
-        return contentType;
+    String getContentType() {
+        return mContentType;
     }
 
-    public static final class Builder {
+    static final class Builder {
 
-        private int statusCode;
-        private String content;
-        private long totalSize;
-        private String contentType;
+        private int mStatusCode;
+        private String mContent;
+        private long mTotalSize;
+        private String mContentType;
 
-        public Builder() {
-            this.totalSize = -1;
+        Builder() {
+            mTotalSize = -1;
         }
 
-        public Builder(AffirmHttpResponse response) {
+        Builder(AffirmHttpResponse response) {
             super();
-            this.setStatusCode(response.getStatusCode());
-            this.setContent(response.getContent());
-            this.setTotalSize(response.getTotalSize());
-            this.setContentType(response.getContentType());
+            setStatusCode(response.getStatusCode());
+            setContent(response.getContent());
+            setTotalSize(response.getTotalSize());
+            setContentType(response.getContentType());
         }
 
-        public Builder setStatusCode(int statusCode) {
-            this.statusCode = statusCode;
+        Builder setStatusCode(int statusCode) {
+            mStatusCode = statusCode;
             return this;
         }
 
-        public Builder setContent(String content) {
-            this.content = content;
+        Builder setContent(String content) {
+            mContent = content;
             return this;
         }
 
-        public Builder setTotalSize(long totalSize) {
-            this.totalSize = totalSize;
+        Builder setTotalSize(long totalSize) {
+            mTotalSize = totalSize;
             return this;
         }
 
 
-        public Builder setContentType(String contentType) {
-            this.contentType = contentType;
+        Builder setContentType(String contentType) {
+            mContentType = contentType;
             return this;
         }
 
-        public AffirmHttpResponse build() {
+        AffirmHttpResponse build() {
             return new AffirmHttpResponse(this);
         }
     }

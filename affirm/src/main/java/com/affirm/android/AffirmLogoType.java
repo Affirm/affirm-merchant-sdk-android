@@ -25,7 +25,7 @@ enum AffirmLogoType {
         return AFFIRM_DISPLAY_TYPE_TEXT;
     }
 
-    public int getOrdinal() {
+    int getOrdinal() {
         return mOrdinal;
     }
 

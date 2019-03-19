@@ -11,11 +11,11 @@ final class AffirmLog {
 
     private static int logLevel = Integer.MAX_VALUE;
 
-    public static int getLogLevel() {
+    static int getLogLevel() {
         return logLevel;
     }
 
-    public static void setLogLevel(int logLevel) {
+    static void setLogLevel(int logLevel) {
         AffirmLog.logLevel = logLevel;
     }
 
@@ -29,43 +29,43 @@ final class AffirmLog {
         }
     }
 
-    public static void v(String message, Throwable tr) {
+    static void v(String message, Throwable tr) {
         log(Log.VERBOSE, message, tr);
     }
 
-    public static void v(String message) {
+    static void v(String message) {
         v(message, null);
     }
 
-    public static void d(String message, Throwable tr) {
+    static void d(String message, Throwable tr) {
         log(Log.DEBUG, message, tr);
     }
 
-    public static void d(String message) {
+    static void d(String message) {
         d(message, null);
     }
 
-    public static void i(String message, Throwable tr) {
+    static void i(String message, Throwable tr) {
         log(Log.INFO, message, tr);
     }
 
-    public static void i(String message) {
+    static void i(String message) {
         i(message, null);
     }
 
-    public static void w(String message, Throwable tr) {
+    static void w(String message, Throwable tr) {
         log(Log.WARN, message, tr);
     }
 
-    public static void w(String message) {
+    static void w(String message) {
         w(message, null);
     }
 
-    public static void e(String message, Throwable tr) {
+    static void e(String message, Throwable tr) {
         log(Log.ERROR, message, tr);
     }
 
-    public static void e(String message) {
+    static void e(String message) {
         e(message, null);
     }
 }

@@ -20,10 +20,10 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_SU
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
-public class CheckoutActivity extends CheckoutCommonActivity
+class CheckoutActivity extends CheckoutCommonActivity
         implements CheckoutWebViewClient.Callbacks {
 
-    public static final String CHECKOUT_TOKEN = "checkout_token";
+    static final String CHECKOUT_TOKEN = "checkout_token";
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout) {

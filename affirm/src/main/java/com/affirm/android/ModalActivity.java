@@ -18,8 +18,8 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAI
 import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 
-public class ModalActivity extends AffirmActivity
-        implements AffirmWebViewClient.Callbacks {
+class ModalActivity extends AffirmActivity
+    implements AffirmWebViewClient.Callbacks {
 
     private static final String MAP_EXTRA = "MAP_EXTRA";
     private static final String TYPE_EXTRA = "TYPE_EXTRA";
@@ -32,8 +32,8 @@ public class ModalActivity extends AffirmActivity
     private static final String CANCEL_URL = "CANCEL_URL";
     private static final String MODAL_ID = "MODAL_ID";
 
-    private ModalType type;
-    private HashMap<String, String> map;
+    private ModalType mType;
+    private HashMap<String, String> mMap;
 
     enum ModalType {
         PRODUCT(R.raw.modal_template, PRODUCT_WEBVIEW_FAIL),
@@ -53,7 +53,7 @@ public class ModalActivity extends AffirmActivity
                               @Nullable String modalId) {
         final Intent intent = new Intent(context, ModalActivity.class);
         final String stringAmount =
-                String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
+            String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
         final String fullPath = PROTOCOL + AffirmPlugins.get().baseUrl() + JS_PATH;
 
         final HashMap<String, String> map = new HashMap<>();
@@ -84,11 +84,11 @@ public class ModalActivity extends AffirmActivity
     @Override
     void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            map = (HashMap<String, String>) savedInstanceState.getSerializable(MAP_EXTRA);
-            type = (ModalType) savedInstanceState.getSerializable(TYPE_EXTRA);
+            mMap = (HashMap<String, String>) savedInstanceState.getSerializable(MAP_EXTRA);
+            mType = (ModalType) savedInstanceState.getSerializable(TYPE_EXTRA);
         } else {
-            map = (HashMap<String, String>) getIntent().getSerializableExtra(MAP_EXTRA);
-            type = (ModalType) getIntent().getSerializableExtra(TYPE_EXTRA);
+            mMap = (HashMap<String, String>) getIntent().getSerializableExtra(MAP_EXTRA);
+            mType = (ModalType) getIntent().getSerializableExtra(TYPE_EXTRA);
         }
     }
 
@@ -96,31 +96,31 @@ public class ModalActivity extends AffirmActivity
     void onAttached() {
         final String html = initialHtml();
         webView.loadDataWithBaseURL(
-                PROTOCOL + AffirmPlugins.get().baseUrl(),
-                html,
-                "text/html",
-                "utf-8",
-                null);
+            PROTOCOL + AffirmPlugins.get().baseUrl(),
+            html,
+            "text/html",
+            "utf-8",
+            null);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(TYPE_EXTRA, type.templateRes);
-        outState.putSerializable(MAP_EXTRA, map);
+        outState.putInt(TYPE_EXTRA, mType.templateRes);
+        outState.putSerializable(MAP_EXTRA, mMap);
     }
 
     private String initialHtml() {
         String html;
         try {
-            final InputStream ins = getResources().openRawResource(type.templateRes);
+            final InputStream ins = getResources().openRawResource(mType.templateRes);
             html = AffirmUtils.readInputStream(ins);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        return AffirmUtils.replacePlaceholders(html, map);
+        return AffirmUtils.replacePlaceholders(html, mMap);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ModalActivity extends AffirmActivity
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmPlugins.get().tracker().track(type.failureEvent, ERROR, null);
+        AffirmPlugins.get().tracker().track(mType.failureEvent, ERROR, null);
         finish();
     }
 }

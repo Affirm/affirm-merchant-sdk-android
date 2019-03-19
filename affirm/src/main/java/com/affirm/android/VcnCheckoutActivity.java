@@ -26,10 +26,10 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIE
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
-public class VcnCheckoutActivity extends CheckoutCommonActivity
-        implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
+class VcnCheckoutActivity extends CheckoutCommonActivity
+    implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
 
-    public static final String CREDIT_DETAILS = "credit_details";
+    static final String CREDIT_DETAILS = "credit_details";
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout) {
@@ -47,8 +47,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
     @Override
     void initViews() {
         AffirmUtils.debuggableWebView(this);
-        webView.setWebViewClient(
-                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
+        webView.setWebViewClient(new VcnCheckoutWebViewClient(this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
         clearCookies();
     }
@@ -68,18 +67,18 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
                 final String html = initialHtml(response);
                 final Uri uri = Uri.parse(response.redirectUrl());
                 webView.loadDataWithBaseURL("https://" + uri.getHost(), html,
-                        "text/html", "utf-8", null);
+                    "text/html", "utf-8", null);
             }
         };
 
         checkoutRequest = new CheckoutRequest(this, checkout,
-                checkoutCallback, CheckoutRequest.CheckoutType.VCN);
+            checkoutCallback, CheckoutRequest.CheckoutType.VCN);
         checkoutRequest.create();
     }
 
     @Override
     CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
-            PermissionException, InvalidRequestException, ConnectionException {
+        PermissionException, InvalidRequestException, ConnectionException {
         return AffirmApiHandler.executeVcnCheckout(checkout);
     }
 

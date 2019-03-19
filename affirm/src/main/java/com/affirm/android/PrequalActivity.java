@@ -10,14 +10,14 @@ import com.affirm.android.exception.ConnectionException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class PrequalActivity extends AffirmActivity
+class PrequalActivity extends AffirmActivity
         implements AffirmWebViewClient.Callbacks, PrequalWebViewClient.Callbacks {
 
     private static final String AMOUNT = "AMOUNT";
     private static final String PROMO_ID = "PROMO_ID";
 
-    private String amount;
-    private String promoId;
+    private String mAmount;
+    private String mPromoId;
 
     static void startActivity(@NonNull Context context, float amount, @Nullable String promoId) {
         final Intent intent = new Intent(context, PrequalActivity.class);
@@ -41,11 +41,11 @@ public class PrequalActivity extends AffirmActivity
     @Override
     void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            amount = savedInstanceState.getString(AMOUNT);
-            promoId = savedInstanceState.getString(PROMO_ID);
+            mAmount = savedInstanceState.getString(AMOUNT);
+            mPromoId = savedInstanceState.getString(PROMO_ID);
         } else {
-            amount = getIntent().getStringExtra(AMOUNT);
-            promoId = getIntent().getStringExtra(PROMO_ID);
+            mAmount = getIntent().getStringExtra(AMOUNT);
+            mPromoId = getIntent().getStringExtra(PROMO_ID);
         }
     }
 
@@ -59,7 +59,7 @@ public class PrequalActivity extends AffirmActivity
                         + "&isSDK=true"
                         + "&use_promo=True"
                         + "&referring_url=%s",
-                publicKey, amount, promoId, PrequalWebViewClient.REFERRING_URL);
+                publicKey, mAmount, mPromoId, PrequalWebViewClient.REFERRING_URL);
 
         webView.loadUrl(PROTOCOL + AffirmPlugins.get().baseUrl() + path);
     }
@@ -68,8 +68,8 @@ public class PrequalActivity extends AffirmActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(AMOUNT, amount);
-        outState.putString(PROMO_ID, promoId);
+        outState.putString(AMOUNT, mAmount);
+        outState.putString(PROMO_ID, mPromoId);
     }
 
     @Override

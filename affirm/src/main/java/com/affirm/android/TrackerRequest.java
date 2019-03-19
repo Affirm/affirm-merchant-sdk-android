@@ -8,22 +8,22 @@ import androidx.annotation.NonNull;
 
 class TrackerRequest extends Request {
 
-    private @NonNull
-    JsonObject trackingData;
+    @NonNull
+    private JsonObject mTrackingData;
 
     TrackerRequest(@NonNull JsonObject trackingData) {
-        this.trackingData = trackingData;
+        mTrackingData = trackingData;
     }
 
     @Override
     AsyncTask createTask() {
-        return new TrackerTask(trackingData);
+        return new TrackerTask(mTrackingData);
     }
 
     private static class TrackerTask extends AsyncTask<Void, Void, Void> {
 
         @NonNull
-        final JsonObject mTrackingData;
+        private final JsonObject mTrackingData;
 
         TrackerTask(@NonNull JsonObject trackingData) {
             this.mTrackingData = trackingData;

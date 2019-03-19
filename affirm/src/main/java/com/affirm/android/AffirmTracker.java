@@ -16,7 +16,7 @@ import okhttp3.Response;
 
 final class AffirmTracker {
 
-    private final AtomicInteger localLogCounter = new AtomicInteger();
+    private final AtomicInteger mLocalLogCounter = new AtomicInteger();
 
     enum TrackingEvent {
         CHECKOUT_CREATION_FAIL("Checkout creation failed"),
@@ -31,10 +31,10 @@ final class AffirmTracker {
         SITE_WEBVIEW_FAIL("Site webView failed"),
         NETWORK_ERROR("network error");
 
-        private final String name;
+        private final String mName;
 
         TrackingEvent(String name) {
-            this.name = name;
+            mName = name;
         }
     }
 
@@ -54,7 +54,7 @@ final class AffirmTracker {
 
     void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
                @Nullable JsonObject data) {
-        final JsonObject trackingData = addTrackingData(event.name, data, level);
+        final JsonObject trackingData = addTrackingData(event.mName, data, level);
         new TrackerRequest(trackingData).create();
     }
 
@@ -76,7 +76,7 @@ final class AffirmTracker {
                                   @NonNull AffirmTracker.TrackingLevel level) {
         final long timeStamp = System.currentTimeMillis();
         // Set the log counter and then increment the logCounter
-        data.addProperty("local_log_counter", localLogCounter.getAndIncrement());
+        data.addProperty("local_log_counter", mLocalLogCounter.getAndIncrement());
         data.addProperty("ts", timeStamp);
         data.addProperty("app_id", "Android SDK");
         data.addProperty("release", BuildConfig.VERSION_NAME);

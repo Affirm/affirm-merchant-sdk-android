@@ -55,7 +55,7 @@ final class AffirmHttpClient {
 
             boolean responseSuccess = response.isSuccessful();
             if (!responseSuccess && sendTrackEvent) {
-                AffirmPlugins.get().tracker().track(NETWORK_ERROR, ERROR,
+                AffirmTracker.track(NETWORK_ERROR, ERROR,
                         createTrackingNetworkJsonObj(okHttpRequest, response));
             }
 
@@ -71,7 +71,7 @@ final class AffirmHttpClient {
 
         } catch (IOException e) {
             if (sendTrackEvent) {
-                AffirmPlugins.get().tracker().track(NETWORK_ERROR, ERROR,
+                AffirmTracker.track(NETWORK_ERROR, ERROR,
                         createTrackingNetworkJsonObj(okHttpRequest, null));
             }
 

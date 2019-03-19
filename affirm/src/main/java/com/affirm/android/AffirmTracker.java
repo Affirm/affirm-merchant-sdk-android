@@ -1,6 +1,7 @@
 package com.affirm.android;
 
 import android.os.Build;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -16,7 +17,7 @@ import okhttp3.Response;
 
 final class AffirmTracker {
 
-    private final AtomicInteger mLocalLogCounter = new AtomicInteger();
+    private static final AtomicInteger mLocalLogCounter = new AtomicInteger();
 
     enum TrackingEvent {
         CHECKOUT_CREATION_FAIL("Checkout creation failed"),
@@ -52,14 +53,14 @@ final class AffirmTracker {
         }
     }
 
-    void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
+    static void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
                @Nullable JsonObject data) {
         final JsonObject trackingData = addTrackingData(event.mName, data, level);
         new TrackerRequest(trackingData).create();
     }
 
     @NonNull
-    private JsonObject addTrackingData(@NonNull String eventName,
+    private static JsonObject addTrackingData(@NonNull String eventName,
                                        @Nullable JsonObject eventData,
                                        @NonNull TrackingLevel level) {
 
@@ -71,12 +72,13 @@ final class AffirmTracker {
         return data;
     }
 
-    private void fillTrackingData(@NonNull String eventName,
+    private static void fillTrackingData(@NonNull String eventName,
                                   @NonNull JsonObject data,
                                   @NonNull AffirmTracker.TrackingLevel level) {
         final long timeStamp = System.currentTimeMillis();
         // Set the log counter and then increment the logCounter
-        data.addProperty("local_log_counter", mLocalLogCounter.getAndIncrement());
+        int localLogCounter = mLocalLogCounter.getAndIncrement();
+        data.addProperty("local_log_counter", localLogCounter);
         data.addProperty("ts", timeStamp);
         data.addProperty("app_id", "Android SDK");
         data.addProperty("release", BuildConfig.VERSION_NAME);

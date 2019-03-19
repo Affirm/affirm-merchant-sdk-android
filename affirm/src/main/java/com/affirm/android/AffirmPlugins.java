@@ -84,13 +84,6 @@ class AffirmPlugins {
         return mGson;
     }
 
-    synchronized AffirmTracker tracker() {
-        if (mAffirmTracker == null) {
-            mAffirmTracker = new AffirmTracker();
-        }
-        return mAffirmTracker;
-    }
-
     synchronized AffirmHttpClient restClient() {
         if (mRestClient == null) {
             OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();

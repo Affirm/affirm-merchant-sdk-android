@@ -130,7 +130,7 @@ class ModalActivity extends AffirmActivity
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmPlugins.get().tracker().track(mType.failureEvent, ERROR, null);
+        AffirmTracker.track(mType.failureEvent, ERROR, null);
         finish();
     }
 }

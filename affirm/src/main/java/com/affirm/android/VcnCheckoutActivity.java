@@ -12,6 +12,7 @@ import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
+import com.affirm.android.CheckoutRequest.CheckoutType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,12 +40,6 @@ class VcnCheckoutActivity extends CheckoutCommonActivity
     }
 
     @Override
-    void beforeOnCreate() {
-        super.beforeOnCreate();
-        checkoutType = CheckoutRequest.CheckoutType.VCN;
-    }
-
-    @Override
     void initViews() {
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(new VcnCheckoutWebViewClient(this));
@@ -53,8 +48,19 @@ class VcnCheckoutActivity extends CheckoutCommonActivity
     }
 
     @Override
-    void onAttached() {
-        InnerCheckoutCallback checkoutCallback = new InnerCheckoutCallback() {
+    CheckoutType checkoutType() {
+        return CheckoutType.VCN;
+    }
+
+    @Override
+    CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
+        PermissionException, InvalidRequestException, ConnectionException {
+        return AffirmApiHandler.executeVcnCheckout(checkout);
+    }
+
+    @Override
+    InnerCheckoutCallback innerCheckoutCallback() {
+        return new InnerCheckoutCallback() {
             @Override
             public void onError(@NonNull AffirmException exception) {
                 AffirmTracker.track(VCN_CHECKOUT_CREATION_FAIL, ERROR, null);
@@ -70,16 +76,6 @@ class VcnCheckoutActivity extends CheckoutCommonActivity
                     "text/html", "utf-8", null);
             }
         };
-
-        checkoutRequest = new CheckoutRequest(this, checkout,
-            checkoutCallback, CheckoutRequest.CheckoutType.VCN);
-        checkoutRequest.create();
-    }
-
-    @Override
-    CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
-        PermissionException, InvalidRequestException, ConnectionException {
-        return AffirmApiHandler.executeVcnCheckout(checkout);
     }
 
     private String initialHtml(CheckoutResponse response) {

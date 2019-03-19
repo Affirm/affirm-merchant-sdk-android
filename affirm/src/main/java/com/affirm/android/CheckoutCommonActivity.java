@@ -9,6 +9,7 @@ import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
+import com.affirm.android.CheckoutRequest.CheckoutType;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,14 +20,16 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
 
     static final String CHECKOUT_EXTRA = "checkout_extra";
 
-    CheckoutRequest checkoutRequest;
+    private CheckoutRequest mCheckoutRequest;
 
-    Checkout checkout;
+    private Checkout mCheckout;
 
-    CheckoutRequest.CheckoutType checkoutType;
+    abstract CheckoutType checkoutType();
 
     abstract CheckoutResponse executeTask(@NonNull Checkout checkout)
-            throws APIException, PermissionException, InvalidRequestException, ConnectionException;
+        throws APIException, PermissionException, InvalidRequestException, ConnectionException;
+
+    abstract InnerCheckoutCallback innerCheckoutCallback();
 
     @Override
     void beforeOnCreate() {
@@ -36,9 +39,9 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
     @Override
     void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            checkout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
+            mCheckout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
         } else {
-            checkout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
+            mCheckout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
         }
     }
 
@@ -46,12 +49,19 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(CHECKOUT_EXTRA, checkout);
+        outState.putParcelable(CHECKOUT_EXTRA, mCheckout);
+    }
+
+    @Override
+    void onAttached() {
+        mCheckoutRequest = new CheckoutRequest(this, mCheckout,
+            innerCheckoutCallback(), checkoutType());
+        mCheckoutRequest.create();
     }
 
     @Override
     protected void onDestroy() {
-        checkoutRequest.cancel();
+        mCheckoutRequest.cancel();
         super.onDestroy();
     }
 

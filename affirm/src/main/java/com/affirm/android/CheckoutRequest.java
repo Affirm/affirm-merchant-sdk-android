@@ -42,7 +42,7 @@ class CheckoutRequest extends Request {
     @Override
     void cancel() {
         super.cancel();
-        switch (this.mCheckoutType) {
+        switch (mCheckoutType) {
             case REGULAR:
                 AffirmApiHandler.cancelCheckoutCall();
                 break;

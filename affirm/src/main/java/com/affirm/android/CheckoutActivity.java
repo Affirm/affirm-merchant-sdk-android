@@ -10,6 +10,7 @@ import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
+import com.affirm.android.CheckoutRequest.CheckoutType;
 
 import androidx.annotation.NonNull;
 
@@ -21,7 +22,7 @@ import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
 class CheckoutActivity extends CheckoutCommonActivity
-        implements CheckoutWebViewClient.Callbacks {
+    implements CheckoutWebViewClient.Callbacks {
 
     static final String CHECKOUT_TOKEN = "checkout_token";
 
@@ -33,12 +34,6 @@ class CheckoutActivity extends CheckoutCommonActivity
     }
 
     @Override
-    void beforeOnCreate() {
-        super.beforeOnCreate();
-        checkoutType = CheckoutRequest.CheckoutType.REGULAR;
-    }
-
-    @Override
     void initViews() {
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(new CheckoutWebViewClient(this));
@@ -46,8 +41,19 @@ class CheckoutActivity extends CheckoutCommonActivity
     }
 
     @Override
-    void onAttached() {
-        InnerCheckoutCallback checkoutCallback = new InnerCheckoutCallback() {
+    CheckoutType checkoutType() {
+        return CheckoutType.REGULAR;
+    }
+
+    @Override
+    CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
+        PermissionException, InvalidRequestException, ConnectionException {
+        return AffirmApiHandler.executeCheckout(checkout);
+    }
+
+    @Override
+    InnerCheckoutCallback innerCheckoutCallback() {
+        return new InnerCheckoutCallback() {
             @Override
             public void onError(@NonNull AffirmException exception) {
                 AffirmTracker.track(CHECKOUT_CREATION_FAIL, ERROR, null);
@@ -60,16 +66,6 @@ class CheckoutActivity extends CheckoutCommonActivity
                 webView.loadUrl(response.redirectUrl());
             }
         };
-
-        checkoutRequest = new CheckoutRequest(this, checkout,
-                checkoutCallback, CheckoutRequest.CheckoutType.REGULAR);
-        checkoutRequest.create();
-    }
-
-    @Override
-    CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
-            PermissionException, InvalidRequestException, ConnectionException {
-        return AffirmApiHandler.executeCheckout(checkout);
     }
 
     @Override

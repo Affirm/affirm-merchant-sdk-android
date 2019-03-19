@@ -58,7 +58,7 @@ final Checkout checkout = Checkout.builder()
         .setTotal(1100f)
         .build();
 
-Affirm.startCheckout(this, checkout);
+Affirm.startCheckoutFlow(this, checkout, false);
 ```
 
 Override onActivityResult so that affirm can handle the result.
@@ -106,7 +106,7 @@ final Checkout checkout = Checkout.builder()
         .setTotal(1100f)
         .build();
 
-Affirm.startVcnCheckout(this, checkout);
+Affirm.startCheckoutFlow(this, checkout, true);
 ```
 
 Override onActivityResult so that affirm can handle the result.

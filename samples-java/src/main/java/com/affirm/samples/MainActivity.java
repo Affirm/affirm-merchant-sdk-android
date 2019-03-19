@@ -34,14 +34,14 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.checkout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startCheckout(MainActivity.this, checkoutModel());
+                Affirm.startCheckoutFlow(MainActivity.this, checkoutModel(), false);
             }
         });
 
         findViewById(R.id.vcnCheckout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startVcnCheckout(MainActivity.this, checkoutModel());
+                Affirm.startCheckoutFlow(MainActivity.this, checkoutModel(), true);
             }
         });
 

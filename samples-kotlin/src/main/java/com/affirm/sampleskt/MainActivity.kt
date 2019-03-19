@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        checkout.setOnClickListener { Affirm.startCheckout(this, checkoutModel()) }
-        vcnCheckout.setOnClickListener { Affirm.startVcnCheckout(this, checkoutModel()) }
+        checkout.setOnClickListener { Affirm.startCheckoutFlow(this, checkoutModel(), false) }
+        vcnCheckout.setOnClickListener { Affirm.startCheckoutFlow(this, checkoutModel(), true) }
         siteModalButton.setOnClickListener { Affirm.startSiteModal(this@MainActivity, "5LNMQ33SEUYHLNUC") }
         productModalButton.setOnClickListener { Affirm.startProductModal(this@MainActivity, 1100f, "0Q97G0Z4Y4TLGHGB") }
 

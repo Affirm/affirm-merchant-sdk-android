@@ -20,8 +20,8 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         setContentView(R.layout.activity_main)
         checkout.setOnClickListener { Affirm.startCheckoutFlow(this, checkoutModel(), false) }
         vcnCheckout.setOnClickListener { Affirm.startCheckoutFlow(this, checkoutModel(), true) }
-        siteModalButton.setOnClickListener { Affirm.startSiteModal(this@MainActivity, "5LNMQ33SEUYHLNUC") }
-        productModalButton.setOnClickListener { Affirm.startProductModal(this@MainActivity, 1100f, "0Q97G0Z4Y4TLGHGB") }
+        siteModalButton.setOnClickListener { Affirm.showSiteModal(this@MainActivity, "5LNMQ33SEUYHLNUC") }
+        productModalButton.setOnClickListener { Affirm.showProductModal(this@MainActivity, 1100f, "0Q97G0Z4Y4TLGHGB") }
 
         Affirm.writePromo(this, promo, null, 1100f, true) { throwable ->
             Log.e(TAG, "As low as label failed...", throwable)

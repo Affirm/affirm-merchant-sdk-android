@@ -15,8 +15,6 @@ import androidx.annotation.Nullable;
 
 abstract class CheckoutCommonActivity extends AffirmActivity {
 
-    static final int RESULT_ERROR = -8575;
-
     static final String CHECKOUT_ERROR = "checkout_error";
 
     static final String CHECKOUT_EXTRA = "checkout_extra";
@@ -60,7 +58,7 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
     protected void finishWithError(@NonNull Throwable error) {
         final Intent intent = new Intent();
         intent.putExtra(CHECKOUT_ERROR, error.toString());
-        setResult(RESULT_ERROR, intent);
+        setResult(Affirm.RESULT_ERROR, intent);
         finish();
     }
 

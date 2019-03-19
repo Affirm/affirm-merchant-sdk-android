@@ -48,14 +48,14 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.siteModalButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startSiteModal(MainActivity.this, "5LNMQ33SEUYHLNUC");
+                Affirm.showSiteModal(MainActivity.this, "5LNMQ33SEUYHLNUC");
             }
         });
 
         findViewById(R.id.productModalButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startProductModal(MainActivity.this, 1100, "0Q97G0Z4Y4TLGHGB");
+                Affirm.showProductModal(MainActivity.this, 1100, "0Q97G0Z4Y4TLGHGB");
             }
         });
 

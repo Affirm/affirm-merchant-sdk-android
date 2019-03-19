@@ -85,16 +85,12 @@ class CheckoutRequest extends Request {
                 CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
                 return new ResponseWrapper<>(checkoutResponse);
             } catch (ConnectionException e) {
-                AffirmLog.e("checkout failed", e);
                 return new ResponseWrapper<>(e);
             } catch (APIException e) {
-                AffirmLog.e("checkout failed", e);
                 return new ResponseWrapper<>(e);
             } catch (PermissionException e) {
-                AffirmLog.e("checkout failed", e);
                 return new ResponseWrapper<>(e);
             } catch (InvalidRequestException e) {
-                AffirmLog.e("checkout failed", e);
                 return new ResponseWrapper<>(e);
             }
         }
@@ -106,6 +102,7 @@ class CheckoutRequest extends Request {
                 if (result.source != null) {
                     checkoutCallback.onSuccess(result.source);
                 } else if (result.error != null) {
+                    AffirmLog.e("Checkout failed...", result.error);
                     checkoutCallback.onError(result.error);
                 }
             }

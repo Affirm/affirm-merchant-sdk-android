@@ -67,16 +67,12 @@ class PromoRequest extends Request {
                         AffirmApiHandler.getNewPromo(promoId, dollarAmount, showCta);
                 return new ResponseWrapper<>(promoResponse);
             } catch (ConnectionException e) {
-                AffirmLog.e("Get new promo failed", e);
                 return new ResponseWrapper<>(e);
             } catch (APIException e) {
-                AffirmLog.e("Get new promo failed", e);
                 return new ResponseWrapper<>(e);
             } catch (PermissionException e) {
-                AffirmLog.e("Get new promo failed", e);
                 return new ResponseWrapper<>(e);
             } catch (InvalidRequestException e) {
-                AffirmLog.e("Get new promo failed", e);
                 return new ResponseWrapper<>(e);
             }
         }
@@ -91,6 +87,7 @@ class PromoRequest extends Request {
                     String promo = result.source.promo().ala();
                     callback.onPromoWritten(promo, showPrequal);
                 } else if (result.error != null) {
+                    AffirmLog.e("Get new promo failed...", result.error);
                     callback.onFailure(result.error);
                 }
             }

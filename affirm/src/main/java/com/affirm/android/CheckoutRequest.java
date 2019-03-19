@@ -85,12 +85,16 @@ class CheckoutRequest extends Request {
                 CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(checkout);
                 return new ResponseWrapper<>(checkoutResponse);
             } catch (ConnectionException e) {
+                AffirmLog.e("checkout failed", e);
                 return new ResponseWrapper<>(e);
             } catch (APIException e) {
+                AffirmLog.e("checkout failed", e);
                 return new ResponseWrapper<>(e);
             } catch (PermissionException e) {
+                AffirmLog.e("checkout failed", e);
                 return new ResponseWrapper<>(e);
             } catch (InvalidRequestException e) {
+                AffirmLog.e("checkout failed", e);
                 return new ResponseWrapper<>(e);
             }
         }

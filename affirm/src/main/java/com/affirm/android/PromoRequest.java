@@ -67,12 +67,16 @@ class PromoRequest extends Request {
                         AffirmApiHandler.getNewPromo(promoId, dollarAmount, showCta);
                 return new ResponseWrapper<>(promoResponse);
             } catch (ConnectionException e) {
+                AffirmLog.e("Get new promo failed", e);
                 return new ResponseWrapper<>(e);
             } catch (APIException e) {
+                AffirmLog.e("Get new promo failed", e);
                 return new ResponseWrapper<>(e);
             } catch (PermissionException e) {
+                AffirmLog.e("Get new promo failed", e);
                 return new ResponseWrapper<>(e);
             } catch (InvalidRequestException e) {
+                AffirmLog.e("Get new promo failed", e);
                 return new ResponseWrapper<>(e);
             }
         }

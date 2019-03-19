@@ -39,19 +39,19 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.checkbox).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.launchCheckout(MainActivity.this, checkoutModel());
+                Affirm.startCheckout(MainActivity.this, checkoutModel());
             }
         });
 
         findViewById(R.id.vcn_checkout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.launchVcnCheckout(MainActivity.this, checkoutModel());
+                Affirm.startVcnCheckout(MainActivity.this, checkoutModel());
             }
         });
 
         AffirmPromoLabel label = findViewById(R.id.affirm_promo_label);
-        Affirm.writePromoToTextView(this, label, null, 1100, true, new Affirm.PromoCallback() {
+        Affirm.writePromo(this, label, null, 1100, true, new Affirm.PromoCallback() {
             @Override
             public void onSuccess(String promo) {
 

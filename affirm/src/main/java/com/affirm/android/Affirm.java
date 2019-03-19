@@ -64,35 +64,41 @@ public final class Affirm {
     }
 
     public static void initialize(Configuration configuration) {
-
-
+        if (isInitialized()) {
+            AffirmLog.w("Affirm is already initialized");
+            return;
+        }
         AffirmPlugins.initialize(configuration);
     }
 
-    public static void launchCheckout(@NonNull Activity activity, @NonNull Checkout checkout) {
+    private static boolean isInitialized() {
+        return AffirmPlugins.get() != null;
+    }
+
+    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout) {
         CheckoutActivity.startActivity(activity, CHECKOUT_REQUEST, checkout);
     }
 
-    public static void launchVcnCheckout(@NonNull Activity activity, Checkout checkout) {
+    public static void startVcnCheckout(@NonNull Activity activity, Checkout checkout) {
         VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
     }
 
-    private static void launchPrequal(@NonNull Context context, float amount,
-                                      @Nullable String promoId) {
+    private static void startPrequalFlow(@NonNull Context context, float amount,
+                                         @Nullable String promoId) {
         PrequalActivity.startActivity(context, amount, promoId);
     }
 
-    private static void launchProductModal(@NonNull Context context, float amount,
-                                           @Nullable String modalId) {
+    private static void startProductModal(@NonNull Context context, float amount,
+                                          @Nullable String modalId) {
         ModalActivity.startActivity(context, amount, PRODUCT, modalId);
     }
 
-    public static void writePromoToTextView(@NonNull Context context,
-                                            @NonNull final AffirmPromoLabel promoLabel,
-                                            @Nullable final String promoId,
-                                            final float amount,
-                                            final boolean showCta,
-                                            @Nullable final PromoCallback promoCallback) {
+    public static void writePromo(@NonNull Context context,
+                                  @NonNull final AffirmPromoLabel promoLabel,
+                                  @Nullable final String promoId,
+                                  final float amount,
+                                  final boolean showCta,
+                                  @Nullable final PromoCallback promoCallback) {
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
@@ -136,9 +142,9 @@ public final class Affirm {
                 }
                 boolean showPrequal = (boolean) v.getTag();
                 if (showPrequal) {
-                    launchPrequal(context, amount, promoId);
+                    startPrequalFlow(context, amount, promoId);
                 } else {
-                    launchProductModal(context, amount, null);
+                    startProductModal(context, amount, null);
                 }
             }
         };

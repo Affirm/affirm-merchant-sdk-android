@@ -22,10 +22,10 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         checkbox.setOnClickListener {
-            Affirm.launchCheckout(this, checkoutModel())
+            Affirm.startCheckout(this, checkoutModel())
         }
-        vcn_checkout.setOnClickListener { Affirm.launchVcnCheckout(this, checkoutModel()) }
-        Affirm.writePromoToTextView(this, affirm_promo_label, null, 1100f, true, object : Affirm.PromoCallback {
+        vcn_checkout.setOnClickListener { Affirm.startVcnCheckout(this, checkoutModel()) }
+        Affirm.writePromo(this, affirm_promo_label, null, 1100f, true, object : Affirm.PromoCallback {
 
             override fun onSuccess(promo: String?) {
 

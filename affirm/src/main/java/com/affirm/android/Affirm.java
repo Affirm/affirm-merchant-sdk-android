@@ -192,8 +192,11 @@ public final class Affirm {
      */
     public static void startCheckoutFlow(@NonNull Activity activity, @NonNull Checkout checkout,
                                          boolean useVcn) {
-        int requestCode = useVcn ? VCN_CHECKOUT_REQUEST : CHECKOUT_REQUEST;
-        CheckoutActivity.startActivity(activity, requestCode, checkout);
+        if (useVcn) {
+            VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
+        } else {
+            CheckoutActivity.startActivity(activity, CHECKOUT_REQUEST, checkout);
+        }
     }
 
     /**

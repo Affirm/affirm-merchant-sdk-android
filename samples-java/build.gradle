@@ -14,8 +14,15 @@ android {
 
 dependencies {
     implementation project(':affirm')
-    implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"
 
+    // aar
+//    implementation(name: 'affirm', ext: 'aar')
+//    implementation "com.squareup.okhttp3:okhttp:3.12.1"
+//    implementation "com.google.code.gson:gson:2.8.5"
+
+    // maven
+
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
@@ -31,4 +38,8 @@ dependencies {
 }
 repositories {
     mavenCentral()
+
+    flatDir {
+        dirs 'libs'
+    }
 }

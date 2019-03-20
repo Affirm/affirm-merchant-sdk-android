@@ -28,6 +28,8 @@ class Constants {
     static final String HTTP = "http";
     static final String X_AFFIRM_REQUEST_ID = "X-Affirm-Request-Id";
     static final String CONTENT_TYPE = "application/json; charset=utf-8";
+    static final String TEXT_HTML = "text/html";
+    static final String UTF_8 = "utf-8";
 
     static final String AMOUNT = "AMOUNT";
     static final String PROMO_ID = "PROMO_ID";

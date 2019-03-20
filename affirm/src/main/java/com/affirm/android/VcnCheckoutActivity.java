@@ -31,6 +31,8 @@ import static com.affirm.android.Constants.AFFIRM_CONFIRMATION_URL;
 import static com.affirm.android.Constants.CHECKOUT_EXTRA;
 import static com.affirm.android.Constants.CREDIT_DETAILS;
 import static com.affirm.android.Constants.HTTPS_PROTOCOL;
+import static com.affirm.android.Constants.TEXT_HTML;
+import static com.affirm.android.Constants.UTF_8;
 
 public class VcnCheckoutActivity extends CheckoutCommonActivity
     implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
@@ -46,7 +48,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
     void initViews() {
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(
-                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
+            new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
         clearCookies();
     }
@@ -77,7 +79,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
                 final String html = initialHtml(response);
                 final Uri uri = Uri.parse(response.redirectUrl());
                 webView.loadDataWithBaseURL(HTTPS_PROTOCOL + uri.getHost(), html,
-                    "text/html", "utf-8", null);
+                    TEXT_HTML, UTF_8, null);
             }
         };
     }

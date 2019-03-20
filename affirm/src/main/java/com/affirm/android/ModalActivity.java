@@ -26,7 +26,9 @@ import static com.affirm.android.Constants.JAVASCRIPT;
 import static com.affirm.android.Constants.JS_PATH;
 import static com.affirm.android.Constants.MAP_EXTRA;
 import static com.affirm.android.Constants.MODAL_ID;
+import static com.affirm.android.Constants.TEXT_HTML;
 import static com.affirm.android.Constants.TYPE_EXTRA;
+import static com.affirm.android.Constants.UTF_8;
 
 public class ModalActivity extends AffirmActivity
     implements AffirmWebViewClient.Callbacks {
@@ -96,10 +98,7 @@ public class ModalActivity extends AffirmActivity
         final String html = initialHtml();
         webView.loadDataWithBaseURL(
             HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
-            html,
-            "text/html",
-            "utf-8",
-            null);
+            html, TEXT_HTML, UTF_8, null);
     }
 
     @Override

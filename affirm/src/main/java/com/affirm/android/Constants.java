@@ -1,6 +1,9 @@
 package com.affirm.android;
 
-class Constants {
+public final class Constants {
+
+    private Constants() {
+    }
 
     static final String SDK_NAME = "Affirm";
 
@@ -9,12 +12,12 @@ class Constants {
     static final String PRODUCTION_URL = "api-cf.affirm.com";
     static final String CHECKOUT_PATH = "/api/v2/checkout/";
     static final String TRACKER_PATH = "/collect";
-    static final String PROMO_PATH = "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d" +
-        "&show_cta=%s&promo_external_id=%s";
-    static final String PREQUAL_PATH = "/apps/prequal?public_api_key=%s&unit_price=%s" +
-        "&promo_external_id=%s&isSDK=true&use_promo=True&referring_url=%s";
-    static final String AFFIRM_CONFIRMATION_URL = "affirm://checkout/confirmed";
-    static final String AFFIRM_CANCELLATION_URL = "affirm://checkout/cancelled";
+    static final String PROMO_PATH = "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d"
+            + "&show_cta=%s&promo_external_id=%s";
+    static final String PREQUAL_PATH = "/apps/prequal?public_api_key=%s&unit_price=%s"
+            + "&promo_external_id=%s&isSDK=true&use_promo=True&referring_url=%s";
+    public static final String AFFIRM_CONFIRMATION_URL = "affirm://checkout/confirmed";
+    public static final String AFFIRM_CANCELLATION_URL = "affirm://checkout/cancelled";
     static final String REFERRING_URL = "https://androidsdk/";
     static final String JS_PATH = "/js/v2/affirm.js";
 

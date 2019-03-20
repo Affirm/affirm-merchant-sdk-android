@@ -15,7 +15,19 @@ import java.util.Locale;
 
 import androidx.annotation.Nullable;
 
-import static com.affirm.android.Constants.*;
+import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
+import static com.affirm.android.Constants.AFFIRM_CONFIRMATION_URL;
+import static com.affirm.android.Constants.CHECKOUT_PATH;
+import static com.affirm.android.Constants.CONTENT_TYPE;
+import static com.affirm.android.Constants.HTTP;
+import static com.affirm.android.Constants.HTTPS_PROTOCOL;
+import static com.affirm.android.Constants.PROMO_PATH;
+import static com.affirm.android.Constants.TAG_CHECKOUT;
+import static com.affirm.android.Constants.TAG_GET_NEW_PROMO;
+import static com.affirm.android.Constants.TAG_TRACKER;
+import static com.affirm.android.Constants.TAG_VCN_CHECKOUT;
+import static com.affirm.android.Constants.TRACKER_PATH;
+
 
 final class AffirmApiHandler {
 

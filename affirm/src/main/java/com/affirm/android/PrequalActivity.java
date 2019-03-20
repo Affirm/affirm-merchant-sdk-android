@@ -101,8 +101,8 @@ public class PrequalActivity extends AffirmActivity
         } else {
             defaultName = getString(R.string.affirm_name_default_production);
         }
-        String name = TextUtils.isEmpty(AffirmPlugins.get().name()) ?
-                defaultName : AffirmPlugins.get().name();
+        String name = TextUtils.isEmpty(AffirmPlugins.get().name())
+                ? defaultName : AffirmPlugins.get().name();
         new AlertDialog.Builder(this).setTitle(R.string.affirm)
                 .setMessage(getString(R.string.affirm_prequal_quit_confirm, name))
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

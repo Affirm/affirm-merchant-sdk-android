@@ -4,9 +4,9 @@ import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 
-final class PrequalWebViewClient extends AffirmWebViewClient {
+import static com.affirm.android.Constants.REFERRING_URL;
 
-    static final String REFERRING_URL = "https://androidsdk/";
+final class PrequalWebViewClient extends AffirmWebViewClient {
 
     private final Callbacks mCallbacks;
 

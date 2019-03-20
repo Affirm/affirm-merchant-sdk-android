@@ -18,6 +18,12 @@ import androidx.annotation.Nullable;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.affirm.android.Constants.CHECKOUT_ERROR;
+import static com.affirm.android.Constants.CHECKOUT_TOKEN;
+import static com.affirm.android.Constants.CREDIT_DETAILS;
+import static com.affirm.android.Constants.PRODUCTION_URL;
+import static com.affirm.android.Constants.SANDBOX_URL;
+import static com.affirm.android.Constants.TRACKER_URL;
 import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
 import static com.affirm.android.ModalActivity.ModalType.SITE;
 
@@ -58,8 +64,8 @@ public final class Affirm {
     }
 
     public enum Environment {
-        SANDBOX("sandbox.affirm.com", "tracker.affirm.com"),
-        PRODUCTION("api-cf.affirm.com", "tracker.affirm.com");
+        SANDBOX(SANDBOX_URL, TRACKER_URL),
+        PRODUCTION(PRODUCTION_URL, TRACKER_URL);
 
         final String baseUrl;
         final String trackerBaseUrl;
@@ -265,7 +271,7 @@ public final class Affirm {
         };
 
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(promoId, amount, showCta, callback);
+            new PromoRequest(promoId, amount, showCta, callback);
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
@@ -311,15 +317,13 @@ public final class Affirm {
         if (requestCode == CHECKOUT_REQUEST) {
             switch (resultCode) {
                 case RESULT_OK:
-                    callbacks.onAffirmCheckoutSuccess(
-                            data.getStringExtra(CheckoutActivity.CHECKOUT_TOKEN));
+                    callbacks.onAffirmCheckoutSuccess(data.getStringExtra(CHECKOUT_TOKEN));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmCheckoutCancelled();
                     break;
                 case RESULT_ERROR:
-                    callbacks.onAffirmCheckoutError(
-                            data.getStringExtra(CheckoutActivity.CHECKOUT_ERROR));
+                    callbacks.onAffirmCheckoutError(data.getStringExtra(CHECKOUT_ERROR));
                     break;
                 default:
             }
@@ -344,15 +348,13 @@ public final class Affirm {
             switch (resultCode) {
                 case RESULT_OK:
                     callbacks.onAffirmVcnCheckoutSuccess(
-                            (CardDetails) data.getParcelableExtra(
-                                    VcnCheckoutActivity.CREDIT_DETAILS));
+                        (CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmVcnCheckoutCancelled();
                     break;
                 case RESULT_ERROR:
-                    callbacks.onAffirmVcnCheckoutError(
-                            data.getStringExtra(VcnCheckoutActivity.CHECKOUT_ERROR));
+                    callbacks.onAffirmVcnCheckoutError(data.getStringExtra(CHECKOUT_ERROR));
                     break;
                 default:
             }

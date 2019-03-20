@@ -26,11 +26,14 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIE
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_SUCCESS;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
+import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
+import static com.affirm.android.Constants.AFFIRM_CONFIRMATION_URL;
+import static com.affirm.android.Constants.CHECKOUT_EXTRA;
+import static com.affirm.android.Constants.CREDIT_DETAILS;
+import static com.affirm.android.Constants.HTTPS_PROTOCOL;
 
-class VcnCheckoutActivity extends CheckoutCommonActivity
+public class VcnCheckoutActivity extends CheckoutCommonActivity
     implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
-
-    static final String CREDIT_DETAILS = "credit_details";
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout) {
@@ -73,7 +76,7 @@ class VcnCheckoutActivity extends CheckoutCommonActivity
                 AffirmTracker.track(VCN_CHECKOUT_CREATION_SUCCESS, INFO, null);
                 final String html = initialHtml(response);
                 final Uri uri = Uri.parse(response.redirectUrl());
-                webView.loadDataWithBaseURL("https://" + uri.getHost(), html,
+                webView.loadDataWithBaseURL(HTTPS_PROTOCOL + uri.getHost(), html,
                     "text/html", "utf-8", null);
             }
         };
@@ -93,8 +96,8 @@ class VcnCheckoutActivity extends CheckoutCommonActivity
         map.put("URL", response.redirectUrl());
         map.put("URL2", response.redirectUrl());
         map.put("JS_CALLBACK_ID", response.jsCallbackId());
-        map.put("CONFIRM_CB_URL", AffirmWebViewClient.AFFIRM_CONFIRMATION_URL);
-        map.put("CANCELLED_CB_URL", AffirmWebViewClient.AFFIRM_CANCELLATION_URL);
+        map.put("CONFIRM_CB_URL", AFFIRM_CONFIRMATION_URL);
+        map.put("CANCELLED_CB_URL", AFFIRM_CANCELLATION_URL);
         return AffirmUtils.replacePlaceholders(html, map);
     }
 

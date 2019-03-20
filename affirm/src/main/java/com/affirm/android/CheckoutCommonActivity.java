@@ -14,11 +14,10 @@ import com.affirm.android.CheckoutRequest.CheckoutType;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static com.affirm.android.Constants.CHECKOUT_ERROR;
+import static com.affirm.android.Constants.CHECKOUT_EXTRA;
+
 abstract class CheckoutCommonActivity extends AffirmActivity {
-
-    static final String CHECKOUT_ERROR = "checkout_error";
-
-    static final String CHECKOUT_EXTRA = "checkout_extra";
 
     private CheckoutRequest mCheckoutRequest;
 

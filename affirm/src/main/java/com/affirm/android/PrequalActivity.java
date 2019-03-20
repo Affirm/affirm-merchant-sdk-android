@@ -13,11 +13,14 @@ import com.affirm.android.exception.ConnectionException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class PrequalActivity extends AffirmActivity
-        implements AffirmWebViewClient.Callbacks, PrequalWebViewClient.Callbacks {
+import static com.affirm.android.Constants.AMOUNT;
+import static com.affirm.android.Constants.HTTPS_PROTOCOL;
+import static com.affirm.android.Constants.PREQUAL_PATH;
+import static com.affirm.android.Constants.PROMO_ID;
+import static com.affirm.android.Constants.REFERRING_URL;
 
-    private static final String AMOUNT = "AMOUNT";
-    private static final String PROMO_ID = "PROMO_ID";
+public class PrequalActivity extends AffirmActivity
+        implements AffirmWebViewClient.Callbacks, PrequalWebViewClient.Callbacks {
 
     private String mAmount;
     private String mPromoId;
@@ -55,16 +58,10 @@ class PrequalActivity extends AffirmActivity
     @Override
     void onAttached() {
         String publicKey = AffirmPlugins.get().publicKey();
-        String path = String.format(
-                "/apps/prequal?public_api_key=%s"
-                        + "&unit_price=%s"
-                        + "&promo_external_id=%s"
-                        + "&isSDK=true"
-                        + "&use_promo=True"
-                        + "&referring_url=%s",
-                publicKey, mAmount, mPromoId, PrequalWebViewClient.REFERRING_URL);
+        String path = String.format(PREQUAL_PATH,
+                publicKey, mAmount, mPromoId, REFERRING_URL);
 
-        webView.loadUrl(PROTOCOL + AffirmPlugins.get().baseUrl() + path);
+        webView.loadUrl(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl() + path);
     }
 
     @Override

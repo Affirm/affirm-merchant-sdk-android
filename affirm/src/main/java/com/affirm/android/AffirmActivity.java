@@ -10,8 +10,9 @@ import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import static com.affirm.android.Constants.HTTPS_PROTOCOL;
+
 abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChromeClient.Callbacks {
-    static final String PROTOCOL = "https://";
 
     ViewGroup container;
     WebView webView;
@@ -54,7 +55,7 @@ abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChro
     public void clearCookies() {
         final CookieManager cookieManager = CookieManager.getInstance();
         final CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(this);
-        CookiesUtil.clearCookieByUrl("https://" + AffirmPlugins.get().baseUrl(),
+        CookiesUtil.clearCookieByUrl(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
                 cookieManager, cookieSyncManager);
     }
 

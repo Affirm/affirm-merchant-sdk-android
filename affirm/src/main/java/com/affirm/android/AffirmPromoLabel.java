@@ -21,10 +21,10 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_WHITE;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
+import static com.affirm.android.Constants.LOGO_PLACEHOLDER;
 
 public class AffirmPromoLabel extends AppCompatTextView {
 
-    private static final String LOGO_PLACEHOLDER = "{affirm_logo}";
     private Paint mPaint;
     private AffirmLogoType mAffirmLogoType;
     private AffirmColor mAffirmColor;

@@ -9,9 +9,10 @@ import com.affirm.android.exception.ConnectionException;
 
 import androidx.annotation.NonNull;
 
-public abstract class AffirmWebViewClient extends WebViewClient {
-    public static final String AFFIRM_CONFIRMATION_URL = "affirm://checkout/confirmed";
-    public static final String AFFIRM_CANCELLATION_URL = "affirm://checkout/cancelled";
+import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
+import static com.affirm.android.Constants.HTTP;
+
+abstract class AffirmWebViewClient extends WebViewClient {
 
     private final Callbacks mCallbacks;
 
@@ -32,7 +33,7 @@ public abstract class AffirmWebViewClient extends WebViewClient {
             return true;
         }
 
-        return !url.startsWith("http");
+        return !url.startsWith(HTTP);
     }
 
     @Override

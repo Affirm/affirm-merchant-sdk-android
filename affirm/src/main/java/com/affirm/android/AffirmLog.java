@@ -2,12 +2,14 @@ package com.affirm.android;
 
 import android.util.Log;
 
+import static com.affirm.android.Constants.SDK_NAME;
+
 final class AffirmLog {
 
     private AffirmLog() {
     }
 
-    private static final String TAG = "Affirm";
+    private static final String TAG = SDK_NAME;
 
     private static int logLevel = Integer.MAX_VALUE;
 

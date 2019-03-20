@@ -16,10 +16,10 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public final class AffirmUtils {
+import static com.affirm.android.Constants.PLACEHOLDER_END;
+import static com.affirm.android.Constants.PLACEHOLDER_START;
 
-    private static final String PLACEHOLDER_START = "{{";
-    private static final String PLACEHOLDER_END = "}}";
+public final class AffirmUtils {
 
     private AffirmUtils() {
     }

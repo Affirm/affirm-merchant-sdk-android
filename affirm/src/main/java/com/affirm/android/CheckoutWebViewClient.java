@@ -4,6 +4,10 @@ import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 
+import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
+import static com.affirm.android.Constants.AFFIRM_CONFIRMATION_URL;
+import static com.affirm.android.Constants.CHECKOUT_TOKEN;
+
 final class CheckoutWebViewClient extends AffirmWebViewClient {
     private final Callbacks mCallbacks;
 
@@ -15,7 +19,7 @@ final class CheckoutWebViewClient extends AffirmWebViewClient {
     @Override
     boolean hasCallbackUrl(WebView view, String url) {
         if (url.contains(AFFIRM_CONFIRMATION_URL)) {
-            final String token = url.split("checkout_token=")[1];
+            final String token = url.split(CHECKOUT_TOKEN + "=")[1];
             mCallbacks.onWebViewConfirmation(token);
             return true;
         } else if (url.contains(AFFIRM_CANCELLATION_URL)) {

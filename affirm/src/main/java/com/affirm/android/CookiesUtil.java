@@ -8,6 +8,9 @@ import android.webkit.CookieSyncManager;
 
 import java.util.Vector;
 
+import static com.affirm.android.Constants.HTTPS_PROTOCOL;
+import static com.affirm.android.Constants.HTTP_PROTOCOL;
+
 final class CookiesUtil {
 
     private CookiesUtil() {
@@ -18,8 +21,8 @@ final class CookiesUtil {
         Uri uri = Uri.parse(url);
         String host = uri.getHost();
         clearCookieByUrlInternal(url, cookieManager, cookieSyncManager);
-        clearCookieByUrlInternal("http://." + host, cookieManager, cookieSyncManager);
-        clearCookieByUrlInternal("https://." + host, cookieManager, cookieSyncManager);
+        clearCookieByUrlInternal(HTTP_PROTOCOL + "." + host, cookieManager, cookieSyncManager);
+        clearCookieByUrlInternal(HTTPS_PROTOCOL + "." + host, cookieManager, cookieSyncManager);
     }
 
     private static void clearCookieByUrlInternal(String url, CookieManager cookieManager,

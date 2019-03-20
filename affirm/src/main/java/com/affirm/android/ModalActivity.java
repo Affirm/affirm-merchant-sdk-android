@@ -17,20 +17,19 @@ import androidx.annotation.RawRes;
 import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
+import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
+import static com.affirm.android.Constants.AMOUNT;
+import static com.affirm.android.Constants.API_KEY;
+import static com.affirm.android.Constants.CANCEL_URL;
+import static com.affirm.android.Constants.HTTPS_PROTOCOL;
+import static com.affirm.android.Constants.JAVASCRIPT;
+import static com.affirm.android.Constants.JS_PATH;
+import static com.affirm.android.Constants.MAP_EXTRA;
+import static com.affirm.android.Constants.MODAL_ID;
+import static com.affirm.android.Constants.TYPE_EXTRA;
 
-class ModalActivity extends AffirmActivity
+public class ModalActivity extends AffirmActivity
     implements AffirmWebViewClient.Callbacks {
-
-    private static final String MAP_EXTRA = "MAP_EXTRA";
-    private static final String TYPE_EXTRA = "TYPE_EXTRA";
-
-    private static final String JS_PATH = "/js/v2/affirm.js";
-
-    private static final String AMOUNT = "AMOUNT";
-    private static final String API_KEY = "API_KEY";
-    private static final String JAVASCRIPT = "JAVASCRIPT";
-    private static final String CANCEL_URL = "CANCEL_URL";
-    private static final String MODAL_ID = "MODAL_ID";
 
     private ModalType mType;
     private HashMap<String, String> mMap;
@@ -54,13 +53,13 @@ class ModalActivity extends AffirmActivity
         final Intent intent = new Intent(context, ModalActivity.class);
         final String stringAmount =
             String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
-        final String fullPath = PROTOCOL + AffirmPlugins.get().baseUrl() + JS_PATH;
+        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl() + JS_PATH;
 
         final HashMap<String, String> map = new HashMap<>();
         map.put(AMOUNT, stringAmount);
         map.put(API_KEY, AffirmPlugins.get().publicKey());
         map.put(JAVASCRIPT, fullPath);
-        map.put(CANCEL_URL, AffirmWebViewClient.AFFIRM_CANCELLATION_URL);
+        map.put(CANCEL_URL, AFFIRM_CANCELLATION_URL);
         map.put(MODAL_ID, modalId == null ? "" : modalId);
 
         intent.putExtra(TYPE_EXTRA, type);
@@ -96,7 +95,7 @@ class ModalActivity extends AffirmActivity
     void onAttached() {
         final String html = initialHtml();
         webView.loadDataWithBaseURL(
-            PROTOCOL + AffirmPlugins.get().baseUrl(),
+            HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
             html,
             "text/html",
             "utf-8",

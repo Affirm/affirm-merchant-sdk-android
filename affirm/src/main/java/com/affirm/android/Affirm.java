@@ -1,7 +1,6 @@
 package com.affirm.android;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
@@ -162,7 +161,7 @@ public final class Affirm {
              */
             public Configuration build() {
                 if (publicKey == null) {
-                    throw new IllegalArgumentException("public key cannot be null");
+                    throw new NullPointerException("public key cannot be null");
                 }
 
                 return new Configuration(this);
@@ -193,8 +192,9 @@ public final class Affirm {
      * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
      * to get the processed result
      *
-     * @param activity your current activity. Cannot be null.
+     * @param activity activity {@link Activity}
      * @param checkout checkout object that contains address & shipping info & others...
+     * @param useVcn   Start VCN checkout or not
      */
     public static void startCheckoutFlow(@NonNull Activity activity, @NonNull Checkout checkout,
                                          boolean useVcn) {
@@ -208,48 +208,48 @@ public final class Affirm {
     /**
      * Start prequal flow
      *
-     * @param context context {@link Context} for resolving resources
-     * @param amount  (Float) eg 112.02 as $112 and ¢2
-     * @param promoId the client's modal id
+     * @param activity activity {@link Activity}
+     * @param amount   (Float) eg 112.02 as $112 and ¢2
+     * @param promoId  the client's modal id
      */
-    private static void startPrequalFlow(@NonNull Context context, float amount,
+    private static void startPrequalFlow(@NonNull Activity activity, float amount,
                                          @Nullable String promoId) {
-        PrequalActivity.startActivity(context, amount, promoId);
+        PrequalActivity.startActivity(activity, amount, promoId);
     }
 
     /**
      * Start site modal
      *
-     * @param context context {@link Context} for resolving resources
-     * @param modalId the client's modal id
+     * @param activity activity {@link Activity}
+     * @param modalId  the client's modal id
      */
-    public static void showSiteModal(@NonNull Context context, @Nullable String modalId) {
-        ModalActivity.startActivity(context, 0f, SITE, modalId);
+    public static void showSiteModal(@NonNull Activity activity, @Nullable String modalId) {
+        ModalActivity.startActivity(activity, 0f, SITE, modalId);
     }
 
     /**
      * Start product modal
      *
-     * @param context context {@link Context} for resolving resources
-     * @param amount  (Float) eg 112.02 as $112 and ¢2
-     * @param modalId the client's modal id
+     * @param activity activity {@link Activity}
+     * @param amount   (Float) eg 112.02 as $112 and ¢2
+     * @param modalId  the client's modal id
      */
-    public static void showProductModal(@NonNull Context context, float amount,
+    public static void showProductModal(@NonNull Activity activity, float amount,
                                         @Nullable String modalId) {
-        ModalActivity.startActivity(context, amount, PRODUCT, modalId);
+        ModalActivity.startActivity(activity, amount, PRODUCT, modalId);
     }
 
     /**
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
-     * @param context       context {@link Context} for resolving resources
+     * @param activity      activity {@link Activity}
      * @param promoLabel    AffirmPromoLabel to show the promo message
      * @param promoId       the client's modal id
      * @param amount        (Float) eg 112.02 as $112 and ¢2
      * @param showCta       whether need to show cta
      * @param promoCallback callback to client if have any errors when show promo message
      */
-    public static void writePromo(@NonNull Context context,
+    public static void writePromo(@NonNull Activity activity,
                                   @NonNull final AffirmPromoLabel promoLabel,
                                   @Nullable final String promoId,
                                   final float amount,
@@ -285,19 +285,19 @@ public final class Affirm {
             }
         });
 
-        final WeakReference contextRef = new WeakReference<>(context);
+        final WeakReference contextRef = new WeakReference<>(activity);
         final View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Context context = (Context) contextRef.get();
-                if (context == null || TextUtils.isEmpty(promoLabel.getText())) {
+                Activity activity = (Activity) contextRef.get();
+                if (activity == null || TextUtils.isEmpty(promoLabel.getText())) {
                     return;
                 }
                 boolean showPrequal = (boolean) v.getTag();
                 if (showPrequal) {
-                    startPrequalFlow(context, amount, promoId);
+                    startPrequalFlow(activity, amount, promoId);
                 } else {
-                    showProductModal(context, amount, null);
+                    showProductModal(activity, amount, null);
                 }
             }
         };

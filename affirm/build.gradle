@@ -18,6 +18,7 @@ ext {
     autoValueParcelVersion = '0.2.5'
     truthVersion = '0.28'
     mockitoCoreVersion = '2.21.0'
+    robolectricVersion = '4.1'
 }
 
 android {
@@ -111,8 +112,8 @@ dependencies {
     annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${autoValueParcelVersion}"
 
     androidTestImplementation "com.android.support.test:runner:${testRunnerVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:${testEspressoVersion}"
 
+    testImplementation "org.robolectric:robolectric:${robolectricVersion}"
     testImplementation "com.google.truth:truth:${truthVersion}"
     testImplementation "org.mockito:mockito-core:${mockitoCoreVersion}"
 }

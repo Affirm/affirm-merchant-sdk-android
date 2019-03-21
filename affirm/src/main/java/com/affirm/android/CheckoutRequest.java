@@ -102,7 +102,7 @@ class CheckoutRequest extends Request {
                 if (result.source != null) {
                     checkoutCallback.onSuccess(result.source);
                 } else if (result.error != null) {
-                    AffirmLog.e("Checkout failed...", result.error);
+                    AffirmLog.e(result.error.toString());
                     checkoutCallback.onError(result.error);
                 }
             }

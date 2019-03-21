@@ -37,8 +37,8 @@ public class ModalActivity extends AffirmActivity
     private HashMap<String, String> mMap;
 
     enum ModalType {
-        PRODUCT(R.raw.modal_template, PRODUCT_WEBVIEW_FAIL),
-        SITE(R.raw.modal_template, SITE_WEBVIEW_FAIL);
+        PRODUCT(R.raw.affirm_modal_template, PRODUCT_WEBVIEW_FAIL),
+        SITE(R.raw.affirm_modal_template, SITE_WEBVIEW_FAIL);
 
         @RawRes
         final int templateRes;

@@ -58,7 +58,7 @@ public final class Affirm {
         void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails);
     }
 
-    public interface PromoCallback {
+    public interface PromoCallbacks {
         void onFailure(Throwable throwable);
     }
 
@@ -122,10 +122,12 @@ public final class Affirm {
             }
 
             /**
-             * Sets the level of logging to display, where each level includes all those below it.
-             * The default level is {@link #LOG_LEVEL_NONE}. Please ensure this is set to
-             * {@link #LOG_LEVEL_ERROR} or {@link #LOG_LEVEL_NONE} before deploying your app to
-             * ensure no sensitive information is logged. The levels are:
+             * Set the level of logging to display. The default level is {@link #LOG_LEVEL_NONE}.
+             * <p>
+             * Please ensure this is set to {@link #LOG_LEVEL_ERROR} or {@link #LOG_LEVEL_NONE}
+             * before deploying your app.
+             * <p>
+             * The levels are:
              * <ul>
              * <li>{@link #LOG_LEVEL_VERBOSE}</li>
              * <li>{@link #LOG_LEVEL_DEBUG}</li>
@@ -254,7 +256,7 @@ public final class Affirm {
                                   @Nullable final String promoId,
                                   final float amount,
                                   final boolean showCta,
-                                  @Nullable final PromoCallback promoCallback) {
+                                  @Nullable final PromoCallbacks promoCallback) {
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
@@ -271,7 +273,7 @@ public final class Affirm {
         };
 
         final PromoRequest affirmPromoRequest =
-            new PromoRequest(promoId, amount, showCta, callback);
+                new PromoRequest(promoId, amount, showCta, callback);
         promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
@@ -348,7 +350,7 @@ public final class Affirm {
             switch (resultCode) {
                 case RESULT_OK:
                     callbacks.onAffirmVcnCheckoutSuccess(
-                        (CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
+                            (CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmVcnCheckoutCancelled();

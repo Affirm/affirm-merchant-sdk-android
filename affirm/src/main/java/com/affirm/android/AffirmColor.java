@@ -32,11 +32,11 @@ enum AffirmColor {
     int getColorRes() {
         switch (this) {
             case AFFIRM_COLOR_TYPE_BLACK:
-                return R.color.black100;
+                return R.color.affirm_black;
             case AFFIRM_COLOR_TYPE_BLUE:
-                return R.color.blue;
+                return R.color.affirm_blue;
             default:
-                return R.color.white;
+                return R.color.affirm_white;
         }
     }
 }

@@ -87,7 +87,7 @@ class PromoRequest extends Request {
                     final String promo = result.source.promo().ala();
                     callback.onPromoWritten(promo, showPrequal);
                 } else if (result.error != null) {
-                    AffirmLog.e("Get new promo failed...", result.error);
+                    AffirmLog.e(result.error.toString());
                     callback.onFailure(result.error);
                 }
             }

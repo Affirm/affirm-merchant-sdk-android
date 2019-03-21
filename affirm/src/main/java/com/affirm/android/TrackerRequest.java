@@ -34,7 +34,7 @@ class TrackerRequest extends Request {
             try {
                 AffirmApiHandler.sendTrackRequest(mTrackingData);
             } catch (Exception e) {
-                AffirmLog.e("track failed", e);
+                AffirmLog.w(e.toString());
             }
             return null;
         }

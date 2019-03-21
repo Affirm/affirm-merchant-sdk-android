@@ -33,13 +33,13 @@ enum AffirmLogoType {
     int getDrawableRes() {
         switch (this) {
             case AFFIRM_DISPLAY_TYPE_LOGO:
-                return R.drawable.black_logo_transparent_bg;
+                return R.drawable.affirm_black_logo_transparent_bg;
             case AFFIRM_DISPLAY_TYPE_SYMBOL:
-                return R.drawable.black_solid_circle_transparent_bg;
+                return R.drawable.affirm_black_solid_circle_transparent_bg;
             case AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW:
-                return R.drawable.black_hollow_circle_transparent_bg;
+                return R.drawable.affirm_black_hollow_circle_transparent_bg;
             default:
-                return R.drawable.black_logo_transparent_bg;
+                return R.drawable.affirm_black_logo_transparent_bg;
         }
     }
 }

@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import com.affirm.android.Affirm;
 import com.affirm.android.AffirmPromoLabel;
-import com.affirm.android.PrequalActivity;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         });
 
         Affirm.writePromo(this, (AffirmPromoLabel) findViewById(R.id.promo), null, 1100, true,
-            new Affirm.PromoCallback() {
+            new Affirm.PromoCallbacks() {
             @Override
             public void onFailure(Throwable throwable) {
                 Log.e(TAG, "As low as label failed...", throwable);

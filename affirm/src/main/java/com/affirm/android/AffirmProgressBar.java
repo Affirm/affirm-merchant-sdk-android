@@ -26,11 +26,11 @@ public class AffirmProgressBar extends ProgressBar {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             Drawable drawableProgress = DrawableCompat.wrap(getIndeterminateDrawable());
             DrawableCompat.setTint(drawableProgress,
-                    ContextCompat.getColor(getContext(), R.color.indigo));
+                    ContextCompat.getColor(getContext(), R.color.affirm_indigo));
             setIndeterminateDrawable(DrawableCompat.unwrap(drawableProgress));
         } else {
             getIndeterminateDrawable().setColorFilter(
-                    ContextCompat.getColor(getContext(), R.color.indigo),
+                    ContextCompat.getColor(getContext(), R.color.affirm_indigo),
                     PorterDuff.Mode.SRC_IN);
         }
     }

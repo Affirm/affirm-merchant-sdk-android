@@ -1,6 +1,6 @@
 <resources>
-    <color name="indigo">#0FA0EA</color>
-    <color name="black100">#23292F</color>
-    <color name="blue">#2984EE</color>
-    <color name="white">@android:color/white</color>
+    <color name="affirm_indigo">#0FA0EA</color>
+    <color name="affirm_black">#23292F</color>
+    <color name="affirm_blue">#2984EE</color>
+    <color name="affirm_white">@android:color/white</color>
 </resources>

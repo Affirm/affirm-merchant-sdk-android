@@ -27,7 +27,7 @@ dependencies {
 //    implementation "com.google.code.gson:gson:2.8.5"
 
     // maven
-    implementation "com.affirm:affirm-android-sdk:1.0.12.1"
+//    implementation "com.affirm:affirm-android-sdk:1.0.12.1"
 
     implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"
 

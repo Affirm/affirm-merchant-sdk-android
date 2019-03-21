@@ -31,7 +31,7 @@ abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChro
         beforeOnCreate();
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_webview);
+        setContentView(R.layout.affirm_activity_webview);
         container = getWindow().getDecorView().findViewById(android.R.id.content);
         webView = findViewById(R.id.webview);
         progressIndicator = findViewById(R.id.progressIndicator);

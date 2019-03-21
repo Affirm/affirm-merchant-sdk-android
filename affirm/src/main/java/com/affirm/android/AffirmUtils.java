@@ -75,13 +75,13 @@ public final class AffirmUtils {
             activity.getActionBar().setDisplayShowTitleEnabled(false);
             activity.getActionBar().setDisplayHomeAsUpEnabled(true);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                activity.getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close);
+                activity.getActionBar().setHomeAsUpIndicator(R.drawable.affirm_ic_baseline_close);
             }
         } else if (activity.getSupportActionBar() != null) {
             activity.getSupportActionBar().show();
             activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close);
+            activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.affirm_ic_baseline_close);
         }
     }
 }

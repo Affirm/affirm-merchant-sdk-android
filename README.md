@@ -1,17 +1,23 @@
 Affirm Android SDK
 ==================
 
-## Download
+Easily integrate Affirm checkouts on merchant's native apps
 
+## Dependency
 
+Download via Gradle:
 
-## Min SDK
+```
+implementation 'com.affirm:affirm-android-sdk:1.0.12.1'
+```
 
-The minimum sdk is 14. If your app supports lower versions you will have to add this to your manifest
-
+or Maven:
 ```xml
-<uses-sdk android:targetSdkVersion="your-target-version" android:minSdkVersion="your-min-sdk-version"
-      tools:overrideLibrary="com.affirm.affirmsdk"/>
+<dependency>
+  <groupId>com.affirm</groupId>
+  <artifactId>affirm-android-sdk</artifactId>
+  <version>1.0.12.1</version>
+</dependency>
 ```
 
 ## Usage Overview
@@ -28,17 +34,13 @@ Affirm.initialize(new Affirm.Configuration.Builder()
 
 ### Promo Message & Prequal Flow
 ```java
-Affirm.writePromo(this, label, null, 1100, true, new Affirm.PromoCallback() {
-    @Override
-    public void onSuccess(String promo) {
-
-    }
-
+Affirm.writePromo(this, (AffirmPromoLabel) findViewById(R.id.promo), null, 1100, true,
+    new Affirm.PromoCallbacks() {
     @Override
     public void onFailure(Throwable throwable) {
         Log.e(TAG, "As low as label failed...", throwable);
         Toast.makeText(MainActivity.this, "As low as label : " + throwable.getMessage(),
-                Toast.LENGTH_LONG).show();
+            Toast.LENGTH_LONG).show();
     }
 });
 ```

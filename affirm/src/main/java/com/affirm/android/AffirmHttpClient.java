@@ -63,8 +63,9 @@ final class AffirmHttpClient {
             final Headers headers = response.headers();
             String requestId = headers.get(X_AFFIRM_REQUEST_ID);
             if (response.code() < 200 || response.code() >= 300) {
+                ResponseBody responseBody = response.body();
                 final AffirmError affirmError = AffirmPlugins.get().gson()
-                    .fromJson(response.body().string(), AffirmError.class);
+                    .fromJson(responseBody != null ? responseBody.string() : "", AffirmError.class);
                 handleAPIError(affirmError, response.code(), requestId);
             }
 

@@ -34,7 +34,7 @@
         android:layout_below="@+id/promo"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="Checkout"
+        android:text="@string/checkout"
         />
 
     <Button
@@ -44,7 +44,7 @@
         android:layout_below="@+id/checkout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="VCN Checkout"
+        android:text="@string/vcn_checkout"
         />
 
     <Button
@@ -54,7 +54,7 @@
         android:layout_below="@id/vcnCheckout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="Launch Site Modal"
+        android:text="@string/launch_site_modal"
         />
 
     <Button
@@ -64,7 +64,7 @@
         android:layout_below="@id/siteModalButton"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="Product Site Modal"
+        android:text="@string/product_site_modal"
         />
 
     <ImageView
@@ -88,9 +88,8 @@
         android:layout_alignLeft="@+id/title"
         android:layout_alignStart="@+id/title"
         android:ems="10"
-        android:inputType="numberDecimal"
         android:text="$1100"
-        android:textSize="18dp"
+        android:textSize="18sp"
         android:textStyle="bold"
         />
 </RelativeLayout>

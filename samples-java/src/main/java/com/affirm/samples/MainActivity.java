@@ -3,9 +3,12 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
+import com.affirm.android.AffirmColor;
+import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionLabel;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.CardDetails;
@@ -59,7 +62,17 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
             }
         });
 
-        Affirm.configureWithAmount((AffirmPromotionLabel) findViewById(R.id.promo), null, 1100, true);
+
+        AffirmPromotionLabel affirmPromotionLabel = findViewById(R.id.promo);
+
+//        AffirmPromotionLabel affirmPromotionLabel = new AffirmPromotionLabel(this);
+//        affirmPromotionLabel.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
+//        affirmPromotionLabel.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
+//
+//        ViewGroup viewGroup = getWindow().getDecorView().findViewById(android.R.id.content);
+//        viewGroup.addView(affirmPromotionLabel);
+
+        Affirm.configureWithAmount(affirmPromotionLabel, null, 1100, true);
 
     }
 

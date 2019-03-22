@@ -2,7 +2,7 @@ package com.affirm.android;
 
 import androidx.annotation.ColorRes;
 
-enum AffirmColor {
+public enum AffirmColor {
     AFFIRM_COLOR_TYPE_BLUE(0),
     AFFIRM_COLOR_TYPE_BLACK(1),
     AFFIRM_COLOR_TYPE_WHITE(2);

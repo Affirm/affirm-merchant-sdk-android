@@ -31,6 +31,26 @@ Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.En
 ```
 
 ### Promo Message & Prequal Flow
+
+```xml
+<com.affirm.android.AffirmPromotionLabel
+     android:id="@+id/promo"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_below="@id/price"
+     android:layout_centerHorizontal="true"
+     android:layout_marginTop="20dp"
+     android:textSize="16sp"
+     app:affirmColor="AffirmColorTypeBlue"
+     app:affirmLogoType="AffirmDisplayTypeLogo"/>
+```
+or
+```java
+AffirmPromotionLabel affirmPromotionLabel = new AffirmPromotionLabel(this);
+affirmPromotionLabel.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
+affirmPromotionLabel.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
+```
+
 ```java
 Affirm.configureWithAmount((AffirmPromotionLabel) findViewById(R.id.promo), null, 1100, true);
 ```

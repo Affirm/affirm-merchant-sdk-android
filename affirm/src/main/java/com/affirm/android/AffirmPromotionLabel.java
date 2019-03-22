@@ -47,9 +47,12 @@ public class AffirmPromotionLabel extends AppCompatTextView {
         TypedArray typedArray =
                 context.obtainStyledAttributes(attrs, R.styleable.AffirmPromotionLabel);
 
-        int affirmLogoTypeOrdinal = typedArray.getInt(R.styleable.AffirmPromotionLabel_affirmLogoType,
+        int affirmLogoTypeOrdinal =
+                typedArray.getInt(R.styleable.AffirmPromotionLabel_affirmLogoType,
                 AFFIRM_DISPLAY_TYPE_TEXT.getOrdinal());
-        int affirmColorOrdinal = typedArray.getInt(R.styleable.AffirmPromotionLabel_affirmColor,
+
+        int affirmColorOrdinal =
+                typedArray.getInt(R.styleable.AffirmPromotionLabel_affirmColor,
                 AFFIRM_COLOR_TYPE_WHITE.getOrdinal());
 
         mAffirmLogoType = AffirmLogoType.getAffirmLogoType(affirmLogoTypeOrdinal);

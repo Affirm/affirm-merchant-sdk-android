@@ -3,12 +3,9 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
-import com.affirm.android.AffirmColor;
-import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionLabel;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.CardDetails;

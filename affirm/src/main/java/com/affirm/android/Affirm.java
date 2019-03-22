@@ -140,10 +140,6 @@ public final class Affirm {
              * @return A constructed {@code Configuration} object.
              */
             public Configuration build() {
-                if (publicKey == null) {
-                    throw new NullPointerException("public key cannot be null");
-                }
-
                 return new Configuration(this);
             }
         }

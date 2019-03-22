@@ -16,7 +16,7 @@ public class TrackerTest {
     @Before
     public void setup() {
         if (AffirmPlugins.get() == null) {
-            Affirm.initialize(new Affirm.Configuration.Builder("sdf")
+            Affirm.initialize(new Affirm.Configuration.Builder("sdf", Affirm.Environment.SANDBOX)
                     .build()
             );
         }

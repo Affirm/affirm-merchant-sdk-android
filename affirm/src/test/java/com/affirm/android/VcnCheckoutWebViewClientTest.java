@@ -31,8 +31,7 @@ public class VcnCheckoutWebViewClientTest {
 
     @Before
     public void setup() {
-        Affirm.Configuration configuration = new Affirm.Configuration.Builder("111")
-                .setEnvironment(Affirm.Environment.PRODUCTION)
+        Affirm.Configuration configuration = new Affirm.Configuration.Builder("111", Affirm.Environment.SANDBOX)
                 .build();
         AffirmPlugins plugins = new AffirmPlugins(configuration);
         Gson gson = plugins.gson();

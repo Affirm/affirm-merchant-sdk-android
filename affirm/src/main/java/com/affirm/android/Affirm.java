@@ -93,25 +93,16 @@ public final class Affirm {
 
         public static final class Builder {
             private final String publicKey;
-            private Environment environment = Environment.SANDBOX;
+            private final Environment environment;
             private String name;
 
             /**
-             * @param publicKey Set the public key to be used by Affirm.
+             * @param publicKey   Set the public key to be used by Affirm.
+             * @param environment Set the environment to be used by Affirm.
              */
-            public Builder(@NonNull String publicKey) {
+            public Builder(@NonNull String publicKey, @NonNull Environment environment) {
                 this.publicKey = publicKey;
-            }
-
-            /**
-             * Set the environment to be used by Affirm.
-             *
-             * @param environment The environment to set
-             * @return The same builder, for easy chaining.
-             */
-            public Builder setEnvironment(@NonNull Environment environment) {
                 this.environment = environment;
-                return this;
             }
 
             /**

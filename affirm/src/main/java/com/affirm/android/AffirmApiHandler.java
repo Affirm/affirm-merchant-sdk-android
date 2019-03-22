@@ -66,7 +66,7 @@ final class AffirmApiHandler {
         final Merchant merchant = Merchant.builder()
             .setPublicApiKey(AffirmPlugins.get().publicKey())
             .setUseVcn(true)
-            .setName(AffirmPlugins.get().name())
+            .setName(AffirmPlugins.get().merchantName())
             .build();
 
         final JsonObject jsonRequest = buildCheckoutJsonRequest(checkout, merchant);
@@ -94,7 +94,7 @@ final class AffirmApiHandler {
             .setPublicApiKey(AffirmPlugins.get().publicKey())
             .setConfirmationUrl(AFFIRM_CONFIRMATION_URL)
             .setCancelUrl(AFFIRM_CANCELLATION_URL)
-            .setName(AffirmPlugins.get().name())
+            .setName(AffirmPlugins.get().merchantName())
             .build();
 
         final JsonObject jsonRequest = buildCheckoutJsonRequest(checkout, merchant);

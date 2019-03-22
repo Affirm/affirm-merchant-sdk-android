@@ -55,8 +55,8 @@ class AffirmPlugins {
         return mConfiguration.publicKey;
     }
 
-    String name() {
-        return mConfiguration.name;
+    String merchantName() {
+        return mConfiguration.merchantName;
     }
 
     Affirm.Environment environment() {

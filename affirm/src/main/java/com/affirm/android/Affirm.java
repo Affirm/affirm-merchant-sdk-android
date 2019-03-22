@@ -77,18 +77,18 @@ public final class Affirm {
     public static final class Configuration {
         final String publicKey;
         final Environment environment;
-        final String name;
+        final String merchantName;
 
         Configuration(Builder builder) {
             this.publicKey = builder.publicKey;
             this.environment = builder.environment;
-            this.name = builder.name;
+            this.merchantName = builder.merchantName;
         }
 
         public static final class Builder {
             private final String publicKey;
             private final Environment environment;
-            private String name;
+            private String merchantName;
 
             /**
              * @param publicKey   Set the public key to be used by Affirm.
@@ -126,11 +126,11 @@ public final class Affirm {
             /**
              * Set your proud partnership name, it's optional
              *
-             * @param name your proud partnership name
+             * @param merchantName your proud partnership name
              * @return The same builder, for easy chaining.
              */
-            public Builder setName(@Nullable String name) {
-                this.name = name;
+            public Builder setMerchantName(@Nullable String merchantName) {
+                this.merchantName = merchantName;
                 return this;
             }
 

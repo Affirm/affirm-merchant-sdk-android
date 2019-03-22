@@ -13,7 +13,7 @@ class SampleApplication : Application() {
         LeakCanary.install(this)
 
         Affirm.initialize(Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
-                .setName(null)
+                .setMerchantName(null)
                 .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
                 .build()
         )

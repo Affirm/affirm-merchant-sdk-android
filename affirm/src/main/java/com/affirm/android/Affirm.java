@@ -92,22 +92,15 @@ public final class Affirm {
         }
 
         public static final class Builder {
-            private String publicKey;
+            private final String publicKey;
             private Environment environment = Environment.SANDBOX;
             private String name;
 
-            public Builder() {
-            }
-
             /**
-             * Set the public key to be used by Affirm.
-             *
-             * @param publicKey The public key to set.
-             * @return The same builder, for easy chaining.
+             * @param publicKey Set the public key to be used by Affirm.
              */
-            public Builder setPublicKey(@NonNull String publicKey) {
+            public Builder(@NonNull String publicKey) {
                 this.publicKey = publicKey;
-                return this;
             }
 
             /**

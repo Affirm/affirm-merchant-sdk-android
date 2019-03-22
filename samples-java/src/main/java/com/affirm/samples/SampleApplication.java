@@ -13,9 +13,8 @@ public class SampleApplication extends Application {
 
         LeakCanary.install(this);
 
-        Affirm.initialize(new Affirm.Configuration.Builder()
+        Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0")
                 .setEnvironment(Affirm.Environment.SANDBOX)
-                .setPublicKey("Y8CQXFF044903JC0")
                 .setName(null)
                 .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
                 .build()

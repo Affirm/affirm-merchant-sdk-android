@@ -17,9 +17,8 @@ public class CheckoutRequestTest {
     @Before
     public void setup() {
         if (AffirmPlugins.get() == null) {
-            Affirm.initialize(new Affirm.Configuration.Builder()
+            Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0")
                     .setEnvironment(Affirm.Environment.SANDBOX)
-                    .setPublicKey("Y8CQXFF044903JC0")
                     .build()
             );
         }

@@ -2,7 +2,6 @@ package com.affirm.sampleskt
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
@@ -18,15 +17,12 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        checkout.setOnClickListener { Affirm.startCheckoutFlow(this, checkoutModel(), false) }
-        vcnCheckout.setOnClickListener { Affirm.startCheckoutFlow(this, checkoutModel(), true) }
+        checkout.setOnClickListener { Affirm.startCheckout(this, checkoutModel(), false) }
+        vcnCheckout.setOnClickListener { Affirm.startCheckout(this, checkoutModel(), true) }
         siteModalButton.setOnClickListener { Affirm.showSiteModal(this@MainActivity, "5LNMQ33SEUYHLNUC") }
         productModalButton.setOnClickListener { Affirm.showProductModal(this@MainActivity, 1100f, "0Q97G0Z4Y4TLGHGB") }
 
-        Affirm.writePromo(this, promo, null, 1100f, true) { throwable ->
-            Log.e(TAG, "As low as label failed...", throwable)
-            Toast.makeText(this@MainActivity, "As low as label : ${throwable?.message}", Toast.LENGTH_SHORT).show()
-        }
+        Affirm.configureWithAmount(promo, null, 1100f, true)
     }
 
     private fun checkoutModel(): Checkout {

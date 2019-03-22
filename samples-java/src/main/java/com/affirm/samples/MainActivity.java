@@ -2,12 +2,11 @@ package com.affirm.samples;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
-import com.affirm.android.AffirmPromoLabel;
+import com.affirm.android.AffirmPromotionLabel;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
@@ -23,7 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks,
-    Affirm.VcnCheckoutCallbacks {
+        Affirm.VcnCheckoutCallbacks {
 
     private static final String TAG = "MainActivity";
 
@@ -35,14 +34,14 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.checkout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startCheckoutFlow(MainActivity.this, checkoutModel(), false);
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), false);
             }
         });
 
         findViewById(R.id.vcnCheckout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startCheckoutFlow(MainActivity.this, checkoutModel(), true);
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), true);
             }
         });
 
@@ -60,52 +59,44 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
             }
         });
 
-        Affirm.writePromo(this, (AffirmPromoLabel) findViewById(R.id.promo), null, 1100, true,
-            new Affirm.PromoCallbacks() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                Log.e(TAG, "As low as label failed...", throwable);
-                Toast.makeText(MainActivity.this, "As low as label : " + throwable.getMessage(),
-                    Toast.LENGTH_LONG).show();
-            }
-        });
+        Affirm.configureWithAmount((AffirmPromotionLabel) findViewById(R.id.promo), null, 1100, true);
 
     }
 
     private Checkout checkoutModel() {
         final Item item = Item.builder()
-            .setDisplayName("Great Deal Wheel")
-            .setImageUrl(
-                "http://www.m2motorsportinc.com/media/catalog/product/cache/1/thumbnail" +
-                    "/9df78eab33525d08d6e5fb8d27136e95/v/e/velocity-vw125-wheels-rims.jpg")
-            .setQty(1)
-            .setSku("wheel")
-            .setUnitPrice(1000f)
-            .setUrl("http://merchant.com/great_deal_wheel")
-            .build();
+                .setDisplayName("Great Deal Wheel")
+                .setImageUrl(
+                        "http://www.m2motorsportinc.com/media/catalog/product/cache/1/thumbnail" +
+                                "/9df78eab33525d08d6e5fb8d27136e95/v/e/velocity-vw125-wheels-rims.jpg")
+                .setQty(1)
+                .setSku("wheel")
+                .setUnitPrice(1000f)
+                .setUrl("http://merchant.com/great_deal_wheel")
+                .build();
 
         final Map<String, Item> items = new HashMap<>();
         items.put("wheel", item);
 
         final Name name = Name.builder().setFull("John Smith").build();
         final Address address = Address.builder()
-            .setCity("San Francisco")
-            .setCountry("USA")
-            .setLine1("333 Kansas st")
-            .setState("CA")
-            .setZipcode("94107")
-            .build();
+                .setCity("San Francisco")
+                .setCountry("USA")
+                .setLine1("333 Kansas st")
+                .setState("CA")
+                .setZipcode("94107")
+                .build();
 
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
 
         return Checkout.builder()
-            .setItems(items)
-            .setBilling(shipping)
-            .setShipping(shipping)
-            .setShippingAmount(0f)
-            .setTaxAmount(100f)
-            .setTotal(1100f)
-            .build();
+                .setItems(items)
+                .setBilling(shipping)
+                .setShipping(shipping)
+                .setShippingAmount(0f)
+                .setTaxAmount(100f)
+                .setTotal(1100f)
+                .build();
     }
 
     @Override

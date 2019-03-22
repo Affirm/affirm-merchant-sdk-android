@@ -10,8 +10,6 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 
-import java.lang.ref.WeakReference;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -56,10 +54,6 @@ public final class Affirm {
         void onAffirmVcnCheckoutCancelled();
 
         void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails);
-    }
-
-    public interface PromoCallbacks {
-        void onFailure(Throwable throwable);
     }
 
     public enum Environment {
@@ -182,25 +176,13 @@ public final class Affirm {
      * @param checkout checkout object that contains address & shipping info & others...
      * @param useVcn   Start VCN checkout or not
      */
-    public static void startCheckoutFlow(@NonNull Activity activity, @NonNull Checkout checkout,
-                                         boolean useVcn) {
+    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
+                                     boolean useVcn) {
         if (useVcn) {
             VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
         } else {
             CheckoutActivity.startActivity(activity, CHECKOUT_REQUEST, checkout);
         }
-    }
-
-    /**
-     * Start prequal flow
-     *
-     * @param activity activity {@link Activity}
-     * @param amount   (Float) eg 112.02 as $112 and ¢2
-     * @param promoId  the client's modal id
-     */
-    private static void startPrequalFlow(@NonNull Activity activity, float amount,
-                                         @Nullable String promoId) {
-        PrequalActivity.startActivity(activity, amount, promoId);
     }
 
     /**
@@ -228,37 +210,31 @@ public final class Affirm {
     /**
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
-     * @param activity      activity {@link Activity}
-     * @param promoLabel    AffirmPromoLabel to show the promo message
-     * @param promoId       the client's modal id
-     * @param amount        (Float) eg 112.02 as $112 and ¢2
-     * @param showCta       whether need to show cta
-     * @param promoCallback callback to client if have any errors when show promo message
+     * @param promotionLabel AffirmPromotionLabel to show the promo message
+     * @param promoId        the client's modal id
+     * @param amount         (Float) eg 112.02 as $112 and ¢2
+     * @param showCta        whether need to show cta
      */
-    public static void writePromo(@NonNull Activity activity,
-                                  @NonNull final AffirmPromoLabel promoLabel,
-                                  @Nullable final String promoId,
-                                  final float amount,
-                                  final boolean showCta,
-                                  @Nullable final PromoCallbacks promoCallback) {
+    public static void configureWithAmount(@NonNull final AffirmPromotionLabel promotionLabel,
+                                           @Nullable final String promoId,
+                                           final float amount,
+                                           final boolean showCta) {
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
-                promoLabel.setTag(showPrequal);
-                promoLabel.setLabel(promo);
+                promotionLabel.setTag(showPrequal);
+                promotionLabel.setLabel(promo);
             }
 
             @Override
             public void onFailure(@NonNull AffirmException exception) {
-                if (promoCallback != null) {
-                    promoCallback.onFailure(exception);
-                }
+                AffirmLog.e(exception.toString());
             }
         };
 
         final PromoRequest affirmPromoRequest =
                 new PromoRequest(promoId, amount, showCta, callback);
-        promoLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+        promotionLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
                 affirmPromoRequest.create();
@@ -267,27 +243,31 @@ public final class Affirm {
             @Override
             public void onViewDetachedFromWindow(View v) {
                 affirmPromoRequest.cancel();
-                promoLabel.removeOnAttachStateChangeListener(this);
+                promotionLabel.removeOnAttachStateChangeListener(this);
             }
         });
 
-        final WeakReference contextRef = new WeakReference<>(activity);
         final View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Activity activity = (Activity) contextRef.get();
-                if (activity == null || TextUtils.isEmpty(promoLabel.getText())) {
+                Activity activity = (Activity) v.getContext();
+                if (activity == null || TextUtils.isEmpty(promotionLabel.getText())) {
                     return;
                 }
                 boolean showPrequal = (boolean) v.getTag();
                 if (showPrequal) {
-                    startPrequalFlow(activity, amount, promoId);
+                    startPrequal(activity, amount, promoId);
                 } else {
                     showProductModal(activity, amount, null);
                 }
             }
         };
-        promoLabel.setOnClickListener(onClickListener);
+        promotionLabel.setOnClickListener(onClickListener);
+    }
+
+    private static void startPrequal(@NonNull Activity activity, float amount,
+                                     @Nullable String promoId) {
+        PrequalActivity.startActivity(activity, amount, promoId);
     }
 
     /**

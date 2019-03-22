@@ -23,21 +23,21 @@ import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_WHITE;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
 import static com.affirm.android.Constants.LOGO_PLACEHOLDER;
 
-public class AffirmPromoLabel extends AppCompatTextView {
+public class AffirmPromotionLabel extends AppCompatTextView {
 
     private Paint mPaint;
     private AffirmLogoType mAffirmLogoType;
     private AffirmColor mAffirmColor;
 
-    public AffirmPromoLabel(Context context) {
+    public AffirmPromotionLabel(Context context) {
         this(context, null);
     }
 
-    public AffirmPromoLabel(Context context, AttributeSet attrs) {
+    public AffirmPromotionLabel(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public AffirmPromoLabel(Context context, AttributeSet attrs, int defStyleAttr) {
+    public AffirmPromotionLabel(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         init(context, attrs);
@@ -45,11 +45,11 @@ public class AffirmPromoLabel extends AppCompatTextView {
 
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray =
-                context.obtainStyledAttributes(attrs, R.styleable.AffirmPromoLabel);
+                context.obtainStyledAttributes(attrs, R.styleable.AffirmPromotionLabel);
 
-        int affirmLogoTypeOrdinal = typedArray.getInt(R.styleable.AffirmPromoLabel_affirmLogoType,
+        int affirmLogoTypeOrdinal = typedArray.getInt(R.styleable.AffirmPromotionLabel_affirmLogoType,
                 AFFIRM_DISPLAY_TYPE_TEXT.getOrdinal());
-        int affirmColorOrdinal = typedArray.getInt(R.styleable.AffirmPromoLabel_affirmColor,
+        int affirmColorOrdinal = typedArray.getInt(R.styleable.AffirmPromotionLabel_affirmColor,
                 AFFIRM_COLOR_TYPE_WHITE.getOrdinal());
 
         mAffirmLogoType = AffirmLogoType.getAffirmLogoType(affirmLogoTypeOrdinal);

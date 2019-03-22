@@ -24,9 +24,7 @@ or Maven:
 Start by initialize Affirm SDK.
 
 ```java
-Affirm.initialize(new Affirm.Configuration.Builder()
-        .setEnvironment(Affirm.Environment.SANDBOX)
-        .setPublicKey("Y8CQXFF044903JC0")
+Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
         .setName(null)
         .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
         .build()
@@ -34,15 +32,7 @@ Affirm.initialize(new Affirm.Configuration.Builder()
 
 ### Promo Message & Prequal Flow
 ```java
-Affirm.writePromo(this, (AffirmPromoLabel) findViewById(R.id.promo), null, 1100, true,
-    new Affirm.PromoCallbacks() {
-    @Override
-    public void onFailure(Throwable throwable) {
-        Log.e(TAG, "As low as label failed...", throwable);
-        Toast.makeText(MainActivity.this, "As low as label : " + throwable.getMessage(),
-            Toast.LENGTH_LONG).show();
-    }
-});
+Affirm.configureWithAmount((AffirmPromotionLabel) findViewById(R.id.promo), null, 1100, true);
 ```
 
 ### Checkout Flow
@@ -60,7 +50,7 @@ final Checkout checkout = Checkout.builder()
         .setTotal(1100f)
         .build();
 
-Affirm.startCheckoutFlow(this, checkout, false);
+Affirm.startCheckout(this, checkout, false);
 ```
 
 Override onActivityResult so that affirm can handle the result.
@@ -108,7 +98,7 @@ final Checkout checkout = Checkout.builder()
         .setTotal(1100f)
         .build();
 
-Affirm.startCheckoutFlow(this, checkout, true);
+Affirm.startCheckout(this, checkout, true);
 ```
 
 Override onActivityResult so that affirm can handle the result.

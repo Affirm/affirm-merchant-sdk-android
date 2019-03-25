@@ -53,4 +53,6 @@ public final class Constants {
     static final String CHECKOUT_EXTRA = "checkout_extra";
     static final String CREDIT_DETAILS = "credit_details";
 
+    static final String PREQUAL_ERROR = "prequal_error";
+
 }

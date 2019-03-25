@@ -14,6 +14,7 @@ import com.affirm.android.CheckoutRequest.CheckoutType;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.Constants.CHECKOUT_ERROR;
 import static com.affirm.android.Constants.CHECKOUT_EXTRA;
 
@@ -67,7 +68,7 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
     protected void finishWithError(@NonNull Throwable error) {
         final Intent intent = new Intent();
         intent.putExtra(CHECKOUT_ERROR, error.toString());
-        setResult(Affirm.RESULT_ERROR, intent);
+        setResult(RESULT_ERROR, intent);
         finish();
     }
 

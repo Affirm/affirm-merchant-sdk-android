@@ -85,4 +85,16 @@ public final class AffirmUtils {
                     .setHomeAsUpIndicator(R.drawable.affirm_ic_baseline_close);
         }
     }
+
+    static <T> T requireNonNull(T obj) {
+        if (obj == null)
+            throw new NullPointerException();
+        return obj;
+    }
+
+    static <T> T requireNonNull(T obj, String message) {
+        if (obj == null)
+            throw new NullPointerException(message);
+        return obj;
+    }
 }

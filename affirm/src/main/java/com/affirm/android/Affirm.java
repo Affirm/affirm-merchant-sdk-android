@@ -38,7 +38,14 @@ public final class Affirm {
 
     private static final int CHECKOUT_REQUEST = 8076;
     private static final int VCN_CHECKOUT_REQUEST = 8077;
+    private static final int PREQUAL_REQUEST = 8078;
     static final int RESULT_ERROR = -8575;
+
+    public interface PrequalCallbacks {
+        void onAffirmPrequalError(@Nullable String message);
+
+        void onAffirmPrequalCancelled();
+    }
 
     public interface CheckoutCallbacks {
         void onAffirmCheckoutError(@Nullable String message);
@@ -188,7 +195,7 @@ public final class Affirm {
      * @param modalId  the client's modal id
      */
     public static void showSiteModal(@NonNull Activity activity, @Nullable String modalId) {
-        ModalActivity.startActivity(activity, 0f, SITE, modalId);
+        ModalActivity.startActivity(activity, 0, 0f, SITE, modalId);
     }
 
     /**
@@ -200,7 +207,7 @@ public final class Affirm {
      */
     public static void showProductModal(@NonNull Activity activity, float amount,
                                         @Nullable String modalId) {
-        ModalActivity.startActivity(activity, amount, PRODUCT, modalId);
+        ModalActivity.startActivity(activity, 0, amount, PRODUCT, modalId);
     }
 
     /**
@@ -252,18 +259,41 @@ public final class Affirm {
                 }
                 boolean showPrequal = (boolean) v.getTag();
                 if (showPrequal) {
-                    startPrequal(activity, amount, promoId);
+                    PrequalActivity.startActivity(activity,
+                            PREQUAL_REQUEST, amount, promoId);
                 } else {
-                    showProductModal(activity, amount, null);
+                    ModalActivity.startActivity(activity,
+                            PREQUAL_REQUEST, amount, PRODUCT, null);
                 }
             }
         };
         promotionLabel.setOnClickListener(onClickListener);
     }
 
-    private static void startPrequal(@NonNull Activity activity, float amount,
-                                     @Nullable String promoId) {
-        PrequalActivity.startActivity(activity, amount, promoId);
+    /**
+     * Helper method to get the Result from prequal
+     */
+    public static boolean handlePrequalData(@NonNull PrequalCallbacks callbacks,
+                                            int requestCode,
+                                            int resultCode,
+                                            @Nullable Intent data) {
+        if (requestCode == PREQUAL_REQUEST) {
+            switch (resultCode) {
+                case RESULT_CANCELED:
+                    callbacks.onAffirmPrequalCancelled();
+                    break;
+                case RESULT_ERROR:
+                    AffirmUtils.requireNonNull(data);
+                    callbacks.onAffirmPrequalError(data.getStringExtra(CHECKOUT_ERROR));
+                    break;
+                default:
+                    break;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -273,21 +303,21 @@ public final class Affirm {
                                              int requestCode,
                                              int resultCode,
                                              @Nullable Intent data) {
-        if (data == null) {
-            return false;
-        }
         if (requestCode == CHECKOUT_REQUEST) {
             switch (resultCode) {
                 case RESULT_OK:
+                    AffirmUtils.requireNonNull(data);
                     callbacks.onAffirmCheckoutSuccess(data.getStringExtra(CHECKOUT_TOKEN));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmCheckoutCancelled();
                     break;
                 case RESULT_ERROR:
+                    AffirmUtils.requireNonNull(data);
                     callbacks.onAffirmCheckoutError(data.getStringExtra(CHECKOUT_ERROR));
                     break;
                 default:
+                    break;
             }
 
             return true;
@@ -303,22 +333,21 @@ public final class Affirm {
                                                 int requestCode,
                                                 int resultCode,
                                                 @Nullable Intent data) {
-        if (data == null) {
-            return false;
-        }
         if (requestCode == VCN_CHECKOUT_REQUEST) {
             switch (resultCode) {
                 case RESULT_OK:
-                    callbacks.onAffirmVcnCheckoutSuccess(
-                            (CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
+                    AffirmUtils.requireNonNull(data);
+                    callbacks.onAffirmVcnCheckoutSuccess((CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmVcnCheckoutCancelled();
                     break;
                 case RESULT_ERROR:
+                    AffirmUtils.requireNonNull(data);
                     callbacks.onAffirmVcnCheckoutError(data.getStringExtra(CHECKOUT_ERROR));
                     break;
                 default:
+                    break;
             }
 
             return true;
@@ -326,4 +355,6 @@ public final class Affirm {
 
         return false;
     }
+
+
 }

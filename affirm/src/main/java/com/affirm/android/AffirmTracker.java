@@ -30,6 +30,7 @@ final class AffirmTracker {
         VCN_CHECKOUT_CREATION_SUCCESS("Vcn Checkout creation success"),
         VCN_CHECKOUT_WEBVIEW_SUCCESS("Vcn Checkout webView success"),
         VCN_CHECKOUT_WEBVIEW_FAIL("Vcn Checkout webView failed"),
+        PREQUAL_WEBVIEW_FAIL("Prequal webView failed"),
         PRODUCT_WEBVIEW_FAIL("Product webView failed"),
         SITE_WEBVIEW_FAIL("Site webView failed"),
         NETWORK_ERROR("network error");

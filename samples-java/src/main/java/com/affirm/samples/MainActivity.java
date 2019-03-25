@@ -22,7 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks,
-        Affirm.VcnCheckoutCallbacks {
+        Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
     private static final String TAG = "MainActivity";
 
@@ -119,6 +119,10 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
             return;
         }
 
+        if (Affirm.handlePrequalData(this, requestCode, resultCode, data)) {
+            return;
+        }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -152,5 +156,16 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
     @Override
     public void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails) {
         Toast.makeText(this, "Vcn Checkout Card: " + cardDetails.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    // - Prequal
+    @Override
+    public void onAffirmPrequalError(@Nullable String message) {
+        Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmPrequalCancelled() {
+        Toast.makeText(this, "Prequal Cancelled", Toast.LENGTH_LONG).show();
     }
 }

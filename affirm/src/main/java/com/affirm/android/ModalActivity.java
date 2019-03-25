@@ -1,6 +1,6 @@
 package com.affirm.android;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 
+import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
@@ -26,12 +27,13 @@ import static com.affirm.android.Constants.JAVASCRIPT;
 import static com.affirm.android.Constants.JS_PATH;
 import static com.affirm.android.Constants.MAP_EXTRA;
 import static com.affirm.android.Constants.MODAL_ID;
+import static com.affirm.android.Constants.PREQUAL_ERROR;
 import static com.affirm.android.Constants.TEXT_HTML;
 import static com.affirm.android.Constants.TYPE_EXTRA;
 import static com.affirm.android.Constants.UTF_8;
 
 public class ModalActivity extends AffirmActivity
-    implements AffirmWebViewClient.Callbacks {
+        implements AffirmWebViewClient.Callbacks {
 
     private ModalType mType;
     private HashMap<String, String> mMap;
@@ -50,11 +52,11 @@ public class ModalActivity extends AffirmActivity
         }
     }
 
-    static void startActivity(@NonNull Context context, float amount, ModalType type,
-                              @Nullable String modalId) {
-        final Intent intent = new Intent(context, ModalActivity.class);
+    static void startActivity(@NonNull Activity activity, int requestCode, float amount,
+                              ModalType type, @Nullable String modalId) {
+        final Intent intent = new Intent(activity, ModalActivity.class);
         final String stringAmount =
-            String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
+                String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
         final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl() + JS_PATH;
 
         final HashMap<String, String> map = new HashMap<>();
@@ -67,7 +69,7 @@ public class ModalActivity extends AffirmActivity
         intent.putExtra(TYPE_EXTRA, type);
         intent.putExtra(MAP_EXTRA, map);
 
-        context.startActivity(intent);
+        activity.startActivityForResult(intent, requestCode);
     }
 
     @Override
@@ -97,8 +99,8 @@ public class ModalActivity extends AffirmActivity
     void onAttached() {
         final String html = initialHtml();
         webView.loadDataWithBaseURL(
-            HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
-            html, TEXT_HTML, UTF_8, null);
+                HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
+                html, TEXT_HTML, UTF_8, null);
     }
 
     @Override
@@ -123,12 +125,18 @@ public class ModalActivity extends AffirmActivity
 
     @Override
     public void onWebViewCancellation() {
+        setResult(RESULT_CANCELED);
         finish();
     }
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
         AffirmTracker.track(mType.failureEvent, ERROR, null);
+        finish();
+
+        final Intent intent = new Intent();
+        intent.putExtra(PREQUAL_ERROR, error.toString());
+        setResult(RESULT_ERROR, intent);
         finish();
     }
 }

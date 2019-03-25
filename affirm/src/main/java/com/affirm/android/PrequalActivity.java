@@ -1,6 +1,6 @@
 package com.affirm.android;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -10,8 +10,12 @@ import com.affirm.android.exception.ConnectionException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static com.affirm.android.Affirm.RESULT_ERROR;
+import static com.affirm.android.AffirmTracker.TrackingEvent.PREQUAL_WEBVIEW_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.Constants.AMOUNT;
 import static com.affirm.android.Constants.HTTPS_PROTOCOL;
+import static com.affirm.android.Constants.PREQUAL_ERROR;
 import static com.affirm.android.Constants.PREQUAL_PATH;
 import static com.affirm.android.Constants.PROMO_ID;
 import static com.affirm.android.Constants.REFERRING_URL;
@@ -22,11 +26,12 @@ public class PrequalActivity extends AffirmActivity
     private String mAmount;
     private String mPromoId;
 
-    static void startActivity(@NonNull Context context, float amount, @Nullable String promoId) {
-        final Intent intent = new Intent(context, PrequalActivity.class);
+    static void startActivity(@NonNull Activity activity, int requestCode,
+                              float amount, @Nullable String promoId) {
+        final Intent intent = new Intent(activity, PrequalActivity.class);
         intent.putExtra(AMOUNT, String.valueOf(amount));
         intent.putExtra(PROMO_ID, promoId);
-        context.startActivity(intent);
+        activity.startActivityForResult(intent, requestCode);
     }
 
     @Override
@@ -71,11 +76,16 @@ public class PrequalActivity extends AffirmActivity
 
     @Override
     public void onWebViewCancellation() {
+        setResult(RESULT_CANCELED);
         finish();
     }
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
+        AffirmTracker.track(PREQUAL_WEBVIEW_FAIL, ERROR, null);
+        final Intent intent = new Intent();
+        intent.putExtra(PREQUAL_ERROR, error.toString());
+        setResult(RESULT_ERROR, intent);
         finish();
     }
 

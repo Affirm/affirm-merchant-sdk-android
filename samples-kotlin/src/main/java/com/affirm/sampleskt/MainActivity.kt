@@ -8,7 +8,7 @@ import com.affirm.android.Affirm
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCheckoutCallbacks {
+class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -66,6 +66,10 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
             return
         }
 
+        if (Affirm.handlePrequalData(this, requestCode, resultCode, data)) {
+            return
+        }
+
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -95,4 +99,12 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         Toast.makeText(this, "Vcn Checkout Card: $cardDetails", Toast.LENGTH_LONG).show()
     }
 
+    // - Prequal
+    override fun onAffirmPrequalError(message: String?) {
+        Toast.makeText(this, "Prequal Error: " + message!!, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onAffirmPrequalCancelled() {
+        Toast.makeText(this, "Prequal Cancelled", Toast.LENGTH_LONG).show()
+    }
 }

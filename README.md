@@ -55,6 +55,31 @@ affirmPromotionLabel.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
 Affirm.configureWithAmount((AffirmPromotionLabel) findViewById(R.id.promo), null, 1100, true);
 ```
 
+(Optional) If you want to handle cancellations and errors, you need to follow the steps below 
+Override onActivityResult so that affirm can handle the result.
+```java
+@Override
+protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    if (Affirm.handlePrequalData(this, requestCode, resultCode, data)) {
+        return;
+    }
+    super.onActivityResult(requestCode, resultCode, data);
+}
+```
+
+Implement Prequal callbacks.
+```java
+@Override
+public void onAffirmPrequalCancelled() {
+    Toast.makeText(this, "Prequal Cancelled", Toast.LENGTH_LONG).show();
+}
+
+@Override
+public void onAffirmPrequalError(String message) {
+    Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
+}
+```
+
 ### Checkout Flow
 When you are ready to checkout with affirm create a checkout object
 and launch the affirm checkout.

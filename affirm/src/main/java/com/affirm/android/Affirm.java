@@ -337,7 +337,8 @@ public final class Affirm {
             switch (resultCode) {
                 case RESULT_OK:
                     AffirmUtils.requireNonNull(data);
-                    callbacks.onAffirmVcnCheckoutSuccess((CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
+                    callbacks.onAffirmVcnCheckoutSuccess(
+                            (CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
                     callbacks.onAffirmVcnCheckoutCancelled();

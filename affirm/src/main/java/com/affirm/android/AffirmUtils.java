@@ -87,14 +87,16 @@ public final class AffirmUtils {
     }
 
     static <T> T requireNonNull(T obj) {
-        if (obj == null)
+        if (obj == null) {
             throw new NullPointerException();
+        }
         return obj;
     }
 
     static <T> T requireNonNull(T obj, String message) {
-        if (obj == null)
+        if (obj == null) {
             throw new NullPointerException(message);
+        }
         return obj;
     }
 }

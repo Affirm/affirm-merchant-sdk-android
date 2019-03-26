@@ -1,3 +1,10 @@
+def propertiesFile = new File('affirm/gradle.properties')
+
+if (!propertiesFile.exists()) {
+    propertiesFile.createNewFile()
+    propertiesFile << new File('./gradle.properties.template').text
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'pmd'
 apply plugin: 'findbugs'

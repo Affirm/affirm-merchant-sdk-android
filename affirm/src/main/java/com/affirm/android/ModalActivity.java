@@ -33,7 +33,7 @@ import static com.affirm.android.Constants.TYPE_EXTRA;
 import static com.affirm.android.Constants.UTF_8;
 
 public class ModalActivity extends AffirmActivity
-        implements AffirmWebViewClient.Callbacks {
+        implements AffirmWebViewClient.WebViewClientCallbacks {
 
     private ModalType mType;
     private HashMap<String, String> mMap;

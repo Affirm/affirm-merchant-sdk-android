@@ -21,7 +21,7 @@ import static com.affirm.android.Constants.PROMO_ID;
 import static com.affirm.android.Constants.REFERRING_URL;
 
 public class PrequalActivity extends AffirmActivity
-        implements AffirmWebViewClient.Callbacks, PrequalWebViewClient.Callbacks {
+        implements AffirmWebViewClient.WebViewClientCallbacks, PrequalWebViewClient.Callbacks {
 
     private String mAmount;
     private String mPromoId;

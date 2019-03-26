@@ -41,7 +41,7 @@ public class CheckoutActivity extends CheckoutCommonActivity
     }
 
     @Override
-    CheckoutType checkoutType() {
+    CheckoutType getCheckoutType() {
         return CheckoutType.REGULAR;
     }
 
@@ -52,7 +52,7 @@ public class CheckoutActivity extends CheckoutCommonActivity
     }
 
     @Override
-    InnerCheckoutCallback innerCheckoutCallback() {
+    InnerCheckoutCallback getInnerCheckoutCallback() {
         return new InnerCheckoutCallback() {
             @Override
             public void onError(@NonNull AffirmException exception) {

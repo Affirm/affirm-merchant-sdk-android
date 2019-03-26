@@ -35,7 +35,7 @@ import static com.affirm.android.Constants.TEXT_HTML;
 import static com.affirm.android.Constants.UTF_8;
 
 public class VcnCheckoutActivity extends CheckoutCommonActivity
-    implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.Callbacks {
+    implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.WebViewClientCallbacks {
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout) {
@@ -54,7 +54,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
     }
 
     @Override
-    CheckoutType checkoutType() {
+    CheckoutType getCheckoutType() {
         return CheckoutType.VCN;
     }
 
@@ -65,7 +65,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
     }
 
     @Override
-    InnerCheckoutCallback innerCheckoutCallback() {
+    InnerCheckoutCallback getInnerCheckoutCallback() {
         return new InnerCheckoutCallback() {
             @Override
             public void onError(@NonNull AffirmException exception) {

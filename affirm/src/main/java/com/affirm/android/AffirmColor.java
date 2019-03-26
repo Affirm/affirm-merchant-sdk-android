@@ -7,7 +7,6 @@ public enum AffirmColor {
     AFFIRM_COLOR_TYPE_BLACK(1),
     AFFIRM_COLOR_TYPE_WHITE(2);
 
-
     private int mOrdinal;
 
     AffirmColor(int ordinal) {
@@ -28,8 +27,8 @@ public enum AffirmColor {
         return mOrdinal;
     }
 
-    protected @ColorRes
-    int getColorRes() {
+    @ColorRes
+    protected int getColorRes() {
         switch (this) {
             case AFFIRM_COLOR_TYPE_BLACK:
                 return R.color.affirm_black;

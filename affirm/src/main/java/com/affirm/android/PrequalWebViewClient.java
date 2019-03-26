@@ -24,7 +24,7 @@ final class PrequalWebViewClient extends AffirmWebViewClient {
         return false;
     }
 
-    interface Callbacks extends AffirmWebViewClient.Callbacks {
+    interface Callbacks extends WebViewClientCallbacks {
         void onWebViewConfirmation();
     }
 }

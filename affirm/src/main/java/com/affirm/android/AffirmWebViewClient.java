@@ -14,11 +14,11 @@ import static com.affirm.android.Constants.HTTP;
 
 abstract class AffirmWebViewClient extends WebViewClient {
 
-    private final Callbacks mCallbacks;
+    private final WebViewClientCallbacks mCallbacks;
 
     abstract boolean hasCallbackUrl(WebView view, String url);
 
-    AffirmWebViewClient(@NonNull Callbacks callbacks) {
+    AffirmWebViewClient(@NonNull WebViewClientCallbacks callbacks) {
         mCallbacks = callbacks;
     }
 
@@ -41,7 +41,7 @@ abstract class AffirmWebViewClient extends WebViewClient {
         mCallbacks.onWebViewError(new ConnectionException(error.toString()));
     }
 
-    public interface Callbacks {
+    public interface WebViewClientCallbacks {
         void onWebViewError(@NonNull ConnectionException error);
 
         void onWebViewCancellation();

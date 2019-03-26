@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 final class ModalWebViewClient extends AffirmWebViewClient {
 
-    ModalWebViewClient(@NonNull Callbacks callbacks) {
+    ModalWebViewClient(@NonNull WebViewClientCallbacks callbacks) {
         super(callbacks);
     }
 

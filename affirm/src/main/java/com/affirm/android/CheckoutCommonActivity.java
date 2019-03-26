@@ -3,13 +3,13 @@ package com.affirm.android;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.affirm.android.CheckoutRequest.CheckoutType;
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
-import com.affirm.android.CheckoutRequest.CheckoutType;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,12 +24,12 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
 
     private Checkout mCheckout;
 
-    abstract CheckoutType checkoutType();
+    abstract CheckoutType getCheckoutType();
+
+    abstract InnerCheckoutCallback getInnerCheckoutCallback();
 
     abstract CheckoutResponse executeTask(@NonNull Checkout checkout)
-        throws APIException, PermissionException, InvalidRequestException, ConnectionException;
-
-    abstract InnerCheckoutCallback innerCheckoutCallback();
+            throws APIException, PermissionException, InvalidRequestException, ConnectionException;
 
     @Override
     void beforeOnCreate() {
@@ -55,7 +55,7 @@ abstract class CheckoutCommonActivity extends AffirmActivity {
     @Override
     void onAttached() {
         mCheckoutRequest = new CheckoutRequest(this, mCheckout,
-            innerCheckoutCallback(), checkoutType());
+                getInnerCheckoutCallback(), getCheckoutType());
         mCheckoutRequest.create();
     }
 

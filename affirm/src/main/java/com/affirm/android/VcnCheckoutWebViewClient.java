@@ -14,10 +14,12 @@ import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
 import static com.affirm.android.Constants.AFFIRM_CONFIRMATION_URL;
 
 final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
-    private final Callbacks mCallbacks;
+    private final WebViewClientCallbacks mCallbacks;
     private final Gson mGson;
+    private static final String VCN_CHECKOUT_REGEX = "data=";
+    private static final String ENCODING_FORMAT = "UTF-8";
 
-    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull Callbacks callbacks) {
+    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull WebViewClientCallbacks callbacks) {
         super(callbacks);
         mCallbacks = callbacks;
         mGson = gson;
@@ -26,9 +28,9 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     @Override
     boolean hasCallbackUrl(WebView view, String url) {
         if (url.contains(AFFIRM_CONFIRMATION_URL)) {
-            final String encodedString = url.split("data=")[1];
+            final String encodedString = url.split(VCN_CHECKOUT_REGEX)[1];
             try {
-                final String json = URLDecoder.decode(encodedString, "UTF-8");
+                final String json = URLDecoder.decode(encodedString, ENCODING_FORMAT);
                 final CardDetails cardDetails = mGson.fromJson(json, CardDetails.class);
                 mCallbacks.onWebViewConfirmation(cardDetails);
             } catch (UnsupportedEncodingException e) {
@@ -43,7 +45,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
         return false;
     }
 
-    interface Callbacks extends AffirmWebViewClient.Callbacks {
+    interface WebViewClientCallbacks extends AffirmWebViewClient.WebViewClientCallbacks {
         void onWebViewConfirmation(@NonNull CardDetails cardDetails);
     }
 }

@@ -21,16 +21,6 @@ final class AffirmLog {
         AffirmLog.logLevel = logLevel;
     }
 
-    private static void log(int messageLogLevel, String message, Throwable tr) {
-        if (messageLogLevel >= logLevel) {
-            if (tr == null) {
-                Log.println(messageLogLevel, TAG, message);
-            } else {
-                Log.println(messageLogLevel, TAG, message + '\n' + Log.getStackTraceString(tr));
-            }
-        }
-    }
-
     static void v(String message, Throwable tr) {
         log(Log.VERBOSE, message, tr);
     }
@@ -69,5 +59,15 @@ final class AffirmLog {
 
     static void e(String message) {
         e(message, null);
+    }
+
+    private static void log(int messageLogLevel, String message, Throwable tr) {
+        if (messageLogLevel >= logLevel) {
+            if (tr == null) {
+                Log.println(messageLogLevel, TAG, message);
+            } else {
+                Log.println(messageLogLevel, TAG, message + '\n' + Log.getStackTraceString(tr));
+            }
+        }
     }
 }

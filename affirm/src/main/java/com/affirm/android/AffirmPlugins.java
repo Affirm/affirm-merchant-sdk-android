@@ -22,15 +22,15 @@ class AffirmPlugins {
     private AffirmHttpClient mRestClient;
     private Gson mGson;
 
-    AffirmPlugins(Affirm.Configuration configuration) {
+    AffirmPlugins(@NonNull Affirm.Configuration configuration) {
         mConfiguration = configuration;
     }
 
-    static void initialize(Affirm.Configuration configuration) {
+    static void initialize(@NonNull Affirm.Configuration configuration) {
         AffirmPlugins.set(new AffirmPlugins(configuration));
     }
 
-    private static void set(AffirmPlugins plugins) {
+    private static void set(@NonNull AffirmPlugins plugins) {
         synchronized (LOCK) {
             if (mInstance != null) {
                 throw new IllegalStateException("AffirmPlugins is already initialized");

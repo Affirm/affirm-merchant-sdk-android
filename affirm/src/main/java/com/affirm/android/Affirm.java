@@ -147,6 +147,8 @@ public final class Affirm {
              * @return A constructed {@code Configuration} object.
              */
             public Configuration build() {
+                AffirmUtils.requireNonNull(publicKey, "public key cannot be null");
+                AffirmUtils.requireNonNull(environment, "environment cannot be null");
                 return new Configuration(this);
             }
         }
@@ -159,7 +161,9 @@ public final class Affirm {
         return AffirmLog.getLogLevel();
     }
 
-    public static void initialize(Configuration configuration) {
+    public static void initialize(@NonNull Configuration configuration) {
+        AffirmUtils.requireNonNull(configuration, "configuration cannot be null");
+
         if (isInitialized()) {
             AffirmLog.w("Affirm is already initialized");
             return;
@@ -181,6 +185,8 @@ public final class Affirm {
      */
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                      boolean useVcn) {
+        AffirmUtils.requireNonNull(activity, "activity cannot be null");
+        AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVcn) {
             VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
         } else {
@@ -195,6 +201,7 @@ public final class Affirm {
      * @param modalId  the client's modal id
      */
     public static void showSiteModal(@NonNull Activity activity, @Nullable String modalId) {
+        AffirmUtils.requireNonNull(activity, "activity cannot be null");
         ModalActivity.startActivity(activity, 0, 0f, SITE, modalId);
     }
 
@@ -207,6 +214,7 @@ public final class Affirm {
      */
     public static void showProductModal(@NonNull Activity activity, float amount,
                                         @Nullable String modalId) {
+        AffirmUtils.requireNonNull(activity, "activity cannot be null");
         ModalActivity.startActivity(activity, 0, amount, PRODUCT, modalId);
     }
 
@@ -222,6 +230,7 @@ public final class Affirm {
                                            @Nullable final String promoId,
                                            final float amount,
                                            final boolean showCta) {
+        AffirmUtils.requireNonNull(promotionLabel, "AffirmPromotionLabel cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
@@ -277,6 +286,8 @@ public final class Affirm {
                                             int requestCode,
                                             int resultCode,
                                             @Nullable Intent data) {
+        AffirmUtils.requireNonNull(callbacks, "PrequalCallbacks cannot be null");
+
         if (requestCode == PREQUAL_REQUEST) {
             switch (resultCode) {
                 case RESULT_CANCELED:
@@ -303,6 +314,8 @@ public final class Affirm {
                                              int requestCode,
                                              int resultCode,
                                              @Nullable Intent data) {
+        AffirmUtils.requireNonNull(callbacks, "CheckoutCallbacks cannot be null");
+
         if (requestCode == CHECKOUT_REQUEST) {
             switch (resultCode) {
                 case RESULT_OK:
@@ -333,6 +346,8 @@ public final class Affirm {
                                                 int requestCode,
                                                 int resultCode,
                                                 @Nullable Intent data) {
+        AffirmUtils.requireNonNull(callbacks, "VcnCheckoutCallbacks cannot be null");
+
         if (requestCode == VCN_CHECKOUT_REQUEST) {
             switch (resultCode) {
                 case RESULT_OK:

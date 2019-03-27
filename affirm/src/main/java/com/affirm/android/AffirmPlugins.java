@@ -1,6 +1,6 @@
 package com.affirm.android;
 
-import com.affirm.android.model.MyAdapterFactory;
+import com.affirm.android.model.AffirmAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -78,7 +78,7 @@ class AffirmPlugins {
     synchronized Gson gson() {
         if (mGson == null) {
             mGson =
-                new GsonBuilder().registerTypeAdapterFactory(MyAdapterFactory.create()).create();
+                new GsonBuilder().registerTypeAdapterFactory(AffirmAdapterFactory.create()).create();
         }
         return mGson;
     }

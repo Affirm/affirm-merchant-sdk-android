@@ -3,7 +3,7 @@ Affirm Android SDK
 
 Easily integrate Affirm checkouts on merchant's native apps
 
-## Dependency
+# Installation
 
 Download via Gradle:
 
@@ -20,7 +20,7 @@ or Maven:
 </dependency>
 ```
 
-## Usage Overview
+# Usage Overview
 Start by initialize Affirm SDK.
 
 ```java
@@ -162,3 +162,6 @@ public void onAffirmPrequalError(String message) {
     Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
 }
 ```
+
+# Example
+A demo app that integrates Affirm is included in the repo. Just open android studio to run it.

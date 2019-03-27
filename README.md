@@ -3,7 +3,7 @@ Affirm Android SDK
 
 Easily integrate Affirm checkouts on merchant's native apps
 
-## Dependency
+# Installation
 
 Download via Gradle:
 
@@ -20,7 +20,7 @@ or Maven:
 </dependency>
 ```
 
-## Usage Overview
+# Usage Overview
 Start by initialize Affirm SDK.
 
 ```java
@@ -30,7 +30,88 @@ Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.En
         .build()
 ```
 
-### Promo Message & Prequal Flow
+## Checkout
+
+When you are ready to checkout with affirm create a checkout object
+and launch the affirm checkout.
+
+
+```java
+final Checkout checkout = Checkout.builder()
+        .setItems(items)
+        .setBilling(shipping)
+        .setShipping(shipping)
+        .setShippingAmount(0f)
+        .setTaxAmount(100f)
+        .setTotal(1100f)
+        .build();
+
+Affirm.startCheckout(this, checkout, false);
+```
+
+- An `checkout` object which contains details about the purchase itself
+- An `useVCN` which determines whether the checkout flow should use virtual card network to handle the checkout.
+    - if set to `true`, it will return `card info` from `VcnCheckoutCallbacks`. Of course you must override onActivityResult first, then call the `handleVcnCheckoutData` method
+    ```java
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (Affirm.handleVcnCheckoutData(this, requestCode, resultCode, data)) {
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    ```
+    
+    ```java
+    @Override
+    public void onAffirmVcnCheckoutCancelled() {
+        Toast.makeText(this, "Vcn Checkout Cancelled", Toast.LENGTH_LONG).show();
+    }
+    
+    @Override
+    public void onAffirmVcnCheckoutError(@Nullable String message) {
+        Toast.makeText(this, "Vcn Checkout Error: " + message, Toast.LENGTH_LONG).show();
+    }
+    
+    @Override
+    public void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails) {
+        Toast.makeText(this, "Vcn Checkout Card: " + cardDetails.toString(), Toast.LENGTH_LONG).show();
+    }
+    ```
+    
+    - if set to `false`, it will return `token` from `CheckoutCallbacks`. Of course you must override onActivityResult first, then call the `handleCheckoutData` method
+    ```java
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (Affirm.handleCheckoutData(this, requestCode, resultCode, data)) {
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    ```
+
+    ```java
+    @Override
+    public void onAffirmCheckoutSuccess(@NonNull String token) {
+        Toast.makeText(this, "Checkout token: " + token, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmCheckoutCancelled() {
+        Toast.makeText(this, "Checkout Cancelled", Toast.LENGTH_LONG).show();
+    }
+    
+    @Override
+    public void onAffirmCheckoutError(String message) {
+        Toast.makeText(this, "Checkout Error: " + message, Toast.LENGTH_LONG).show();
+    }
+    ```
+
+## Promotional Messaging
+
+Affirm Promotional Messaging allows you to inform customers about the availability of installment financing. Promos consist of promotional messaging, which appears directly in your app, and a modal, which is opened when the user clicks on the promotional button.
+
+To display promotional messaging, the SDK provides the `AffirmPromotionLabel` class. The `AffirmPromotionLabel` is implemented as follows:
 
 ```xml
 <com.affirm.android.AffirmPromotionLabel
@@ -55,7 +136,9 @@ affirmPromotionLabel.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
 Affirm.configureWithAmount((AffirmPromotionLabel) findViewById(R.id.promo), null, 1100, true);
 ```
 
-(Optional) If you want to handle cancellations and errors, you need to follow the steps below 
+Tapping on the `AffirmPromotionLabel` automatically start prequal flow with more information.
+
+(Optional) If you want to handle cancellations and errors, you need to follow the steps below.
 Override onActivityResult so that affirm can handle the result.
 ```java
 @Override
@@ -80,99 +163,5 @@ public void onAffirmPrequalError(String message) {
 }
 ```
 
-### Checkout Flow
-When you are ready to checkout with affirm create a checkout object
-and launch the affirm checkout.
-
-
-```java
-final Checkout checkout = Checkout.builder()
-        .setItems(items)
-        .setBilling(shipping)
-        .setShipping(shipping)
-        .setShippingAmount(0f)
-        .setTaxAmount(100f)
-        .setTotal(1100f)
-        .build();
-
-Affirm.startCheckout(this, checkout, false);
-```
-
-Override onActivityResult so that affirm can handle the result.
-
-```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    if (Affirm.handleCheckoutData(this, requestCode, resultCode, data)) {
-        return;
-    }
-    super.onActivityResult(requestCode, resultCode, data);
-}
-```
-
-Implement Checkout callbacks.
-
-```java
-@Override
-public void onAffirmCheckoutSuccess(@NonNull String token) {
-    Toast.makeText(this, "Checkout token: " + token, Toast.LENGTH_LONG).show();
-}
-
-@Override
-public void onAffirmCheckoutCancelled() {
-    Toast.makeText(this, "Checkout Cancelled", Toast.LENGTH_LONG).show();
-}
-
-@Override
-public void onAffirmCheckoutError(String message) {
-    Toast.makeText(this, "Checkout Error: " + message, Toast.LENGTH_LONG).show();
-}
-```
-
-### VCN Checkout Flow
-When you are ready to VCN checkout with affirm create a checkout object
-and launch the affirm VCN checkout.
-
-```java
-final Checkout checkout = Checkout.builder()
-        .setItems(items)
-        .setBilling(shipping)
-        .setShipping(shipping)
-        .setShippingAmount(0f)
-        .setTaxAmount(100f)
-        .setTotal(1100f)
-        .build();
-
-Affirm.startCheckout(this, checkout, true);
-```
-
-Override onActivityResult so that affirm can handle the result.
-
-```java
-@Override
-protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    if (Affirm.handleVcnCheckoutData(this, requestCode, resultCode, data)) {
-        return;
-    }
-    super.onActivityResult(requestCode, resultCode, data);
-}
-```
-
-Implement Checkout callbacks.
-
-```java
-@Override
-public void onAffirmVcnCheckoutCancelled() {
-    Toast.makeText(this, "Vcn Checkout Cancelled", Toast.LENGTH_LONG).show();
-}
-
-@Override
-public void onAffirmVcnCheckoutError(@Nullable String message) {
-    Toast.makeText(this, "Vcn Checkout Error: " + message, Toast.LENGTH_LONG).show();
-}
-
-@Override
-public void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails) {
-    Toast.makeText(this, "Vcn Checkout Card: " + cardDetails.toString(), Toast.LENGTH_LONG).show();
-}
-```
+# Example
+A demo app that integrates Affirm is included in the repo. Just open android studio to run it.

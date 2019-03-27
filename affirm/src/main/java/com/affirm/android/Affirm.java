@@ -181,13 +181,13 @@ public final class Affirm {
      *
      * @param activity activity {@link Activity}
      * @param checkout checkout object that contains address & shipping info & others...
-     * @param useVcn   Start VCN checkout or not
+     * @param useVCN   Start VCN checkout or not
      */
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
-                                     boolean useVcn) {
+                                     boolean useVCN) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
-        if (useVcn) {
+        if (useVCN) {
             VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
         } else {
             CheckoutActivity.startActivity(activity, CHECKOUT_REQUEST, checkout);

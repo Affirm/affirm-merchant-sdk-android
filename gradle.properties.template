@@ -1,7 +1,7 @@
 POM_NAME=Affirm-Android-Sdk
 POM_ARTIFACT_ID=affirm-android-sdk
 POM_PACKAGING=aar
-VERSION_NAME=2.0
+VERSION_NAME=2.0.0
 VERSION_CODE=11
 GROUP=com.affirm
 POM_DESCRIPTION=Affirm Android Sdk

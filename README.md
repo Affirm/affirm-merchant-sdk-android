@@ -49,7 +49,7 @@ final Checkout checkout = Checkout.builder()
 Affirm.startCheckout(this, checkout, false);
 ```
 
-- An `Checkout` object which contains details about the purchase itself
+- An `checkout` object which contains details about the purchase itself
 - An `useVCN` which determines whether the checkout flow should use virtual card network to handle the checkout.
     - if set to `true`, it will return `card info` from `VcnCheckoutCallbacks`. Of course you must override onActivityResult first, then call the `handleVcnCheckoutData` method
     ```java
@@ -138,7 +138,7 @@ Affirm.configureWithAmount((AffirmPromotionLabel) findViewById(R.id.promo), null
 
 Tapping on the `AffirmPromotionLabel` automatically start prequal flow with more information.
 
-(Optional) If you want to handle cancellations and errors, you need to follow the steps below 
+(Optional) If you want to handle cancellations and errors, you need to follow the steps below.
 Override onActivityResult so that affirm can handle the result.
 ```java
 @Override

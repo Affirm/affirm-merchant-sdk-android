@@ -78,7 +78,7 @@ class PromoRequest extends Request {
         }
 
         @Override
-        protected void onPostExecute(ResponseWrapper<PromoResponse> result) {
+        protected void onPostExecute(@NonNull ResponseWrapper<PromoResponse> result) {
             final SpannablePromoCallback callback = mCallbackRef.get();
             if (callback != null && !isRequestCancelled) {
                 if (result.source != null) {

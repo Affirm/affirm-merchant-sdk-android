@@ -29,21 +29,24 @@ public class AffirmPromotionLabel extends AppCompatTextView {
     private AffirmLogoType mAffirmLogoType;
     private AffirmColor mAffirmColor;
 
-    public AffirmPromotionLabel(Context context) {
+    public AffirmPromotionLabel(@NonNull Context context) {
         this(context, null);
     }
 
-    public AffirmPromotionLabel(Context context, AttributeSet attrs) {
+    public AffirmPromotionLabel(@NonNull Context context,
+                                @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public AffirmPromotionLabel(Context context, AttributeSet attrs, int defStyleAttr) {
+    public AffirmPromotionLabel(@NonNull Context context,
+                                @Nullable AttributeSet attrs,
+                                int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         init(context, attrs);
     }
 
-    private void init(Context context, AttributeSet attrs) {
+    private void init(@NonNull Context context, @Nullable AttributeSet attrs) {
         TypedArray typedArray =
                 context.obtainStyledAttributes(attrs, R.styleable.AffirmPromotionLabel);
 
@@ -72,7 +75,7 @@ public class AffirmPromotionLabel extends AppCompatTextView {
         mAffirmLogoType = affirmLogoType;
     }
 
-    public void setAffirmColor(AffirmColor affirmColor) {
+    public void setAffirmColor(@NonNull AffirmColor affirmColor) {
         mAffirmColor = affirmColor;
     }
 

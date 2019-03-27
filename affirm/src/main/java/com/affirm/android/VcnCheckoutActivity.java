@@ -84,7 +84,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
         };
     }
 
-    private String initialHtml(CheckoutResponse response) {
+    private String initialHtml(@NonNull CheckoutResponse response) {
         String html;
         try {
             final InputStream ins = getResources().openRawResource(R.raw.affirm_vcn_checkout);

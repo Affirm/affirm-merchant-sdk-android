@@ -28,7 +28,7 @@ public final class AffirmUtils {
         return (int) (amount * 100);
     }
 
-    static String readInputStream(InputStream inputStream) throws IOException {
+    static String readInputStream(@NonNull InputStream inputStream) throws IOException {
         final BufferedReader r =
                 new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
         final StringBuilder total = new StringBuilder();
@@ -59,7 +59,7 @@ public final class AffirmUtils {
         }
     }
 
-    static void hideActionBar(AppCompatActivity activity) {
+    static void hideActionBar(@NonNull AppCompatActivity activity) {
         activity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         if (activity.getActionBar() != null) {
             activity.getActionBar().hide();
@@ -68,7 +68,7 @@ public final class AffirmUtils {
         }
     }
 
-    static void showCloseActionBar(AppCompatActivity activity) {
+    static void showCloseActionBar(@NonNull AppCompatActivity activity) {
         activity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         if (activity.getActionBar() != null) {
             activity.getActionBar().show();

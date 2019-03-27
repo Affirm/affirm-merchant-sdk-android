@@ -78,7 +78,8 @@ class AffirmPlugins {
     synchronized Gson gson() {
         if (mGson == null) {
             mGson =
-                new GsonBuilder().registerTypeAdapterFactory(AffirmAdapterFactory.create()).create();
+                new GsonBuilder()
+                        .registerTypeAdapterFactory(AffirmAdapterFactory.create()).create();
         }
         return mGson;
     }

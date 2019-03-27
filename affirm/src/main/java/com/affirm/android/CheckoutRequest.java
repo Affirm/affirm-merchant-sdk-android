@@ -96,7 +96,7 @@ class CheckoutRequest extends Request {
         }
 
         @Override
-        protected void onPostExecute(ResponseWrapper<CheckoutResponse> result) {
+        protected void onPostExecute(@NonNull ResponseWrapper<CheckoutResponse> result) {
             final InnerCheckoutCallback checkoutCallback = mCallbackRef.get();
             if (checkoutCallback != null && !isRequestCancelled) {
                 if (result.source != null) {

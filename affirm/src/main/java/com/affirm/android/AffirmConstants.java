@@ -1,8 +1,8 @@
 package com.affirm.android;
 
-public final class Constants {
+public final class AffirmConstants {
 
-    private Constants() {
+    private AffirmConstants() {
     }
 
     static final String SDK_NAME = "Affirm";

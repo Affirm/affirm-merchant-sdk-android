@@ -26,15 +26,15 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIE
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_SUCCESS;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CANCELLATION_URL;
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
-import static com.affirm.android.Constants.CHECKOUT_EXTRA;
-import static com.affirm.android.Constants.CREDIT_DETAILS;
-import static com.affirm.android.Constants.HTTPS_PROTOCOL;
-import static com.affirm.android.Constants.TEXT_HTML;
-import static com.affirm.android.Constants.UTF_8;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
+import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
+import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.TEXT_HTML;
+import static com.affirm.android.AffirmConstants.UTF_8;
 
-public class VcnCheckoutActivity extends CheckoutCommonActivity
+public class VcnCheckoutActivity extends CheckoutBaseActivity
         implements VcnCheckoutWebViewClient.Callbacks {
 
     static void startActivity(@NonNull Activity activity, int requestCode,

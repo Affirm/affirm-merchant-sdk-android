@@ -8,8 +8,8 @@ import android.webkit.CookieSyncManager;
 
 import java.util.Vector;
 
-import static com.affirm.android.Constants.HTTPS_PROTOCOL;
-import static com.affirm.android.Constants.HTTP_PROTOCOL;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.HTTP_PROTOCOL;
 
 final class CookiesUtil {
 

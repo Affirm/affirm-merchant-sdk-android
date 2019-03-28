@@ -13,12 +13,12 @@ import androidx.annotation.Nullable;
 import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingEvent.PREQUAL_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
-import static com.affirm.android.Constants.AMOUNT;
-import static com.affirm.android.Constants.HTTPS_PROTOCOL;
-import static com.affirm.android.Constants.PREQUAL_ERROR;
-import static com.affirm.android.Constants.PREQUAL_PATH;
-import static com.affirm.android.Constants.PROMO_ID;
-import static com.affirm.android.Constants.REFERRING_URL;
+import static com.affirm.android.AffirmConstants.AMOUNT;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.PREQUAL_ERROR;
+import static com.affirm.android.AffirmConstants.PREQUAL_PATH;
+import static com.affirm.android.AffirmConstants.PROMO_ID;
+import static com.affirm.android.AffirmConstants.REFERRING_URL;
 
 public class PrequalActivity extends AffirmActivity implements PrequalWebViewClient.Callbacks {
 

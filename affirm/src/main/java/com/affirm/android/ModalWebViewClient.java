@@ -4,7 +4,7 @@ import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 
 final class ModalWebViewClient extends AffirmWebViewClient {
 

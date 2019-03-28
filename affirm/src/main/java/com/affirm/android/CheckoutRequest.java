@@ -15,7 +15,7 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class CheckoutRequest extends Request {
+class CheckoutRequest extends AffirmRequest {
 
     public enum CheckoutType {
         REGULAR, VCN
@@ -60,7 +60,7 @@ class CheckoutRequest extends Request {
     }
 
     private static class CheckoutTask extends
-            AsyncTask<Void, Void, ResponseWrapper<CheckoutResponse>> {
+            AsyncTask<Void, Void, AffirmResponseWrapper<CheckoutResponse>> {
         @NonNull
         private final Checkout mCheckout;
         @NonNull
@@ -78,25 +78,25 @@ class CheckoutRequest extends Request {
         }
 
         @Override
-        protected ResponseWrapper<CheckoutResponse> doInBackground(Void... params) {
+        protected AffirmResponseWrapper<CheckoutResponse> doInBackground(Void... params) {
             try {
-                CheckoutCommonActivity checkoutBaseActivity =
-                        (CheckoutCommonActivity) mContextRef.get();
+                CheckoutBaseActivity checkoutBaseActivity =
+                        (CheckoutBaseActivity) mContextRef.get();
                 CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(mCheckout);
-                return new ResponseWrapper<>(checkoutResponse);
+                return new AffirmResponseWrapper<>(checkoutResponse);
             } catch (ConnectionException e) {
-                return new ResponseWrapper<>(e);
+                return new AffirmResponseWrapper<>(e);
             } catch (APIException e) {
-                return new ResponseWrapper<>(e);
+                return new AffirmResponseWrapper<>(e);
             } catch (PermissionException e) {
-                return new ResponseWrapper<>(e);
+                return new AffirmResponseWrapper<>(e);
             } catch (InvalidRequestException e) {
-                return new ResponseWrapper<>(e);
+                return new AffirmResponseWrapper<>(e);
             }
         }
 
         @Override
-        protected void onPostExecute(@NonNull ResponseWrapper<CheckoutResponse> result) {
+        protected void onPostExecute(@NonNull AffirmResponseWrapper<CheckoutResponse> result) {
             final InnerCheckoutCallback checkoutCallback = mCallbackRef.get();
             if (checkoutCallback != null && !isRequestCancelled) {
                 if (result.source != null) {

@@ -15,10 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import static com.affirm.android.Affirm.RESULT_ERROR;
-import static com.affirm.android.Constants.CHECKOUT_ERROR;
-import static com.affirm.android.Constants.CHECKOUT_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
+import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 
-abstract class CheckoutCommonActivity extends AffirmActivity {
+abstract class CheckoutBaseActivity extends AffirmActivity {
 
     private CheckoutRequest mCheckoutRequest;
 

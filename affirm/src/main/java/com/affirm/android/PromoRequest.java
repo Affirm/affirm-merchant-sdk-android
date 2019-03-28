@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class PromoRequest extends Request {
+class PromoRequest extends AffirmRequest {
 
     @Nullable
     private final String mPromoId;
@@ -42,7 +42,7 @@ class PromoRequest extends Request {
     }
 
     private static class PromoTask extends
-            AsyncTask<Void, Void, ResponseWrapper<PromoResponse>> {
+            AsyncTask<Void, Void, AffirmResponseWrapper<PromoResponse>> {
         @Nullable
         private final String mPromoId;
         private final float mDollarAmount;
@@ -61,24 +61,24 @@ class PromoRequest extends Request {
         }
 
         @Override
-        protected ResponseWrapper<PromoResponse> doInBackground(Void... params) {
+        protected AffirmResponseWrapper<PromoResponse> doInBackground(Void... params) {
             try {
                 PromoResponse promoResponse =
                         AffirmApiHandler.getNewPromo(mPromoId, mDollarAmount, mShowCta);
-                return new ResponseWrapper<>(promoResponse);
+                return new AffirmResponseWrapper<>(promoResponse);
             } catch (ConnectionException e) {
-                return new ResponseWrapper<>(e);
+                return new AffirmResponseWrapper<>(e);
             } catch (APIException e) {
-                return new ResponseWrapper<>(e);
+                return new AffirmResponseWrapper<>(e);
             } catch (PermissionException e) {
-                return new ResponseWrapper<>(e);
+                return new AffirmResponseWrapper<>(e);
             } catch (InvalidRequestException e) {
-                return new ResponseWrapper<>(e);
+                return new AffirmResponseWrapper<>(e);
             }
         }
 
         @Override
-        protected void onPostExecute(@NonNull ResponseWrapper<PromoResponse> result) {
+        protected void onPostExecute(@NonNull AffirmResponseWrapper<PromoResponse> result) {
             final SpannablePromoCallback callback = mCallbackRef.get();
             if (callback != null && !isRequestCancelled) {
                 if (result.source != null) {

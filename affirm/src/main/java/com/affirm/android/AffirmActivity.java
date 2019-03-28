@@ -10,7 +10,7 @@ import android.webkit.WebView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import static com.affirm.android.Constants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 
 abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChromeClient.Callbacks {
 

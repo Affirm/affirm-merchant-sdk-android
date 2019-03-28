@@ -15,18 +15,18 @@ import java.util.Locale;
 
 import androidx.annotation.Nullable;
 
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CANCELLATION_URL;
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
-import static com.affirm.android.Constants.CHECKOUT_PATH;
-import static com.affirm.android.Constants.CONTENT_TYPE;
-import static com.affirm.android.Constants.HTTP;
-import static com.affirm.android.Constants.HTTPS_PROTOCOL;
-import static com.affirm.android.Constants.PROMO_PATH;
-import static com.affirm.android.Constants.TAG_CHECKOUT;
-import static com.affirm.android.Constants.TAG_GET_NEW_PROMO;
-import static com.affirm.android.Constants.TAG_TRACKER;
-import static com.affirm.android.Constants.TAG_VCN_CHECKOUT;
-import static com.affirm.android.Constants.TRACKER_PATH;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
+import static com.affirm.android.AffirmConstants.CHECKOUT_PATH;
+import static com.affirm.android.AffirmConstants.CONTENT_TYPE;
+import static com.affirm.android.AffirmConstants.HTTP;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.PROMO_PATH;
+import static com.affirm.android.AffirmConstants.TAG_CHECKOUT;
+import static com.affirm.android.AffirmConstants.TAG_GET_NEW_PROMO;
+import static com.affirm.android.AffirmConstants.TAG_TRACKER;
+import static com.affirm.android.AffirmConstants.TAG_VCN_CHECKOUT;
+import static com.affirm.android.AffirmConstants.TRACKER_PATH;
 
 
 final class AffirmApiHandler {

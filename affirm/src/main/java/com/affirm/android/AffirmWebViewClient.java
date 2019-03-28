@@ -9,7 +9,7 @@ import com.affirm.android.exception.ConnectionException;
 
 import androidx.annotation.NonNull;
 
-import static com.affirm.android.Constants.HTTP;
+import static com.affirm.android.AffirmConstants.HTTP;
 
 abstract class AffirmWebViewClient extends WebViewClient {
 

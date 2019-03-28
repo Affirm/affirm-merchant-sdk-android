@@ -2,16 +2,16 @@ package com.affirm.android;
 
 import com.affirm.android.exception.AffirmException;
 
-class ResponseWrapper<T> {
+class AffirmResponseWrapper<T> {
     T source;
 
     AffirmException error;
 
-    ResponseWrapper(T source) {
+    AffirmResponseWrapper(T source) {
         this.source = source;
     }
 
-    ResponseWrapper(AffirmException error) {
+    AffirmResponseWrapper(AffirmException error) {
         this.error = error;
     }
 }

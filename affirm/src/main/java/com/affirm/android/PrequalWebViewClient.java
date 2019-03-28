@@ -4,7 +4,7 @@ import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 
-import static com.affirm.android.Constants.REFERRING_URL;
+import static com.affirm.android.AffirmConstants.REFERRING_URL;
 
 final class PrequalWebViewClient extends AffirmWebViewClient {
 

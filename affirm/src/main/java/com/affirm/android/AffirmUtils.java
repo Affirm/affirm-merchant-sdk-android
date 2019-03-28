@@ -16,8 +16,8 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import static com.affirm.android.Constants.PLACEHOLDER_END;
-import static com.affirm.android.Constants.PLACEHOLDER_START;
+import static com.affirm.android.AffirmConstants.PLACEHOLDER_END;
+import static com.affirm.android.AffirmConstants.PLACEHOLDER_START;
 
 public final class AffirmUtils {
 

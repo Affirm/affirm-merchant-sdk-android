@@ -10,8 +10,8 @@ import java.net.URLDecoder;
 
 import androidx.annotation.NonNull;
 
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CANCELLATION_URL;
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
 
 final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     private final Callbacks mCallbacks;

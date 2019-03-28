@@ -4,9 +4,9 @@ import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CANCELLATION_URL;
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
-import static com.affirm.android.Constants.CHECKOUT_TOKEN;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
+import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 
 final class CheckoutWebViewClient extends AffirmWebViewClient {
     private final Callbacks mCallbacks;

@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 
 import androidx.annotation.NonNull;
 
-class TrackerRequest extends Request {
+class TrackerRequest extends AffirmRequest {
 
     @NonNull
     private JsonObject mTrackingData;

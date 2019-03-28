@@ -21,7 +21,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_WHITE;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
-import static com.affirm.android.Constants.LOGO_PLACEHOLDER;
+import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
 
 public class AffirmPromotionLabel extends AppCompatTextView {
 

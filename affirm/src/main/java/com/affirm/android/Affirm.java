@@ -15,12 +15,12 @@ import androidx.annotation.Nullable;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static com.affirm.android.Constants.CHECKOUT_ERROR;
-import static com.affirm.android.Constants.CHECKOUT_TOKEN;
-import static com.affirm.android.Constants.CREDIT_DETAILS;
-import static com.affirm.android.Constants.PRODUCTION_URL;
-import static com.affirm.android.Constants.SANDBOX_URL;
-import static com.affirm.android.Constants.TRACKER_URL;
+import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
+import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
+import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
+import static com.affirm.android.AffirmConstants.PRODUCTION_URL;
+import static com.affirm.android.AffirmConstants.SANDBOX_URL;
+import static com.affirm.android.AffirmConstants.TRACKER_URL;
 import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
 import static com.affirm.android.ModalActivity.ModalType.SITE;
 

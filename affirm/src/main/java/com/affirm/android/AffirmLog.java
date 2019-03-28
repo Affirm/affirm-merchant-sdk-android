@@ -2,7 +2,7 @@ package com.affirm.android;
 
 import android.util.Log;
 
-import static com.affirm.android.Constants.SDK_NAME;
+import static com.affirm.android.AffirmConstants.SDK_NAME;
 
 final class AffirmLog {
 

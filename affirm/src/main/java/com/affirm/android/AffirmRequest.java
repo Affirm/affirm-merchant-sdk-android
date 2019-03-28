@@ -2,7 +2,7 @@ package com.affirm.android;
 
 import android.os.AsyncTask;
 
-abstract class Request<T> {
+abstract class AffirmRequest<T> {
 
     interface RequestCreate {
 

@@ -18,19 +18,19 @@ import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
-import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CANCELLATION_URL;
-import static com.affirm.android.Constants.AMOUNT;
-import static com.affirm.android.Constants.API_KEY;
-import static com.affirm.android.Constants.CANCEL_URL;
-import static com.affirm.android.Constants.HTTPS_PROTOCOL;
-import static com.affirm.android.Constants.JAVASCRIPT;
-import static com.affirm.android.Constants.JS_PATH;
-import static com.affirm.android.Constants.MAP_EXTRA;
-import static com.affirm.android.Constants.MODAL_ID;
-import static com.affirm.android.Constants.PREQUAL_ERROR;
-import static com.affirm.android.Constants.TEXT_HTML;
-import static com.affirm.android.Constants.TYPE_EXTRA;
-import static com.affirm.android.Constants.UTF_8;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.AffirmConstants.AMOUNT;
+import static com.affirm.android.AffirmConstants.API_KEY;
+import static com.affirm.android.AffirmConstants.CANCEL_URL;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.JAVASCRIPT;
+import static com.affirm.android.AffirmConstants.JS_PATH;
+import static com.affirm.android.AffirmConstants.MAP_EXTRA;
+import static com.affirm.android.AffirmConstants.MODAL_ID;
+import static com.affirm.android.AffirmConstants.PREQUAL_ERROR;
+import static com.affirm.android.AffirmConstants.TEXT_HTML;
+import static com.affirm.android.AffirmConstants.TYPE_EXTRA;
+import static com.affirm.android.AffirmConstants.UTF_8;
 
 public class ModalActivity extends AffirmActivity implements ModalWebViewClient.Callbacks {
 

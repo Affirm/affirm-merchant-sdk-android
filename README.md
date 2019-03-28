@@ -158,11 +158,6 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 Implement Prequal callbacks.
 ```java
 @Override
-public void onAffirmPrequalCancelled() {
-    Toast.makeText(this, "Prequal Cancelled", Toast.LENGTH_LONG).show();
-}
-
-@Override
 public void onAffirmPrequalError(String message) {
     Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
 }

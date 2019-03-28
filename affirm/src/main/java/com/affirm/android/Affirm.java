@@ -43,8 +43,6 @@ public final class Affirm {
 
     public interface PrequalCallbacks {
         void onAffirmPrequalError(@Nullable String message);
-
-        void onAffirmPrequalCancelled();
     }
 
     public interface CheckoutCallbacks {
@@ -290,9 +288,6 @@ public final class Affirm {
 
         if (requestCode == PREQUAL_REQUEST) {
             switch (resultCode) {
-                case RESULT_CANCELED:
-                    callbacks.onAffirmPrequalCancelled();
-                    break;
                 case RESULT_ERROR:
                     AffirmUtils.requireNonNull(data);
                     callbacks.onAffirmPrequalError(data.getStringExtra(CHECKOUT_ERROR));

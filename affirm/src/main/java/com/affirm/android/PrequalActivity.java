@@ -21,7 +21,7 @@ import static com.affirm.android.Constants.PROMO_ID;
 import static com.affirm.android.Constants.REFERRING_URL;
 
 public class PrequalActivity extends AffirmActivity
-        implements AffirmWebViewClient.WebViewClientCallbacks, PrequalWebViewClient.Callbacks {
+        implements PrequalWebViewClient.Callbacks {
 
     private String mAmount;
     private String mPromoId;
@@ -72,12 +72,6 @@ public class PrequalActivity extends AffirmActivity
 
         outState.putString(AMOUNT, mAmount);
         outState.putString(PROMO_ID, mPromoId);
-    }
-
-    @Override
-    public void onWebViewCancellation() {
-        setResult(RESULT_CANCELED);
-        finish();
     }
 
     @Override

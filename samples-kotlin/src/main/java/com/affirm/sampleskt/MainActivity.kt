@@ -103,8 +103,4 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
     override fun onAffirmPrequalError(message: String?) {
         Toast.makeText(this, "Prequal Error: " + message!!, Toast.LENGTH_LONG).show()
     }
-
-    override fun onAffirmPrequalCancelled() {
-        Toast.makeText(this, "Prequal Cancelled", Toast.LENGTH_LONG).show()
-    }
 }

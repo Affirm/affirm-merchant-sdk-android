@@ -43,12 +43,12 @@ final class AffirmHttpClient {
     }
 
     AffirmHttpResponse execute(final AffirmHttpRequest request) throws APIException,
-        PermissionException, InvalidRequestException, ConnectionException {
+            PermissionException, InvalidRequestException, ConnectionException {
         return execute(request, true);
     }
 
     AffirmHttpResponse execute(final AffirmHttpRequest request, boolean sendTrackEvent)
-        throws APIException, PermissionException, InvalidRequestException, ConnectionException {
+            throws APIException, PermissionException, InvalidRequestException, ConnectionException {
         Request okHttpRequest = getRequest(request);
         Call call = mOkHttpClient.newCall(okHttpRequest);
         try {
@@ -57,7 +57,7 @@ final class AffirmHttpClient {
             boolean responseSuccess = response.isSuccessful();
             if (!responseSuccess && sendTrackEvent) {
                 AffirmTracker.track(NETWORK_ERROR, ERROR,
-                    createTrackingNetworkJsonObj(okHttpRequest, response));
+                        createTrackingNetworkJsonObj(okHttpRequest, response));
             }
 
             final Headers headers = response.headers();
@@ -65,7 +65,7 @@ final class AffirmHttpClient {
             if (response.code() < 200 || response.code() >= 300) {
                 ResponseBody responseBody = response.body();
                 final AffirmError affirmError = AffirmPlugins.get().gson()
-                    .fromJson(responseBody != null ? responseBody.string() : "", AffirmError.class);
+                        .fromJson(responseBody != null ? responseBody.string() : "", AffirmError.class);
                 handleAPIError(affirmError, response.code(), requestId);
             }
 
@@ -74,7 +74,7 @@ final class AffirmHttpClient {
         } catch (IOException e) {
             if (sendTrackEvent) {
                 AffirmTracker.track(NETWORK_ERROR, ERROR,
-                    createTrackingNetworkJsonObj(okHttpRequest, null));
+                        createTrackingNetworkJsonObj(okHttpRequest, null));
             }
 
             throw new ConnectionException("i/o failure", e);
@@ -83,27 +83,27 @@ final class AffirmHttpClient {
 
     private static void handleAPIError(@NonNull AffirmError affirmError, int responseCode,
                                        @Nullable String requestId) throws APIException,
-        PermissionException, InvalidRequestException {
+            PermissionException, InvalidRequestException {
 
         switch (responseCode) {
             case 400:
             case 404: {
                 throw new InvalidRequestException(
-                    affirmError.message(),
-                    affirmError.type(),
-                    affirmError.field(),
-                    requestId,
-                    affirmError.status(),
-                    affirmError,
-                    null);
+                        affirmError.message(),
+                        affirmError.type(),
+                        affirmError.field(),
+                        requestId,
+                        affirmError.status(),
+                        affirmError,
+                        null);
             }
             case 403: {
                 throw new PermissionException(affirmError.message(), requestId, responseCode,
-                    affirmError);
+                        affirmError);
             }
             default: {
                 throw new APIException(affirmError.message(), requestId, responseCode, affirmError,
-                    null);
+                        null);
             }
         }
     }
@@ -144,11 +144,11 @@ final class AffirmHttpClient {
             }
         }
         return new AffirmHttpResponse.Builder()
-            .setStatusCode(statusCode)
-            .setContent(content)
-            .setTotalSize(totalSize)
-            .setContentType(contentType)
-            .build();
+                .setStatusCode(statusCode)
+                .setContent(content)
+                .setTotalSize(totalSize)
+                .setContentType(contentType)
+                .build();
     }
 
     private Request getRequest(AffirmHttpRequest request) {

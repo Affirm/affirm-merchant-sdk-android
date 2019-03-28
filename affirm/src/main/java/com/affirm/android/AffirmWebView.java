@@ -21,9 +21,9 @@ final class AffirmWebView extends WebView {
         getSettings().setJavaScriptEnabled(true);
         getSettings().setDomStorageEnabled(true);
         getSettings().setSupportMultipleWindows(true);
-        setVerticalScrollBarEnabled(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         }
+        setVerticalScrollBarEnabled(false);
     }
 }

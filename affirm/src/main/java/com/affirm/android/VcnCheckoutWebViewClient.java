@@ -10,16 +10,16 @@ import java.net.URLDecoder;
 
 import androidx.annotation.NonNull;
 
-import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
-import static com.affirm.android.Constants.AFFIRM_CONFIRMATION_URL;
+import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
 
 final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
-    private final WebViewClientCallbacks mCallbacks;
+    private final Callbacks mCallbacks;
     private final Gson mGson;
     private static final String VCN_CHECKOUT_REGEX = "data=";
     private static final String ENCODING_FORMAT = "UTF-8";
 
-    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull WebViewClientCallbacks callbacks) {
+    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull Callbacks callbacks) {
         super(callbacks);
         mCallbacks = callbacks;
         mGson = gson;
@@ -27,7 +27,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
 
     @Override
     boolean hasCallbackUrl(WebView view, String url) {
-        if (url.contains(AFFIRM_CONFIRMATION_URL)) {
+        if (url.contains(AFFIRM_CHECKOUT_CONFIRMATION_URL)) {
             final String encodedString = url.split(VCN_CHECKOUT_REGEX)[1];
             try {
                 final String json = URLDecoder.decode(encodedString, ENCODING_FORMAT);
@@ -37,7 +37,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
                 throw new RuntimeException(e);
             }
             return true;
-        } else if (url.contains(AFFIRM_CANCELLATION_URL)) {
+        } else if (url.contains(AFFIRM_CHECKOUT_CANCELLATION_URL)) {
             mCallbacks.onWebViewCancellation();
             return true;
         }
@@ -45,7 +45,9 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
         return false;
     }
 
-    interface WebViewClientCallbacks extends AffirmWebViewClient.WebViewClientCallbacks {
+    interface Callbacks extends WebViewClientCallbacks {
         void onWebViewConfirmation(@NonNull CardDetails cardDetails);
+
+        void onWebViewCancellation();
     }
 }

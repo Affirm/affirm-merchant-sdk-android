@@ -163,9 +163,4 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
     public void onAffirmPrequalError(@Nullable String message) {
         Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
     }
-
-    @Override
-    public void onAffirmPrequalCancelled() {
-        Toast.makeText(this, "Prequal Cancelled", Toast.LENGTH_LONG).show();
-    }
 }

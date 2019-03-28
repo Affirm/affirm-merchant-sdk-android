@@ -3,6 +3,7 @@ package com.affirm.android;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.affirm.android.CheckoutRequest.CheckoutType;
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.ConnectionException;
@@ -10,7 +11,6 @@ import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
-import com.affirm.android.CheckoutRequest.CheckoutType;
 
 import androidx.annotation.NonNull;
 
@@ -24,7 +24,7 @@ import static com.affirm.android.Constants.CHECKOUT_EXTRA;
 import static com.affirm.android.Constants.CHECKOUT_TOKEN;
 
 public class CheckoutActivity extends CheckoutCommonActivity
-    implements CheckoutWebViewClient.Callbacks {
+        implements CheckoutWebViewClient.Callbacks {
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout) {
@@ -47,7 +47,7 @@ public class CheckoutActivity extends CheckoutCommonActivity
 
     @Override
     CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
-        PermissionException, InvalidRequestException, ConnectionException {
+            PermissionException, InvalidRequestException, ConnectionException {
         return AffirmApiHandler.executeCheckout(checkout);
     }
 

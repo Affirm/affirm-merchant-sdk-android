@@ -9,7 +9,6 @@ import com.affirm.android.exception.ConnectionException;
 
 import androidx.annotation.NonNull;
 
-import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
 import static com.affirm.android.Constants.HTTP;
 
 abstract class AffirmWebViewClient extends WebViewClient {
@@ -24,11 +23,6 @@ abstract class AffirmWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if (url.contains(AFFIRM_CANCELLATION_URL)) {
-            mCallbacks.onWebViewCancellation();
-            return true;
-        }
-
         if (hasCallbackUrl(view, url)) {
             return true;
         }
@@ -43,7 +37,5 @@ abstract class AffirmWebViewClient extends WebViewClient {
 
     public interface WebViewClientCallbacks {
         void onWebViewError(@NonNull ConnectionException error);
-
-        void onWebViewCancellation();
     }
 }

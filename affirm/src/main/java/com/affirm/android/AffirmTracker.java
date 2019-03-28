@@ -57,15 +57,15 @@ final class AffirmTracker {
     }
 
     static void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
-               @Nullable JsonObject data) {
+                      @Nullable JsonObject data) {
         final JsonObject trackingData = addTrackingData(event.mName, data, level);
         new TrackerRequest(trackingData).create();
     }
 
     @NonNull
     private static JsonObject addTrackingData(@NonNull String eventName,
-                                       @Nullable JsonObject eventData,
-                                       @NonNull TrackingLevel level) {
+                                              @Nullable JsonObject eventData,
+                                              @NonNull TrackingLevel level) {
 
         final Gson gson = new Gson();
         final JsonObject data = eventData == null ? new JsonObject()
@@ -76,8 +76,8 @@ final class AffirmTracker {
     }
 
     private static void fillTrackingData(@NonNull String eventName,
-                                  @NonNull JsonObject data,
-                                  @NonNull AffirmTracker.TrackingLevel level) {
+                                         @NonNull JsonObject data,
+                                         @NonNull AffirmTracker.TrackingLevel level) {
         final long timeStamp = System.currentTimeMillis();
         // Set the log counter and then increment the logCounter
         int localLogCounter = mLocalLogCounter.getAndIncrement();

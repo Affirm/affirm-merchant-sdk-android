@@ -18,7 +18,7 @@ import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
-import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
+import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.Constants.AMOUNT;
 import static com.affirm.android.Constants.API_KEY;
 import static com.affirm.android.Constants.CANCEL_URL;
@@ -32,8 +32,7 @@ import static com.affirm.android.Constants.TEXT_HTML;
 import static com.affirm.android.Constants.TYPE_EXTRA;
 import static com.affirm.android.Constants.UTF_8;
 
-public class ModalActivity extends AffirmActivity
-        implements AffirmWebViewClient.WebViewClientCallbacks {
+public class ModalActivity extends AffirmActivity implements ModalWebViewClient.Callbacks {
 
     private ModalType mType;
     private HashMap<String, String> mMap;
@@ -63,7 +62,7 @@ public class ModalActivity extends AffirmActivity
         map.put(AMOUNT, stringAmount);
         map.put(API_KEY, AffirmPlugins.get().publicKey());
         map.put(JAVASCRIPT, fullPath);
-        map.put(CANCEL_URL, AFFIRM_CANCELLATION_URL);
+        map.put(CANCEL_URL, AFFIRM_CHECKOUT_CANCELLATION_URL);
         map.put(MODAL_ID, modalId == null ? "" : modalId);
 
         intent.putExtra(TYPE_EXTRA, type);

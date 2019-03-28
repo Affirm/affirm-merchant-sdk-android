@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class VcnCheckoutWebViewClientTest {
 
     @Mock
-    VcnCheckoutWebViewClient.WebViewClientCallbacks callbacks;
+    VcnCheckoutWebViewClient.Callbacks callbacks;
     @Mock
     WebView webview;
 

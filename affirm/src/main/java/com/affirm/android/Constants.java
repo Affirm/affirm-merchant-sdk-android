@@ -16,8 +16,8 @@ public final class Constants {
             + "&show_cta=%s&promo_external_id=%s";
     static final String PREQUAL_PATH = "/apps/prequal?public_api_key=%s&unit_price=%s"
             + "&promo_external_id=%s&isSDK=true&use_promo=True&referring_url=%s";
-    public static final String AFFIRM_CONFIRMATION_URL = "affirm://checkout/confirmed";
-    public static final String AFFIRM_CANCELLATION_URL = "affirm://checkout/cancelled";
+    static final String AFFIRM_CHECKOUT_CONFIRMATION_URL = "affirm://checkout/confirmed";
+    static final String AFFIRM_CHECKOUT_CANCELLATION_URL = "affirm://checkout/cancelled";
     static final String REFERRING_URL = "https://androidsdk/";
     static final String JS_PATH = "/js/v2/affirm.js";
 

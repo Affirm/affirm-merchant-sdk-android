@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.affirm.android.CheckoutRequest.CheckoutType;
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.ConnectionException;
@@ -12,7 +13,6 @@ import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
-import com.affirm.android.CheckoutRequest.CheckoutType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,8 +26,8 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIE
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_SUCCESS;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
-import static com.affirm.android.Constants.AFFIRM_CANCELLATION_URL;
-import static com.affirm.android.Constants.AFFIRM_CONFIRMATION_URL;
+import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.Constants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
 import static com.affirm.android.Constants.CHECKOUT_EXTRA;
 import static com.affirm.android.Constants.CREDIT_DETAILS;
 import static com.affirm.android.Constants.HTTPS_PROTOCOL;
@@ -35,7 +35,7 @@ import static com.affirm.android.Constants.TEXT_HTML;
 import static com.affirm.android.Constants.UTF_8;
 
 public class VcnCheckoutActivity extends CheckoutCommonActivity
-    implements AffirmWebChromeClient.Callbacks, VcnCheckoutWebViewClient.WebViewClientCallbacks {
+        implements VcnCheckoutWebViewClient.Callbacks {
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout) {
@@ -48,7 +48,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
     void initViews() {
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(
-            new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
+                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
         clearCookies();
     }
@@ -60,7 +60,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
 
     @Override
     CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
-        PermissionException, InvalidRequestException, ConnectionException {
+            PermissionException, InvalidRequestException, ConnectionException {
         return AffirmApiHandler.executeVcnCheckout(checkout);
     }
 
@@ -79,7 +79,7 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
                 final String html = initialHtml(response);
                 final Uri uri = Uri.parse(response.redirectUrl());
                 webView.loadDataWithBaseURL(HTTPS_PROTOCOL + uri.getHost(), html,
-                    TEXT_HTML, UTF_8, null);
+                        TEXT_HTML, UTF_8, null);
             }
         };
     }
@@ -98,8 +98,8 @@ public class VcnCheckoutActivity extends CheckoutCommonActivity
         map.put("URL", response.redirectUrl());
         map.put("URL2", response.redirectUrl());
         map.put("JS_CALLBACK_ID", response.jsCallbackId());
-        map.put("CONFIRM_CB_URL", AFFIRM_CONFIRMATION_URL);
-        map.put("CANCELLED_CB_URL", AFFIRM_CANCELLATION_URL);
+        map.put("CONFIRM_CB_URL", AFFIRM_CHECKOUT_CONFIRMATION_URL);
+        map.put("CANCELLED_CB_URL", AFFIRM_CHECKOUT_CANCELLATION_URL);
         return AffirmUtils.replacePlaceholders(html, map);
     }
 

@@ -26,11 +26,12 @@ replacing `latest.version.here` with the latest released version
 Snapshots of the development version are available in [Sonatype's `snapshots` repository](https://oss.sonatype.org/content/repositories/snapshots/).
 
 # Usage Overview
-Start by initialize Affirm SDK.
+
+Before you can start initialize Affirm SDK, you must first set the AffirmSDK with your public API key from your [Merchant Dashboard](https://sandbox.affirm.com/dashboard). You must set this key as follows:
 
 ```java
 Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
-        .setName(null)
+        .setName("Your merchant's name")
         .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
         .build()
 ```
@@ -56,7 +57,7 @@ Affirm.startCheckout(this, checkout, false);
 
 - An `checkout` object which contains details about the purchase itself
 - An `useVCN` which determines whether the checkout flow should use virtual card network to handle the checkout.
-    - if set to `true`, it will return `card info` from `VcnCheckoutCallbacks`. Of course you must override onActivityResult first, then call the `handleVcnCheckoutData` method
+    - if set to `true`, it will return `card info` from `VcnCheckoutCallbacks`. And you should override onActivityResult, then call the `handleVcnCheckoutData` method
     ```java
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -84,7 +85,7 @@ Affirm.startCheckout(this, checkout, false);
     }
     ```
     
-    - if set to `false`, it will return `token` from `CheckoutCallbacks`. Of course you must override onActivityResult first, then call the `handleCheckoutData` method
+    - if set to `false`, it will return `token` from `CheckoutCallbacks`. And you should override onActivityResult, then call the `handleCheckoutData` method
     ```java
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -114,7 +115,7 @@ Affirm.startCheckout(this, checkout, false);
 
 ## Promotional Messaging
 
-Affirm Promotional Messaging allows you to inform customers about the availability of installment financing. Promos consist of promotional messaging, which appears directly in your app, and a modal, which is opened when the user clicks on the promotional button.
+Affirm Promotional Messaging allows you to inform customers about the availability of installment financing. Promos consist of promotional messaging, which appears directly in your app, and a modal, which is opened when the user clicks on the promotional label.
 
 To display promotional messaging, the SDK provides the `AffirmPromotionLabel` class. The `AffirmPromotionLabel` is implemented as follows:
 
@@ -138,12 +139,12 @@ affirmPromotionLabel.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
 ```
 
 ```java
-Affirm.configureWithAmount((AffirmPromotionLabel) findViewById(R.id.promo), null, 1100, true);
+Affirm.configureWithAmount(affirmPromotionLabel, null, 1100, true);
 ```
 
 Tapping on the `AffirmPromotionLabel` automatically start prequal flow with more information.
 
-(Optional) If you want to handle cancellations and errors, you need to follow the steps below.
+(Optional) If you want to handle errors, you need to follow the steps below.
 Override onActivityResult so that affirm can handle the result.
 ```java
 @Override
@@ -155,7 +156,6 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 }
 ```
 
-Implement Prequal callbacks.
 ```java
 @Override
 public void onAffirmPrequalError(String message) {

@@ -20,8 +20,7 @@ import static com.affirm.android.Constants.PREQUAL_PATH;
 import static com.affirm.android.Constants.PROMO_ID;
 import static com.affirm.android.Constants.REFERRING_URL;
 
-public class PrequalActivity extends AffirmActivity
-        implements PrequalWebViewClient.Callbacks {
+public class PrequalActivity extends AffirmActivity implements PrequalWebViewClient.Callbacks {
 
     private String mAmount;
     private String mPromoId;

@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,11 +14,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 public class AffirmTrackerTest {
     private static AtomicInteger mLocalLogCounter;
 
     @Before
-    public void init(){
+    public void init() {
         mLocalLogCounter = new AtomicInteger();
         if (AffirmPlugins.get() == null) {
             Affirm.initialize(new Affirm.Configuration.Builder("sdf", Affirm.Environment.SANDBOX)
@@ -30,19 +32,19 @@ public class AffirmTrackerTest {
 
 
     @Test
-    public void testTrack(){
+    public void testTrack() {
         JsonObject data = addTrackingData(AffirmTracker.TrackingEvent.CHECKOUT_CREATION_FAIL.name(),
                 null, AffirmTracker.TrackingLevel.INFO);
-        assertNotEquals(-1,data.get("local_log_counter").getAsInt());
-        assertNotEquals(0L,data.get("ts").getAsLong());
-        assertEquals("Android SDK",data.get("app_id").getAsString());
-        assertEquals(BuildConfig.VERSION_NAME,data.get("release").getAsString());
-        assertEquals(Build.VERSION.SDK_INT,data.get("android_sdk").getAsInt());
-        assertNotEquals(null,data.get("device_name"));
-        assertNotEquals(null,data.get("merchant_key").getAsString());
-        assertNotEquals(null,data.get("environment").getAsString());
-        assertEquals(AffirmTracker.TrackingEvent.CHECKOUT_CREATION_FAIL.name(),data.get("event_name").getAsString());
-        assertEquals(AffirmTracker.TrackingLevel.INFO.getLevel(),data.get("level").getAsString());
+        assertNotEquals(-1, data.get("local_log_counter").getAsInt());
+        assertNotEquals(0L, data.get("ts").getAsLong());
+        assertEquals("Android SDK", data.get("app_id").getAsString());
+        assertEquals(BuildConfig.VERSION_NAME, data.get("release").getAsString());
+        assertEquals(Build.VERSION.SDK_INT, data.get("android_sdk").getAsInt());
+        assertNotEquals(null, data.get("device_name"));
+        assertNotEquals(null, data.get("merchant_key").getAsString());
+        assertNotEquals(null, data.get("environment").getAsString());
+        assertEquals(AffirmTracker.TrackingEvent.CHECKOUT_CREATION_FAIL.name(), data.get("event_name").getAsString());
+        assertEquals(AffirmTracker.TrackingLevel.INFO.getLevel(), data.get("level").getAsString());
     }
 
     @NonNull

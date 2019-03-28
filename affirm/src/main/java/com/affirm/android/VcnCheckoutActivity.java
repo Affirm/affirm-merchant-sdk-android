@@ -20,12 +20,6 @@ import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 
-import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_FAIL;
-import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_SUCCESS;
-import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_FAIL;
-import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_SUCCESS;
-import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
-import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
@@ -33,6 +27,12 @@ import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
 import static com.affirm.android.AffirmConstants.UTF_8;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_SUCCESS;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_SUCCESS;
+import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
+import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
 public class VcnCheckoutActivity extends CheckoutBaseActivity
         implements VcnCheckoutWebViewClient.Callbacks {

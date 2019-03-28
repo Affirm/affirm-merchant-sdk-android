@@ -31,7 +31,7 @@ Before you can start initialize Affirm SDK, you must first set the AffirmSDK wit
 
 ```java
 Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
-        .setName("Your merchant's name")
+        .setName("The name of the merchant")
         .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
         .build()
 ```

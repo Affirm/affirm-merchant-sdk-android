@@ -15,9 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 
 import static com.affirm.android.Affirm.RESULT_ERROR;
-import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAIL;
-import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
-import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AMOUNT;
 import static com.affirm.android.AffirmConstants.API_KEY;
@@ -31,6 +28,9 @@ import static com.affirm.android.AffirmConstants.PREQUAL_ERROR;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
 import static com.affirm.android.AffirmConstants.TYPE_EXTRA;
 import static com.affirm.android.AffirmConstants.UTF_8;
+import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 
 public class ModalActivity extends AffirmActivity implements ModalWebViewClient.Callbacks {
 

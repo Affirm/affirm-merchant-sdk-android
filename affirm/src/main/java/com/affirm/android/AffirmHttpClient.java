@@ -21,10 +21,10 @@ import okhttp3.ResponseBody;
 import okhttp3.internal.Util;
 import okio.BufferedSink;
 
+import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
-import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 
 final class AffirmHttpClient {
 

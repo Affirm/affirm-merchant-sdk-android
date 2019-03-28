@@ -14,14 +14,14 @@ import com.affirm.android.model.CheckoutResponse;
 
 import androidx.annotation.NonNull;
 
+import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_CREATION_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_CREATION_SUCCESS;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_SUCCESS;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
-import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
-import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 
 public class CheckoutActivity extends CheckoutBaseActivity
         implements CheckoutWebViewClient.Callbacks {

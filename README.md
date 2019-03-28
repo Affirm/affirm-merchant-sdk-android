@@ -5,21 +5,17 @@ Easily integrate Affirm checkouts on merchant's native apps
 
 # Installation
 
-Add this in your root `build.gradle` file (**not** your module `build.gradle` file):
-
-```gradle
-allprojects {
-	repositories {
-		...
-		jcenter()
-	}
-}
+Download via Gradle:
+```groovy
+implementation "com.affirm:affirm-android-sdk:latest.version.here"
 ```
-
-Then, add the library to your project `build.gradle`
-
-```
-implementation 'com.affirm:affirm-android-sdk:latest.version.here'
+or Maven:
+```xml
+<dependency>
+  <groupId>com.affirm</groupId>
+  <artifactId>affirm-android-sdk</artifactId>
+  <version>latest.version.here</version>
+</dependency>
 ```
 replacing `latest.version.here` with the latest released version
 
@@ -164,4 +160,5 @@ public void onAffirmPrequalError(String message) {
 ```
 
 # Example
-A demo app that integrates Affirm is included in the repo. Just open android studio to run it.
+1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. Of course, this step is optional because we have already auto processed it in `affirm/build.gradle`.
+2. Run the `samples-java` or `samples-kotlin` with android studio.

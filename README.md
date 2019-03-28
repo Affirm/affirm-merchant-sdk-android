@@ -117,10 +117,10 @@ Affirm.startCheckout(this, checkout, false);
 
 Affirm Promotional Messaging allows you to inform customers about the availability of installment financing. Promos consist of promotional messaging, which appears directly in your app, and a modal, which is opened when the user clicks on the promotional label.
 
-To display promotional messaging, the SDK provides the `AffirmPromotionLabel` class. The `AffirmPromotionLabel` is implemented as follows:
+To display promotional messaging, the SDK provides the `AffirmPromotionButton` class. The `AffirmPromotionButton` is implemented as follows:
 
 ```xml
-<com.affirm.android.AffirmPromotionLabel
+<com.affirm.android.AffirmPromotionButton
      android:id="@+id/promo"
      android:layout_width="wrap_content"
      android:layout_height="wrap_content"
@@ -133,16 +133,16 @@ To display promotional messaging, the SDK provides the `AffirmPromotionLabel` cl
 ```
 or
 ```java
-AffirmPromotionLabel affirmPromotionLabel = new AffirmPromotionLabel(this);
-affirmPromotionLabel.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
-affirmPromotionLabel.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
+AffirmPromotionButton affirmPromotionButton = new AffirmPromotionButton(this);
+AffirmPromotionButton.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
+AffirmPromotionButton.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
 ```
 
 ```java
-Affirm.configureWithAmount(affirmPromotionLabel, null, 1100, true);
+Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
 ```
 
-Tapping on the `AffirmPromotionLabel` automatically start prequal flow with more information.
+Tapping on the `AffirmPromotionButton` automatically start prequal flow with more information.
 
 (Optional) If you want to handle errors, you need to follow the steps below.
 Override onActivityResult so that affirm can handle the result.

@@ -219,21 +219,21 @@ public final class Affirm {
     /**
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
-     * @param promotionLabel AffirmPromotionLabel to show the promo message
-     * @param promoId        the client's modal id
-     * @param amount         (Float) eg 112.02 as $112 and ¢2
-     * @param showCta        whether need to show cta
+     * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param promoId         the client's modal id
+     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
      */
-    public static void configureWithAmount(@NonNull final AffirmPromotionLabel promotionLabel,
+    public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final String promoId,
                                            final float amount,
                                            final boolean showCta) {
-        AffirmUtils.requireNonNull(promotionLabel, "AffirmPromotionLabel cannot be null");
+        AffirmUtils.requireNonNull(promotionButton, "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
-                promotionLabel.setTag(showPrequal);
-                promotionLabel.setLabel(promo);
+                promotionButton.setTag(showPrequal);
+                promotionButton.setLabel(promo);
             }
 
             @Override
@@ -244,7 +244,7 @@ public final class Affirm {
 
         final PromoRequest affirmPromoRequest =
                 new PromoRequest(promoId, amount, showCta, callback);
-        promotionLabel.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+        promotionButton.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(View v) {
                 affirmPromoRequest.create();
@@ -253,7 +253,7 @@ public final class Affirm {
             @Override
             public void onViewDetachedFromWindow(View v) {
                 affirmPromoRequest.cancel();
-                promotionLabel.removeOnAttachStateChangeListener(this);
+                promotionButton.removeOnAttachStateChangeListener(this);
             }
         });
 
@@ -261,7 +261,7 @@ public final class Affirm {
             @Override
             public void onClick(View v) {
                 Activity activity = (Activity) v.getContext();
-                if (activity == null || TextUtils.isEmpty(promotionLabel.getText())) {
+                if (activity == null || TextUtils.isEmpty(promotionButton.getText())) {
                     return;
                 }
                 boolean showPrequal = (boolean) v.getTag();
@@ -274,7 +274,7 @@ public final class Affirm {
                 }
             }
         };
-        promotionLabel.setOnClickListener(onClickListener);
+        promotionButton.setOnClickListener(onClickListener);
     }
 
     /**

@@ -16,7 +16,7 @@
         android:text="Great Wheel Deal"
         />
 
-    <com.affirm.android.AffirmPromotionLabel
+    <com.affirm.android.AffirmPromotionButton
         android:id="@+id/promo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

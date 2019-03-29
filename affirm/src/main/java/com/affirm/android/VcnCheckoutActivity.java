@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.affirm.android.CheckoutRequest.CheckoutType;
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.ConnectionException;
@@ -54,14 +53,14 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     }
 
     @Override
-    CheckoutType getCheckoutType() {
-        return CheckoutType.VCN;
-    }
-
-    @Override
     CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
             PermissionException, InvalidRequestException, ConnectionException {
         return AffirmApiHandler.executeVcnCheckout(checkout);
+    }
+
+    @Override
+    boolean useVCN() {
+        return true;
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.affirm.android;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.affirm.android.CheckoutRequest.CheckoutType;
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
@@ -24,7 +23,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
     private Checkout mCheckout;
 
-    abstract CheckoutType getCheckoutType();
+    abstract boolean useVCN();
 
     abstract InnerCheckoutCallback getInnerCheckoutCallback();
 
@@ -55,7 +54,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
     @Override
     void onAttached() {
         mCheckoutRequest = new CheckoutRequest(this, mCheckout,
-                getInnerCheckoutCallback(), getCheckoutType());
+                getInnerCheckoutCallback(), useVCN());
         mCheckoutRequest.create();
     }
 

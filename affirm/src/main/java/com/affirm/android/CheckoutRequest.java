@@ -17,40 +17,30 @@ import androidx.annotation.Nullable;
 
 class CheckoutRequest extends AffirmRequest {
 
-    public enum CheckoutType {
-        REGULAR, VCN
-    }
-
     @NonNull
     private Context mContext;
     @NonNull
     private Checkout mCheckout;
     @Nullable
     private InnerCheckoutCallback mCallback;
-    @NonNull
-    private CheckoutType mCheckoutType;
+    private boolean mUseVCN;
 
     CheckoutRequest(@NonNull Context context, @NonNull Checkout checkout,
                     @Nullable InnerCheckoutCallback callback,
-                    @NonNull CheckoutType checkoutType) {
+                    boolean useVCN) {
         mContext = context;
         mCheckout = checkout;
         mCallback = callback;
-        mCheckoutType = checkoutType;
+        mUseVCN = useVCN;
     }
 
     @Override
     void cancel() {
         super.cancel();
-        switch (mCheckoutType) {
-            case REGULAR:
-                AffirmApiHandler.cancelCheckoutCall();
-                break;
-            case VCN:
-                AffirmApiHandler.cancelVcnCheckoutCall();
-                break;
-            default:
-                break;
+        if (mUseVCN) {
+            AffirmApiHandler.cancelVcnCheckoutCall();
+        } else {
+            AffirmApiHandler.cancelCheckoutCall();
         }
     }
 

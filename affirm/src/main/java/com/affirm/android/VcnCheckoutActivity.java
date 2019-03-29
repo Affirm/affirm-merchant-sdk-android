@@ -97,7 +97,6 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
 
         map.put("URL", response.redirectUrl());
         map.put("URL2", response.redirectUrl());
-        map.put("JS_CALLBACK_ID", response.jsCallbackId());
         map.put("CONFIRM_CB_URL", AFFIRM_CHECKOUT_CONFIRMATION_URL);
         map.put("CANCELLED_CB_URL", AFFIRM_CHECKOUT_CANCELLATION_URL);
         return AffirmUtils.replacePlaceholders(html, map);

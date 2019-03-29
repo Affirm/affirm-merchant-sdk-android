@@ -6,16 +6,10 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
-import androidx.annotation.Nullable;
-
 @AutoValue
 public abstract class CheckoutResponse {
     @SerializedName("redirect_url")
     public abstract String redirectUrl();
-
-    @Nullable
-    @SerializedName("js_callback_id")
-    public abstract String jsCallbackId();
 
     public static TypeAdapter<CheckoutResponse> typeAdapter(Gson gson) {
         return new AutoValue_CheckoutResponse.GsonTypeAdapter(gson);
@@ -28,8 +22,6 @@ public abstract class CheckoutResponse {
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract CheckoutResponse.Builder setRedirectUrl(String value);
-
-        public abstract CheckoutResponse.Builder setJsCallbackId(String value);
 
         public abstract CheckoutResponse build();
     }

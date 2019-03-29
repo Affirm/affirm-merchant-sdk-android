@@ -10,7 +10,7 @@ import android.widget.ProgressBar;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
-public class AffirmProgressBar extends ProgressBar {
+class AffirmProgressBar extends ProgressBar {
 
     public AffirmProgressBar(Context context) {
         this(context, null);

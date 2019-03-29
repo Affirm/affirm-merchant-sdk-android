@@ -163,25 +163,22 @@ final class AffirmHttpClient {
             case DELETE:
             case POST:
             case PUT:
-                // Since we need to set body and method at the same time for DELETE, POST, PUT,
-                // we will do it in
-                // the following.
                 break;
             default:
                 // This case will never be reached since we have already handled this case in
-                throw new IllegalStateException("Unsupported http method " + method.toString());
+                throw new IllegalStateException("Unsupported http method: " + method.toString());
         }
-        // Set url
+        // Set request url
         okHttpRequestBuilder.url(request.getUrl());
 
-        // Set Body
+        // Set request body
         AffirmHttpBody body = request.getBody();
         AffirmOkHttpRequestBody okHttpRequestBody = null;
         if (body != null) {
             okHttpRequestBody = new AffirmOkHttpRequestBody(body);
         }
 
-        // set tag
+        // set request tag
         okHttpRequestBuilder.tag(request.getTag());
 
         if (okHttpRequestBody != null) {

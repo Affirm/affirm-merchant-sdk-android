@@ -1,6 +1,5 @@
 package com.affirm.android;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.affirm.android.exception.APIException;
@@ -18,17 +17,14 @@ import androidx.annotation.Nullable;
 class CheckoutRequest extends AffirmRequest {
 
     @NonNull
-    private Context mContext;
-    @NonNull
-    private Checkout mCheckout;
+    private final Checkout mCheckout;
+    private final boolean mUseVCN;
     @Nullable
-    private InnerCheckoutCallback mCallback;
-    private boolean mUseVCN;
+    private final InnerCheckoutCallback mCallback;
 
-    CheckoutRequest(@NonNull Context context, @NonNull Checkout checkout,
+    CheckoutRequest(@NonNull Checkout checkout,
                     @Nullable InnerCheckoutCallback callback,
                     boolean useVCN) {
-        mContext = context;
         mCheckout = checkout;
         mCallback = callback;
         mUseVCN = useVCN;
@@ -46,33 +42,34 @@ class CheckoutRequest extends AffirmRequest {
 
     @Override
     AsyncTask createTask() {
-        return new CheckoutTask(mContext, mCheckout, mCallback);
+        return new CheckoutTask(mCheckout, mUseVCN, mCallback);
     }
 
     private static class CheckoutTask extends
             AsyncTask<Void, Void, AffirmResponseWrapper<CheckoutResponse>> {
         @NonNull
         private final Checkout mCheckout;
+        private final boolean mUseVcn;
         @NonNull
         private final WeakReference<InnerCheckoutCallback> mCallbackRef;
 
-        @NonNull
-        private final WeakReference<Context> mContextRef;
-
-        CheckoutTask(@NonNull Context context,
-                     @NonNull final Checkout checkout,
+        CheckoutTask(@NonNull final Checkout checkout,
+                     boolean useVCN,
                      @Nullable final InnerCheckoutCallback callback) {
-            mContextRef = new WeakReference<>(context);
             mCheckout = checkout;
+            mUseVcn = useVCN;
             mCallbackRef = new WeakReference<>(callback);
         }
 
         @Override
         protected AffirmResponseWrapper<CheckoutResponse> doInBackground(Void... params) {
             try {
-                CheckoutBaseActivity checkoutBaseActivity =
-                        (CheckoutBaseActivity) mContextRef.get();
-                CheckoutResponse checkoutResponse = checkoutBaseActivity.executeTask(mCheckout);
+                CheckoutResponse checkoutResponse;
+                if (mUseVcn) {
+                    checkoutResponse = AffirmApiHandler.executeVcnCheckout(mCheckout);
+                } else {
+                    checkoutResponse = AffirmApiHandler.executeCheckout(mCheckout);
+                }
                 return new AffirmResponseWrapper<>(checkoutResponse);
             } catch (ConnectionException e) {
                 return new AffirmResponseWrapper<>(e);

@@ -3,12 +3,7 @@ package com.affirm.android;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.affirm.android.exception.APIException;
-import com.affirm.android.exception.ConnectionException;
-import com.affirm.android.exception.InvalidRequestException;
-import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
-import com.affirm.android.model.CheckoutResponse;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,9 +21,6 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
     abstract boolean useVCN();
 
     abstract InnerCheckoutCallback getInnerCheckoutCallback();
-
-    abstract CheckoutResponse executeTask(@NonNull Checkout checkout)
-            throws APIException, PermissionException, InvalidRequestException, ConnectionException;
 
     @Override
     void beforeOnCreate() {
@@ -53,8 +45,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
     @Override
     void onAttached() {
-        mCheckoutRequest = new CheckoutRequest(this, mCheckout,
-                getInnerCheckoutCallback(), useVCN());
+        mCheckoutRequest = new CheckoutRequest(mCheckout, getInnerCheckoutCallback(), useVCN());
         mCheckoutRequest.create();
     }
 

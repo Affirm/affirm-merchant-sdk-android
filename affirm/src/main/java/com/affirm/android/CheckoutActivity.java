@@ -3,11 +3,8 @@ package com.affirm.android;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.ConnectionException;
-import com.affirm.android.exception.InvalidRequestException;
-import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 
@@ -37,12 +34,6 @@ public class CheckoutActivity extends CheckoutBaseActivity
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(new CheckoutWebViewClient(this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
-    }
-
-    @Override
-    CheckoutResponse executeTask(@NonNull Checkout checkout) throws APIException,
-            PermissionException, InvalidRequestException, ConnectionException {
-        return AffirmApiHandler.executeCheckout(checkout);
     }
 
     @Override

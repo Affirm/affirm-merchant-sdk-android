@@ -48,7 +48,7 @@ public abstract class Checkout implements Parcelable {
     public abstract static class Builder {
         private Float mCheckoutTotal;
         private Float mTaxAmount;
-        private Float mThippingAmount;
+        private Float mShippingAmount;
 
         public abstract Builder setItems(Map<String, Item> value);
 
@@ -74,7 +74,7 @@ public abstract class Checkout implements Parcelable {
         }
 
         public Builder setShippingAmount(@NonNull Float value) {
-            mThippingAmount = value;
+            mShippingAmount = value;
             return this;
         }
 
@@ -85,7 +85,7 @@ public abstract class Checkout implements Parcelable {
 
         public Checkout build() {
             setTotal(AffirmUtils.decimalDollarsToIntegerCents(mCheckoutTotal));
-            setShippingAmount(AffirmUtils.decimalDollarsToIntegerCents(mThippingAmount));
+            setShippingAmount(AffirmUtils.decimalDollarsToIntegerCents(mShippingAmount));
             setTaxAmount(AffirmUtils.decimalDollarsToIntegerCents(mTaxAmount));
             return autoBuild();
         }

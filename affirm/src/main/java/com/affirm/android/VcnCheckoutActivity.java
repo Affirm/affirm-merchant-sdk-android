@@ -18,10 +18,14 @@ import androidx.annotation.NonNull;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
+import static com.affirm.android.AffirmConstants.CANCELLED_CB_URL;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
+import static com.affirm.android.AffirmConstants.CONFIRM_CB_URL;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
+import static com.affirm.android.AffirmConstants.URL;
+import static com.affirm.android.AffirmConstants.URL2;
 import static com.affirm.android.AffirmConstants.UTF_8;
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_SUCCESS;
@@ -85,10 +89,10 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
 
         final HashMap<String, String> map = new HashMap<>();
 
-        map.put("URL", response.redirectUrl());
-        map.put("URL2", response.redirectUrl());
-        map.put("CONFIRM_CB_URL", AFFIRM_CHECKOUT_CONFIRMATION_URL);
-        map.put("CANCELLED_CB_URL", AFFIRM_CHECKOUT_CANCELLATION_URL);
+        map.put(URL, response.redirectUrl());
+        map.put(URL2, response.redirectUrl());
+        map.put(CONFIRM_CB_URL, AFFIRM_CHECKOUT_CONFIRMATION_URL);
+        map.put(CANCELLED_CB_URL, AFFIRM_CHECKOUT_CANCELLATION_URL);
         return AffirmUtils.replacePlaceholders(html, map);
     }
 

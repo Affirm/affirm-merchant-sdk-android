@@ -55,4 +55,8 @@ public final class AffirmConstants {
 
     static final String PREQUAL_ERROR = "prequal_error";
 
+    static final String URL = "URL";
+    static final String URL2 = "URL2";
+    static final String CONFIRM_CB_URL = "CONFIRM_CB_URL";
+    static final String CANCELLED_CB_URL = "CANCELLED_CB_URL";
 }

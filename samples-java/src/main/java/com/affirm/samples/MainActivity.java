@@ -3,21 +3,23 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
-import com.affirm.android.AffirmColor;
-import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.model.Address;
+import com.affirm.android.model.AffirmTrackObject;
+import com.affirm.android.model.AffirmTrackOrder;
+import com.affirm.android.model.AffirmTrackProduct;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.Shipping;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -26,8 +28,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks,
         Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
-
-    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +62,13 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
             }
         });
 
+        findViewById(R.id.trackOrderConfirmed).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
+            }
+        });
+
 
         AffirmPromotionButton affirmPromotionButton = findViewById(R.id.promo);
 
@@ -74,6 +81,41 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
 
+    }
+
+    private AffirmTrackObject trackModel() {
+        final AffirmTrackOrder affirmTrackOrder = AffirmTrackOrder.builder()
+                .setStoreName("Affirm Store")
+                .setCoupon("SUMMER2018")
+                .setCurrency("USD")
+                .setDiscount(0)
+                .setPaymentMethod("Visa")
+                .setRevenue(2920)
+                .setShipping(534)
+                .setShippingMethod("Fedex")
+                .setTax(285)
+                .setOrderId("T12345")
+                .setTotal(3739)
+                .build();
+
+        final AffirmTrackProduct affirmTrackProduct = AffirmTrackProduct.builder()
+                .setBrand("Affirm")
+                .setCategory("Apparel")
+                .setCoupon("SUMMER2018")
+                .setName("Affirm T-Shirt")
+                .setPrice(730)
+                .setProductId("SKU-1234")
+                .setQuantity(1)
+                .setVariant("Black")
+                .build();
+
+        final List<AffirmTrackProduct> affirmTrackProducts = new ArrayList<>();
+        affirmTrackProducts.add(affirmTrackProduct);
+
+        return AffirmTrackObject.builder()
+                .setAffirmTrackOrder(affirmTrackOrder)
+                .setAffirmTrackProducts(affirmTrackProducts)
+                .build();
     }
 
     private Checkout checkoutModel() {

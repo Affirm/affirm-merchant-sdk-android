@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.affirm.android.exception.AffirmException;
+import com.affirm.android.model.AffirmTrackObject;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 
@@ -171,6 +172,11 @@ public final class Affirm {
 
     private static boolean isInitialized() {
         return AffirmPlugins.get() != null;
+    }
+
+
+    public static void trackOrderConfirmed(@NonNull Activity activity, @NonNull AffirmTrackObject affirmTrackObject) {
+        AffirmTrackActivity.startActivity(activity, affirmTrackObject);
     }
 
     /**

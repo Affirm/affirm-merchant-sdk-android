@@ -67,6 +67,16 @@
         android:text="@string/product_site_modal"
         />
 
+    <Button
+        android:id="@+id/trackOrderConfirmed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/productModalButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="@string/track_order_confirmed"
+        />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"

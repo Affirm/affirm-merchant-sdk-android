@@ -181,7 +181,8 @@ public final class Affirm {
      * @param activity activity {@link Activity}
      * @param affirmTrack AffirmTrack object that containers order & product info
      */
-    public static void trackOrderConfirmed(@NonNull Activity activity, @NonNull AffirmTrack affirmTrack) {
+    public static void trackOrderConfirmed(@NonNull Activity activity,
+                                           @NonNull AffirmTrack affirmTrack) {
         AffirmTrackActivity.startActivity(activity, affirmTrack);
     }
 

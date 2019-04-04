@@ -27,7 +27,8 @@ import static com.affirm.android.AffirmConstants.TRACK_ORDER_OBJECT;
 import static com.affirm.android.AffirmConstants.TRACK_PRODUCT_OBJECT;
 import static com.affirm.android.AffirmConstants.UTF_8;
 
-public class AffirmTrackActivity extends AffirmActivity implements TrackWebViewClient.Callbacks {
+public class AffirmTrackActivity extends AffirmActivity
+        implements AffirmWebViewClient.WebViewClientCallbacks {
 
     private static final String AFFIRM_TRACK = "AFFIRM_TRACK";
 

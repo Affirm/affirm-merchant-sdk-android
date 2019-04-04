@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.ArrayList
 
 class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
@@ -21,8 +22,44 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         vcnCheckout.setOnClickListener { Affirm.startCheckout(this, checkoutModel(), true) }
         siteModalButton.setOnClickListener { Affirm.showSiteModal(this@MainActivity, "5LNMQ33SEUYHLNUC") }
         productModalButton.setOnClickListener { Affirm.showProductModal(this@MainActivity, 1100f, "0Q97G0Z4Y4TLGHGB") }
+        trackOrderConfirmed.setOnClickListener { Affirm.trackOrderConfirmed(this@MainActivity, trackModel()) }
 
         Affirm.configureWithAmount(promo, null, 1100f, true)
+    }
+
+    private fun trackModel(): AffirmTrack {
+        val affirmTrackOrder = AffirmTrackOrder.builder()
+                .setStoreName("Affirm Store")
+                .setCoupon("SUMMER2018")
+                .setCurrency("USD")
+                .setDiscount(0)
+                .setPaymentMethod("Visa")
+                .setRevenue(2920)
+                .setShipping(534)
+                .setShippingMethod("Fedex")
+                .setTax(285)
+                .setOrderId("T12345")
+                .setTotal(3739)
+                .build()
+
+        val affirmTrackProduct = AffirmTrackProduct.builder()
+                .setBrand("Affirm")
+                .setCategory("Apparel")
+                .setCoupon("SUMMER2018")
+                .setName("Affirm T-Shirt")
+                .setPrice(730)
+                .setProductId("SKU-1234")
+                .setQuantity(1)
+                .setVariant("Black")
+                .build()
+
+        val affirmTrackProducts = ArrayList<AffirmTrackProduct>()
+        affirmTrackProducts.add(affirmTrackProduct)
+
+        return AffirmTrack.builder()
+                .setAffirmTrackOrder(affirmTrackOrder)
+                .setAffirmTrackProducts(affirmTrackProducts)
+                .build()
     }
 
     private fun checkoutModel(): Checkout {

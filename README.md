@@ -1,7 +1,7 @@
 Affirm Android SDK
 ==================
 
-Easily integrate Affirm sdk on merchant's native apps
+Easily integrate Affirm SDK inside merchant Android apps.
 
 # Installation
 
@@ -51,9 +51,9 @@ final Checkout checkout = Checkout.builder()
 Affirm.startCheckout(this, checkout, false);
 ```
 
-- An `checkout` object which contains details about the purchase itself
-- An `useVCN` which determines whether the checkout flow should use virtual card network to handle the checkout.
-    - if set to `true`, it will return `card info` from `VcnCheckoutCallbacks`. And you should override onActivityResult, then call the `handleVcnCheckoutData` method
+- `checkout` object contains details about the purchase itself
+- `useVCN` (boolean) determines whether the checkout flow should use virtual card network.
+    - if `true`, it will return `card info` from `VcnCheckoutCallbacks`. Be sure to override onActivityResult, then call the `handleVcnCheckoutData` method.  Please check out the example project for more information.
     ```java
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -81,7 +81,7 @@ Affirm.startCheckout(this, checkout, false);
     }
     ```
     
-    - if set to `false`, it will return `token` from `CheckoutCallbacks`. And you should override onActivityResult, then call the `handleCheckoutData` method
+    - if `false`, it will return `token` from `CheckoutCallbacks`. Be sure to override onActivityResult, then call the `handleCheckoutData` method.  Please check out the example project for more information.
     ```java
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -111,7 +111,7 @@ Affirm.startCheckout(this, checkout, false);
 
 ## Promotional Messaging
 
-Affirm Promotional Messaging allows you to inform customers about the availability of installment financing. Promos consist of promotional messaging, which appears directly in your app, and a modal, which is opened when the user clicks on the promotional label.
+Affirm Promotional Messaging allows you to inform customers about the availability of installment financing. Promos consist of promotional message label, which appears directly in your app, and a modal, which is opened when the user clicks on the promotional label.
 
 To display promotional messaging, the SDK provides the `AffirmPromotionButton` class. The `AffirmPromotionButton` is implemented as follows:
 
@@ -138,10 +138,10 @@ AffirmPromotionButton.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO)
 Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
 ```
 
-Tapping on the `AffirmPromotionButton` automatically start prequal flow with more information.
+Tapping on the `AffirmPromotionButton` automatically start prequalification flow.
 
-(Optional) If you want to handle errors, you need to follow the steps below.
-Override onActivityResult so that affirm can handle the result.
+(Optional) If you want to handle errors, override onActivityResult so that affirm can handle the result.
+
 ```java
 @Override
 protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -160,5 +160,5 @@ public void onAffirmPrequalError(String message) {
 ```
 
 # Example
-1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. Of course, this step is optional because we have already auto processed it in `affirm/build.gradle`.
-2. Run the `samples-java` or `samples-kotlin` with android studio.
+1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. This step is optional. There is a step inside `affirm/build.gradle` to do this automatically.
+2. Run the `samples-java` or `samples-kotlin` within Android Studio

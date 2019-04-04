@@ -1,11 +1,11 @@
 # Affirm Android SDK Changelog
-All notable changes to the SDK will be documented in this file.
+All notable changes to the SDK are documented in this file.
 
 ## Version 2.0.0 (March 29, 2019)
 -----------------------
 
 ### HTTP Networking
-  - Add `AffirmHttpClient`, used to handle all http requests and responses, unify to handle all errors.
+  - Added `AffirmHttpClient` to handle all http requests and responses. Unified error handling.
     ```
     AffirmHttpResponse execute(final AffirmHttpRequest request, boolean sendTrackEvent)
             throws APIException, PermissionException, InvalidRequestException, ConnectionException {
@@ -42,7 +42,7 @@ All notable changes to the SDK will be documented in this file.
         }
     }
     ```
-  - Encapsulates all api requests in `AffirmApiHandler`
+  - All Affirm API requests are in `AffirmApiHandler` now
 ### Debug logging
 ```
     public static final int LOG_LEVEL_VERBOSE = Log.VERBOSE;
@@ -52,14 +52,15 @@ All notable changes to the SDK will be documented in this file.
     public static final int LOG_LEVEL_ERROR = Log.ERROR;
     public static final int LOG_LEVEL_NONE = Integer.MAX_VALUE;
 ```
-You can set a different LogLevel so that you can see more SDK logs. But please ensure this is set to `LOG_LEVEL_ERROR` or `LOG_LEVEL_NONE` before deploying your app.
+You can set an appropriate LogLevel for the SDK. Reminder: set this to `LOG_LEVEL_NONE` for the final production build.
 
 ### Event tracker
   - Refactor tracker related logic
-### SDK configuration and init
-  - Now `publicKey` and `environment` are required when initializing Affirm. Current implement is as follows.
-  - You can `setMerchantName` when initializing Affirm, it's optional.
-  - Add `LogLevel`, it's optional. You can `setLogLevel` when initializing Affirm in debug mode, that can help debug code. But please ensure this is set to `LOG_LEVEL_ERROR` or `LOG_LEVEL_NONE` before deploying your app.
+### SDK configuration and init update
+  - `publicKey` and `environment` are required when initializing Affirm.
+  - `setMerchantName` is an optional step when initializing Affirm.
+  - Added optional `LogLevel` to set log level
+  - Example for configuration and init
 ```
   Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
                   .setMerchantName(null)
@@ -68,7 +69,7 @@ You can set a different LogLevel so that you can see more SDK logs. But please e
           );
 ```
 ### Prequalify Flow
-  - Add `AffirmPromotionButton`, you can declare it in an `xml` file or create it directly via `new`. Then with the `configureWithAmount` method, you can set the `promoId` and `amount` values.
+  - Added `AffirmPromotionButton` class, you can declare it in an `xml` file or create it directly via `new`. You can then set the `promoId` and `amount` values with the `configureWithAmount` method.
 ```xml
 <com.affirm.android.AffirmPromotionButton
      android:id="@+id/promo"
@@ -92,7 +93,7 @@ AffirmPromotionButton.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO)
 Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
 ```
 
-  - Add `PrequalCallbacks`, of course this is optional, you can detect prequal `failure` if you want.
+  - Added optional `PrequalCallbacks`, you can catch prequal `failure` through this callback.
     
 ```
     @Override
@@ -109,13 +110,14 @@ Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
     }
 ```
 
-  - Checkout Flow (direct + vcn)
-    - Both checkout and vcn checkout use the unified method `startCheckout`. Only need to pass in different parameters `useVCN`.
+  - Checkout Flow (direct + VCN)
+    - Both checkout and VCN checkout now use the unified method `startCheckout`, differentiated by the boolean parameter `useVCN`.
 ```
     Affirm.startCheckout(this, checkout, false);
 ```
-### Exceptional Flows
-  - Add some custom exceptions, `APIException`, `ConnectionException`, `InvalidRequestException`, `PermissionException` to distinguish between different error types.
+### Exceptions
+  - Added custom exceptions, `APIException`, `ConnectionException`, `InvalidRequestException`, `PermissionException` to distinguish between different error types.
 ### Activity indicator
   - Package indicator to use
 ### SDK requirement lowered, now is 14
+### Added Kotlin example

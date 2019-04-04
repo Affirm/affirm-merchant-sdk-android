@@ -171,6 +171,8 @@ final AffirmTrack affirmTrack = AffirmTrack.builder()
 
 Affirm.trackOrderConfirmed(this, affirmTrack);
 ```
+- Since there is no callback, the screen will be closed after 10 seconds timeout.
+- We will replace using the http api after the api is done.
 
 # Example
 1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. This step is optional. There is a step inside `affirm/build.gradle` to do this automatically.
@@ -178,4 +180,6 @@ Affirm.trackOrderConfirmed(this, affirmTrack);
 
 # Upgrade (from 1.x.x to 2.0.0)
 * We recommend you to install the latest version for get better features and experience. if you are using the old sdk, you can refer to this [upgrade document](https://github.com/greycats/affirm-android-sdk-rewrite/blob/master/UPGRADE.md).
-* You can view the changes of each version from here [changelog](https://github.com/greycats/affirm-android-sdk-rewrite/blob/master/CHANGELOG.md)
+
+# Changelog
+* All notable changes to this project will be documented in [changelog document](https://github.com/greycats/affirm-android-sdk-rewrite/blob/master/CHANGELOG.md).

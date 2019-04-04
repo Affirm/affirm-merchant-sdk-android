@@ -159,6 +159,23 @@ public void onAffirmPrequalError(String message) {
 }
 ```
 
+## Track Order Confirmed
+When you are ready to track with affirm create a `AffirmTrack` object and launch the affirm track.
+
+
+```java
+final AffirmTrack affirmTrack = AffirmTrack.builder()
+        .setAffirmTrackOrder(affirmTrackOrder)
+        .setAffirmTrackProducts(affirmTrackProducts)
+        .build();
+
+Affirm.trackOrderConfirmed(this, affirmTrack);
+```
+
 # Example
 1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. This step is optional. There is a step inside `affirm/build.gradle` to do this automatically.
 2. Run the `samples-java` or `samples-kotlin` within Android Studio
+
+# Upgrade (from 1.x.x to 2.0.0)
+* We recommend you to install the latest version for get better features and experience. if you are using the old sdk, you can refer to this [upgrade document](https://github.com/greycats/affirm-android-sdk-rewrite/blob/master/UPGRADE.md).
+* You can view the changes of each version from here [changelog](https://github.com/greycats/affirm-android-sdk-rewrite/blob/master/CHANGELOG.md)

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.affirm.android.exception.ConnectionException;
-import com.affirm.android.model.AffirmTrackObject;
+import com.affirm.android.model.AffirmTrack;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -29,16 +29,16 @@ import static com.affirm.android.AffirmConstants.UTF_8;
 
 public class AffirmTrackActivity extends AffirmActivity implements TrackWebViewClient.Callbacks {
 
-    private static final String AFFIRM_TRACK_OBJECT = "AFFIRM_TRACK_OBJECT";
+    private static final String AFFIRM_TRACK = "AFFIRM_TRACK";
 
-    private AffirmTrackObject mAffirmTrackObject;
+    private AffirmTrack mAffirmTrack;
 
     private Handler mHandler = new Handler();
 
     static void startActivity(@NonNull Activity activity,
-                              @NonNull AffirmTrackObject affirmTrackObject) {
+                              @NonNull AffirmTrack affirmTrack) {
         final Intent intent = new Intent(activity, AffirmTrackActivity.class);
-        intent.putExtra(AFFIRM_TRACK_OBJECT, affirmTrackObject);
+        intent.putExtra(AFFIRM_TRACK, affirmTrack);
         activity.startActivity(intent);
     }
 
@@ -57,9 +57,9 @@ public class AffirmTrackActivity extends AffirmActivity implements TrackWebViewC
     @Override
     void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mAffirmTrackObject = savedInstanceState.getParcelable(AFFIRM_TRACK_OBJECT);
+            mAffirmTrack = savedInstanceState.getParcelable(AFFIRM_TRACK);
         } else {
-            mAffirmTrackObject = getIntent().getParcelableExtra(AFFIRM_TRACK_OBJECT);
+            mAffirmTrack = getIntent().getParcelableExtra(AFFIRM_TRACK);
         }
     }
 
@@ -79,7 +79,7 @@ public class AffirmTrackActivity extends AffirmActivity implements TrackWebViewC
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(AFFIRM_TRACK_OBJECT, mAffirmTrackObject);
+        outState.putParcelable(AFFIRM_TRACK, mAffirmTrack);
     }
 
     @Override
@@ -111,13 +111,13 @@ public class AffirmTrackActivity extends AffirmActivity implements TrackWebViewC
     private JsonObject buildOrderObject() {
         final JsonParser jsonParser = new JsonParser();
         return jsonParser.parse(AffirmPlugins.get().gson()
-                .toJson(mAffirmTrackObject.affirmTrackOrder())).getAsJsonObject();
+                .toJson(mAffirmTrack.affirmTrackOrder())).getAsJsonObject();
     }
 
     private JsonArray buildProductObject() {
         final JsonParser jsonParser = new JsonParser();
         return jsonParser.parse(AffirmPlugins.get().gson()
-                .toJson(mAffirmTrackObject.affirmTrackProducts())).getAsJsonArray();
+                .toJson(mAffirmTrack.affirmTrackProducts())).getAsJsonArray();
     }
 
     @Override

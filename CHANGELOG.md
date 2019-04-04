@@ -115,9 +115,18 @@ Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
 ```
     Affirm.startCheckout(this, checkout, false);
 ```
+### Track Order Confirmed
+```java
+    final AffirmTrack affirmTrack = AffirmTrack.builder()
+        .setAffirmTrackOrder(affirmTrackOrder)
+        .setAffirmTrackProducts(affirmTrackProducts)
+        .build();
+
+    Affirm.trackOrderConfirmed(this, affirmTrack);
+```
 ### Exceptions
   - Added custom exceptions, `APIException`, `ConnectionException`, `InvalidRequestException`, `PermissionException` to distinguish between different error types.
 ### Activity indicator
-  - Package indicator to use
+  - Activity indicator that is automatically added/dismissed to denote loading state when presenting checkout or prequal
 ### SDK requirement lowered, now is 14
 ### Added Kotlin example

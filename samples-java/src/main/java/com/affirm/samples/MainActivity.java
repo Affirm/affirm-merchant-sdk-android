@@ -8,7 +8,7 @@ import android.widget.Toast;
 import com.affirm.android.Affirm;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.model.Address;
-import com.affirm.android.model.AffirmTrackObject;
+import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
 import com.affirm.android.model.AffirmTrackProduct;
 import com.affirm.android.model.CardDetails;
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
     }
 
-    private AffirmTrackObject trackModel() {
+    private AffirmTrack trackModel() {
         final AffirmTrackOrder affirmTrackOrder = AffirmTrackOrder.builder()
                 .setStoreName("Affirm Store")
                 .setCoupon("SUMMER2018")
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         final List<AffirmTrackProduct> affirmTrackProducts = new ArrayList<>();
         affirmTrackProducts.add(affirmTrackProduct);
 
-        return AffirmTrackObject.builder()
+        return AffirmTrack.builder()
                 .setAffirmTrackOrder(affirmTrackOrder)
                 .setAffirmTrackProducts(affirmTrackProducts)
                 .build();

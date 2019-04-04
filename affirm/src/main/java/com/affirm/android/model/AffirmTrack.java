@@ -9,18 +9,18 @@ import com.google.gson.TypeAdapter;
 import java.util.List;
 
 @AutoValue
-public abstract class AffirmTrackObject implements Parcelable {
+public abstract class AffirmTrack implements Parcelable {
 
     public abstract AffirmTrackOrder affirmTrackOrder();
 
     public abstract List<AffirmTrackProduct> affirmTrackProducts();
 
-    public static AffirmTrackObject.Builder builder() {
-        return new AutoValue_AffirmTrackObject.Builder();
+    public static AffirmTrack.Builder builder() {
+        return new AutoValue_AffirmTrack.Builder();
     }
 
-    public static TypeAdapter<AffirmTrackObject> typeAdapter(Gson gson) {
-        return new AutoValue_AffirmTrackObject.GsonTypeAdapter(gson);
+    public static TypeAdapter<AffirmTrack> typeAdapter(Gson gson) {
+        return new AutoValue_AffirmTrack.GsonTypeAdapter(gson);
     }
 
     @AutoValue.Builder
@@ -30,6 +30,6 @@ public abstract class AffirmTrackObject implements Parcelable {
 
         public abstract Builder setAffirmTrackProducts(List<AffirmTrackProduct> value);
 
-        public abstract AffirmTrackObject build();
+        public abstract AffirmTrack build();
     }
 }

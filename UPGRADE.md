@@ -1,16 +1,20 @@
-# UPGRADE GUIDE (upgrade from 1.13.0 to 2.0.0)
+# UPGRADE GUIDE (upgrade from 1.x.x to 2.0.0)
+====================
+If you want to upgrade you sdk to the latest, please check the following points:
 
-- Updating Dependencies
-  - Replace the latest version in your `build.gradle` file
-  - Support min sdk as low as 14
- 
+
+## Updating Dependencies
+- Replace the latest version(2.0.0) in your `build.gradle` file
+- Sync gradle
+
+## Make code changes against the new SDK API
 - Initialize the SDK
-  - Now `publicKey` and `environment` are required when initializing Affirm. Current implement is as follows.
-  - You can `setMerchantName` when initializing Affirm, it's optional.
-  - Add `LogLevel`, it's optional. You can `setLogLevel` when initializing Affirm in debug mode, that can help debug code. But please ensure this is set to `LOG_LEVEL_ERROR` or `LOG_LEVEL_NONE` before deploying your app.
-
+  - `publicKey` and `environment` are required when initializing Affirm.
+  - `setMerchantName` is an optional step when initializing Affirm.
+  - Added optional `LogLevel` to set log level
+  
   Before
-  ```
+  ```java
    Affirm.builder()
           .setEnvironment(Affirm.Environment.SANDBOX)
           .setMerchantPublicKey("public key")
@@ -18,7 +22,7 @@
   ```
   
   Now
-  ```
+  ```java
   Affirm.initialize(new Affirm.Configuration.Builder("public key", Affirm.Environment.SANDBOX)
                   .setMerchantName(null)
                   .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
@@ -27,9 +31,10 @@
   ```
   
 - Promotional Messaging
-  - Add `AffirmPromotionButton`, you can declare it in an `xml` file or create it directly via `new`. Then with the `configureWithAmount` method, you can set the `promoId` and `amount` values.
+  - Added `AffirmPromotionButton` class, you can declare it in an `xml` file or create it directly via `new`. You can then set the `promoId` and `amount` values with the `configureWithAmount` method. 
+  
   Before
-  ```
+  ```java
   CancellableRequest aslowasPromo = affirm.writePromoToTextView(promo, null, 1100, AffirmDisplayTypeLogo, AffirmColorTypeBlue, true, new PromoCallback() {
         @Override public void onPromoWritten(TextView textView) {
           aslowasPromo = null;
@@ -55,14 +60,14 @@
   ```
   
   Now
-  ```
+  ```java
   AffirmPromotionButton affirmPromotionButton = findViewById(R.id.promo);
   Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
   ```
   
-  - Add `PrequalCallbacks`(it's optional), you can detect prequal `failure` if you want.
+  - Added optional `PrequalCallbacks`, you can catch prequal `failure` through this callback.
 
-  ```
+  ```java
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
       if (Affirm.handlePrequalData(this, requestCode, resultCode, data)) {
@@ -79,12 +84,12 @@
 
 
 - Checkout
-  - Both checkout and vcn checkout use the unified method `startCheckout`. Only need to pass in different parameters `useVCN`.
+  - Both checkout and VCN checkout now use the unified method `startCheckout`, differentiated by the boolean parameter `useVCN`.
   
   Take vcn checkout as an example, checkout is also similar
 
   Before
-  ```
+  ```java
   final Checkout checkout = Checkout.builder()
           .setItems(items)
           .setBilling(shipping)
@@ -105,7 +110,7 @@
   ```
   
   Now
-  ```
+  ```java
   final Checkout checkout = Checkout.builder()
           .setItems(items)
           .setBilling(shipping)
@@ -124,3 +129,15 @@
         super.onActivityResult(requestCode, resultCode, data);
   }
   ```
+- Track Order Confirmed
+  ```java
+  final AffirmTrack affirmTrack = AffirmTrack.builder()
+        .setAffirmTrackOrder(affirmTrackOrder)
+        .setAffirmTrackProducts(affirmTrackProducts)
+        .build();
+
+    Affirm.trackOrderConfirmed(this, affirmTrack);
+  ```
+  
+## Rebuild and ship
+Rebuild you project, if there is no compile error and AffirmSDK work as you expected. **Congratulations!** you can ship it now.

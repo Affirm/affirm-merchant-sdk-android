@@ -23,24 +23,36 @@ public abstract class Checkout implements Parcelable {
         return new AutoValue_Checkout.GsonTypeAdapter(gson);
     }
 
+    // A list of item objects.
     public abstract Map<String, Item> items();
 
+    // A hash of coupon codes to discount objects. If discounts are passed, they must have a name
+    // and positive integer dollar amount.
     @Nullable
     public abstract Map<String, Discount> discounts();
 
+    // Customer contact information.
     public abstract Shipping shipping();
 
+    // Customer contact information.
     @Nullable
     public abstract Shipping billing();
 
+    // The total shipping amount; Defaults to 0.
     @SerializedName("shipping_amount")
     public abstract Integer shippingAmount();
 
+    // The total tax amount computed after all discounts have been applied; Defaults to 0.
     @SerializedName("tax_amount")
     public abstract Integer taxAmount();
 
+    // The total amount of the checkout. This determines the total amount charged to the user.
+    //Note: We only use this value for the loan total; we do not calculate the total from the
+    // checkout object line items.
     public abstract Integer total();
 
+    // A hash of keys to values for any metadata to be passed into checkout and stored.
+    // 'entity_name' is a protected key, and will show up in your settlement reporting.
     @Nullable
     public abstract Map<String, String> metadata();
 

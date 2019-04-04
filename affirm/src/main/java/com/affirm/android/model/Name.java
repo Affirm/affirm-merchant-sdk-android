@@ -16,6 +16,7 @@ public abstract class Name implements Parcelable {
         return new AutoValue_Name.GsonTypeAdapter(gson);
     }
 
+    // Required if 'first' and 'last' keys are missing. String must contain at two words.
     public abstract String full();
 
     @AutoValue.Builder

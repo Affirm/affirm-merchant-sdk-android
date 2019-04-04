@@ -19,33 +19,42 @@ public abstract class AffirmTrackProduct implements Parcelable {
         return new AutoValue_AffirmTrackProduct.GsonTypeAdapter(gson);
     }
 
+    // Your unique internal identifier representing the product, such as the SKU or an internal
+    // database identifier. Maximum 500 characters. Required
     @SerializedName("productId")
     public abstract String productId();
 
+    // The brand of the product (e.g., Affirm). Maximum 500 characters. Optional
     @Nullable
     @SerializedName("brand")
     public abstract String brand();
 
+    // The product category (e.g., apparel). Maximum 500 characters. Optional
     @Nullable
     @SerializedName("category")
     public abstract String category();
 
+    // Any coupon code applied to this particular product. Maximum 500 characters. Optional
     @Nullable
     @SerializedName("coupon")
     public abstract String coupon();
 
+    // The full name of the product (e.g., Affirm T-Shirt). Maximum 500 characters. Optional
     @Nullable
     @SerializedName("name")
     public abstract String name();
 
+    // The price of the purchased product, stated in USD cents (e.g., $100 = 10000). Optional
     @Nullable
     @SerializedName("price")
     public abstract Integer price();
 
+    // The quantity of the purchased product. Optional
     @Nullable
     @SerializedName("quantity")
     public abstract Integer quantity();
 
+    // The variant of the product (e.g. black). Maximum 500 characters. Optional
     @Nullable
     @SerializedName("variant")
     public abstract String variant();

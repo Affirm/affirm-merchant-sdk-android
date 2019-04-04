@@ -20,19 +20,25 @@ public abstract class Item implements Parcelable {
         return new AutoValue_Item.GsonTypeAdapter(gson);
     }
 
+    // The display name of the product.
     @SerializedName("display_name")
     public abstract String displayName();
 
+    // The product SKU.
     public abstract String sku();
 
+    // The item price expressed as integer USD cents ("$100" = 10000).
     @SerializedName("unit_price")
     public abstract Integer unitPrice();
 
+    // The item quantity expressed as an integer.
     public abstract Integer qty();
 
+    // The item's product description page URL.
     @SerializedName("item_url")
     public abstract String url();
 
+    // The item's product image URL.
     @SerializedName("item_image_url")
     public abstract String imageUrl();
 

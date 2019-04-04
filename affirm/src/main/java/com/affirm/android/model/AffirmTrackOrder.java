@@ -19,43 +19,63 @@ public abstract class AffirmTrackOrder implements Parcelable {
         return new AutoValue_AffirmTrackOrder.GsonTypeAdapter(gson);
     }
 
+    // Your store name. Maximum 500 characters. Required
     @SerializedName("storeName")
     public abstract String storeName();
 
+    // Your internal unique identifier representing the order. Maximum 500 characters. Required
     @SerializedName("orderId")
     public abstract String orderId();
 
+    // The payment method chosen by the customer (e.g., Visa). Maximum 150 characters. Required
     @SerializedName("paymentMethod")
     public abstract String paymentMethod();
 
+    // Your internal unique identifier representing the checkout if it’s distinct from the order ID.
+    // If they are the same, only orderID is needed. Maximum 500 characters. Optional
+    @SerializedName("checkoutId")
+    public abstract String checkoutId();
+
+    // The coupon code applied to the order (e.g., SUMMER2018). Maximum 500 characters. Optional
     @Nullable
     @SerializedName("coupon")
     public abstract String coupon();
 
+    // USD Optional
     @Nullable
     @SerializedName("currency")
     public abstract String currency();
 
+    // The total discount applied to the order, stated in USD cents (e.g., $100 = 10000). Optional
     @Nullable
     @SerializedName("discount")
     public abstract Integer discount();
 
+    // The net revenue amount of the order excluding shipping, total tax and discounts,
+    // stated in USD cents (e.g., $100 = 10000). Optional
     @Nullable
     @SerializedName("revenue")
     public abstract Integer revenue();
 
+    // The shipping cost associated with the order. Optional
     @Nullable
     @SerializedName("shipping")
     public abstract Integer shipping();
 
+    // The shipping method chosen by the customer (e.g., Fedex). Maximum 150 characters. Optional
     @Nullable
     @SerializedName("shippingMethod")
     public abstract String shippingMethod();
 
+    // The total tax amount associated with the order, stated in USD cents (e.g., $100 = 10000).
+    // Optional
     @Nullable
     @SerializedName("tax")
     public abstract Integer tax();
 
+    // The total amount of the transaction including tax and shipping, stated in USD cents
+    // (e.g., $100 = 10000). If not sent, the total amount will be calculated using the product
+    // quantity and price fields of each product object passed. Optional
     @Nullable
     @SerializedName("total")
     public abstract Integer total();
@@ -68,6 +88,8 @@ public abstract class AffirmTrackOrder implements Parcelable {
         public abstract Builder setOrderId(String value);
 
         public abstract Builder setPaymentMethod(String value);
+
+        public abstract Builder setCheckoutId(String value);
 
         public abstract Builder setCoupon(String value);
 

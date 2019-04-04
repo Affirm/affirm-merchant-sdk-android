@@ -18,17 +18,24 @@ public abstract class Address implements Parcelable {
         return new AutoValue_Address.GsonTypeAdapter(gson);
     }
 
+    // Valid U.S. street address, verified by public address service APIs.
     public abstract String line1();
 
+    // Apartment, suite, floor, etc.
     @Nullable
     public abstract String line2();
 
+    // City name, verified by public address service APIs.
     public abstract String city();
 
+    // 2-letter ISO code or full name, verified by public address service APIs.
     public abstract String state();
 
+    // Must match other provided address information, verified by public address service APIs.
     public abstract String zipcode();
 
+    // If provided, must be 'US' or 'USA' (3-letter ISO code).
+    // Affirm is only available to U.S. residents.
     public abstract String country();
 
     @AutoValue.Builder

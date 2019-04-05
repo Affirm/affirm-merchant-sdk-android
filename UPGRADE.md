@@ -1,19 +1,20 @@
-# UPGRADE GUIDE (upgrade from 1.x.x to 2.0.0)
-====================
-If you want to upgrade you sdk to the latest, please check the following points:
+UPGRADE GUIDE (upgrade from v1 to v2)
+==================
+
+These are the steps to upgrade from SDK v1 to v2
 
 
 ## Updating Dependencies
-- Replace the latest version(2.0.0) in your `build.gradle` file
+- In your `build.gradle` file, update the version number of Affirm SDK to the latest version (2.x.x)
 - Sync gradle
 
 ## Make code changes against the new SDK API
 - Initialize the SDK
-  - `publicKey` and `environment` are required when initializing Affirm.
-  - `setMerchantName` is an optional step when initializing Affirm.
-  - Added optional `LogLevel` to set log level
+  - `publicKey` and `environment` are required.
+  - `setMerchantName` is an optional step.
+  - Added optional `LogLevel`
   
-  Before
+  Before:
   ```java
    Affirm.builder()
           .setEnvironment(Affirm.Environment.SANDBOX)
@@ -21,7 +22,7 @@ If you want to upgrade you sdk to the latest, please check the following points:
           .build();
   ```
   
-  Now
+  Now:
   ```java
   Affirm.initialize(new Affirm.Configuration.Builder("public key", Affirm.Environment.SANDBOX)
                   .setMerchantName(null)
@@ -140,4 +141,4 @@ If you want to upgrade you sdk to the latest, please check the following points:
   ```
   
 ## Rebuild and ship
-Rebuild you project, if there is no compile error and AffirmSDK work as you expected. **Congratulations!** you can ship it now.
+Rebuild you project, if there is no compile error and after testing everything is working as you expected. **Congratulations!** you can ship it now :)

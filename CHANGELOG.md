@@ -117,12 +117,22 @@ Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
 ```
 ### Track Order Confirmed
 ```java
-    final AffirmTrack affirmTrack = AffirmTrack.builder()
+final AffirmTrack affirmTrack = AffirmTrack.builder()
         .setAffirmTrackOrder(affirmTrackOrder)
         .setAffirmTrackProducts(affirmTrackProducts)
         .build();
 
-    Affirm.trackOrderConfirmed(this, affirmTrack);
+Affirm.trackOrderConfirmed(MainActivity.this, trackModel(), false, MainActivity.this);
+
+@Override
+public void onAffirmTrackSuccess() {
+    Toast.makeText(MainActivity.this, "Track Order Confirmed Success", Toast.LENGTH_LONG).show();
+}
+
+@Override
+public void onAffirmTrackError(@Nullable String message) {
+    Toast.makeText(MainActivity.this, "Track Order Confirmed Failed: " + message, Toast.LENGTH_LONG).show();
+}
 ```
 ### Exceptions
   - Added custom exceptions, `APIException`, `ConnectionException`, `InvalidRequestException`, `PermissionException` to distinguish between different error types.

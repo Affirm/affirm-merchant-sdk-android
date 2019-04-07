@@ -67,15 +67,30 @@
         android:text="@string/product_site_modal"
         />
 
-    <Button
-        android:id="@+id/trackOrderConfirmed"
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/productModalButton"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="@string/track_order_confirmed"
-        />
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/trackOrderConfirmed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/track_order_confirmed"
+            />
+
+        <CheckBox
+            android:id="@+id/showIndicator"
+            android:text="@string/show_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
 
     <ImageView
         android:id="@+id/imageView"

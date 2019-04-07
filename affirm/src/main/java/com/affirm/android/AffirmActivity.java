@@ -3,14 +3,10 @@ package com.affirm.android;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 
 abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChromeClient.Callbacks {
 
@@ -45,18 +41,11 @@ abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChro
 
     @Override
     protected void onDestroy() {
-        clearCookies();
+        CookiesUtil.clearCookies(this);
         container.removeView(webView);
         webView.removeAllViews();
         webView.destroy();
         super.onDestroy();
-    }
-
-    public void clearCookies() {
-        final CookieManager cookieManager = CookieManager.getInstance();
-        final CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(this);
-        CookiesUtil.clearCookieByUrl(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
-                cookieManager, cookieSyncManager);
     }
 
     @Override

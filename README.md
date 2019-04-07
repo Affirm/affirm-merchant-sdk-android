@@ -161,7 +161,7 @@ public void onAffirmPrequalError(String message) {
 
 ## Track Order Confirmed
 When you are ready to track with affirm create a `AffirmTrack` object and launch the affirm track.
-
+If you want to show indicator when tracking, need to set `showIndicator` to true.
 
 ```java
 final AffirmTrack affirmTrack = AffirmTrack.builder()
@@ -169,9 +169,20 @@ final AffirmTrack affirmTrack = AffirmTrack.builder()
         .setAffirmTrackProducts(affirmTrackProducts)
         .build();
 
-Affirm.trackOrderConfirmed(this, affirmTrack);
+Affirm.trackOrderConfirmed(MainActivity.this, trackModel(), false, MainActivity.this);
+
+@Override
+public void onAffirmTrackSuccess() {
+    Toast.makeText(MainActivity.this, "Track Order Confirmed Success", Toast.LENGTH_LONG).show();
+}
+
+@Override
+public void onAffirmTrackError(@Nullable String message) {
+    Toast.makeText(MainActivity.this, "Track Order Confirmed Failed: " + message, Toast.LENGTH_LONG).show();
+}
 ```
-- Since there is no callback, the screen will be closed after 10 seconds timeout.
+
+- Since there is no callback, will return success after 10 seconds timeout.
 - We will replace using the http api after the api is done.
 
 # Example

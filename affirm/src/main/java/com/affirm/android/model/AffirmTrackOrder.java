@@ -33,6 +33,7 @@ public abstract class AffirmTrackOrder implements Parcelable {
 
     // Your internal unique identifier representing the checkout if it’s distinct from the order ID.
     // If they are the same, only orderID is needed. Maximum 500 characters. Optional
+    @Nullable
     @SerializedName("checkoutId")
     public abstract String checkoutId();
 
@@ -79,7 +80,6 @@ public abstract class AffirmTrackOrder implements Parcelable {
     @Nullable
     @SerializedName("total")
     public abstract Integer total();
-
 
     @AutoValue.Builder
     public abstract static class Builder {

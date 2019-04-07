@@ -8,8 +8,11 @@ import com.affirm.android.Affirm
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.MutableMap
+import kotlin.collections.set
 
-class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
+class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks, Affirm.TrackCallbacks {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -22,7 +25,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         vcnCheckout.setOnClickListener { Affirm.startCheckout(this, checkoutModel(), true) }
         siteModalButton.setOnClickListener { Affirm.showSiteModal(this@MainActivity, "5LNMQ33SEUYHLNUC") }
         productModalButton.setOnClickListener { Affirm.showProductModal(this@MainActivity, 1100f, "0Q97G0Z4Y4TLGHGB") }
-        trackOrderConfirmed.setOnClickListener { Affirm.trackOrderConfirmed(this@MainActivity, trackModel()) }
+        trackOrderConfirmed.setOnClickListener { Affirm.trackOrderConfirmed(this@MainActivity, trackModel(), false, this@MainActivity) }
 
         Affirm.configureWithAmount(promo, null, 1100f, true)
     }
@@ -139,5 +142,14 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
     // - Prequal
     override fun onAffirmPrequalError(message: String?) {
         Toast.makeText(this, "Prequal Error: " + message!!, Toast.LENGTH_LONG).show()
+    }
+
+    // - track order confirmed
+    override fun onAffirmTrackSuccess() {
+        Toast.makeText(this@MainActivity, "Track Order Confirmed Success", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onAffirmTrackError(message: String?) {
+        Toast.makeText(this@MainActivity, "Track Order Confirmed Failed: $message", Toast.LENGTH_LONG).show()
     }
 }

@@ -1,5 +1,6 @@
 package com.affirm.android;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
@@ -14,6 +15,13 @@ import static com.affirm.android.AffirmConstants.HTTP_PROTOCOL;
 final class CookiesUtil {
 
     private CookiesUtil() {
+    }
+
+    static void clearCookies(Context context) {
+        final CookieManager cookieManager = CookieManager.getInstance();
+        final CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(context);
+        CookiesUtil.clearCookieByUrl(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
+                cookieManager, cookieSyncManager);
     }
 
     static void clearCookieByUrl(String url, CookieManager cookieManager,

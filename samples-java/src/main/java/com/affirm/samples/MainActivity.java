@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.trackOrderConfirmed).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Start Track Order Confirmed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Track successfully", Toast.LENGTH_SHORT).show();
                 Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
             }
         });

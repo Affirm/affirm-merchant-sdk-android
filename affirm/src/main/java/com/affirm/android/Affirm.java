@@ -191,7 +191,7 @@ public final class Affirm {
 
                     @Override
                     public void onSuccess(AffirmTrackView affirmTrackView) {
-                        AffirmLog.d("Track Successful");
+                        AffirmLog.d("Track successfully");
                         container.removeView(affirmTrackView);
                     }
 

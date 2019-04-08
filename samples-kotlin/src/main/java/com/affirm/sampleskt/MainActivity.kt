@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         siteModalButton.setOnClickListener { Affirm.showSiteModal(this@MainActivity, "5LNMQ33SEUYHLNUC") }
         productModalButton.setOnClickListener { Affirm.showProductModal(this@MainActivity, 1100f, "0Q97G0Z4Y4TLGHGB") }
         trackOrderConfirmed.setOnClickListener {
-            Toast.makeText(this@MainActivity, "Start Track Order Confirmed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@MainActivity, "Track successfully", Toast.LENGTH_SHORT).show()
             Affirm.trackOrderConfirmed(this@MainActivity, trackModel())
         }
 

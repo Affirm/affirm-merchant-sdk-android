@@ -63,8 +63,7 @@ public class AffirmTrackView extends FrameLayout
     }
 
     private void initViews(Context context) {
-        mWebView = new AffirmWebView(context.getApplicationContext(), null);
-        addView(mWebView);
+        addView(mWebView = new AffirmWebView(context.getApplicationContext(), null));
     }
 
     @Override
@@ -84,7 +83,7 @@ public class AffirmTrackView extends FrameLayout
         final String html = initialHtml();
         mWebView.loadDataWithBaseURL(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(), html,
                 TEXT_HTML, UTF_8, null);
-        // Since there is no callback, the screen will be removed after 10 seconds timeout.
+        // Since there is no callback, the track view will be removed after 10 seconds timeout.
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {

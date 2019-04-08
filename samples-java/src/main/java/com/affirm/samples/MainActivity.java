@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks,
-        Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks, Affirm.TrackCallbacks {
+        Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.trackOrderConfirmed).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.trackOrderConfirmed(MainActivity.this, trackModel(), MainActivity.this);
+                Toast.makeText(MainActivity.this, "Start Track Order Confirmed", Toast.LENGTH_SHORT).show();
+                Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
             }
         });
 
@@ -207,16 +208,5 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
     @Override
     public void onAffirmPrequalError(@Nullable String message) {
         Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
-    }
-
-    // - track order confirmed
-    @Override
-    public void onAffirmTrackSuccess() {
-        Toast.makeText(MainActivity.this, "Track Order Confirmed Success", Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onAffirmTrackError(@Nullable String message) {
-        Toast.makeText(MainActivity.this, "Track Order Confirmed Failed: " + message, Toast.LENGTH_LONG).show();
     }
 }

@@ -1,7 +1,6 @@
 package com.affirm.android;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,8 +11,6 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
-
-import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,14 +42,6 @@ public final class Affirm {
     private static final int VCN_CHECKOUT_REQUEST = 8077;
     private static final int PREQUAL_REQUEST = 8078;
     static final int RESULT_ERROR = -8575;
-    private static volatile boolean mDurTracking = false;
-    private static ProgressDialog mProgressDialog;
-
-    public interface TrackCallbacks {
-        void onAffirmTrackError(@Nullable String message);
-
-        void onAffirmTrackSuccess();
-    }
 
     public interface PrequalCallbacks {
         void onAffirmPrequalError(@Nullable String message);
@@ -194,15 +183,7 @@ public final class Affirm {
      * @param affirmTrack AffirmTrack object that containers order & product info
      */
     public static void trackOrderConfirmed(@NonNull final Activity activity,
-                                           @NonNull AffirmTrack affirmTrack,
-                                           @Nullable final TrackCallbacks trackCallbacks) {
-        if (mDurTracking) {
-            AffirmLog.w("Tracking, you can try again later.");
-            return;
-        }
-
-        mDurTracking = true;
-        final WeakReference callbackRef = new WeakReference<>(trackCallbacks);
+                                           @NonNull AffirmTrack affirmTrack) {
         final ViewGroup container =
                 activity.getWindow().getDecorView().findViewById(android.R.id.content);
         AffirmTrackView affirmTrackView = new AffirmTrackView(activity, affirmTrack,
@@ -210,22 +191,14 @@ public final class Affirm {
 
                     @Override
                     public void onSuccess(AffirmTrackView affirmTrackView) {
-                        mDurTracking = false;
+                        AffirmLog.d("Track Successful");
                         container.removeView(affirmTrackView);
-                        final TrackCallbacks callbacks = (TrackCallbacks) callbackRef.get();
-                        if (callbacks != null) {
-                            callbacks.onAffirmTrackSuccess();
-                        }
                     }
 
                     @Override
                     public void onFailed(AffirmTrackView affirmTrackView, String reason) {
-                        mDurTracking = false;
+                        AffirmLog.e("Track Failed: " + reason);
                         container.removeView(affirmTrackView);
-                        final TrackCallbacks callbacks = (TrackCallbacks) callbackRef.get();
-                        if (callbacks != null) {
-                            callbacks.onAffirmTrackError(reason);
-                        }
                     }
                 });
         container.addView(affirmTrackView);

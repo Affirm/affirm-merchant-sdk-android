@@ -168,17 +168,7 @@ final AffirmTrack affirmTrack = AffirmTrack.builder()
         .setAffirmTrackProducts(affirmTrackProducts)
         .build();
 
-Affirm.trackOrderConfirmed(MainActivity.this, trackModel(), MainActivity.this);
-
-@Override
-public void onAffirmTrackSuccess() {
-    Toast.makeText(MainActivity.this, "Track Order Confirmed Success", Toast.LENGTH_LONG).show();
-}
-
-@Override
-public void onAffirmTrackError(@Nullable String message) {
-    Toast.makeText(MainActivity.this, "Track Order Confirmed Failed: " + message, Toast.LENGTH_LONG).show();
-}
+Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
 ```
 
 - Since there is no callback, will return success after 10 seconds timeout.

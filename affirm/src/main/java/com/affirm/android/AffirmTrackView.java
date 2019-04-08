@@ -1,9 +1,11 @@
 package com.affirm.android;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.affirm.android.exception.ConnectionException;
@@ -66,6 +68,7 @@ public class AffirmTrackView extends FrameLayout
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        AffirmLog.v("AffirmTrackView onAttachedToWindow");
 
         AffirmUtils.debuggableWebView(getContext());
         mWebView.setWebViewClient(new TrackWebViewClient(this));
@@ -117,7 +120,15 @@ public class AffirmTrackView extends FrameLayout
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        CookiesUtil.clearCookies(getContext());
+        AffirmLog.v("AffirmTrackView onDetachedFromWindow");
+        Context context = getContext();
+        if (context != null) {
+            CookiesUtil.clearCookies(context);
+            ViewGroup container =
+                    ((Activity) context).getWindow()
+                            .getDecorView().findViewById(android.R.id.content);
+            container.removeView(mWebView);
+        }
         mWebView.removeAllViews();
         mWebView.destroyDrawingCache();
         mWebView.clearHistory();

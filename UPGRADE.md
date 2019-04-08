@@ -137,17 +137,7 @@ These are the steps to upgrade from SDK v1 to v2
       .setAffirmTrackProducts(affirmTrackProducts)
       .build();
 
-  Affirm.trackOrderConfirmed(MainActivity.this, trackModel(), MainActivity.this);
-
-  @Override
-  public void onAffirmTrackSuccess() {
-    Toast.makeText(MainActivity.this, "Track Order Confirmed Success", Toast.LENGTH_LONG).show();
-  }
-
-  @Override
-  public void onAffirmTrackError(@Nullable String message) {
-    Toast.makeText(MainActivity.this, "Track Order Confirmed Failed: " + message, Toast.LENGTH_LONG).show();
-  }
+  Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
   ```
   
 ## Rebuild and ship

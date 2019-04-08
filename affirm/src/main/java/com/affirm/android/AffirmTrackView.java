@@ -59,7 +59,7 @@ public class AffirmTrackView extends FrameLayout
     }
 
     private void initViews(Context context) {
-        mWebView = new AffirmWebView(context, null);
+        mWebView = new AffirmWebView(context.getApplicationContext(), null);
         addView(mWebView);
     }
 
@@ -119,7 +119,10 @@ public class AffirmTrackView extends FrameLayout
         super.onDetachedFromWindow();
         CookiesUtil.clearCookies(getContext());
         mWebView.removeAllViews();
+        mWebView.destroyDrawingCache();
+        mWebView.clearHistory();
         mWebView.destroy();
+        mWebView = null;
         mHandler.removeCallbacksAndMessages(null);
     }
 

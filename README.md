@@ -161,7 +161,6 @@ public void onAffirmPrequalError(String message) {
 
 ## Track Order Confirmed
 When you are ready to track with affirm create a `AffirmTrack` object and launch the affirm track.
-If you want to show indicator when tracking, need to set `showIndicator` to true.
 
 ```java
 final AffirmTrack affirmTrack = AffirmTrack.builder()
@@ -169,7 +168,7 @@ final AffirmTrack affirmTrack = AffirmTrack.builder()
         .setAffirmTrackProducts(affirmTrackProducts)
         .build();
 
-Affirm.trackOrderConfirmed(MainActivity.this, trackModel(), false, MainActivity.this);
+Affirm.trackOrderConfirmed(MainActivity.this, trackModel(), MainActivity.this);
 
 @Override
 public void onAffirmTrackSuccess() {

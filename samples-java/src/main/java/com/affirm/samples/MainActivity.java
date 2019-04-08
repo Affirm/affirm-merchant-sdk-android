@@ -3,7 +3,6 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
@@ -66,8 +65,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.trackOrderConfirmed).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean showIndicator = ((CheckBox) findViewById(R.id.showIndicator)).isChecked();
-                Affirm.trackOrderConfirmed(MainActivity.this, trackModel(), showIndicator, MainActivity.this);
+                Affirm.trackOrderConfirmed(MainActivity.this, trackModel(), MainActivity.this);
             }
         });
 

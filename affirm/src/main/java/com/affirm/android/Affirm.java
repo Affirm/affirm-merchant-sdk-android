@@ -3,13 +3,10 @@ package com.affirm.android;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
@@ -193,13 +190,11 @@ public final class Affirm {
     /**
      * Start track order
      *
-     * @param activity      activity {@link Activity}
-     * @param affirmTrack   AffirmTrack object that containers order & product info
-     * @param showIndicator If need to show indicator when tracking, default is false
+     * @param activity    activity {@link Activity}
+     * @param affirmTrack AffirmTrack object that containers order & product info
      */
     public static void trackOrderConfirmed(@NonNull final Activity activity,
                                            @NonNull AffirmTrack affirmTrack,
-                                           final boolean showIndicator,
                                            @Nullable final TrackCallbacks trackCallbacks) {
         if (mDurTracking) {
             AffirmLog.w("Tracking, you can try again later.");
@@ -207,11 +202,6 @@ public final class Affirm {
         }
 
         mDurTracking = true;
-
-        if (showIndicator) {
-            startWait(activity);
-        }
-
         final WeakReference callbackRef = new WeakReference<>(trackCallbacks);
         final ViewGroup container =
                 activity.getWindow().getDecorView().findViewById(android.R.id.content);
@@ -222,11 +212,6 @@ public final class Affirm {
                     public void onSuccess(AffirmTrackView affirmTrackView) {
                         mDurTracking = false;
                         container.removeView(affirmTrackView);
-
-                        if (showIndicator) {
-                            endWait();
-                        }
-
                         final TrackCallbacks callbacks = (TrackCallbacks) callbackRef.get();
                         if (callbacks != null) {
                             callbacks.onAffirmTrackSuccess();
@@ -237,11 +222,6 @@ public final class Affirm {
                     public void onFailed(AffirmTrackView affirmTrackView, String reason) {
                         mDurTracking = false;
                         container.removeView(affirmTrackView);
-
-                        if (showIndicator) {
-                            endWait();
-                        }
-
                         final TrackCallbacks callbacks = (TrackCallbacks) callbackRef.get();
                         if (callbacks != null) {
                             callbacks.onAffirmTrackError(reason);
@@ -443,37 +423,5 @@ public final class Affirm {
         }
 
         return false;
-    }
-
-    private static void startWait(Activity activity) {
-        if (mProgressDialog != null && mProgressDialog.isShowing() || activity == null) {
-            return;
-        }
-        if (!activity.isFinishing()) {
-            try {
-                mProgressDialog = ProgressDialog.show(activity, null, null, true, false);
-                Window window = mProgressDialog.getWindow();
-                if (window != null) {
-                    window.setDimAmount(0f);
-                    window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                }
-                mProgressDialog.setContentView(R.layout.progress);
-            } catch (Exception e) {
-                AffirmLog.d("Failed to show progress dialog", e);
-            }
-        } else {
-            mProgressDialog = null;
-        }
-    }
-
-    private static void endWait() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            try {
-                mProgressDialog.dismiss();
-            } catch (Exception e) {
-                AffirmLog.d("Failed to dismiss progress dialog", e);
-            }
-            mProgressDialog = null;
-        }
     }
 }

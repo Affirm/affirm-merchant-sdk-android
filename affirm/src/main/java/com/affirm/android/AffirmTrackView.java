@@ -3,9 +3,11 @@ package com.affirm.android;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
 import android.widget.FrameLayout;
 
 import com.affirm.android.exception.ConnectionException;
@@ -68,14 +70,20 @@ public class AffirmTrackView extends FrameLayout
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        AffirmLog.v("AffirmTrackView onAttachedToWindow");
+        AffirmLog.v("AffirmTrackView attached to window");
 
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView, true);
+        } else {
+            CookieManager.getInstance().setAcceptCookie(true);
+        }
         AffirmUtils.debuggableWebView(getContext());
         mWebView.setWebViewClient(new TrackWebViewClient(this));
         mWebView.setWebChromeClient(new AffirmWebChromeClient(this));
 
         final String html = initialHtml();
-        mWebView.loadData(html, TEXT_HTML, UTF_8);
+        mWebView.loadDataWithBaseURL(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(), html,
+                TEXT_HTML, UTF_8, null);
         // Since there is no callback, the screen will be removed after 10 seconds timeout.
         mHandler.postDelayed(new Runnable() {
             @Override
@@ -120,7 +128,7 @@ public class AffirmTrackView extends FrameLayout
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        AffirmLog.v("AffirmTrackView onDetachedFromWindow");
+        AffirmLog.v("AffirmTrackView detached from window");
         Context context = getContext();
         if (context != null) {
             CookiesUtil.clearCookies(context);
@@ -144,6 +152,6 @@ public class AffirmTrackView extends FrameLayout
 
     @Override
     public void chromeLoadCompleted() {
-        AffirmLog.v("ChromeLoadCompleted on AffirmTrackView");
+        AffirmLog.v("AffirmTrackView has been loaded");
     }
 }

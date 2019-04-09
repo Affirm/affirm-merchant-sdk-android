@@ -30,5 +30,3 @@ proguard/
 *.iml
 *.iws
 out/
-
-affirm/gradle.properties

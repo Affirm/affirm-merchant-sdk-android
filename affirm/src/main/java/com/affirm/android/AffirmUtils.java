@@ -2,6 +2,8 @@ package com.affirm.android;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.Window;
 import android.webkit.WebView;
@@ -15,6 +17,7 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_END;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_START;
@@ -70,19 +73,26 @@ public final class AffirmUtils {
 
     static void showCloseActionBar(@NonNull AppCompatActivity activity) {
         activity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+
+        Drawable drawable =
+                ContextCompat.getDrawable(activity, R.drawable.affirm_ic_baseline_close);
+        if (drawable != null) {
+            drawable.setColorFilter(
+                    ContextCompat.getColor(activity, R.color.affirm_ic_close_color),
+                    PorterDuff.Mode.SRC_ATOP);
+        }
         if (activity.getActionBar() != null) {
             activity.getActionBar().show();
             activity.getActionBar().setDisplayShowTitleEnabled(false);
             activity.getActionBar().setDisplayHomeAsUpEnabled(true);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                activity.getActionBar().setHomeAsUpIndicator(R.drawable.affirm_ic_baseline_close);
+                activity.getActionBar().setHomeAsUpIndicator(drawable);
             }
         } else if (activity.getSupportActionBar() != null) {
             activity.getSupportActionBar().show();
             activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            activity.getSupportActionBar()
-                    .setHomeAsUpIndicator(R.drawable.affirm_ic_baseline_close);
+            activity.getSupportActionBar().setHomeAsUpIndicator(drawable);
         }
     }
 

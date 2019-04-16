@@ -1,10 +1,13 @@
 package com.affirm.android;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 
@@ -94,6 +97,17 @@ public final class AffirmUtils {
             activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             activity.getSupportActionBar().setHomeAsUpIndicator(drawable);
         }
+    }
+
+    static Activity getActivityFromView(View view) {
+        Context context = view.getContext();
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                return (Activity) context;
+            }
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return null;
     }
 
     static <T> T requireNonNull(T obj) {

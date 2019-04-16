@@ -291,7 +291,7 @@ public final class Affirm {
         final View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Activity activity = (Activity) v.getContext();
+                Activity activity = AffirmUtils.getActivityFromView(v);
                 if (activity == null || TextUtils.isEmpty(promotionButton.getText())) {
                     return;
                 }

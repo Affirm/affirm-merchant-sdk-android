@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="affirm_progressbar_dimen">80dp</dimen>
+</resources>

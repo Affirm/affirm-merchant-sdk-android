@@ -1,0 +1,13 @@
+<FindBugsFilter>
+    <Match>
+        <Class name="~.*\.R\$.*"/>
+        <!--<Method name="run"/>-->
+    </Match>
+    <Match>
+        <Class name="~.*\.Manifest\$.*"/>
+    </Match>
+    <Match>
+        <Bug code="ST"/>
+        <Class name="com.affirm.affirmsdk.di.AffirmInjector"/>
+    </Match>
+</FindBugsFilter>

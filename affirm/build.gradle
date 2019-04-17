@@ -1,0 +1,122 @@
+apply plugin: 'com.android.library'
+apply plugin: 'pmd'
+apply plugin: 'findbugs'
+apply plugin: 'checkstyle'
+apply from: 'maven-push.gradle'
+
+ext {
+    BUILD_TOOLS_VERSION = "28.0.3"
+    COMPILE_SDK_VERSION = 28
+
+    androidxAppCompatVersion = '1.0.2'
+    junitVersion = "4.12"
+    testRunnerVersion = "1.0.2"
+    testEspressoVersion = "3.0.2"
+    okhttpVersion = '3.12.1'
+    gsonVersion = '2.8.5'
+    playServiceAuthVersion = '16.0.1'
+    autoValueGsonVersion = '0.4.6'
+    autoValueParcelVersion = '0.2.5'
+    truthVersion = '0.28'
+    mockitoCoreVersion = '2.21.0'
+    robolectricVersion = '4.1'
+}
+
+android {
+    compileSdkVersion COMPILE_SDK_VERSION
+    buildToolsVersion BUILD_TOOLS_VERSION
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion COMPILE_SDK_VERSION
+        versionCode VERSION_CODE.toInteger()
+        versionName project.VERSION_NAME
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    lintOptions {
+        disable 'ContentDescription', 'Instantiatable'
+    }
+}
+
+pmd {
+    toolVersion = '5.5.2'
+}
+
+findbugs {
+    toolVersion = "3.0.1"
+}
+
+checkstyle {
+    toolVersion = '7.3'
+}
+
+task findbugs(type: FindBugs) {
+    excludeFilter file('config/findbugs/exclude.xml')
+    classes = files("$project.buildDir/intermediates/classes")
+    source = fileTree('src/main/java')
+    classpath = files()
+    effort = 'max'
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+task pmd(type: Pmd) {
+    ruleSets = ["java-android",
+                "java-basic",
+                "java-braces",
+                "java-strings",
+                "java-unnecessary",
+                "java-unusedcode",
+                "java-sunsecure"]
+    source = fileTree('src/main/java')
+}
+
+task checkstyle(type: Checkstyle) {
+    configFile file('config/checkstyle/checkstyle.xml')
+    source 'src/main/java'
+    include '**/*.java'
+    classpath = files()
+}
+
+task findbugsWrapper(dependsOn: 'findbugs') {}
+task pmdWrapper(dependsOn: 'pmd') {}
+task checkstyleWrapper(dependsOn: 'checkstyle') {}
+
+build.dependsOn findbugsWrapper
+check.dependsOn pmdWrapper
+check.dependsOn checkstyleWrapper
+
+dependencies {
+    implementation "androidx.appcompat:appcompat:${androidxAppCompatVersion}"
+    testImplementation "junit:junit:${junitVersion}"
+
+    api "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    api "com.google.code.gson:gson:${gsonVersion}"
+
+    implementation "com.google.android.gms:play-services-auth:${playServiceAuthVersion}"
+
+    annotationProcessor "com.ryanharter.auto.value:auto-value-gson:${autoValueGsonVersion}"
+    compileOnly "com.ryanharter.auto.value:auto-value-gson:${autoValueGsonVersion}"
+    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${autoValueParcelVersion}"
+
+    androidTestImplementation "com.android.support.test:runner:${testRunnerVersion}"
+
+    testImplementation "org.robolectric:robolectric:${robolectricVersion}"
+    testImplementation "com.google.truth:truth:${truthVersion}"
+    testImplementation "org.mockito:mockito-core:${mockitoCoreVersion}"
+}

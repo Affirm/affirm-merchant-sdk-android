@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Affirm Samples Java</string>
+    <string name="checkout">Checkout</string>
+    <string name="vcn_checkout">VCN Checkout</string>
+    <string name="launch_site_modal">Launch Site Modal</string>
+    <string name="product_site_modal">Product Site Modal</string>
+    <string name="track_order_confirmed">Track Order Confirmed</string>
+    <string name="show_indicator">Show Indicator</string>
+
+</resources>

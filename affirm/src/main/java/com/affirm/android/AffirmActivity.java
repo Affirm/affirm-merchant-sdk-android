@@ -44,7 +44,11 @@ abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChro
         CookiesUtil.clearCookies(this);
         container.removeView(webView);
         webView.removeAllViews();
+        webView.clearCache(true);
+        webView.destroyDrawingCache();
+        webView.clearHistory();
         webView.destroy();
+        webView = null;
         super.onDestroy();
     }
 

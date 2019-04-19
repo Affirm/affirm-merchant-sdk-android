@@ -3,6 +3,7 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
@@ -29,10 +30,14 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks,
         Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
+    private TextView mMessageLabel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mMessageLabel = findViewById(R.id.message);
 
         findViewById(R.id.checkout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
     // - Affirm.CheckoutCallbacks
     @Override
     public void onAffirmCheckoutSuccess(@NonNull String token) {
-        Toast.makeText(this, "Checkout token: " + token, Toast.LENGTH_LONG).show();
+        mMessageLabel.setText("Checkout token: " + token);
     }
 
     @Override
@@ -201,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
     @Override
     public void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails) {
-        Toast.makeText(this, "Vcn Checkout Card: " + cardDetails.toString(), Toast.LENGTH_LONG).show();
+        mMessageLabel.setText(cardDetails.toString());
     }
 
     // - Prequal

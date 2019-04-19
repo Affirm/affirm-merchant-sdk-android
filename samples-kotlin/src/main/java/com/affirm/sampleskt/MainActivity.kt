@@ -9,7 +9,6 @@ import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
 import kotlin.collections.HashMap
-import kotlin.collections.MutableMap
 import kotlin.collections.set
 
 class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
@@ -126,7 +125,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
     }
 
     override fun onAffirmCheckoutSuccess(token: String) {
-        Toast.makeText(this, "Checkout token: $token", Toast.LENGTH_LONG).show()
+        message.text = "Checkout token: $token"
     }
 
     // - Affirm.VcnCheckoutCallbacks
@@ -139,7 +138,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
     }
 
     override fun onAffirmVcnCheckoutSuccess(cardDetails: CardDetails) {
-        Toast.makeText(this, "Vcn Checkout Card: $cardDetails", Toast.LENGTH_LONG).show()
+        message.text = cardDetails.toString()
     }
 
     // - Prequal

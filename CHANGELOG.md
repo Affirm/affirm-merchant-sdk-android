@@ -1,7 +1,7 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
-## Version 2.0.0 (March 29, 2019)
+## Version 2.0.0 (April 19, 2019)
 -----------------------
 
 ### HTTP Networking

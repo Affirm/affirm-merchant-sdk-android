@@ -22,12 +22,16 @@ public class AffirmTrackerTest {
 
     @Before
     public void init() {
-        mLocalLogCounter = new AtomicInteger();
+        initmLocalLogCounter();
         if (AffirmPlugins.get() == null) {
             Affirm.initialize(new Affirm.Configuration.Builder("sdf", Affirm.Environment.SANDBOX)
                     .build()
             );
         }
+    }
+
+    public static void initmLocalLogCounter() {
+        mLocalLogCounter = new AtomicInteger();
     }
 
 

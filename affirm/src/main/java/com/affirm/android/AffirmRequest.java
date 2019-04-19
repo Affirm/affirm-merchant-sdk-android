@@ -21,7 +21,7 @@ abstract class AffirmRequest<T> {
 
         @Override
         public void create() {
-            isRequestCancelled = false;
+            setRequestCancelled(false);
             task = createTask();
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -32,9 +32,14 @@ abstract class AffirmRequest<T> {
                 task.cancel(true);
                 task = null;
             }
-            isRequestCancelled = true;
+            setRequestCancelled(true);
         }
+
     };
+
+    public static void setRequestCancelled(boolean value) {
+        isRequestCancelled = value;
+    }
 
     void create() {
         mRequestCreate.create();

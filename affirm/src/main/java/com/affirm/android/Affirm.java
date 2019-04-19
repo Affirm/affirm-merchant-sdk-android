@@ -302,7 +302,8 @@ public final class Affirm {
                 if (activity == null || activity.isFinishing()) {
                     return;
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                        && activity.isDestroyed()) {
                     return;
                 }
                 LifeListenerFragment fragment = getLifeListenerFragment(activity);
@@ -321,7 +322,8 @@ public final class Affirm {
                 if (activity == null || activity.isFinishing()) {
                     return;
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
+                        && activity.isDestroyed()) {
                     return;
                 }
                 LifeListenerFragment fragment = getLifeListenerFragment(activity);

@@ -69,7 +69,7 @@ checkstyle {
 
 task findbugs(type: FindBugs) {
     excludeFilter file('config/findbugs/exclude.xml')
-    classes = files("$project.buildDir/intermediates/classes")
+    classes = files("$project.buildDir/intermediates/javac")
     source = fileTree('src/main/java')
     classpath = files()
     effort = 'max'

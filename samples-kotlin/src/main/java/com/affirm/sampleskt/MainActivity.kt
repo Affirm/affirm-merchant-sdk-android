@@ -16,21 +16,24 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
 
     companion object {
         private const val TAG = "MainActivity"
+
+        private const val PRICE = 1100f
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        price.text = "$$PRICE"
         checkout.setOnClickListener { Affirm.startCheckout(this, checkoutModel(), false) }
         vcnCheckout.setOnClickListener { Affirm.startCheckout(this, checkoutModel(), true) }
         siteModalButton.setOnClickListener { Affirm.showSiteModal(this@MainActivity, "5LNMQ33SEUYHLNUC") }
-        productModalButton.setOnClickListener { Affirm.showProductModal(this@MainActivity, 1100f, "0Q97G0Z4Y4TLGHGB") }
+        productModalButton.setOnClickListener { Affirm.showProductModal(this@MainActivity, PRICE, "0Q97G0Z4Y4TLGHGB") }
         trackOrderConfirmed.setOnClickListener {
             Toast.makeText(this@MainActivity, "Track successfully", Toast.LENGTH_SHORT).show()
             Affirm.trackOrderConfirmed(this@MainActivity, trackModel())
         }
 
-        Affirm.configureWithAmount(promo, null, 1100f, true)
+        Affirm.configureWithAmount(promo, null, PRICE, true)
     }
 
     private fun trackModel(): AffirmTrack {
@@ -96,7 +99,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setShipping(shipping)
                 .setShippingAmount(0f)
                 .setTaxAmount(100f)
-                .setTotal(1100f)
+                .setTotal(PRICE)
                 .build()
     }
 

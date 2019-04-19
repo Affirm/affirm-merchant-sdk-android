@@ -101,7 +101,7 @@ public class AffirmTrackView extends FrameLayout
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl() + JS_PATH;
+        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseJsUrl() + JS_PATH;
 
         final HashMap<String, String> map = new HashMap<>();
 
@@ -130,7 +130,6 @@ public class AffirmTrackView extends FrameLayout
         AffirmLog.v("AffirmTrackView detached from window");
         Context context = getContext();
         if (context != null) {
-            CookiesUtil.clearCookies(context);
             ViewGroup container =
                     ((Activity) context).getWindow()
                             .getDecorView().findViewById(android.R.id.content);

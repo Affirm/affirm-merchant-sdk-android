@@ -24,7 +24,7 @@ final class CookiesUtil {
                 cookieManager, cookieSyncManager);
     }
 
-    static void clearCookieByUrl(String url, CookieManager cookieManager,
+    private static void clearCookieByUrl(String url, CookieManager cookieManager,
                                  CookieSyncManager cookieSyncManager) {
         Uri uri = Uri.parse(url);
         String host = uri.getHost();

@@ -56,7 +56,7 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
         final Intent intent = new Intent(activity, ModalActivity.class);
         final String stringAmount =
                 String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
-        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl() + JS_PATH;
+        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseJsUrl() + JS_PATH;
 
         final HashMap<String, String> map = new HashMap<>();
         map.put(AMOUNT, stringAmount);

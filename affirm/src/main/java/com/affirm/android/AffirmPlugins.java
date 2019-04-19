@@ -1,17 +1,16 @@
 package com.affirm.android;
 
+import android.webkit.CookieManager;
+
 import com.affirm.android.model.AffirmAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 
 class AffirmPlugins {
 
@@ -71,6 +70,10 @@ class AffirmPlugins {
         return configuration.environment.baseUrl;
     }
 
+    String baseJsUrl() {
+        return mConfiguration.environment.jsUrl;
+    }
+
     String trackerBaseUrl() {
         return configuration.environment.trackerBaseUrl;
     }
@@ -88,20 +91,20 @@ class AffirmPlugins {
         if (restClient == null) {
             OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
             //add it as the first interceptor
-            clientBuilder.interceptors().add(0, new Interceptor() {
-                @Override
-                @NonNull
-                public Response intercept(@NonNull Chain chain) throws IOException {
-                    final Request request = chain.request()
-                            .newBuilder()
-                            .addHeader("Accept", "application/json")
-                            .addHeader("Content-Type", "application/json")
-                            .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
-                            .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
-                            .build();
+            clientBuilder.interceptors().add(0, chain -> {
+                final Request.Builder builder = chain.request().newBuilder();
+                builder.addHeader("Accept", "application/json");
+                builder.addHeader("Content-Type", "application/json");
+                builder.addHeader("Affirm-User-Agent", "Affirm-Android-SDK");
+                builder.addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME);
 
-                    return chain.proceed(request);
+                CookieManager cookieManager = CookieManager.getInstance();
+                String cookie = cookieManager
+                        .getCookie(AffirmConstants.HTTPS_PROTOCOL + baseUrl());
+                if (cookie != null) {
+                    builder.addHeader("Cookie", cookie);
                 }
+                return chain.proceed(builder.build());
             });
             clientBuilder.connectTimeout(5, TimeUnit.SECONDS);
             clientBuilder.readTimeout(30, TimeUnit.SECONDS);

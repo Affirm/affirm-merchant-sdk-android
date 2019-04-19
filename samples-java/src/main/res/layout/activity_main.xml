@@ -106,7 +106,6 @@
         android:layout_alignLeft="@+id/title"
         android:layout_alignStart="@+id/title"
         android:ems="10"
-        android:text="$1100"
         android:textSize="18sp"
         android:textStyle="bold"
         />

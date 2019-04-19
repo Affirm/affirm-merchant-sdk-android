@@ -1,7 +1,9 @@
 package com.affirm.android;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Intent;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +22,9 @@ import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
+import static com.affirm.android.AffirmConstants.PRODUCTION_JS_URL;
 import static com.affirm.android.AffirmConstants.PRODUCTION_URL;
+import static com.affirm.android.AffirmConstants.SANDBOX_JS_URL;
 import static com.affirm.android.AffirmConstants.SANDBOX_URL;
 import static com.affirm.android.AffirmConstants.TRACKER_URL;
 import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
@@ -43,6 +47,8 @@ public final class Affirm {
     private static final int PREQUAL_REQUEST = 8078;
     static final int RESULT_ERROR = -8575;
 
+    private static final String LIFE_FRAGMENT_TAG = "LifeFragmentTag";
+
     public interface PrequalCallbacks {
         void onAffirmPrequalError(@Nullable String message);
     }
@@ -64,14 +70,16 @@ public final class Affirm {
     }
 
     public enum Environment {
-        SANDBOX(SANDBOX_URL, TRACKER_URL),
-        PRODUCTION(PRODUCTION_URL, TRACKER_URL);
+        SANDBOX(SANDBOX_URL, SANDBOX_JS_URL, TRACKER_URL),
+        PRODUCTION(PRODUCTION_URL, PRODUCTION_JS_URL, TRACKER_URL);
 
         final String baseUrl;
         final String trackerBaseUrl;
+        final String jsUrl;
 
-        Environment(String baseUrl, String trackerBaseUrl) {
+        Environment(String baseUrl, String jsUrl, String trackerBaseUrl) {
             this.baseUrl = baseUrl;
+            this.jsUrl = jsUrl;
             this.trackerBaseUrl = trackerBaseUrl;
         }
 
@@ -275,16 +283,49 @@ public final class Affirm {
 
         final PromoRequest affirmPromoRequest =
                 new PromoRequest(promoId, amount, showCta, callback);
-        promotionButton.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+
+        final LifecycleListener lifecycleListener = new LifecycleListener() {
             @Override
-            public void onViewAttachedToWindow(View v) {
+            public void onStart() {
                 affirmPromoRequest.create();
             }
 
             @Override
-            public void onViewDetachedFromWindow(View v) {
+            public void onStop() {
                 affirmPromoRequest.cancel();
+            }
+        };
+        promotionButton.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(final View v) {
+                Activity activity = AffirmUtils.getActivityFromView(v);
+                if (activity == null || activity.isFinishing()) {
+                    return;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed()) {
+                    return;
+                }
+                LifeListenerFragment fragment = getLifeListenerFragment(activity);
+                fragment.addLifeListener(lifecycleListener);
+
+                // For the case that rotating screen
+                if (activity.getFragmentManager().findFragmentByTag(LIFE_FRAGMENT_TAG) != null) {
+                    affirmPromoRequest.create();
+                }
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
                 promotionButton.removeOnAttachStateChangeListener(this);
+                Activity activity = AffirmUtils.getActivityFromView(v);
+                if (activity == null || activity.isFinishing()) {
+                    return;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed()) {
+                    return;
+                }
+                LifeListenerFragment fragment = getLifeListenerFragment(activity);
+                fragment.removeLifeListener();
             }
         });
 
@@ -306,6 +347,21 @@ public final class Affirm {
             }
         };
         promotionButton.setOnClickListener(onClickListener);
+    }
+
+    // Add a blank fragment to handle the lifecycle of the activity
+    private static LifeListenerFragment getLifeListenerFragment(Activity activity) {
+        final FragmentManager manager = activity.getFragmentManager();
+        LifeListenerFragment fragment =
+                (LifeListenerFragment) manager.findFragmentByTag(LIFE_FRAGMENT_TAG);
+        if (fragment == null) {
+            fragment = new LifeListenerFragment();
+            manager
+                    .beginTransaction()
+                    .add(fragment, LIFE_FRAGMENT_TAG)
+                    .commitAllowingStateLoss();
+        }
+        return fragment;
     }
 
     /**

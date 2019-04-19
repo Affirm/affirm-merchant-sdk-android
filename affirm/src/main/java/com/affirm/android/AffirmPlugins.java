@@ -3,6 +3,7 @@ package com.affirm.android;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
+import android.webkit.CookieManager;
 
 import com.affirm.android.model.AffirmAdapterFactory;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -115,15 +116,19 @@ class AffirmPlugins {
                 @Override
                 @NonNull
                 public Response intercept(@NonNull Chain chain) throws IOException {
-                    final Request request = chain.request()
-                            .newBuilder()
-                            .addHeader("Accept", "application/json")
-                            .addHeader("Content-Type", "application/json")
-                            .addHeader("Affirm-User-Agent", "Affirm-Android-SDK")
-                            .addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME)
-                            .build();
+                    final Request.Builder builder = chain.request().newBuilder();
+                    builder.addHeader("Accept", "application/json");
+                    builder.addHeader("Content-Type", "application/json");
+                    builder.addHeader("Affirm-User-Agent", "Affirm-Android-SDK");
+                    builder.addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME);
 
-                    return chain.proceed(request);
+                    CookieManager cookieManager = CookieManager.getInstance();
+                    String cookie = cookieManager
+                            .getCookie(AffirmConstants.HTTPS_PROTOCOL + baseUrl());
+                    if (cookie != null) {
+                        builder.addHeader("Cookie", cookie);
+                    }
+                    return chain.proceed(builder.build());
                 }
             });
             clientBuilder.connectTimeout(5, TimeUnit.SECONDS);

@@ -50,7 +50,6 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
         webView.setWebViewClient(
                 new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
-        CookiesUtil.clearCookies(this);
     }
 
     @Override

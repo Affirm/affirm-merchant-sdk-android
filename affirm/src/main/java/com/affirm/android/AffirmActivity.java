@@ -41,7 +41,6 @@ abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChro
 
     @Override
     protected void onDestroy() {
-        CookiesUtil.clearCookies(this);
         container.removeView(webView);
         webView.removeAllViews();
         webView.clearCache(true);

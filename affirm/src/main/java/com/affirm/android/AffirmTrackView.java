@@ -130,7 +130,6 @@ public class AffirmTrackView extends FrameLayout
         AffirmLog.v("AffirmTrackView detached from window");
         Context context = getContext();
         if (context != null) {
-            CookiesUtil.clearCookies(context);
             ViewGroup container =
                     ((Activity) context).getWindow()
                             .getDecorView().findViewById(android.R.id.content);

@@ -7,13 +7,13 @@ Easily integrate Affirm SDK inside merchant Android apps.
 
 Download via Gradle:
 ```groovy
-implementation "com.affirm:affirm-merchant-sdk-android:latest.version.here"
+implementation "com.affirm:affirm-android-sdk:latest.version.here"
 ```
 or Maven:
 ```xml
 <dependency>
   <groupId>com.affirm</groupId>
-  <artifactId>affirm-merchant-sdk-android</artifactId>
+  <artifactId>affirm-android-sdk</artifactId>
   <version>latest.version.here</version>
 </dependency>
 ```

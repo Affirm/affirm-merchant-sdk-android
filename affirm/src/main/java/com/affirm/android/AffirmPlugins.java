@@ -71,7 +71,7 @@ class AffirmPlugins {
     }
 
     String baseJsUrl() {
-        return mConfiguration.environment.jsUrl;
+        return configuration.environment.jsUrl;
     }
 
     String trackerBaseUrl() {

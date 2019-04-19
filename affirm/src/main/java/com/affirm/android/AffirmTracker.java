@@ -16,7 +16,7 @@ import okhttp3.Response;
 
 final class AffirmTracker {
 
-    private static final AtomicInteger mLocalLogCounter = new AtomicInteger();
+    private static final AtomicInteger localLogCounter = new AtomicInteger();
 
     private AffirmTracker() {
     }
@@ -80,7 +80,7 @@ final class AffirmTracker {
                                          @NonNull AffirmTracker.TrackingLevel level) {
         final long timeStamp = System.currentTimeMillis();
         // Set the log counter and then increment the logCounter
-        int localLogCounter = mLocalLogCounter.getAndIncrement();
+        int localLogCounter = AffirmTracker.localLogCounter.getAndIncrement();
         data.addProperty("local_log_counter", localLogCounter);
         data.addProperty("ts", timeStamp);
         data.addProperty("app_id", "Android SDK");

@@ -14,9 +14,9 @@ import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 
 abstract class CheckoutBaseActivity extends AffirmActivity {
 
-    private CheckoutRequest mCheckoutRequest;
+    private CheckoutRequest checkoutRequest;
 
-    private Checkout mCheckout;
+    private Checkout checkout;
 
     abstract boolean useVCN();
 
@@ -30,9 +30,9 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
     @Override
     void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mCheckout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
+            checkout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
         } else {
-            mCheckout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
+            checkout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
         }
     }
 
@@ -40,18 +40,18 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(CHECKOUT_EXTRA, mCheckout);
+        outState.putParcelable(CHECKOUT_EXTRA, checkout);
     }
 
     @Override
     void onAttached() {
-        mCheckoutRequest = new CheckoutRequest(mCheckout, getInnerCheckoutCallback(), useVCN());
-        mCheckoutRequest.create();
+        checkoutRequest = new CheckoutRequest(checkout, getInnerCheckoutCallback(), useVCN());
+        checkoutRequest.create();
     }
 
     @Override
     protected void onDestroy() {
-        mCheckoutRequest.cancel();
+        checkoutRequest.cancel();
         super.onDestroy();
     }
 

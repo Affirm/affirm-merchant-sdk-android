@@ -12,7 +12,7 @@ ext {
     junitVersion = "4.12"
     testRunnerVersion = "1.0.2"
     testEspressoVersion = "3.0.2"
-    okhttpVersion = '3.12.1'
+    okhttpVersion = '3.14.1'
     gsonVersion = '2.8.5'
     playServiceAuthVersion = '16.0.1'
     autoValueGsonVersion = '0.4.6'
@@ -27,7 +27,7 @@ android {
     buildToolsVersion BUILD_TOOLS_VERSION
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion COMPILE_SDK_VERSION
         versionCode VERSION_CODE.toInteger()
         versionName project.VERSION_NAME
@@ -38,8 +38,12 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     lintOptions {

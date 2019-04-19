@@ -22,8 +22,8 @@ import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 
 public class PrequalActivity extends AffirmActivity implements PrequalWebViewClient.Callbacks {
 
-    private String mAmount;
-    private String mPromoId;
+    private String amount;
+    private String promoId;
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               float amount, @Nullable String promoId) {
@@ -48,11 +48,11 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     @Override
     void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mAmount = savedInstanceState.getString(AMOUNT);
-            mPromoId = savedInstanceState.getString(PROMO_ID);
+            amount = savedInstanceState.getString(AMOUNT);
+            promoId = savedInstanceState.getString(PROMO_ID);
         } else {
-            mAmount = getIntent().getStringExtra(AMOUNT);
-            mPromoId = getIntent().getStringExtra(PROMO_ID);
+            amount = getIntent().getStringExtra(AMOUNT);
+            promoId = getIntent().getStringExtra(PROMO_ID);
         }
     }
 
@@ -60,7 +60,7 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     void onAttached() {
         String publicKey = AffirmPlugins.get().publicKey();
         String path = String.format(PREQUAL_PATH,
-                publicKey, mAmount, mPromoId, REFERRING_URL);
+                publicKey, amount, promoId, REFERRING_URL);
 
         webView.loadUrl(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl() + path);
     }
@@ -69,8 +69,8 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(AMOUNT, mAmount);
-        outState.putString(PROMO_ID, mPromoId);
+        outState.putString(AMOUNT, amount);
+        outState.putString(PROMO_ID, promoId);
     }
 
     @Override

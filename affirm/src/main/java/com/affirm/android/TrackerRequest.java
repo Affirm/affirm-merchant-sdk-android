@@ -9,15 +9,15 @@ import androidx.annotation.NonNull;
 class TrackerRequest extends AffirmRequest {
 
     @NonNull
-    private JsonObject mTrackingData;
+    private JsonObject trackingData;
 
     TrackerRequest(@NonNull JsonObject trackingData) {
-        mTrackingData = trackingData;
+        this.trackingData = trackingData;
     }
 
     @Override
     AsyncTask createTask() {
-        return new TrackerTask(mTrackingData);
+        return new TrackerTask(trackingData);
     }
 
     private static class TrackerTask extends AsyncTask<Void, Void, Void> {

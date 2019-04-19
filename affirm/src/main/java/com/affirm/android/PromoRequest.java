@@ -16,18 +16,18 @@ import androidx.annotation.Nullable;
 class PromoRequest extends AffirmRequest {
 
     @Nullable
-    private final String mPromoId;
-    private final float mDollarAmount;
-    private final boolean mShowCta;
+    private final String promoId;
+    private final float dollarAmount;
+    private final boolean showCta;
     @NonNull
-    private SpannablePromoCallback mCallback;
+    private SpannablePromoCallback callback;
 
     PromoRequest(@Nullable final String promoId, final float dollarAmount,
                  final boolean showCta, @NonNull SpannablePromoCallback callback) {
-        mPromoId = promoId;
-        mDollarAmount = dollarAmount;
-        mShowCta = showCta;
-        mCallback = callback;
+        this.promoId = promoId;
+        this.dollarAmount = dollarAmount;
+        this.showCta = showCta;
+        this.callback = callback;
     }
 
     @Override
@@ -38,15 +38,15 @@ class PromoRequest extends AffirmRequest {
 
     @Override
     AsyncTask createTask() {
-        return new PromoTask(mPromoId, mDollarAmount, mShowCta, mCallback);
+        return new PromoTask(promoId, dollarAmount, showCta, callback);
     }
 
     private static class PromoTask extends
             AsyncTask<Void, Void, AffirmResponseWrapper<PromoResponse>> {
         @Nullable
-        private final String mPromoId;
-        private final float mDollarAmount;
-        private final boolean mShowCta;
+        private final String promoId;
+        private final float dollarAmount;
+        private final boolean showCta;
         @NonNull
         private final WeakReference<SpannablePromoCallback> mCallbackRef;
 
@@ -54,9 +54,9 @@ class PromoRequest extends AffirmRequest {
                   float dollarAmount,
                   boolean showCta,
                   @NonNull SpannablePromoCallback callback) {
-            mPromoId = promoId;
-            mDollarAmount = dollarAmount;
-            mShowCta = showCta;
+            this.promoId = promoId;
+            this.dollarAmount = dollarAmount;
+            this.showCta = showCta;
             mCallbackRef = new WeakReference<>(callback);
         }
 
@@ -64,7 +64,7 @@ class PromoRequest extends AffirmRequest {
         protected AffirmResponseWrapper<PromoResponse> doInBackground(Void... params) {
             try {
                 PromoResponse promoResponse =
-                        AffirmApiHandler.getNewPromo(mPromoId, mDollarAmount, mShowCta);
+                        AffirmApiHandler.getNewPromo(promoId, dollarAmount, showCta);
                 return new AffirmResponseWrapper<>(promoResponse);
             } catch (ConnectionException e) {
                 return new AffirmResponseWrapper<>(e);

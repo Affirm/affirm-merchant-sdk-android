@@ -25,9 +25,9 @@ import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
 
 public class AffirmPromotionButton extends AppCompatButton {
 
-    private Paint mPaint;
-    private AffirmLogoType mAffirmLogoType;
-    private AffirmColor mAffirmColor;
+    private Paint paint;
+    private AffirmLogoType affirmLogoType;
+    private AffirmColor affirmColor;
 
     public AffirmPromotionButton(@NonNull Context context) {
         this(context, null);
@@ -58,13 +58,13 @@ public class AffirmPromotionButton extends AppCompatButton {
                 typedArray.getInt(R.styleable.AffirmPromotionButton_affirmColor,
                         AFFIRM_COLOR_TYPE_WHITE.getOrdinal());
 
-        mAffirmLogoType = AffirmLogoType.getAffirmLogoType(affirmLogoTypeOrdinal);
-        mAffirmColor = AffirmColor.getAffirmColor(affirmColorOrdinal);
+        affirmLogoType = AffirmLogoType.getAffirmLogoType(affirmLogoTypeOrdinal);
+        affirmColor = AffirmColor.getAffirmColor(affirmColorOrdinal);
 
         typedArray.recycle();
 
-        mPaint = new Paint();
-        mPaint.setStyle(Paint.Style.FILL);
+        paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
     }
 
     protected void setLabel(@NonNull String text) {
@@ -72,11 +72,11 @@ public class AffirmPromotionButton extends AppCompatButton {
     }
 
     public void setAffirmLogoType(AffirmLogoType affirmLogoType) {
-        mAffirmLogoType = affirmLogoType;
+        this.affirmLogoType = affirmLogoType;
     }
 
     public void setAffirmColor(@NonNull AffirmColor affirmColor) {
-        mAffirmColor = affirmColor;
+        this.affirmColor = affirmColor;
     }
 
     private SpannableString updateSpan(@NonNull String template) {
@@ -90,11 +90,11 @@ public class AffirmPromotionButton extends AppCompatButton {
         Resources resources = getResources();
 
         Drawable logoDrawable = null;
-        if (mAffirmLogoType != AFFIRM_DISPLAY_TYPE_TEXT) {
-            logoDrawable = resources.getDrawable(mAffirmLogoType.getDrawableRes());
+        if (affirmLogoType != AFFIRM_DISPLAY_TYPE_TEXT) {
+            logoDrawable = resources.getDrawable(affirmLogoType.getDrawableRes());
         }
 
-        final int color = resources.getColor(mAffirmColor.getColorRes());
+        final int color = resources.getColor(affirmColor.getColorRes());
 
         return getSpannable(template, textSize, logoDrawable, typeface, color);
     }
@@ -104,10 +104,10 @@ public class AffirmPromotionButton extends AppCompatButton {
                                          @Nullable Drawable logoDrawable,
                                          @NonNull Typeface typeface, int color) {
 
-        mPaint.setTextSize(textSize);
-        mPaint.setTypeface(typeface);
+        paint.setTextSize(textSize);
+        paint.setTypeface(typeface);
         Rect result = new Rect();
-        mPaint.getTextBounds(template.toUpperCase(Locale.getDefault()),
+        paint.getTextBounds(template.toUpperCase(Locale.getDefault()),
                 0, template.length(), result);
 
         SpannableString spannableString;

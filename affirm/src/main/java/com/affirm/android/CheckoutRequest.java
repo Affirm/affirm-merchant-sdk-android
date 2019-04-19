@@ -17,23 +17,23 @@ import androidx.annotation.Nullable;
 class CheckoutRequest extends AffirmRequest {
 
     @NonNull
-    private final Checkout mCheckout;
-    private final boolean mUseVCN;
+    private final Checkout checkout;
+    private final boolean useVCN;
     @Nullable
-    private final InnerCheckoutCallback mCallback;
+    private final InnerCheckoutCallback callback;
 
     CheckoutRequest(@NonNull Checkout checkout,
                     @Nullable InnerCheckoutCallback callback,
                     boolean useVCN) {
-        mCheckout = checkout;
-        mCallback = callback;
-        mUseVCN = useVCN;
+        this.checkout = checkout;
+        this.callback = callback;
+        this.useVCN = useVCN;
     }
 
     @Override
     void cancel() {
         super.cancel();
-        if (mUseVCN) {
+        if (useVCN) {
             AffirmApiHandler.cancelVcnCheckoutCall();
         } else {
             AffirmApiHandler.cancelCheckoutCall();
@@ -42,7 +42,7 @@ class CheckoutRequest extends AffirmRequest {
 
     @Override
     AsyncTask createTask() {
-        return new CheckoutTask(mCheckout, mUseVCN, mCallback);
+        return new CheckoutTask(checkout, useVCN, callback);
     }
 
     private static class CheckoutTask extends

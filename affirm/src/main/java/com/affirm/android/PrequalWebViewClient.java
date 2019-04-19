@@ -8,17 +8,17 @@ import static com.affirm.android.AffirmConstants.REFERRING_URL;
 
 final class PrequalWebViewClient extends AffirmWebViewClient {
 
-    private final Callbacks mCallbacks;
+    private final Callbacks callbacks;
 
     PrequalWebViewClient(@NonNull Callbacks callbacks) {
         super(callbacks);
-        mCallbacks = callbacks;
+        this.callbacks = callbacks;
     }
 
     @Override
     boolean hasCallbackUrl(WebView view, String url) {
         if (url.equals(REFERRING_URL)) {
-            mCallbacks.onWebViewConfirmation();
+            callbacks.onWebViewConfirmation();
             return true;
         }
         return false;

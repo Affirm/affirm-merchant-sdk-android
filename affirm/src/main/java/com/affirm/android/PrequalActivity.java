@@ -28,7 +28,9 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     static void startActivity(@NonNull Activity activity, int requestCode,
                               float amount, @Nullable String promoId) {
         final Intent intent = new Intent(activity, PrequalActivity.class);
-        intent.putExtra(AMOUNT, String.valueOf(amount));
+        final String stringAmount =
+                String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
+        intent.putExtra(AMOUNT, stringAmount);
         intent.putExtra(PROMO_ID, promoId);
         activity.startActivityForResult(intent, requestCode);
     }

@@ -3,10 +3,13 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
+import com.affirm.android.AffirmColor;
+import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
@@ -75,18 +78,16 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
             }
         });
 
+        // Option1 - Load via findViewById
+        AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
+        Affirm.configureWithAmount(affirmPromotionButton1, null, 1100, true);
 
-        AffirmPromotionButton affirmPromotionButton = findViewById(R.id.promo);
-
-//        AffirmPromotionButton affirmPromotionButton = new AffirmPromotionButton(this);
-//        affirmPromotionButton.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
-//        affirmPromotionButton.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
-//
-//        ViewGroup viewGroup = getWindow().getDecorView().findViewById(android.R.id.content);
-//        viewGroup.addView(affirmPromotionButton);
-
-        Affirm.configureWithAmount(affirmPromotionButton, null, PRICE, true);
-
+        // Option2 - Initialize by new
+        AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
+        affirmPromotionButton2.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
+        affirmPromotionButton2.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
+        ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
+        Affirm.configureWithAmount(affirmPromotionButton2, null, 1100, true);
     }
 
     private AffirmTrack trackModel() {

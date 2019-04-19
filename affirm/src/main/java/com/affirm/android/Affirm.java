@@ -20,7 +20,9 @@ import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
+import static com.affirm.android.AffirmConstants.PRODUCTION_JS_URL;
 import static com.affirm.android.AffirmConstants.PRODUCTION_URL;
+import static com.affirm.android.AffirmConstants.SANDBOX_JS_URL;
 import static com.affirm.android.AffirmConstants.SANDBOX_URL;
 import static com.affirm.android.AffirmConstants.TRACKER_URL;
 import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
@@ -64,14 +66,16 @@ public final class Affirm {
     }
 
     public enum Environment {
-        SANDBOX(SANDBOX_URL, TRACKER_URL),
-        PRODUCTION(PRODUCTION_URL, TRACKER_URL);
+        SANDBOX(SANDBOX_URL, SANDBOX_JS_URL, TRACKER_URL),
+        PRODUCTION(PRODUCTION_URL, PRODUCTION_JS_URL, TRACKER_URL);
 
         final String baseUrl;
         final String trackerBaseUrl;
+        final String jsUrl;
 
-        Environment(String baseUrl, String trackerBaseUrl) {
+        Environment(String baseUrl, String jsUrl, String trackerBaseUrl) {
             this.baseUrl = baseUrl;
+            this.jsUrl = jsUrl;
             this.trackerBaseUrl = trackerBaseUrl;
         }
 

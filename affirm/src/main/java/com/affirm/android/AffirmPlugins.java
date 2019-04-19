@@ -94,6 +94,10 @@ class AffirmPlugins {
         return mConfiguration.environment.baseUrl;
     }
 
+    String baseJsUrl() {
+        return mConfiguration.environment.jsUrl;
+    }
+
     String trackerBaseUrl() {
         return mConfiguration.environment.trackerBaseUrl;
     }

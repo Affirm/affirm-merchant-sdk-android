@@ -42,20 +42,20 @@ public class AffirmTrackView extends FrameLayout
         void onFailed(AffirmTrackView affirmTrackView, String reason);
     }
 
-    private AffirmWebView mWebView;
+    private AffirmWebView webView;
 
-    private AffirmTrack mAffirmTrack;
-    private AffirmTrackCallback mAffirmTrackCallback;
+    private AffirmTrack affirmTrack;
+    private AffirmTrackCallback affirmTrackCallback;
 
     private static final int DELAY_FINISH = 10 * 1000;
-    private Handler mHandler = new Handler();
+    private Handler handler = new Handler();
 
     public AffirmTrackView(@NonNull Context context, @NonNull AffirmTrack affirmTrack,
                            @NonNull AffirmTrackCallback affirmTrackCallback) {
         super(context, null, 0);
 
-        this.mAffirmTrack = affirmTrack;
-        this.mAffirmTrackCallback = affirmTrackCallback;
+        this.affirmTrack = affirmTrack;
+        this.affirmTrackCallback = affirmTrackCallback;
 
         setVisibility(View.GONE);
 
@@ -63,7 +63,7 @@ public class AffirmTrackView extends FrameLayout
     }
 
     private void initViews(Context context) {
-        addView(mWebView = new AffirmWebView(context.getApplicationContext(), null));
+        addView(webView = new AffirmWebView(context.getApplicationContext(), null));
     }
 
     @Override
@@ -72,22 +72,22 @@ public class AffirmTrackView extends FrameLayout
         AffirmLog.v("AffirmTrackView attached to window");
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager.getInstance().setAcceptThirdPartyCookies(mWebView, true);
+            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
         } else {
             CookieManager.getInstance().setAcceptCookie(true);
         }
         AffirmUtils.debuggableWebView(getContext());
-        mWebView.setWebViewClient(new TrackWebViewClient(this));
-        mWebView.setWebChromeClient(new AffirmWebChromeClient(this));
+        webView.setWebViewClient(new TrackWebViewClient(this));
+        webView.setWebChromeClient(new AffirmWebChromeClient(this));
 
         final String html = initialHtml();
-        mWebView.loadDataWithBaseURL(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(), html,
+        webView.loadDataWithBaseURL(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(), html,
                 TEXT_HTML, UTF_8, null);
         // Since there is no callback, the track view will be removed after 10 seconds timeout.
-        mHandler.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mAffirmTrackCallback.onSuccess(AffirmTrackView.this);
+                affirmTrackCallback.onSuccess(AffirmTrackView.this);
             }
         }, DELAY_FINISH);
     }
@@ -115,13 +115,13 @@ public class AffirmTrackView extends FrameLayout
     private JsonObject buildOrderObject() {
         final JsonParser jsonParser = new JsonParser();
         return jsonParser.parse(AffirmPlugins.get().gson()
-                .toJson(mAffirmTrack.affirmTrackOrder())).getAsJsonObject();
+                .toJson(affirmTrack.affirmTrackOrder())).getAsJsonObject();
     }
 
     private JsonArray buildProductObject() {
         final JsonParser jsonParser = new JsonParser();
         return jsonParser.parse(AffirmPlugins.get().gson()
-                .toJson(mAffirmTrack.affirmTrackProducts())).getAsJsonArray();
+                .toJson(affirmTrack.affirmTrackProducts())).getAsJsonArray();
     }
 
     @Override
@@ -134,19 +134,19 @@ public class AffirmTrackView extends FrameLayout
             ViewGroup container =
                     ((Activity) context).getWindow()
                             .getDecorView().findViewById(android.R.id.content);
-            container.removeView(mWebView);
+            container.removeView(webView);
         }
-        mWebView.removeAllViews();
-        mWebView.destroyDrawingCache();
-        mWebView.clearHistory();
-        mWebView.destroy();
-        mWebView = null;
-        mHandler.removeCallbacksAndMessages(null);
+        webView.removeAllViews();
+        webView.destroyDrawingCache();
+        webView.clearHistory();
+        webView.destroy();
+        webView = null;
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        mAffirmTrackCallback.onFailed(this, error.toString());
+        affirmTrackCallback.onFailed(this, error.toString());
     }
 
     @Override

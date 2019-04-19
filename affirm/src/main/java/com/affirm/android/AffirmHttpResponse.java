@@ -1,36 +1,36 @@
 package com.affirm.android;
 
 final class AffirmHttpResponse {
-    private final int mStatusCode;
-    private final String mContent;
-    private final long mTotalSize;
-    private final String mContentType;
+    private final int statusCode;
+    private final String content;
+    private final long totalSize;
+    private final String contentType;
 
     private AffirmHttpResponse(Builder builder) {
-        mStatusCode = builder.mStatusCode;
-        mContent = builder.mContent;
-        mTotalSize = builder.mTotalSize;
-        mContentType = builder.mContentType;
+        statusCode = builder.mStatusCode;
+        content = builder.mContent;
+        totalSize = builder.mTotalSize;
+        contentType = builder.mContentType;
     }
 
     boolean isSuccessful() {
-        return mStatusCode >= 200 && mStatusCode < 300;
+        return statusCode >= 200 && statusCode < 300;
     }
 
     int getStatusCode() {
-        return mStatusCode;
+        return statusCode;
     }
 
     String getContent() {
-        return mContent;
+        return content;
     }
 
     long getTotalSize() {
-        return mTotalSize;
+        return totalSize;
     }
 
     String getContentType() {
-        return mContentType;
+        return contentType;
     }
 
     static final class Builder {

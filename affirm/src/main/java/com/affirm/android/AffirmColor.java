@@ -7,16 +7,16 @@ public enum AffirmColor {
     AFFIRM_COLOR_TYPE_BLACK(1),
     AFFIRM_COLOR_TYPE_WHITE(2);
 
-    private int mOrdinal;
+    private int ordinal;
 
     AffirmColor(int ordinal) {
-        mOrdinal = ordinal;
+        this.ordinal = ordinal;
     }
 
     protected static AffirmColor getAffirmColor(int ordinal) {
         AffirmColor[] types = values();
         for (AffirmColor type : types) {
-            if (type.mOrdinal == ordinal) {
+            if (type.ordinal == ordinal) {
                 return type;
             }
         }
@@ -24,7 +24,7 @@ public enum AffirmColor {
     }
 
     public int getOrdinal() {
-        return mOrdinal;
+        return ordinal;
     }
 
     @ColorRes

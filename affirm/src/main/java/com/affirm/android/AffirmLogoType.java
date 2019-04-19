@@ -9,16 +9,16 @@ public enum AffirmLogoType {
     AFFIRM_DISPLAY_TYPE_SYMBOL(2),
     AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW(3);
 
-    private int mOrdinal;
+    private int ordinal;
 
     AffirmLogoType(int ordinal) {
-        mOrdinal = ordinal;
+        this.ordinal = ordinal;
     }
 
     protected static AffirmLogoType getAffirmLogoType(int ordinal) {
         final AffirmLogoType[] types = values();
         for (AffirmLogoType type : types) {
-            if (type.mOrdinal == ordinal) {
+            if (type.ordinal == ordinal) {
                 return type;
             }
         }
@@ -26,7 +26,7 @@ public enum AffirmLogoType {
     }
 
     int getOrdinal() {
-        return mOrdinal;
+        return ordinal;
     }
 
     protected @DrawableRes

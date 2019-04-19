@@ -8,17 +8,17 @@ import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_UR
 
 final class ModalWebViewClient extends AffirmWebViewClient {
 
-    private final Callbacks mCallbacks;
+    private final Callbacks callbacks;
 
     ModalWebViewClient(@NonNull Callbacks callbacks) {
         super(callbacks);
-        mCallbacks = callbacks;
+        this.callbacks = callbacks;
     }
 
     @Override
     boolean hasCallbackUrl(WebView view, String url) {
         if (url.contains(AFFIRM_CHECKOUT_CANCELLATION_URL)) {
-            mCallbacks.onWebViewCancellation();
+            callbacks.onWebViewCancellation();
             return true;
         }
         return false;

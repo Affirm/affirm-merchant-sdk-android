@@ -7,6 +7,8 @@ import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.AffirmError;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,14 +30,14 @@ import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 
 final class AffirmHttpClient {
 
-    private OkHttpClient mOkHttpClient;
+    private OkHttpClient okHttpClient;
 
     private AffirmHttpClient(@Nullable OkHttpClient.Builder builder) {
         if (builder == null) {
             builder = new OkHttpClient.Builder();
         }
 
-        mOkHttpClient = builder.build();
+        okHttpClient = builder.build();
     }
 
     static AffirmHttpClient createClient(@Nullable OkHttpClient.Builder builder) {
@@ -50,7 +52,7 @@ final class AffirmHttpClient {
     AffirmHttpResponse execute(final AffirmHttpRequest request, boolean sendTrackEvent)
             throws APIException, PermissionException, InvalidRequestException, ConnectionException {
         Request okHttpRequest = getRequest(request);
-        Call call = mOkHttpClient.newCall(okHttpRequest);
+        Call call = okHttpClient.newCall(okHttpRequest);
         try {
             Response response = call.execute();
 
@@ -64,12 +66,12 @@ final class AffirmHttpClient {
             String requestId = headers.get(X_AFFIRM_REQUEST_ID);
             if (response.code() < 200 || response.code() >= 300) {
                 ResponseBody responseBody = response.body();
-                final AffirmError affirmError = AffirmPlugins.get().gson()
-                        .fromJson(responseBody != null
-                                ? responseBody.string() : "", AffirmError.class);
-                handleAPIError(affirmError, response.code(), requestId);
+                if (responseBody != null && responseBody.contentLength() > 0) {
+                    final AffirmError affirmError = AffirmPlugins.get().gson()
+                            .fromJson(responseBody.charStream(), AffirmError.class);
+                    handleAPIError(affirmError, response.code(), requestId);
+                }
             }
-
             return getResponse(response);
 
         } catch (IOException e) {
@@ -110,13 +112,13 @@ final class AffirmHttpClient {
     }
 
     void cancelCallWithTag(String tag) {
-        for (Call call : mOkHttpClient.dispatcher().queuedCalls()) {
+        for (Call call : okHttpClient.dispatcher().queuedCalls()) {
             Object requestTag = call.request().tag();
             if (requestTag != null && requestTag.equals(tag)) {
                 call.cancel();
             }
         }
-        for (Call call : mOkHttpClient.dispatcher().runningCalls()) {
+        for (Call call : okHttpClient.dispatcher().runningCalls()) {
             Object requestTag = call.request().tag();
             if (requestTag != null && requestTag.equals(tag)) {
                 call.cancel();
@@ -207,7 +209,7 @@ final class AffirmHttpClient {
 
         AffirmOkHttpRequestBody(AffirmHttpBody body) {
             this.body = body;
-            this.content = body.getContent().getBytes(Util.UTF_8);
+            this.content = body.getContent().getBytes(StandardCharsets.UTF_8);
             this.offset = 0;
             this.byteCount = content.length;
         }

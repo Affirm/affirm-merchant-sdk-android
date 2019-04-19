@@ -128,5 +128,5 @@ Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
   - Added custom exceptions, `APIException`, `ConnectionException`, `InvalidRequestException`, `PermissionException` to distinguish between different error types.
 ### Activity indicator
   - Activity indicator that is automatically added/dismissed to denote loading state when presenting checkout or prequal
-### SDK requirement lowered, now is 14
+### SDK requirement lowered, now is 21
 ### Added Kotlin example

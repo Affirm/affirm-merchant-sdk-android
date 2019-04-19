@@ -34,8 +34,8 @@ import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 
 public class ModalActivity extends AffirmActivity implements ModalWebViewClient.Callbacks {
 
-    private ModalType mType;
-    private HashMap<String, String> mMap;
+    private ModalType type;
+    private HashMap<String, String> map;
 
     enum ModalType {
         PRODUCT(R.raw.affirm_modal_template, PRODUCT_WEBVIEW_FAIL),
@@ -86,11 +86,11 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
     @Override
     void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mMap = (HashMap<String, String>) savedInstanceState.getSerializable(MAP_EXTRA);
-            mType = (ModalType) savedInstanceState.getSerializable(TYPE_EXTRA);
+            map = (HashMap<String, String>) savedInstanceState.getSerializable(MAP_EXTRA);
+            type = (ModalType) savedInstanceState.getSerializable(TYPE_EXTRA);
         } else {
-            mMap = (HashMap<String, String>) getIntent().getSerializableExtra(MAP_EXTRA);
-            mType = (ModalType) getIntent().getSerializableExtra(TYPE_EXTRA);
+            map = (HashMap<String, String>) getIntent().getSerializableExtra(MAP_EXTRA);
+            type = (ModalType) getIntent().getSerializableExtra(TYPE_EXTRA);
         }
     }
 
@@ -106,20 +106,20 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt(TYPE_EXTRA, mType.templateRes);
-        outState.putSerializable(MAP_EXTRA, mMap);
+        outState.putInt(TYPE_EXTRA, type.templateRes);
+        outState.putSerializable(MAP_EXTRA, map);
     }
 
     private String initialHtml() {
         String html;
         try {
-            final InputStream ins = getResources().openRawResource(mType.templateRes);
+            final InputStream ins = getResources().openRawResource(type.templateRes);
             html = AffirmUtils.readInputStream(ins);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        return AffirmUtils.replacePlaceholders(html, mMap);
+        return AffirmUtils.replacePlaceholders(html, map);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmTracker.track(mType.failureEvent, ERROR, null);
+        AffirmTracker.track(type.failureEvent, ERROR, null);
         finish();
 
         final Intent intent = new Intent();

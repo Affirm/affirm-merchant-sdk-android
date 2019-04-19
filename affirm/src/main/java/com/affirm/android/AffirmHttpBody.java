@@ -2,19 +2,19 @@ package com.affirm.android;
 
 class AffirmHttpBody {
 
-    private final String mContentType;
-    private final String mContent;
+    private final String contentType;
+    private final String content;
 
     AffirmHttpBody(String contentType, String content) {
-        mContentType = contentType;
-        mContent = content;
+        this.contentType = contentType;
+        this.content = content;
     }
 
     String getContent() {
-        return mContent;
+        return content;
     }
 
     String getContentType() {
-        return mContentType;
+        return contentType;
     }
 }

@@ -7,13 +7,13 @@ Easily integrate Affirm SDK inside merchant Android apps.
 
 Download via Gradle:
 ```groovy
-implementation "com.affirm:affirm-android-sdk:latest.version.here"
+implementation "com.affirm:affirm-merchant-sdk-android:latest.version.here"
 ```
 or Maven:
 ```xml
 <dependency>
   <groupId>com.affirm</groupId>
-  <artifactId>affirm-android-sdk</artifactId>
+  <artifactId>affirm-merchant-sdk-android</artifactId>
   <version>latest.version.here</version>
 </dependency>
 ```
@@ -129,13 +129,18 @@ To display promotional messaging, the SDK provides the `AffirmPromotionButton` c
 ```
 or
 ```java
-AffirmPromotionButton affirmPromotionButton = new AffirmPromotionButton(this);
-AffirmPromotionButton.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
-AffirmPromotionButton.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
+// Option1 - Load via findViewById
+AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
+Affirm.configureWithAmount(affirmPromotionButton1, null, 1100, true);
 ```
-
+or
 ```java
-Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
+// Option2 - Initialize by new
+AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
+affirmPromotionButton2.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
+affirmPromotionButton2.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
+((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
+Affirm.configureWithAmount(affirmPromotionButton2, null, 1100, true);
 ```
 
 Tapping on the `AffirmPromotionButton` automatically start prequalification flow.
@@ -179,7 +184,7 @@ Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
 2. Run the `samples-java` or `samples-kotlin` within Android Studio
 
 # Upgrade (from 1.x.x to 2.0.0)
-* We recommend you to install the latest version for get better features and experience. if you are using the old sdk, you can refer to this [upgrade document](https://github.com/greycats/affirm-android-sdk-rewrite/blob/master/UPGRADE.md).
+* We recommend you to install the latest version for get better features and experience. if you are using the old sdk, you can refer to this [upgrade document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/UPGRADE.md).
 
 # Changelog
-* All notable changes to this project will be documented in [changelog document](https://github.com/greycats/affirm-android-sdk-rewrite/blob/master/CHANGELOG.md).
+* All notable changes to this project will be documented in [changelog document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/CHANGELOG.md).

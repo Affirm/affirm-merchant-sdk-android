@@ -3,6 +3,7 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.affirm.android.Affirm;
@@ -29,10 +30,14 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks,
         Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
+    private static final float PRICE = 1100f;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ((TextView) findViewById(R.id.price)).setText("$" + PRICE);
 
         findViewById(R.id.checkout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.productModalButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.showProductModal(MainActivity.this, 1100, "0Q97G0Z4Y4TLGHGB");
+                Affirm.showProductModal(MainActivity.this, PRICE, "0Q97G0Z4Y4TLGHGB");
             }
         });
 
@@ -80,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 //        ViewGroup viewGroup = getWindow().getDecorView().findViewById(android.R.id.content);
 //        viewGroup.addView(affirmPromotionButton);
 
-        Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
+        Affirm.configureWithAmount(affirmPromotionButton, null, PRICE, true);
 
     }
 
@@ -151,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .setShipping(shipping)
                 .setShippingAmount(0f)
                 .setTaxAmount(100f)
-                .setTotal(1100f)
+                .setTotal(PRICE)
                 .build();
     }
 

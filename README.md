@@ -184,7 +184,7 @@ Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
 2. Run the `samples-java` or `samples-kotlin` within Android Studio
 
 # Upgrade (from 1.x.x to 2.0.0)
-* We recommend you to install the latest version for get better features and experience. if you are using the old sdk, you can refer to this [upgrade document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/UPGRADE.md).
+* We recommend that you install the latest version to access the most up-to-date features and experience. If you are using an older version of the SDK, you can refer to this [upgrade document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/UPGRADE.md).
 
 # Changelog
 * All notable changes to this project will be documented in [changelog document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/CHANGELOG.md).

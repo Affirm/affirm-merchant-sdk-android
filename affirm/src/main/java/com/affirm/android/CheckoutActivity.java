@@ -34,6 +34,7 @@ public class CheckoutActivity extends CheckoutBaseActivity
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(new CheckoutWebViewClient(this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
+        CookiesUtil.clearCookies(this);
     }
 
     @Override

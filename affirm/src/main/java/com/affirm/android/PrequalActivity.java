@@ -45,6 +45,7 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(new PrequalWebViewClient(this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
+        CookiesUtil.clearCookies(this);
     }
 
     @Override

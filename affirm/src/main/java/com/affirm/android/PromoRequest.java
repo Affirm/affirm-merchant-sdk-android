@@ -80,7 +80,7 @@ class PromoRequest extends AffirmRequest {
         @Override
         protected void onPostExecute(@NonNull AffirmResponseWrapper<PromoResponse> result) {
             final SpannablePromoCallback callback = mCallbackRef.get();
-            if (callback != null && !isRequestCancelled) {
+            if (callback != null && !isRequestCancelled()) {
                 if (result.source != null) {
                     final boolean showPrequal =
                             !result.source.promo().promoConfig().promoStyle().equals("fast");

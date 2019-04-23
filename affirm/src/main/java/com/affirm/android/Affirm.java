@@ -3,7 +3,6 @@ package com.affirm.android;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -299,11 +298,7 @@ public final class Affirm {
             @Override
             public void onViewAttachedToWindow(final View v) {
                 Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || activity.isFinishing()) {
-                    return;
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                        && activity.isDestroyed()) {
+                if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
                     return;
                 }
                 LifeListenerFragment fragment = getLifeListenerFragment(activity);
@@ -319,11 +314,7 @@ public final class Affirm {
             public void onViewDetachedFromWindow(View v) {
                 promotionButton.removeOnAttachStateChangeListener(this);
                 Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || activity.isFinishing()) {
-                    return;
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                        && activity.isDestroyed()) {
+                if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
                     return;
                 }
                 LifeListenerFragment fragment = getLifeListenerFragment(activity);
@@ -331,21 +322,18 @@ public final class Affirm {
             }
         });
 
-        final View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || TextUtils.isEmpty(promotionButton.getText())) {
-                    return;
-                }
-                boolean showPrequal = (boolean) v.getTag();
-                if (showPrequal) {
-                    PrequalActivity.startActivity(activity,
-                            PREQUAL_REQUEST, amount, promoId);
-                } else {
-                    ModalActivity.startActivity(activity,
-                            PREQUAL_REQUEST, amount, PRODUCT, null);
-                }
+        final View.OnClickListener onClickListener = v -> {
+            Activity activity = AffirmUtils.getActivityFromView(v);
+            if (activity == null || TextUtils.isEmpty(promotionButton.getText())) {
+                return;
+            }
+            boolean showPrequal = (boolean) v.getTag();
+            if (showPrequal) {
+                PrequalActivity.startActivity(activity,
+                        PREQUAL_REQUEST, amount, promoId);
+            } else {
+                ModalActivity.startActivity(activity,
+                        PREQUAL_REQUEST, amount, PRODUCT, null);
             }
         };
         promotionButton.setOnClickListener(onClickListener);

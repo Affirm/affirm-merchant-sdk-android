@@ -85,7 +85,7 @@ class CheckoutRequest extends AffirmRequest {
         @Override
         protected void onPostExecute(@NonNull AffirmResponseWrapper<CheckoutResponse> result) {
             final InnerCheckoutCallback checkoutCallback = mCallbackRef.get();
-            if (checkoutCallback != null && !isRequestCancelled) {
+            if (checkoutCallback != null && !isRequestCancelled()) {
                 if (result.source != null) {
                     checkoutCallback.onSuccess(result.source);
                 } else if (result.error != null) {

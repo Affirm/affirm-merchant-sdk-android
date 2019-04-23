@@ -2,7 +2,6 @@ package com.affirm.android;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Message;
@@ -49,16 +48,8 @@ class AffirmWebChromeClient extends WebChromeClient {
     public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
         new AlertDialog.Builder(view.getContext()).setTitle(R.string.affirm)
                 .setMessage(message)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.confirm();
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        result.cancel();
-                    }
-                })
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> result.confirm())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> result.cancel())
                 .create()
                 .show();
         return true;

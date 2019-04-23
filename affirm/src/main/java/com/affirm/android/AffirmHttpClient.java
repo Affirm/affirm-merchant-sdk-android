@@ -7,7 +7,6 @@ import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.AffirmError;
 
 import java.io.IOException;
-//import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.NonNull;
@@ -20,7 +19,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-//import okhttp3.internal.Util;
 import okio.BufferedSink;
 
 import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;

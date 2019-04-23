@@ -15,9 +15,9 @@ abstract class AffirmRequest<T> {
 
     private AsyncTask<Void, Void, T> task;
 
-    static boolean isRequestCancelled = false;
+    private static boolean isRequestCancelled = false;
 
-    private final RequestCreate mRequestCreate = new RequestCreate() {
+    private final RequestCreate requestCreate = new RequestCreate() {
 
         @Override
         public void create() {
@@ -37,15 +37,19 @@ abstract class AffirmRequest<T> {
 
     };
 
-    public static void setRequestCancelled(boolean value) {
-        isRequestCancelled = value;
+    static boolean isRequestCancelled() {
+        return isRequestCancelled;
+    }
+
+    private static void setRequestCancelled(boolean isRequestCancelled) {
+        AffirmRequest.isRequestCancelled = isRequestCancelled;
     }
 
     void create() {
-        mRequestCreate.create();
+        requestCreate.create();
     }
 
     void cancel() {
-        mRequestCreate.cancel();
+        requestCreate.cancel();
     }
 }

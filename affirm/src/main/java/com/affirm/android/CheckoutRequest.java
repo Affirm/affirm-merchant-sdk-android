@@ -45,6 +45,13 @@ class CheckoutRequest extends AffirmRequest {
         return new CheckoutTask(checkout, useVCN, callback);
     }
 
+    @Override
+    void cancelTask() {
+        if (task != null) {
+            ((CheckoutTask) task).cancelTask();
+        }
+    }
+
     private static class CheckoutTask extends
             AsyncTask<Void, Void, AffirmResponseWrapper<CheckoutResponse>> {
         @NonNull
@@ -59,6 +66,10 @@ class CheckoutRequest extends AffirmRequest {
             mCheckout = checkout;
             mUseVcn = useVCN;
             mCallbackRef = new WeakReference<>(callback);
+        }
+
+        void cancelTask() {
+            mCallbackRef.clear();
         }
 
         @Override
@@ -85,7 +96,7 @@ class CheckoutRequest extends AffirmRequest {
         @Override
         protected void onPostExecute(@NonNull AffirmResponseWrapper<CheckoutResponse> result) {
             final InnerCheckoutCallback checkoutCallback = mCallbackRef.get();
-            if (checkoutCallback != null && !isRequestCancelled()) {
+            if (checkoutCallback != null) {
                 if (result.source != null) {
                     checkoutCallback.onSuccess(result.source);
                 } else if (result.error != null) {

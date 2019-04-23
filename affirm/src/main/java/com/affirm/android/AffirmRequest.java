@@ -13,15 +13,15 @@ abstract class AffirmRequest<T> {
 
     abstract AsyncTask<Void, Void, T> createTask();
 
-    private AsyncTask<Void, Void, T> task;
+    void cancelTask() {
+    }
 
-    private static boolean isRequestCancelled = false;
+    AsyncTask<Void, Void, T> task;
 
     private final RequestCreate requestCreate = new RequestCreate() {
 
         @Override
         public void create() {
-            setRequestCancelled(false);
             task = createTask();
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -32,18 +32,9 @@ abstract class AffirmRequest<T> {
                 task.cancel(true);
                 task = null;
             }
-            setRequestCancelled(true);
+            cancelTask();
         }
-
     };
-
-    static boolean isRequestCancelled() {
-        return isRequestCancelled;
-    }
-
-    private static void setRequestCancelled(boolean isRequestCancelled) {
-        AffirmRequest.isRequestCancelled = isRequestCancelled;
-    }
 
     void create() {
         requestCreate.create();

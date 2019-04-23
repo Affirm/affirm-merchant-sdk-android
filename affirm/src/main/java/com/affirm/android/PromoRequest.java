@@ -41,6 +41,13 @@ class PromoRequest extends AffirmRequest {
         return new PromoTask(promoId, dollarAmount, showCta, callback);
     }
 
+    @Override
+    void cancelTask() {
+        if (task != null) {
+            ((PromoTask) task).cancelTask();
+        }
+    }
+
     private static class PromoTask extends
             AsyncTask<Void, Void, AffirmResponseWrapper<PromoResponse>> {
         @Nullable
@@ -49,6 +56,10 @@ class PromoRequest extends AffirmRequest {
         private final boolean showCta;
         @NonNull
         private final WeakReference<SpannablePromoCallback> mCallbackRef;
+
+        void cancelTask() {
+            mCallbackRef.clear();
+        }
 
         PromoTask(@Nullable String promoId,
                   float dollarAmount,
@@ -80,7 +91,7 @@ class PromoRequest extends AffirmRequest {
         @Override
         protected void onPostExecute(@NonNull AffirmResponseWrapper<PromoResponse> result) {
             final SpannablePromoCallback callback = mCallbackRef.get();
-            if (callback != null && !isRequestCancelled()) {
+            if (callback != null) {
                 if (result.source != null) {
                     final boolean showPrequal =
                             !result.source.promo().promoConfig().promoStyle().equals("fast");

@@ -13,6 +13,8 @@ import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 
+import java.util.UUID;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -294,6 +296,8 @@ public final class Affirm {
                 affirmPromoRequest.cancel();
             }
         };
+
+        promotionButton.setTag(UUID.randomUUID());
         promotionButton.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(final View v) {
@@ -301,13 +305,10 @@ public final class Affirm {
                 if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
                     return;
                 }
-                LifeListenerFragment fragment = getLifeListenerFragment(activity);
-                fragment.addLifeListener(lifecycleListener);
 
-                // For the case that rotating screen
-                if (activity.getFragmentManager().findFragmentByTag(LIFE_FRAGMENT_TAG) != null) {
-                    affirmPromoRequest.create();
-                }
+                LifeListenerFragment fragment =
+                        getLifeListenerFragment(activity, LIFE_FRAGMENT_TAG + v.getTag());
+                fragment.addLifeListener(lifecycleListener);
             }
 
             @Override
@@ -317,7 +318,9 @@ public final class Affirm {
                 if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
                     return;
                 }
-                LifeListenerFragment fragment = getLifeListenerFragment(activity);
+
+                LifeListenerFragment fragment =
+                        getLifeListenerFragment(activity, LIFE_FRAGMENT_TAG + v.getTag());
                 fragment.removeLifeListener();
             }
         });
@@ -340,15 +343,15 @@ public final class Affirm {
     }
 
     // Add a blank fragment to handle the lifecycle of the activity
-    private static LifeListenerFragment getLifeListenerFragment(Activity activity) {
+    private static LifeListenerFragment getLifeListenerFragment(Activity activity, String tag) {
         final FragmentManager manager = activity.getFragmentManager();
         LifeListenerFragment fragment =
-                (LifeListenerFragment) manager.findFragmentByTag(LIFE_FRAGMENT_TAG);
+                (LifeListenerFragment) manager.findFragmentByTag(tag);
         if (fragment == null) {
             fragment = new LifeListenerFragment();
             manager
                     .beginTransaction()
-                    .add(fragment, LIFE_FRAGMENT_TAG)
+                    .add(fragment, tag)
                     .commitAllowingStateLoss();
         }
         return fragment;

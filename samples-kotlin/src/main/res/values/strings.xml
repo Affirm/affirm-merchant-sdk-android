@@ -5,5 +5,6 @@
     <string name="launch_site_modal">Launch Site Modal</string>
     <string name="product_site_modal">Product Site Modal</string>
     <string name="track_order_confirmed">Track Order Confirmed</string>
+    <string name="clear_cookies">Clear Cookies</string>
 
 </resources>

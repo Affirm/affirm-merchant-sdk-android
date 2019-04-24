@@ -77,6 +77,16 @@
         android:text="@string/track_order_confirmed"
         />
 
+    <Button
+        android:id="@+id/clearCookies"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/trackOrderConfirmed"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="@string/clear_cookies"
+        />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"

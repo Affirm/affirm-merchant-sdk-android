@@ -12,12 +12,12 @@ import java.util.Vector;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.HTTP_PROTOCOL;
 
-final class CookiesUtil {
+public class CookiesUtil {
 
     private CookiesUtil() {
     }
 
-    static void clearCookies(Context context) {
+    public static void clearCookies(Context context) {
         final CookieManager cookieManager = CookieManager.getInstance();
         final CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(context);
         CookiesUtil.clearCookieByUrl(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),

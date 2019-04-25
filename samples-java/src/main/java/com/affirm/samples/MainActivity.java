@@ -11,6 +11,7 @@ import com.affirm.android.Affirm;
 import com.affirm.android.AffirmColor;
 import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
+import com.affirm.android.CookiesUtil;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
@@ -75,6 +76,13 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "Track successfully", Toast.LENGTH_SHORT).show();
                 Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
+            }
+        });
+
+        findViewById(R.id.clearCookies).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CookiesUtil.clearCookies(MainActivity.this);
             }
         });
 

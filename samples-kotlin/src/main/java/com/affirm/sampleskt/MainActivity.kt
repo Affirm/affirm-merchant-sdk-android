@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
+import com.affirm.android.CookiesUtil
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
 import kotlin.collections.HashMap
-import kotlin.collections.MutableMap
 import kotlin.collections.set
 
 class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
@@ -31,6 +31,9 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         trackOrderConfirmed.setOnClickListener {
             Toast.makeText(this@MainActivity, "Track successfully", Toast.LENGTH_SHORT).show()
             Affirm.trackOrderConfirmed(this@MainActivity, trackModel())
+        }
+        clearCookies.setOnClickListener {
+            CookiesUtil.clearCookies(this@MainActivity)
         }
 
         Affirm.configureWithAmount(promo, null, PRICE, true)

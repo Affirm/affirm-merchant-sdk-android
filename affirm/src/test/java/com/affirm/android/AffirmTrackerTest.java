@@ -18,11 +18,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class AffirmTrackerTest {
-    private static AtomicInteger mLocalLogCounter;
+    private static AtomicInteger localLogCounter = new AtomicInteger();
 
     @Before
     public void init() {
-        initmLocalLogCounter();
         if (AffirmPlugins.get() == null) {
             Affirm.initialize(new Affirm.Configuration.Builder("sdf", Affirm.Environment.SANDBOX)
                     .build()
@@ -30,10 +29,9 @@ public class AffirmTrackerTest {
         }
     }
 
-    public static void initmLocalLogCounter() {
-        mLocalLogCounter = new AtomicInteger();
+    private static AtomicInteger getLocalLogCounter() {
+        return AffirmTrackerTest.localLogCounter;
     }
-
 
     @Test
     public void testTrack() {
@@ -69,7 +67,7 @@ public class AffirmTrackerTest {
                                          @NonNull AffirmTracker.TrackingLevel level) {
         final long timeStamp = System.currentTimeMillis();
         // Set the log counter and then increment the logCounter
-        int localLogCounter = mLocalLogCounter.getAndIncrement();
+        int localLogCounter = getLocalLogCounter().getAndIncrement();
         data.addProperty("local_log_counter", localLogCounter);
         data.addProperty("ts", timeStamp);
         data.addProperty("app_id", "Android SDK");

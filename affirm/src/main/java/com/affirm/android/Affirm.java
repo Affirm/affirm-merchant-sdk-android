@@ -3,7 +3,6 @@ package com.affirm.android;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +12,8 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
+
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -295,72 +296,62 @@ public final class Affirm {
                 affirmPromoRequest.cancel();
             }
         };
+
+        promotionButton.setTag(UUID.randomUUID());
         promotionButton.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(final View v) {
                 Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || activity.isFinishing()) {
+                if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
                     return;
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                        && activity.isDestroyed()) {
-                    return;
-                }
-                LifeListenerFragment fragment = getLifeListenerFragment(activity);
-                fragment.addLifeListener(lifecycleListener);
 
-                // For the case that rotating screen
-                if (activity.getFragmentManager().findFragmentByTag(LIFE_FRAGMENT_TAG) != null) {
-                    affirmPromoRequest.create();
-                }
+                LifeListenerFragment fragment =
+                        getLifeListenerFragment(activity, LIFE_FRAGMENT_TAG + v.getTag());
+                fragment.addLifeListener(lifecycleListener);
             }
 
             @Override
             public void onViewDetachedFromWindow(View v) {
                 promotionButton.removeOnAttachStateChangeListener(this);
                 Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || activity.isFinishing()) {
+                if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
                     return;
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-                        && activity.isDestroyed()) {
-                    return;
-                }
-                LifeListenerFragment fragment = getLifeListenerFragment(activity);
+
+                LifeListenerFragment fragment =
+                        getLifeListenerFragment(activity, LIFE_FRAGMENT_TAG + v.getTag());
                 fragment.removeLifeListener();
             }
         });
 
-        final View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || TextUtils.isEmpty(promotionButton.getText())) {
-                    return;
-                }
-                boolean showPrequal = (boolean) v.getTag();
-                if (showPrequal) {
-                    PrequalActivity.startActivity(activity,
-                            PREQUAL_REQUEST, amount, promoId);
-                } else {
-                    ModalActivity.startActivity(activity,
-                            PREQUAL_REQUEST, amount, PRODUCT, null);
-                }
+        final View.OnClickListener onClickListener = v -> {
+            Activity activity = AffirmUtils.getActivityFromView(v);
+            if (activity == null || TextUtils.isEmpty(promotionButton.getText())) {
+                return;
+            }
+            boolean showPrequal = (boolean) v.getTag();
+            if (showPrequal) {
+                PrequalActivity.startActivity(activity,
+                        PREQUAL_REQUEST, amount, promoId);
+            } else {
+                ModalActivity.startActivity(activity,
+                        PREQUAL_REQUEST, amount, PRODUCT, null);
             }
         };
         promotionButton.setOnClickListener(onClickListener);
     }
 
     // Add a blank fragment to handle the lifecycle of the activity
-    private static LifeListenerFragment getLifeListenerFragment(Activity activity) {
+    private static LifeListenerFragment getLifeListenerFragment(Activity activity, String tag) {
         final FragmentManager manager = activity.getFragmentManager();
         LifeListenerFragment fragment =
-                (LifeListenerFragment) manager.findFragmentByTag(LIFE_FRAGMENT_TAG);
+                (LifeListenerFragment) manager.findFragmentByTag(tag);
         if (fragment == null) {
             fragment = new LifeListenerFragment();
             manager
                     .beginTransaction()
-                    .add(fragment, LIFE_FRAGMENT_TAG)
+                    .add(fragment, tag)
                     .commitAllowingStateLoss();
         }
         return fragment;

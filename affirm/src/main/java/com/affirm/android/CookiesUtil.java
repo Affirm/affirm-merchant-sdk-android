@@ -12,7 +12,7 @@ import java.util.Vector;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.HTTP_PROTOCOL;
 
-public class CookiesUtil {
+public final class CookiesUtil {
 
     private CookiesUtil() {
     }

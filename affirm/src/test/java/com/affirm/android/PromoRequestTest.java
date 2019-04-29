@@ -38,7 +38,7 @@ public class PromoRequestTest {
         };
 
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(null, 1100, false, callback);
+                new PromoRequest(null, null, 1100, false, callback);
         affirmPromoRequest.create();
     }
 

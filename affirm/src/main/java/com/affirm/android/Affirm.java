@@ -12,6 +12,7 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
+import com.affirm.android.model.PromoPageType;
 
 import java.util.UUID;
 
@@ -268,6 +269,24 @@ public final class Affirm {
                                            @Nullable final String promoId,
                                            final float amount,
                                            final boolean showCta) {
+        configureWithAmount(promotionButton, promoId, null, amount, showCta);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param promoId         the client's modal id
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     */
+    public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
+                                           @Nullable final String promoId,
+                                           @Nullable final PromoPageType pageType,
+                                           final float amount,
+                                           final boolean showCta) {
         AffirmUtils.requireNonNull(promotionButton, "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
@@ -283,7 +302,7 @@ public final class Affirm {
         };
 
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(promoId, amount, showCta, callback);
+                new PromoRequest(promoId, pageType, amount, showCta, callback);
 
         final LifecycleListener lifecycleListener = new LifecycleListener() {
             @Override

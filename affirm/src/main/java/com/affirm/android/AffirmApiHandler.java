@@ -7,6 +7,7 @@ import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 import com.affirm.android.model.Merchant;
+import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.PromoResponse;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -38,15 +39,23 @@ final class AffirmApiHandler {
         AffirmPlugins.get().restClient().cancelCallWithTag(TAG_GET_NEW_PROMO);
     }
 
-    static PromoResponse getNewPromo(@Nullable String promoId, float dollarAmount, boolean showCta)
+    static PromoResponse getNewPromo(@Nullable String promoId,
+                                     @Nullable PromoPageType pageType,
+                                     float dollarAmount,
+                                     boolean showCta)
             throws APIException, PermissionException, InvalidRequestException, ConnectionException {
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
         int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
-        String path = String.format(Locale.getDefault(), PROMO_PATH,
-                AffirmPlugins.get().publicKey(), centAmount, showCta, promoId);
-
+        StringBuilder path = new StringBuilder(String.format(Locale.getDefault(), PROMO_PATH,
+                AffirmPlugins.get().publicKey(), centAmount, showCta));
+        if (promoId != null) {
+            path.append("&promo_external_id=").append(promoId);
+        }
+        if (pageType != null) {
+            path.append("&page_type=").append(pageType.getType());
+        }
         AffirmHttpRequest request = new AffirmHttpRequest.Builder()
-                .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + path)
+                .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + path.toString())
                 .setMethod(AffirmHttpRequest.Method.GET)
                 .setTag(TAG_GET_NEW_PROMO)
                 .build();

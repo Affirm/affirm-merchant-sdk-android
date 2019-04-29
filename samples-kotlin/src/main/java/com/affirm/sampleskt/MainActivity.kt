@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
             CookiesUtil.clearCookies(this@MainActivity)
         }
 
-        Affirm.configureWithAmount(promo, null, PRICE, true)
+        Affirm.configureWithAmount(promo, null, PromoPageType.PRODUCT, PRICE, true)
     }
 
     private fun trackModel(): AffirmTrack {

@@ -69,7 +69,7 @@ You can set an appropriate LogLevel for the SDK. Reminder: set this to `LOG_LEVE
           );
 ```
 ### Prequalify Flow
-  - Added `AffirmPromotionButton` class, you can declare it in an `xml` file or create it directly via `new`. You can then set the `promoId` and `amount` values with the `configureWithAmount` method.
+  - Added `AffirmPromotionButton` class, you can declare it in an `xml` file or create it directly via `new`. You can then set the `promoId`(optional), `pageType`(optional) and `amount` values with the `configureWithAmount` method.
 ```xml
 <com.affirm.android.AffirmPromotionButton
      android:id="@+id/promo"
@@ -90,7 +90,7 @@ AffirmPromotionButton.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO)
 ```
 
 ```java
-Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
+Affirm.configureWithAmount(affirmPromotionButton, null, PromoPageType.PRODUCT, 1100, true);
 ```
 
   - Added optional `PrequalCallbacks`, you can catch prequal `failure` through this callback.

@@ -20,6 +20,7 @@ import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
+import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.Shipping;
 
 import java.util.ArrayList;
@@ -88,14 +89,14 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         // Option1 - Load via findViewById
         AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
-        Affirm.configureWithAmount(affirmPromotionButton1, null, 1100, true);
+        Affirm.configureWithAmount(affirmPromotionButton1, null, PromoPageType.PRODUCT, 1100, true);
 
         // Option2 - Initialize by new
         AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
         affirmPromotionButton2.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
         affirmPromotionButton2.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
         ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
-        Affirm.configureWithAmount(affirmPromotionButton2, null, 1100, true);
+        Affirm.configureWithAmount(affirmPromotionButton2, null, PromoPageType.PRODUCT, 1100, true);
     }
 
     private AffirmTrack trackModel() {

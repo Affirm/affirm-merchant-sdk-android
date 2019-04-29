@@ -6,6 +6,7 @@ import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
+import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.PromoResponse;
 
 import java.lang.ref.WeakReference;
@@ -19,12 +20,18 @@ class PromoRequest extends AffirmRequest {
     private final String promoId;
     private final float dollarAmount;
     private final boolean showCta;
+    @Nullable
+    private final PromoPageType pageType;
     @NonNull
     private SpannablePromoCallback callback;
 
-    PromoRequest(@Nullable final String promoId, final float dollarAmount,
-                 final boolean showCta, @NonNull SpannablePromoCallback callback) {
+    PromoRequest(@Nullable final String promoId,
+                 @Nullable final PromoPageType pageType,
+                 final float dollarAmount,
+                 final boolean showCta,
+                 @NonNull SpannablePromoCallback callback) {
         this.promoId = promoId;
+        this.pageType = pageType;
         this.dollarAmount = dollarAmount;
         this.showCta = showCta;
         this.callback = callback;
@@ -38,7 +45,7 @@ class PromoRequest extends AffirmRequest {
 
     @Override
     AsyncTask createTask() {
-        return new PromoTask(promoId, dollarAmount, showCta, callback);
+        return new PromoTask(promoId, pageType, dollarAmount, showCta, callback);
     }
 
     @Override
@@ -54,6 +61,8 @@ class PromoRequest extends AffirmRequest {
         private final String promoId;
         private final float dollarAmount;
         private final boolean showCta;
+        @Nullable
+        private final PromoPageType pageType;
         @NonNull
         private final WeakReference<SpannablePromoCallback> mCallbackRef;
 
@@ -62,10 +71,12 @@ class PromoRequest extends AffirmRequest {
         }
 
         PromoTask(@Nullable String promoId,
+                  @Nullable PromoPageType pageType,
                   float dollarAmount,
                   boolean showCta,
                   @NonNull SpannablePromoCallback callback) {
             this.promoId = promoId;
+            this.pageType = pageType;
             this.dollarAmount = dollarAmount;
             this.showCta = showCta;
             mCallbackRef = new WeakReference<>(callback);
@@ -75,7 +86,7 @@ class PromoRequest extends AffirmRequest {
         protected AffirmResponseWrapper<PromoResponse> doInBackground(Void... params) {
             try {
                 PromoResponse promoResponse =
-                        AffirmApiHandler.getNewPromo(promoId, dollarAmount, showCta);
+                        AffirmApiHandler.getNewPromo(promoId, pageType, dollarAmount, showCta);
                 return new AffirmResponseWrapper<>(promoResponse);
             } catch (ConnectionException e) {
                 return new AffirmResponseWrapper<>(e);

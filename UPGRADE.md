@@ -32,7 +32,7 @@ These are the steps to upgrade from SDK v1 to v2
   ```
   
 - Promotional Messaging
-  - Added `AffirmPromotionButton` class, you can declare it in an `xml` file or create it directly via `new`. You can then set the `promoId` and `amount` values with the `configureWithAmount` method. 
+  - Added `AffirmPromotionButton` class, you can declare it in an `xml` file or create it directly via `new`. You can then set the `promoId`(optional), `pageType`(optional) and `amount` values with the `configureWithAmount` method. 
   
   Before
   ```java
@@ -45,7 +45,7 @@ These are the steps to upgrade from SDK v1 to v2
           runOnUiThread(new Runnable() {
             @Override public void run() {
               Toast.makeText(MainActivity.this, "As low as label : " + throwable.getMessage(),
-                  Toast.LENGTH_LONG).show();
+                  Toast.LENGTH_LONG).shsysow();
               aslowasPromo = null;
             }
           });
@@ -63,7 +63,7 @@ These are the steps to upgrade from SDK v1 to v2
   Now
   ```java
   AffirmPromotionButton affirmPromotionButton = findViewById(R.id.promo);
-  Affirm.configureWithAmount(affirmPromotionButton, null, 1100, true);
+  Affirm.configureWithAmount(affirmPromotionButton, null, PromoPageType.PRODUCT, 1100, true);
   ```
   
   - Added optional `PrequalCallbacks`, you can catch prequal `failure` through this callback.

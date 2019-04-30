@@ -187,7 +187,7 @@ Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
 1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. This step is optional. There is a step inside `affirm/build.gradle` to do this automatically.
 2. Run the `samples-java` or `samples-kotlin` within Android Studio.
 
-# Upgrade (from 1.x.x to 2.0.0)
+# Upgrade (from 1.x.x to 2.0.1)
 * If you are using an older version of the SDK, you can refer to this [upgrade document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/UPGRADE.md). We recommend that you install the latest version to access the most up-to-date features and experience. 
 
 # Changelog

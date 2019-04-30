@@ -1,6 +1,13 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+
+## Version 2.0.1 (April 29, 2019)
+-----------------------
+- Added page type
+- Added session cookie
+- Added method to remove cookies
+
 ## Version 2.0.0 (April 19, 2019)
 -----------------------
 

@@ -7,18 +7,16 @@ Affirm Android SDK allows you to offer Affirm monthly payments in your own app.
 
 Download via Gradle:
 ```groovy
-implementation "com.affirm:affirm-android-sdk:latest.version.here"
+implementation "com.affirm:affirm-android-sdk:2.0.1"
 ```
 or Maven:
 ```xml
 <dependency>
   <groupId>com.affirm</groupId>
   <artifactId>affirm-android-sdk</artifactId>
-  <version>latest.version.here</version>
+  <version>2.0.1</version>
 </dependency>
 ```
-*Replace `latest.version.here` with the latest released version above
-
 Snapshots of the development version are available in [Sonatype's `snapshots` repository](https://oss.sonatype.org/content/repositories/snapshots/).
 
 # Usage Overview

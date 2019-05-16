@@ -8,6 +8,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
@@ -28,6 +29,7 @@ public class AffirmPromotionButton extends AppCompatButton {
     private Paint paint;
     private AffirmLogoType affirmLogoType;
     private AffirmColor affirmColor;
+    private boolean htmlStyling;
 
     public AffirmPromotionButton(@NonNull Context context) {
         this(context, null);
@@ -58,6 +60,9 @@ public class AffirmPromotionButton extends AppCompatButton {
                 typedArray.getInt(R.styleable.AffirmPromotionButton_affirmColor,
                         AFFIRM_COLOR_TYPE_WHITE.getOrdinal());
 
+        htmlStyling = typedArray.getBoolean(R.styleable.AffirmPromotionButton_htmlStyling,
+                false);
+
         affirmLogoType = AffirmLogoType.getAffirmLogoType(affirmLogoTypeOrdinal);
         affirmColor = AffirmColor.getAffirmColor(affirmColorOrdinal);
 
@@ -68,14 +73,34 @@ public class AffirmPromotionButton extends AppCompatButton {
     }
 
     protected void setLabel(@NonNull String text) {
-        setText(updateSpan(text));
+        if (htmlStyling) {
+            setText(Html.fromHtml(text));
+        } else {
+            setText(updateSpan(text));
+        }
     }
 
-    public void setAffirmLogoType(AffirmLogoType affirmLogoType) {
+    public boolean isHtmlStyle() {
+        return htmlStyling;
+    }
+
+    @Deprecated
+    public void setAffirmLogoType(@NonNull AffirmLogoType affirmLogoType) {
         this.affirmLogoType = affirmLogoType;
     }
 
+    @Deprecated
     public void setAffirmColor(@NonNull AffirmColor affirmColor) {
+        this.affirmColor = affirmColor;
+    }
+
+    public void configWithHtmlStyling(boolean htmlStyling) {
+        this.htmlStyling = htmlStyling;
+    }
+
+    public void configWithLocalStyling(@NonNull AffirmColor affirmColor,
+                                       @NonNull AffirmLogoType affirmLogoType) {
+        this.affirmLogoType = affirmLogoType;
         this.affirmColor = affirmColor;
     }
 

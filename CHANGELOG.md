@@ -2,6 +2,10 @@
 All notable changes to the SDK are documented in this file.
 
 
+## Version 2.0.2 (May 16, 2019)
+-----------------------
+- Support `htmlStyling` with AffirmPromotionButton
+
 ## Version 2.0.1 (April 29, 2019)
 -----------------------
 - Added page type

@@ -107,7 +107,8 @@ class PromoRequest extends AffirmRequest {
                     final boolean showPrequal =
                             !result.source.promo().promoConfig().promoStyle().equals("fast");
                     final String promo = result.source.promo().ala();
-                    callback.onPromoWritten(promo, showPrequal);
+                    final String htmlPromo = result.source.promo().htmlAla();
+                    callback.onPromoWritten(promo, htmlPromo, showPrequal);
                 } else if (result.error != null) {
                     AffirmLog.e(result.error.toString());
                     callback.onFailure(result.error);

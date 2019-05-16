@@ -126,6 +126,7 @@ To display promotional messaging, SDK provides a `AffirmPromotionButton` class. 
      android:layout_centerHorizontal="true"
      android:layout_marginTop="20dp"
      android:textSize="16sp"
+     app:htmlStyling="false"
      app:affirmColor="AffirmColorTypeBlue"
      app:affirmLogoType="AffirmDisplayTypeLogo"/>
 ```
@@ -138,9 +139,11 @@ Affirm.configureWithAmount(affirmPromotionButton1, null, PromoPageType.PRODUCT, 
 or
 ```java
 // Option2 - Initialize by new
+// - configWithHtmlStyling will use html style from Affirm server
+// - configWithLocalStyling that you can set custom styles
 AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
-affirmPromotionButton2.setAffirmColor(AffirmColor.AFFIRM_COLOR_TYPE_BLUE);
-affirmPromotionButton2.setAffirmLogoType(AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
+affirmPromotionButton2.configWithHtmlStyling(true);
+//affirmPromotionButton2.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
 ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
 Affirm.configureWithAmount(affirmPromotionButton2, null, PromoPageType.PRODUCT, 1100, true);
 ```

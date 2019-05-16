@@ -27,7 +27,7 @@ public class PromoRequestTest {
     public void testGetNewPromo() {
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
+            public void onPromoWritten(@NonNull final String promo, @NonNull final String htmlPromo, final boolean showPrequal) {
                 assertNotNull(promo);
             }
 

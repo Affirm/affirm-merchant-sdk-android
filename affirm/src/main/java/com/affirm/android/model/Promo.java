@@ -9,6 +9,9 @@ import com.google.gson.annotations.SerializedName;
 public abstract class Promo {
     public abstract String ala();
 
+    @SerializedName("html_ala")
+    public abstract String htmlAla();
+
     @SerializedName("config")
     public abstract PromoConfig promoConfig();
 
@@ -25,6 +28,8 @@ public abstract class Promo {
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder setAla(String value);
+
+        public abstract Builder setHtmlAla(String value);
 
         public abstract Builder setPromoConfig(PromoConfig value);
 

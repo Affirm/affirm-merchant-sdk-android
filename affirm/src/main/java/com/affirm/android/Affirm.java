@@ -261,6 +261,19 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     */
+    public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
+                                           final float amount,
+                                           final boolean showCta) {
+        configureWithAmount(promotionButton, null, null, amount, showCta);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param promotionButton AffirmPromotionButton to show the promo message
      * @param promoId         the client's modal id
      * @param amount          (Float) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
@@ -270,6 +283,22 @@ public final class Affirm {
                                            final float amount,
                                            final boolean showCta) {
         configureWithAmount(promotionButton, promoId, null, amount, showCta);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     */
+    public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
+                                           @Nullable final PromoPageType pageType,
+                                           final float amount,
+                                           final boolean showCta) {
+        configureWithAmount(promotionButton, null, pageType, amount, showCta);
     }
 
     /**
@@ -290,9 +319,10 @@ public final class Affirm {
         AffirmUtils.requireNonNull(promotionButton, "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
+            public void onPromoWritten(@NonNull final String promo,
+                                       @NonNull final String htmlPromo, final boolean showPrequal) {
                 promotionButton.setTag(showPrequal);
-                promotionButton.setLabel(promo);
+                promotionButton.setLabel(promotionButton.isHtmlStyle() ? htmlPromo : promo);
             }
 
             @Override

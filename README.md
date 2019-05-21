@@ -24,11 +24,17 @@ Snapshots of the development version are available in [Sonatype's `snapshots` re
 Before you can start the initialization of Affirm SDK, you must first set the AffirmSDK with your `public API key` from your sandbox [Merchant Dashboard](https://sandbox.affirm.com/dashboard). You must set this key as follows:
 
 ```java
-Affirm.initialize(new Affirm.Configuration.Builder("public key", Affirm.Environment.SANDBOX)
+Affirm.initialize(new Affirm.Configuration.Builder("public key")
+        .setEnvironment(Affirm.Environment.SANDBOX)
         .setName("merchant name")
         .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
+        .setCheckoutRequestCode(8001)
+        .setVcnCheckoutRequestCode(8002)
+        .setPrequalRequestCode(8003)
         .build()
 ```
+- `environment` can be set to `Affirm.Environment.SANDBOX` for test.
+- To prevent conflicts, you can set a custom affirm's request code.
 
 ## Checkout
 

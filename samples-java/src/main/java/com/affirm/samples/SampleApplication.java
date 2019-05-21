@@ -10,9 +10,13 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Affirm.initialize(new Affirm.Configuration.Builder("F6B2V0K9D5I8033Y", Affirm.Environment.SANDBOX)
+        Affirm.initialize(new Affirm.Configuration.Builder("F6B2V0K9D5I8033Y")
+                .setEnvironment(Affirm.Environment.SANDBOX)
                 .setMerchantName(null)
                 .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
+                .setCheckoutRequestCode(8001)
+                .setVcnCheckoutRequestCode(8002)
+                .setPrequalRequestCode(8003)
                 .build()
         );
     }

@@ -44,9 +44,11 @@ public final class Affirm {
     public static final int LOG_LEVEL_ERROR = Log.ERROR;
     public static final int LOG_LEVEL_NONE = Integer.MAX_VALUE;
 
-    private static final int CHECKOUT_REQUEST = 8076;
-    private static final int VCN_CHECKOUT_REQUEST = 8077;
-    private static final int PREQUAL_REQUEST = 8078;
+    // these values are set by the builder
+    private static int CHECKOUT_REQUEST;
+    private static int VCN_CHECKOUT_REQUEST;
+    private static int PREQUAL_REQUEST;
+
     static final int RESULT_ERROR = -8575;
 
     private static final String LIFE_FRAGMENT_TAG = "LifeFragmentTag";
@@ -98,20 +100,33 @@ public final class Affirm {
 
         Configuration(Builder builder) {
             this.publicKey = builder.publicKey;
-            this.environment = builder.environment;
+            this.environment = builder.environment != null ? builder.environment : Environment.PRODUCTION;
             this.merchantName = builder.merchantName;
+            CHECKOUT_REQUEST = builder.checkoutRequestCode != 0 ? builder.checkoutRequestCode : 8076;
+            VCN_CHECKOUT_REQUEST = builder.vcnCheckoutRequestCode != 0 ? builder.vcnCheckoutRequestCode : 8077;
+            PREQUAL_REQUEST = builder.prequalRequestCode != 0 ? builder.prequalRequestCode : 8078;
         }
 
         public static final class Builder {
             private final String publicKey;
-            private final Environment environment;
+            private Environment environment;
             private String merchantName;
+            private int checkoutRequestCode;
+            private int vcnCheckoutRequestCode;
+            private int prequalRequestCode;
+
+            /**
+             * @param publicKey Set the public key to be used by Affirm.
+             */
+            public Builder(@NonNull String publicKey) {
+                this.publicKey = publicKey;
+            }
 
             /**
              * @param publicKey   Set the public key to be used by Affirm.
              * @param environment Set the environment to be used by Affirm.
              */
-            public Builder(@NonNull String publicKey, @NonNull Environment environment) {
+            public Builder(@NonNull String publicKey, @Nullable Environment environment) {
                 this.publicKey = publicKey;
                 this.environment = environment;
             }
@@ -148,6 +163,50 @@ public final class Affirm {
              */
             public Builder setMerchantName(@Nullable String merchantName) {
                 this.merchantName = merchantName;
+                return this;
+            }
+
+            /**
+             * Set the environment to be used by Affirm, it's optional
+             *
+             * @param environment your environment to be used by Affirm
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setEnvironment(@NonNull Environment environment) {
+                this.environment = environment;
+                return this;
+            }
+
+            /**
+             * Set the checkout request code to be used by Affirm, it's optional
+             *
+             * @param checkoutRequestCode your checkout request code to be used by Affirm
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setCheckoutRequestCode(int checkoutRequestCode) {
+                this.checkoutRequestCode = checkoutRequestCode;
+                return this;
+            }
+
+            /**
+             * Set the vcn checkout request code to be used by Affirm, it's optional
+             *
+             * @param vcnCheckoutRequestCode your vcn checkout request code to be used by Affirm
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setVcnCheckoutRequestCode(int vcnCheckoutRequestCode) {
+                this.vcnCheckoutRequestCode = vcnCheckoutRequestCode;
+                return this;
+            }
+
+            /**
+             * Set the prequal request code to be used by Affirm, it's optional
+             *
+             * @param prequalRequestCode your prequal request code to be used by Affirm
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setPrequalRequestCode(int prequalRequestCode) {
+                this.prequalRequestCode = prequalRequestCode;
                 return this;
             }
 

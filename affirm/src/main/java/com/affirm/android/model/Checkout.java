@@ -23,6 +23,11 @@ public abstract class Checkout implements Parcelable {
         return new AutoValue_Checkout.GsonTypeAdapter(gson);
     }
 
+    // Your internal unique identifier representing the order. Maximum 500 characters. Required
+    @Nullable
+    @SerializedName("orderId")
+    public abstract String orderId();
+
     // A list of item objects.
     public abstract Map<String, Item> items();
 
@@ -61,6 +66,8 @@ public abstract class Checkout implements Parcelable {
         private Float mCheckoutTotal;
         private Float mTaxAmount;
         private Float mShippingAmount;
+
+        public abstract Builder setOrderId(String value);
 
         public abstract Builder setItems(Map<String, Item> value);
 

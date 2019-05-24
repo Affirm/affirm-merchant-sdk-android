@@ -3,7 +3,7 @@ All notable changes to the SDK are documented in this file.
 
 ## Version 2.0.2 (May 23, 2019)
 -----------------------
-- Add orderId to the checkout
+- Add the Order Id to the checkout
 - Support `htmlStyling` with AffirmPromotionButton
 - request code can be set in the builder in order to prevent conflicts
 - Add initialized constructor, only contains publicKey

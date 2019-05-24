@@ -164,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
 
         return Checkout.builder()
+                .setOrderId("55555")
                 .setItems(items)
                 .setBilling(shipping)
                 .setShipping(shipping)

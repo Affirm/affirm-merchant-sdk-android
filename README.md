@@ -43,6 +43,7 @@ Checkout creation is the process in which a customer uses Affirm to pay for a pu
 
 ```java
 final Checkout checkout = Checkout.builder()
+        .setOrderId("order id")
         .setItems(items)
         .setBilling(shipping)
         .setShipping(shipping)

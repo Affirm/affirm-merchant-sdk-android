@@ -45,9 +45,9 @@ public final class Affirm {
     public static final int LOG_LEVEL_NONE = Integer.MAX_VALUE;
 
     // these values are set by the builder
-    private static int CHECKOUT_REQUEST;
-    private static int VCN_CHECKOUT_REQUEST;
-    private static int PREQUAL_REQUEST;
+    private static int checkoutRequest;
+    private static int vcnCheckoutRequest;
+    private static int prequalRequest;
 
     static final int RESULT_ERROR = -8575;
 
@@ -100,11 +100,31 @@ public final class Affirm {
 
         Configuration(Builder builder) {
             this.publicKey = builder.publicKey;
-            this.environment = builder.environment != null ? builder.environment : Environment.PRODUCTION;
             this.merchantName = builder.merchantName;
-            CHECKOUT_REQUEST = builder.checkoutRequestCode != 0 ? builder.checkoutRequestCode : 8076;
-            VCN_CHECKOUT_REQUEST = builder.vcnCheckoutRequestCode != 0 ? builder.vcnCheckoutRequestCode : 8077;
-            PREQUAL_REQUEST = builder.prequalRequestCode != 0 ? builder.prequalRequestCode : 8078;
+
+            if (builder.environment != null) {
+                this.environment = builder.environment;
+            } else {
+                this.environment = Environment.PRODUCTION;
+            }
+
+            if (builder.checkoutRequestCode != 0) {
+                checkoutRequest = builder.checkoutRequestCode;
+            } else {
+                checkoutRequest = 8076;
+            }
+
+            if (builder.vcnCheckoutRequestCode != 0) {
+                vcnCheckoutRequest = builder.vcnCheckoutRequestCode;
+            } else {
+                vcnCheckoutRequest = 8077;
+            }
+
+            if (builder.prequalRequestCode != 0) {
+                prequalRequest = builder.prequalRequestCode;
+            } else {
+                prequalRequest = 8078;
+            }
         }
 
         public static final class Builder {
@@ -286,9 +306,9 @@ public final class Affirm {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
-            VcnCheckoutActivity.startActivity(activity, VCN_CHECKOUT_REQUEST, checkout);
+            VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout);
         } else {
-            CheckoutActivity.startActivity(activity, CHECKOUT_REQUEST, checkout);
+            CheckoutActivity.startActivity(activity, checkoutRequest, checkout);
         }
     }
 
@@ -441,10 +461,10 @@ public final class Affirm {
             boolean showPrequal = (boolean) v.getTag();
             if (showPrequal) {
                 PrequalActivity.startActivity(activity,
-                        PREQUAL_REQUEST, amount, promoId);
+                        prequalRequest, amount, promoId);
             } else {
                 ModalActivity.startActivity(activity,
-                        PREQUAL_REQUEST, amount, PRODUCT, null);
+                        prequalRequest, amount, PRODUCT, null);
             }
         };
         promotionButton.setOnClickListener(onClickListener);
@@ -474,7 +494,7 @@ public final class Affirm {
                                             @Nullable Intent data) {
         AffirmUtils.requireNonNull(callbacks, "PrequalCallbacks cannot be null");
 
-        if (requestCode == PREQUAL_REQUEST) {
+        if (requestCode == prequalRequest) {
             switch (resultCode) {
                 case RESULT_ERROR:
                     AffirmUtils.requireNonNull(data);
@@ -499,7 +519,7 @@ public final class Affirm {
                                              @Nullable Intent data) {
         AffirmUtils.requireNonNull(callbacks, "CheckoutCallbacks cannot be null");
 
-        if (requestCode == CHECKOUT_REQUEST) {
+        if (requestCode == checkoutRequest) {
             switch (resultCode) {
                 case RESULT_OK:
                     AffirmUtils.requireNonNull(data);
@@ -531,7 +551,7 @@ public final class Affirm {
                                                 @Nullable Intent data) {
         AffirmUtils.requireNonNull(callbacks, "VcnCheckoutCallbacks cannot be null");
 
-        if (requestCode == VCN_CHECKOUT_REQUEST) {
+        if (requestCode == vcnCheckoutRequest) {
             switch (resultCode) {
                 case RESULT_OK:
                     AffirmUtils.requireNonNull(data);

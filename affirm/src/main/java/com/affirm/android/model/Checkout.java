@@ -25,7 +25,7 @@ public abstract class Checkout implements Parcelable {
 
     // Your internal unique identifier representing the order. Maximum 500 characters. Required
     @Nullable
-    @SerializedName("orderId")
+    @SerializedName("order_id")
     public abstract String orderId();
 
     // A list of item objects.

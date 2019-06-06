@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         // Option1 - Load via findViewById
         AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
-        Affirm.configureWithAmount(affirmPromotionButton1, 1100, true);
+        Affirm.configureWithAmount(affirmPromotionButton1, PromoPageType.PRODUCT, 1100, true);
 
         // Option2 - Initialize by new
         AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);

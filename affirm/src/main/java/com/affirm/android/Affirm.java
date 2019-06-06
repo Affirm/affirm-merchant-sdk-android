@@ -461,7 +461,7 @@ public final class Affirm {
             boolean showPrequal = (boolean) v.getTag();
             if (showPrequal) {
                 PrequalActivity.startActivity(activity,
-                        prequalRequest, amount, promoId);
+                        prequalRequest, amount, promoId, pageType);
             } else {
                 ModalActivity.startActivity(activity,
                         prequalRequest, amount, PRODUCT, null);

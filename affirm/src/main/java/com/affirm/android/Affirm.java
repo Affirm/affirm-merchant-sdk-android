@@ -460,8 +460,9 @@ public final class Affirm {
             }
             boolean showPrequal = (boolean) v.getTag();
             if (showPrequal) {
+                String type = pageType != null ? pageType.getType() : null;
                 PrequalActivity.startActivity(activity,
-                        prequalRequest, amount, promoId);
+                        prequalRequest, amount, promoId, type);
             } else {
                 ModalActivity.startActivity(activity,
                         prequalRequest, amount, PRODUCT, null);

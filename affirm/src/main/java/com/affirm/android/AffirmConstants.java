@@ -38,6 +38,7 @@ public final class AffirmConstants {
 
     static final String AMOUNT = "AMOUNT";
     static final String PROMO_ID = "PROMO_ID";
+    static final String PAGE_TYPE = "PAGE_TYPE";
     static final String MAP_EXTRA = "MAP_EXTRA";
     static final String TYPE_EXTRA = "TYPE_EXTRA";
 

@@ -6,9 +6,13 @@ import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-final class AffirmWebView extends WebView {
+class AffirmWebView extends WebView {
     private static final String USER_AGENT_PREFIX = "Affirm-SDK:Android-"
             + BuildConfig.VERSION_NAME;
+
+    public AffirmWebView(Context context) {
+        this(context, null);
+    }
 
     @SuppressLint("SetJavaScriptEnabled")
     public AffirmWebView(Context context, AttributeSet attrs) {

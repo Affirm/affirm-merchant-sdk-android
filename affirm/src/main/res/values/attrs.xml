@@ -13,5 +13,7 @@
             <enum name="AffirmColorTypeWhite" value="2"/>
         </attr>
         <attr name="htmlStyling" format="boolean"/>
+        <attr name="affirmTextSize" format="dimension"/>
+        <attr name="affirmFont" format="string"/>
     </declare-styleable>
 </resources>

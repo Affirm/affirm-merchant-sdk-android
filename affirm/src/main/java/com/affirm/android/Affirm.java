@@ -410,7 +410,10 @@ public final class Affirm {
         };
 
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(promoId, pageType, amount, showCta, callback);
+                new PromoRequest(promoId, pageType, amount, showCta,
+                        promotionButton.getAffirmColor(),
+                        promotionButton.getAffirmLogoType(),
+                        callback);
 
         final LifecycleListener lifecycleListener = new LifecycleListener() {
             @Override

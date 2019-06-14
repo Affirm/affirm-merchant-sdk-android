@@ -7,6 +7,10 @@ public enum AffirmColor {
     AFFIRM_COLOR_TYPE_BLACK(1),
     AFFIRM_COLOR_TYPE_WHITE(2);
 
+    private static final String BLUE = "blue";
+    private static final String BLACK = "black";
+    private static final String WHITE = "white";
+
     private int ordinal;
 
     AffirmColor(int ordinal) {
@@ -36,6 +40,19 @@ public enum AffirmColor {
                 return R.color.affirm_blue;
             default:
                 return R.color.affirm_white;
+        }
+    }
+
+    protected String getColor() {
+        switch (this) {
+            case AFFIRM_COLOR_TYPE_BLUE:
+                return BLUE;
+            case AFFIRM_COLOR_TYPE_BLACK:
+                return BLACK;
+            case AFFIRM_COLOR_TYPE_WHITE:
+                return WHITE;
+            default:
+                return BLUE;
         }
     }
 }

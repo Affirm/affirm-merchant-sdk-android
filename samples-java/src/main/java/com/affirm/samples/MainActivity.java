@@ -93,10 +93,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         // Option2 - Initialize by new
         AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
-
         affirmPromotionButton2.configWithHtmlStyling(true);
-
-//        affirmPromotionButton2.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
+        affirmPromotionButton2.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
 
         ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
         Affirm.configureWithAmount(affirmPromotionButton2, 1100, true);

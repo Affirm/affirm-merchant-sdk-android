@@ -14,6 +14,7 @@ import com.google.gson.JsonParser;
 
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
@@ -42,7 +43,9 @@ final class AffirmApiHandler {
     static PromoResponse getNewPromo(@Nullable String promoId,
                                      @Nullable PromoPageType pageType,
                                      float dollarAmount,
-                                     boolean showCta)
+                                     boolean showCta,
+                                     @NonNull String logoColor,
+                                     @NonNull String logoType)
             throws APIException, PermissionException, InvalidRequestException, ConnectionException {
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
         int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
@@ -54,6 +57,7 @@ final class AffirmApiHandler {
         if (pageType != null) {
             path.append("&page_type=").append(pageType.getType());
         }
+        path.append("&logo_color=").append(logoColor).append("&logo_type=").append(logoType);
         AffirmHttpRequest request = new AffirmHttpRequest.Builder()
                 .setUrl(getProtocol() + AffirmPlugins.get().baseUrl() + path.toString())
                 .setMethod(AffirmHttpRequest.Method.GET)

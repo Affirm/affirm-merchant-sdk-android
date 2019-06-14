@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_WHITE;
-import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
+import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
+import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO;
 
 public class AffirmPromotionButton extends FrameLayout {
 
@@ -20,6 +19,9 @@ public class AffirmPromotionButton extends FrameLayout {
 
     private PromotionButton promotionButton;
     private PromotionWebView promotionWebView;
+
+    private AffirmLogoType affirmLogoType;
+    private AffirmColor affirmColor;
 
     public AffirmPromotionButton(@NonNull Context context) {
         this(context, null);
@@ -44,11 +46,11 @@ public class AffirmPromotionButton extends FrameLayout {
 
         int affirmLogoTypeOrdinal =
                 typedArray.getInt(R.styleable.AffirmPromotionButton_affirmLogoType,
-                        AFFIRM_DISPLAY_TYPE_TEXT.getOrdinal());
+                        AFFIRM_DISPLAY_TYPE_LOGO.getOrdinal());
 
         int affirmColorOrdinal =
                 typedArray.getInt(R.styleable.AffirmPromotionButton_affirmColor,
-                        AFFIRM_COLOR_TYPE_WHITE.getOrdinal());
+                        AFFIRM_COLOR_TYPE_BLUE.getOrdinal());
 
         float affirmTextSize =
                 typedArray.getDimensionPixelSize(R.styleable.AffirmPromotionButton_affirmTextSize,
@@ -57,33 +59,28 @@ public class AffirmPromotionButton extends FrameLayout {
         htmlStyling = typedArray.getBoolean(R.styleable.AffirmPromotionButton_htmlStyling,
                 false);
 
-        AffirmLogoType affirmLogoType = AffirmLogoType.getAffirmLogoType(affirmLogoTypeOrdinal);
-        AffirmColor affirmColor = AffirmColor.getAffirmColor(affirmColorOrdinal);
+        affirmLogoType = AffirmLogoType.getAffirmLogoType(affirmLogoTypeOrdinal);
+        affirmColor = AffirmColor.getAffirmColor(affirmColorOrdinal);
 
         typedArray.recycle();
 
         promotionButton = new PromotionButton(context);
         promotionButton.setAffirmTextSize(affirmTextSize);
-        promotionButton.setVisibility(View.GONE);
         promotionButton.setAffirmColor(affirmColor);
         promotionButton.setAffirmLogoType(affirmLogoType);
-        addView(promotionButton);
 
         promotionWebView = new PromotionWebView(context);
         promotionWebView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-        promotionWebView.setVisibility(View.GONE);
-        addView(promotionWebView);
     }
 
     protected void setLabel(@NonNull String text) {
         this.message = text;
+        removeAllViews();
         if (htmlStyling) {
-            promotionButton.setVisibility(GONE);
-            promotionWebView.setVisibility(VISIBLE);
+            addView(promotionWebView);
             promotionWebView.loadData(text);
         } else {
-            promotionButton.setVisibility(VISIBLE);
-            promotionWebView.setVisibility(GONE);
+            addView(promotionButton);
             promotionButton.setText(promotionButton.updateSpan(text));
         }
     }
@@ -94,11 +91,13 @@ public class AffirmPromotionButton extends FrameLayout {
 
     @Deprecated
     public void setAffirmLogoType(@NonNull AffirmLogoType affirmLogoType) {
+        this.affirmLogoType = affirmLogoType;
         promotionButton.setAffirmLogoType(affirmLogoType);
     }
 
     @Deprecated
     public void setAffirmColor(@NonNull AffirmColor affirmColor) {
+        this.affirmColor = affirmColor;
         promotionButton.setAffirmColor(affirmColor);
     }
 
@@ -108,8 +107,18 @@ public class AffirmPromotionButton extends FrameLayout {
 
     public void configWithLocalStyling(@NonNull AffirmColor affirmColor,
                                        @NonNull AffirmLogoType affirmLogoType) {
+        this.affirmColor = affirmColor;
+        this.affirmLogoType = affirmLogoType;
         promotionButton.setAffirmColor(affirmColor);
         promotionButton.setAffirmLogoType(affirmLogoType);
+    }
+
+    protected AffirmColor getAffirmColor() {
+        return affirmColor;
+    }
+
+    protected AffirmLogoType getAffirmLogoType() {
+        return affirmLogoType;
     }
 
     boolean isEmpty() {

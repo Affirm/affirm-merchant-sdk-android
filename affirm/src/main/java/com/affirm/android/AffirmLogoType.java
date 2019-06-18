@@ -9,6 +9,10 @@ public enum AffirmLogoType {
     AFFIRM_DISPLAY_TYPE_SYMBOL(2),
     AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW(3);
 
+    private static final String LOGO = "logo";
+    private static final String TEXT = "text";
+    private static final String SYMBOL = "symbol";
+
     private int ordinal;
 
     AffirmLogoType(int ordinal) {
@@ -40,6 +44,21 @@ public enum AffirmLogoType {
                 return R.drawable.affirm_black_hollow_circle_transparent_bg;
             default:
                 return R.drawable.affirm_black_logo_transparent_bg;
+        }
+    }
+
+    protected String getType() {
+        switch (this) {
+            case AFFIRM_DISPLAY_TYPE_LOGO:
+                return LOGO;
+            case AFFIRM_DISPLAY_TYPE_TEXT:
+                return TEXT;
+            case AFFIRM_DISPLAY_TYPE_SYMBOL:
+                return SYMBOL;
+            case AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW:
+                return SYMBOL;
+            default:
+                return LOGO;
         }
     }
 }

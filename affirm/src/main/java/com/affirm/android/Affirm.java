@@ -3,7 +3,6 @@ package com.affirm.android;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -411,7 +410,10 @@ public final class Affirm {
         };
 
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(promoId, pageType, amount, showCta, callback);
+                new PromoRequest(promoId, pageType, amount, showCta,
+                        promotionButton.getAffirmColor(),
+                        promotionButton.getAffirmLogoType(),
+                        callback);
 
         final LifecycleListener lifecycleListener = new LifecycleListener() {
             @Override
@@ -455,7 +457,7 @@ public final class Affirm {
 
         final View.OnClickListener onClickListener = v -> {
             Activity activity = AffirmUtils.getActivityFromView(v);
-            if (activity == null || TextUtils.isEmpty(promotionButton.getText())) {
+            if (activity == null || promotionButton.isEmpty()) {
                 return;
             }
             boolean showPrequal = (boolean) v.getTag();

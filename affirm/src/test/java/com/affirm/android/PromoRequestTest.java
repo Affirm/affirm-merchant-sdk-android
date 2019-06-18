@@ -38,7 +38,7 @@ public class PromoRequestTest {
         };
 
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(null, null, 1100, false, callback);
+                new PromoRequest(null, null, 1100, false, AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, callback);
         affirmPromoRequest.create();
     }
 

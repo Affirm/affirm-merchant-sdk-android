@@ -23,8 +23,8 @@
         android:layout_below="@id/price"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:textSize="16sp"
         app:htmlStyling="false"
+        app:affirmTextSize="16sp"
         app:affirmColor="AffirmColorTypeBlue"
         app:affirmLogoType="AffirmDisplayTypeLogo"/>
 

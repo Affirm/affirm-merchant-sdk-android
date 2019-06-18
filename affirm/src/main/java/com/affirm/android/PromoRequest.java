@@ -20,6 +20,10 @@ class PromoRequest extends AffirmRequest {
     private final String promoId;
     private final float dollarAmount;
     private final boolean showCta;
+    @NonNull
+    private final AffirmColor affirmColor;
+    @NonNull
+    private final AffirmLogoType affirmLogoType;
     @Nullable
     private final PromoPageType pageType;
     @NonNull
@@ -29,11 +33,15 @@ class PromoRequest extends AffirmRequest {
                  @Nullable final PromoPageType pageType,
                  final float dollarAmount,
                  final boolean showCta,
+                 @NonNull final AffirmColor affirmColor,
+                 @NonNull final AffirmLogoType affirmLogoType,
                  @NonNull SpannablePromoCallback callback) {
         this.promoId = promoId;
         this.pageType = pageType;
         this.dollarAmount = dollarAmount;
         this.showCta = showCta;
+        this.affirmColor = affirmColor;
+        this.affirmLogoType = affirmLogoType;
         this.callback = callback;
     }
 
@@ -45,7 +53,8 @@ class PromoRequest extends AffirmRequest {
 
     @Override
     AsyncTask createTask() {
-        return new PromoTask(promoId, pageType, dollarAmount, showCta, callback);
+        return new PromoTask(promoId, pageType, dollarAmount, showCta,
+                affirmColor, affirmLogoType, callback);
     }
 
     @Override
@@ -61,6 +70,10 @@ class PromoRequest extends AffirmRequest {
         private final String promoId;
         private final float dollarAmount;
         private final boolean showCta;
+        @NonNull
+        private final AffirmColor affirmColor;
+        @NonNull
+        private final AffirmLogoType affirmLogoType;
         @Nullable
         private final PromoPageType pageType;
         @NonNull
@@ -74,11 +87,15 @@ class PromoRequest extends AffirmRequest {
                   @Nullable PromoPageType pageType,
                   float dollarAmount,
                   boolean showCta,
+                  @NonNull AffirmColor affirmColor,
+                  @NonNull AffirmLogoType affirmLogoType,
                   @NonNull SpannablePromoCallback callback) {
             this.promoId = promoId;
             this.pageType = pageType;
             this.dollarAmount = dollarAmount;
             this.showCta = showCta;
+            this.affirmColor = affirmColor;
+            this.affirmLogoType = affirmLogoType;
             mCallbackRef = new WeakReference<>(callback);
         }
 
@@ -86,7 +103,13 @@ class PromoRequest extends AffirmRequest {
         protected AffirmResponseWrapper<PromoResponse> doInBackground(Void... params) {
             try {
                 PromoResponse promoResponse =
-                        AffirmApiHandler.getNewPromo(promoId, pageType, dollarAmount, showCta);
+                        AffirmApiHandler.getNewPromo(
+                                promoId,
+                                pageType,
+                                dollarAmount,
+                                showCta,
+                                affirmColor.getColor(),
+                                affirmLogoType.getType());
                 return new AffirmResponseWrapper<>(promoResponse);
             } catch (ConnectionException e) {
                 return new AffirmResponseWrapper<>(e);

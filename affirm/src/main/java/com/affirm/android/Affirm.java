@@ -13,8 +13,6 @@ import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.PromoPageType;
 
-import java.util.UUID;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -423,11 +421,15 @@ public final class Affirm {
 
             @Override
             public void onStop() {
+
+            }
+
+            @Override
+            public void onDestroy() {
                 affirmPromoRequest.cancel();
             }
         };
 
-        promotionButton.setTag(UUID.randomUUID());
         promotionButton.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(final View v) {
@@ -437,7 +439,7 @@ public final class Affirm {
                 }
 
                 LifeListenerFragment fragment =
-                        getLifeListenerFragment(activity, LIFE_FRAGMENT_TAG + v.getTag());
+                        getLifeListenerFragment(activity);
                 fragment.addLifeListener(lifecycleListener);
             }
 
@@ -450,8 +452,8 @@ public final class Affirm {
                 }
 
                 LifeListenerFragment fragment =
-                        getLifeListenerFragment(activity, LIFE_FRAGMENT_TAG + v.getTag());
-                fragment.removeLifeListener();
+                        getLifeListenerFragment(activity);
+                fragment.removeLifeListener(lifecycleListener);
             }
         });
 
@@ -474,16 +476,17 @@ public final class Affirm {
     }
 
     // Add a blank fragment to handle the lifecycle of the activity
-    private static LifeListenerFragment getLifeListenerFragment(Activity activity, String tag) {
+    private static LifeListenerFragment getLifeListenerFragment(Activity activity) {
         final FragmentManager manager = activity.getFragmentManager();
         LifeListenerFragment fragment =
-                (LifeListenerFragment) manager.findFragmentByTag(tag);
+                (LifeListenerFragment) manager.findFragmentByTag(LIFE_FRAGMENT_TAG);
         if (fragment == null) {
             fragment = new LifeListenerFragment();
             manager
                     .beginTransaction()
-                    .add(fragment, tag)
+                    .add(fragment, LIFE_FRAGMENT_TAG)
                     .commitAllowingStateLoss();
+            manager.executePendingTransactions();
         }
         return fragment;
     }

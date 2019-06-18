@@ -67,4 +67,5 @@ public final class AffirmConstants {
     static final String TRACK_PRODUCT_OBJECT = "TRACK_PRODUCT_OBJECT";
 
     static final String HTML_FRAGMENT = "HTML_FRAGMENT";
+    static final String REMOTE_CSS_URL = "REMOTE_CSS_URL";
 }

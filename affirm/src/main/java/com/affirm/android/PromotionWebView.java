@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import android.content.Context;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -19,6 +20,7 @@ import static com.affirm.android.AffirmConstants.HTML_FRAGMENT;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.JAVASCRIPT;
 import static com.affirm.android.AffirmConstants.JS_PATH;
+import static com.affirm.android.AffirmConstants.REMOTE_CSS_URL;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
 import static com.affirm.android.AffirmConstants.UTF_8;
 
@@ -95,17 +97,18 @@ class PromotionWebView extends AffirmWebView implements AffirmWebChromeClient.Ca
         });
     }
 
-    void loadData(String promoHtml) {
-        final String html = initialHtml(promoHtml);
+    void loadData(String promoHtml, String remoteCssUrl) {
+        final String html = initialHtml(promoHtml, remoteCssUrl);
         loadDataWithBaseURL(
                 HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
                 html, TEXT_HTML, UTF_8, null);
     }
 
-    private String initialHtml(String promoHtml) {
+    private String initialHtml(String promoHtml, String remoteCssUrl) {
         String html;
         try {
-            final InputStream ins = getResources().openRawResource(R.raw.affirm_promo);
+            final InputStream ins = getResources().openRawResource(
+                    TextUtils.isEmpty(remoteCssUrl) ? R.raw.affirm_promo : R.raw.affirm_promo_css);
             html = AffirmUtils.readInputStream(ins);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -117,6 +120,7 @@ class PromotionWebView extends AffirmWebView implements AffirmWebChromeClient.Ca
         map.put(API_KEY, AffirmPlugins.get().publicKey());
         map.put(JAVASCRIPT, fullPath);
         map.put(HTML_FRAGMENT, promoHtml);
+        map.put(REMOTE_CSS_URL, remoteCssUrl);
         return AffirmUtils.replacePlaceholders(html, map);
     }
 

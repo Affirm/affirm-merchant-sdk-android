@@ -23,6 +23,8 @@ public class AffirmPromotionButton extends FrameLayout {
     private AffirmLogoType affirmLogoType;
     private AffirmColor affirmColor;
 
+    private String remoteCssUrl;
+
     public AffirmPromotionButton(@NonNull Context context) {
         this(context, null);
     }
@@ -78,7 +80,7 @@ public class AffirmPromotionButton extends FrameLayout {
         removeAllViews();
         if (htmlStyling) {
             addView(promotionWebView);
-            promotionWebView.loadData(text);
+            promotionWebView.loadData(text, remoteCssUrl);
         } else {
             addView(promotionButton);
             promotionButton.setText(promotionButton.updateSpan(text));
@@ -102,7 +104,17 @@ public class AffirmPromotionButton extends FrameLayout {
     }
 
     public void configWithHtmlStyling(boolean htmlStyling) {
+        this.configWithHtmlStyling(htmlStyling, null);
+    }
+
+    /**
+     * When you want to display the promo message in html style, your should set htmlStyling to true
+     * @param htmlStyling Set to true if you want to use html style
+     * @param remoteCssUrl Set if you want to use custom css. If not, just pass null
+     */
+    public void configWithHtmlStyling(boolean htmlStyling, @Nullable String remoteCssUrl) {
         this.htmlStyling = htmlStyling;
+        this.remoteCssUrl = remoteCssUrl;
     }
 
     public void configWithLocalStyling(@NonNull AffirmColor affirmColor,

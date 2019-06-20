@@ -93,7 +93,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         // Option2 - Initialize by new
         AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
-        affirmPromotionButton2.configWithHtmlStyling(true);
+        // You can use local or remote css file, we suggest you can deploy the css file on the server.
+        affirmPromotionButton2.configWithHtmlStyling(true, "file:///android_asset/remote_promo.css");
         affirmPromotionButton2.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
 
         ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);

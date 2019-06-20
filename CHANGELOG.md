@@ -1,6 +1,12 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.3 (June 20, 2019)
+- Updated modal configuration
+- Custom CSS support in ALA messaging
+- ALA messaging webviews
+- ALA messaging logo and color support
+
 ## Version 2.0.2 (May 23, 2019)
 -----------------------
 - Add the Order Id to the checkout

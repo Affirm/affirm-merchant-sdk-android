@@ -144,6 +144,10 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         Toast.makeText(this, "Vcn Checkout Cancelled", Toast.LENGTH_LONG).show()
     }
 
+    override fun onAffirmVcnCheckoutCancelledReason(vcnReason: VcnReason) {
+        Toast.makeText(this, "Vcn Checkout Cancelled: $vcnReason", Toast.LENGTH_LONG).show()
+    }
+
     override fun onAffirmVcnCheckoutSuccess(cardDetails: CardDetails) {
         Toast.makeText(this, "Vcn Checkout Card: $cardDetails", Toast.LENGTH_LONG).show()
     }

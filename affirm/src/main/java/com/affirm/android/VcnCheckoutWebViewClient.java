@@ -21,7 +21,8 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     private static final String VCN_CHECKOUT_REGEX = "data=";
     private static final String ENCODING_FORMAT = "UTF-8";
 
-    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull String receiveReasonCodes, @NonNull Callbacks callbacks) {
+    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull String receiveReasonCodes,
+                             @NonNull Callbacks callbacks) {
         super(callbacks);
         this.receiveReasonCodes = receiveReasonCodes;
         this.callbacks = callbacks;
@@ -46,7 +47,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
                 final String json = URLDecoder.decode(encodedString, ENCODING_FORMAT);
                 final VcnReason vcnReason = gson.fromJson(json, VcnReason.class);
 
-                if(receiveReasonCodes == "false"){
+                if (receiveReasonCodes.equals("false")) {
                     callbacks.onWebViewCancellation();
                 } else {
                     callbacks.onWebViewCancellationReason(vcnReason);

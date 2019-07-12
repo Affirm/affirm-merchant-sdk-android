@@ -22,7 +22,7 @@ public abstract class VcnReason implements Parcelable {
 
     @AutoValue.Builder
     public abstract static class Builder {
-        public abstract VcnReason.Builder reason(String value);
+        public abstract VcnReason.Builder setReason(String value);
 
         public abstract VcnReason build();
     }

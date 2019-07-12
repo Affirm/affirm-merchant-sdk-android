@@ -209,7 +209,7 @@ public final class Affirm {
             /**
              * Set the checkout request code to be used by Affirm, it's optional
              *
-             * @param receiveReasonCodes receive reason codes from Affirm when a checkout is canceled
+             * @param receiveReasonCodes receive reason codes when a checkout is canceled
              * @return The same builder, for easy chaining.
              */
             public Builder setReceiveReasonCodes(@Nullable String receiveReasonCodes) {
@@ -326,7 +326,8 @@ public final class Affirm {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
-            VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, receiveReasonCodes);
+            VcnCheckoutActivity.startActivity(
+                    activity, vcnCheckoutRequest, checkout, receiveReasonCodes);
         } else {
             CheckoutActivity.startActivity(activity, checkoutRequest, checkout);
         }
@@ -588,7 +589,7 @@ public final class Affirm {
                             (CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
-                    if(receiveReasonCodes == "false"){
+                    if (receiveReasonCodes.equals("false")) {
 
                         callbacks.onAffirmVcnCheckoutCancelled();
                     } else {

@@ -6,6 +6,7 @@ import android.webkit.WebView;
 
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.CardDetails;
+import com.affirm.android.model.VcnReason;
 import com.google.gson.Gson;
 
 import org.junit.Before;
@@ -35,7 +36,7 @@ public class VcnCheckoutWebViewClientTest {
                 .build();
         AffirmPlugins plugins = new AffirmPlugins(configuration);
         Gson gson = plugins.gson();
-        affirmWebViewClient = new VcnCheckoutWebViewClient(gson, callbacks);
+        affirmWebViewClient = new VcnCheckoutWebViewClient(gson, "true", callbacks);
     }
 
     @Test
@@ -58,15 +59,22 @@ public class VcnCheckoutWebViewClientTest {
 
     @Test
     public void shouldOverrideUrlLoading_Cancellation() {
-        affirmWebViewClient.shouldOverrideUrlLoading(webview, "affirm://checkout/cancelled");
-        Mockito.verify(callbacks).onWebViewCancellation();
+        final String encodedData =
+                "%7B%22reason%22%3A%22canceled%22%7D";
+        affirmWebViewClient.shouldOverrideUrlLoading(webview,
+                "affirm://checkout/cancelled?data=" + encodedData);
+
+        final VcnReason expected = VcnReason.builder()
+                .setReason("canceled")
+                .build();
+        Mockito.verify(callbacks).onWebViewCancellationReason(expected);
     }
 
     @Test
     public void shouldOverrideUrlLoading_Random() {
         affirmWebViewClient.shouldOverrideUrlLoading(webview, "http://www.affirm.com/api/v1/get");
         Mockito.verify(callbacks, never()).onWebViewConfirmation(any(CardDetails.class));
-        Mockito.verify(callbacks, never()).onWebViewCancellation();
+        Mockito.verify(callbacks, never()).onWebViewCancellationReason(any(VcnReason.class));
     }
 
     @Test

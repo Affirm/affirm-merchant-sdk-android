@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
@@ -43,7 +42,8 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     private static String receiveReasonCodes;
 
     static void startActivity(@NonNull Activity activity, int requestCode,
-                              @NonNull Checkout checkout, @NonNull String configReceiveReasonCodes) {
+                              @NonNull Checkout checkout,
+                              @NonNull String configReceiveReasonCodes) {
 
         receiveReasonCodes = configReceiveReasonCodes;
         final Intent intent = new Intent(activity, VcnCheckoutActivity.class);
@@ -125,7 +125,7 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     }
 
     @Override
-    public void onWebViewCancellationReason(@NonNull VcnReason vcnReason){
+    public void onWebViewCancellationReason(@NonNull VcnReason vcnReason) {
         final Intent intent = new Intent();
         intent.putExtra(VCN_REASON, vcnReason);
         setResult(RESULT_CANCELED, intent);

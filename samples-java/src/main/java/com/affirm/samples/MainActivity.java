@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
     @Override
     public void onAffirmVcnCheckoutCancelledReason(@NonNull VcnReason vcnReason) {
-        Toast.makeText(this, "Vcn Checkout Cancelled" + vcnReason.toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Vcn Checkout Cancelled: " + vcnReason.toString(), Toast.LENGTH_LONG).show();
     }
 
     @Override

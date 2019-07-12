@@ -27,6 +27,7 @@ Before you can start the initialization of Affirm SDK, you must first set the Af
 Affirm.initialize(new Affirm.Configuration.Builder("public key")
         .setEnvironment(Affirm.Environment.SANDBOX)
         .setName("merchant name")
+        .setReceiveReasonCodes("true")
         .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
         .setCheckoutRequestCode(8001)
         .setVcnCheckoutRequestCode(8002)

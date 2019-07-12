@@ -7,6 +7,7 @@ import android.net.Uri;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.CardDetails;
+import com.affirm.android.model.VcnReason;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 
@@ -22,6 +23,7 @@ import static com.affirm.android.AffirmConstants.CANCELLED_CB_URL;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CONFIRM_CB_URL;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
+import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
 import static com.affirm.android.AffirmConstants.URL;
@@ -113,7 +115,10 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     }
 
     @Override
-    public void onWebViewCancellation() {
-        webViewCancellation();
+    public void onWebViewCancellation(@NonNull VcnReason vcnReason){
+        final Intent intent = new Intent();
+        intent.putExtra(VCN_REASON, vcnReason);
+        setResult(RESULT_CANCELED, intent);
+        finish();
     }
 }

@@ -22,6 +22,7 @@ import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.Shipping;
+import com.affirm.android.model.VcnReason;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -208,8 +209,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
     // - Affirm.VcnCheckoutCallbacks
     @Override
-    public void onAffirmVcnCheckoutCancelled() {
-        Toast.makeText(this, "Vcn Checkout Cancelled", Toast.LENGTH_LONG).show();
+    public void onAffirmVcnCheckoutCancelled(@NonNull VcnReason vcnReason) {
+        Toast.makeText(this, "Vcn Checkout Cancelled" + vcnReason.toString(), Toast.LENGTH_LONG).show();
     }
 
     @Override

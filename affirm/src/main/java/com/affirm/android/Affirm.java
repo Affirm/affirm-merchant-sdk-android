@@ -12,6 +12,7 @@ import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.PromoPageType;
+import com.affirm.android.model.VcnReason;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
+import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmConstants.PRODUCTION_JS_URL;
 import static com.affirm.android.AffirmConstants.PRODUCTION_URL;
 import static com.affirm.android.AffirmConstants.SANDBOX_JS_URL;
@@ -65,7 +67,7 @@ public final class Affirm {
     public interface VcnCheckoutCallbacks {
         void onAffirmVcnCheckoutError(@Nullable String message);
 
-        void onAffirmVcnCheckoutCancelled();
+        void onAffirmVcnCheckoutCancelled(@NonNull VcnReason vcnReason);
 
         void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails);
     }
@@ -565,7 +567,7 @@ public final class Affirm {
                             (CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
-                    callbacks.onAffirmVcnCheckoutCancelled();
+                    callbacks.onAffirmVcnCheckoutCancelled((VcnReason) data.getParcelableExtra(VCN_REASON));
                     break;
                 case RESULT_ERROR:
                     AffirmUtils.requireNonNull(data);

@@ -55,6 +55,7 @@ public final class AffirmConstants {
     static final String CHECKOUT_ERROR = "checkout_error";
     static final String CHECKOUT_EXTRA = "checkout_extra";
     static final String CREDIT_DETAILS = "credit_details";
+    static final String VCN_REASON = "vcn_reason";
 
     static final String PREQUAL_ERROR = "prequal_error";
 

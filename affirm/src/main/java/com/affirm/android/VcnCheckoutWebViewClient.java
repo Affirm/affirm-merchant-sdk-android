@@ -3,6 +3,7 @@ package com.affirm.android;
 import android.webkit.WebView;
 
 import com.affirm.android.model.CardDetails;
+import com.affirm.android.model.VcnReason;
 import com.google.gson.Gson;
 
 import java.io.UnsupportedEncodingException;
@@ -38,7 +39,14 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
             }
             return true;
         } else if (url.contains(AFFIRM_CHECKOUT_CANCELLATION_URL)) {
-            callbacks.onWebViewCancellation();
+            final String encodedString = url.split(VCN_CHECKOUT_REGEX)[1];
+            try {
+                final String json = URLDecoder.decode(encodedString, ENCODING_FORMAT);
+                final VcnReason vcnReason = gson.fromJson(json, VcnReason.class);
+                callbacks.onWebViewCancellation(vcnReason);
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
             return true;
         }
 
@@ -48,6 +56,6 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     interface Callbacks extends WebViewClientCallbacks {
         void onWebViewConfirmation(@NonNull CardDetails cardDetails);
 
-        void onWebViewCancellation();
+        void onWebViewCancellation(@NonNull VcnReason vcnReason);
     }
 }

@@ -24,6 +24,7 @@ ext {
     robolectricVersion = '4.1'
 }
 
+
 android {
     compileSdkVersion COMPILE_SDK_VERSION
     buildToolsVersion BUILD_TOOLS_VERSION

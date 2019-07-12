@@ -47,6 +47,7 @@ public final class Affirm {
     private static int checkoutRequest;
     private static int vcnCheckoutRequest;
     private static int prequalRequest;
+    private static String receiveReasonCodes;
 
     static final int RESULT_ERROR = -8575;
 
@@ -67,7 +68,9 @@ public final class Affirm {
     public interface VcnCheckoutCallbacks {
         void onAffirmVcnCheckoutError(@Nullable String message);
 
-        void onAffirmVcnCheckoutCancelled(@NonNull VcnReason vcnReason);
+        void onAffirmVcnCheckoutCancelled();
+
+        void onAffirmVcnCheckoutCancelledReason(@NonNull VcnReason vcnReason);
 
         void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails);
     }
@@ -107,6 +110,12 @@ public final class Affirm {
                 this.environment = Environment.PRODUCTION;
             }
 
+            if (builder.receiveReasonCodes != null) {
+                receiveReasonCodes = builder.receiveReasonCodes;
+            } else {
+                receiveReasonCodes = "false";
+            }
+
             if (builder.checkoutRequestCode != 0) {
                 checkoutRequest = builder.checkoutRequestCode;
             } else {
@@ -133,6 +142,7 @@ public final class Affirm {
             private int checkoutRequestCode;
             private int vcnCheckoutRequestCode;
             private int prequalRequestCode;
+            private String receiveReasonCodes;
 
             /**
              * @param publicKey Set the public key to be used by Affirm.
@@ -193,6 +203,17 @@ public final class Affirm {
              */
             public Builder setEnvironment(@NonNull Environment environment) {
                 this.environment = environment;
+                return this;
+            }
+
+            /**
+             * Set the checkout request code to be used by Affirm, it's optional
+             *
+             * @param receiveReasonCodes receive reason codes from Affirm when a checkout is canceled
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setReceiveReasonCodes(@Nullable String receiveReasonCodes) {
+                this.receiveReasonCodes = receiveReasonCodes;
                 return this;
             }
 
@@ -305,7 +326,7 @@ public final class Affirm {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
-            VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout);
+            VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, receiveReasonCodes);
         } else {
             CheckoutActivity.startActivity(activity, checkoutRequest, checkout);
         }
@@ -567,7 +588,13 @@ public final class Affirm {
                             (CardDetails) data.getParcelableExtra(CREDIT_DETAILS));
                     break;
                 case RESULT_CANCELED:
-                    callbacks.onAffirmVcnCheckoutCancelled((VcnReason) data.getParcelableExtra(VCN_REASON));
+                    if(receiveReasonCodes == "false"){
+
+                        callbacks.onAffirmVcnCheckoutCancelled();
+                    } else {
+                        callbacks.onAffirmVcnCheckoutCancelledReason(
+                                (VcnReason) data.getParcelableExtra(VCN_REASON));
+                    }
                     break;
                 case RESULT_ERROR:
                     AffirmUtils.requireNonNull(data);

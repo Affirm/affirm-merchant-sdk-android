@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.4 (July 12, 2019)
+- Add reason codes for VCN checkout cancellation
+
 ## Version 2.0.3 (June 20, 2019)
 - Updated modal configuration
 - Custom CSS support in ALA messaging

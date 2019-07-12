@@ -17,11 +17,13 @@ import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_UR
 final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     private final Callbacks callbacks;
     private final Gson gson;
+    private final String receiveReasonCodes;
     private static final String VCN_CHECKOUT_REGEX = "data=";
     private static final String ENCODING_FORMAT = "UTF-8";
 
-    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull Callbacks callbacks) {
+    VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull String receiveReasonCodes, @NonNull Callbacks callbacks) {
         super(callbacks);
+        this.receiveReasonCodes = receiveReasonCodes;
         this.callbacks = callbacks;
         this.gson = gson;
     }
@@ -43,7 +45,12 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
             try {
                 final String json = URLDecoder.decode(encodedString, ENCODING_FORMAT);
                 final VcnReason vcnReason = gson.fromJson(json, VcnReason.class);
-                callbacks.onWebViewCancellation(vcnReason);
+
+                if(receiveReasonCodes == "false"){
+                    callbacks.onWebViewCancellation();
+                } else {
+                    callbacks.onWebViewCancellationReason(vcnReason);
+                }
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
@@ -56,6 +63,8 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     interface Callbacks extends WebViewClientCallbacks {
         void onWebViewConfirmation(@NonNull CardDetails cardDetails);
 
-        void onWebViewCancellation(@NonNull VcnReason vcnReason);
+        void onWebViewCancellationReason(@NonNull VcnReason vcnReason);
+
+        void onWebViewCancellation();
     }
 }

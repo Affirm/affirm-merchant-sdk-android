@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
@@ -39,8 +40,12 @@ import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 public class VcnCheckoutActivity extends CheckoutBaseActivity
         implements VcnCheckoutWebViewClient.Callbacks {
 
+    private static String receiveReasonCodes;
+
     static void startActivity(@NonNull Activity activity, int requestCode,
-                              @NonNull Checkout checkout) {
+                              @NonNull Checkout checkout, @NonNull String configReceiveReasonCodes) {
+
+        receiveReasonCodes = configReceiveReasonCodes;
         final Intent intent = new Intent(activity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         activity.startActivityForResult(intent, requestCode);
@@ -50,7 +55,7 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     void initViews() {
         AffirmUtils.debuggableWebView(this);
         webView.setWebViewClient(
-                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), this));
+                new VcnCheckoutWebViewClient(AffirmPlugins.get().gson(), receiveReasonCodes, this));
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
     }
 
@@ -115,7 +120,12 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     }
 
     @Override
-    public void onWebViewCancellation(@NonNull VcnReason vcnReason){
+    public void onWebViewCancellation() {
+            webViewCancellation();
+    }
+
+    @Override
+    public void onWebViewCancellationReason(@NonNull VcnReason vcnReason){
         final Intent intent = new Intent();
         intent.putExtra(VCN_REASON, vcnReason);
         setResult(RESULT_CANCELED, intent);

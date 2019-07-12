@@ -13,6 +13,7 @@ public class SampleApplication extends Application {
         Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0")
                 .setEnvironment(Affirm.Environment.SANDBOX)
                 .setMerchantName(null)
+                .setReceiveReasonCodes("true")
                 .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
                 .setCheckoutRequestCode(8001)
                 .setVcnCheckoutRequestCode(8002)

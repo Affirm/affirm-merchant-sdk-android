@@ -2,13 +2,17 @@ package com.affirm.sampleskt
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
 import com.affirm.android.CookiesUtil
+import com.affirm.android.PromotionCallback
+import com.affirm.android.exception.AffirmException
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.ArrayList
+import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.set
 
@@ -35,6 +39,14 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         clearCookies.setOnClickListener {
             CookiesUtil.clearCookies(this@MainActivity)
         }
+
+        val requestData = PromoRequestData.Builder()
+                .setPromoId(null)
+                .setPageType(null)
+                .setAmount(PRICE)
+                .setShowCta(true)
+                .build()
+
 
         Affirm.configureWithAmount(promo, null, PromoPageType.PRODUCT, PRICE, true)
     }

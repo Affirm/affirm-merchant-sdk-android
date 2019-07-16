@@ -14,7 +14,7 @@ import java.lang.ref.WeakReference;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class CheckoutRequest extends AffirmRequest {
+class CheckoutRequest extends AffirmRequest<AsyncTask> {
 
     @NonNull
     private final Checkout checkout;

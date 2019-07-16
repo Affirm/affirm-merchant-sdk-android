@@ -11,27 +11,34 @@ abstract class AffirmRequest<T> {
         void cancel();
     }
 
-    abstract AsyncTask<Void, Void, T> createTask();
+    abstract T createTask();
 
     void cancelTask() {
     }
 
-    AsyncTask<Void, Void, T> task;
+    T task;
 
     private final RequestCreate requestCreate = new RequestCreate() {
 
         @Override
         public void create() {
             task = createTask();
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            if (task instanceof AsyncTask) {
+                ((AsyncTask) task).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
         }
 
         @Override
         public void cancel() {
-            if (task != null && !task.isCancelled()) {
-                task.cancel(true);
+            if (task != null) {
+                if (task instanceof AsyncTask && !((AsyncTask) task).isCancelled()) {
+                    ((AsyncTask) task).cancel(true);
+                }
+
                 task = null;
             }
+
             cancelTask();
         }
     };

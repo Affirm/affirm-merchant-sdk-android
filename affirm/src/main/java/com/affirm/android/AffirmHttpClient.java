@@ -1,5 +1,8 @@
 package com.affirm.android;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
@@ -9,9 +12,8 @@ import com.affirm.android.model.AffirmError;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -40,6 +42,10 @@ final class AffirmHttpClient {
 
     static AffirmHttpClient createClient(@Nullable OkHttpClient.Builder builder) {
         return new AffirmHttpClient(builder);
+    }
+
+    OkHttpClient getOkHttpClientt() {
+        return okHttpClient;
     }
 
     AffirmHttpResponse execute(final AffirmHttpRequest request) throws APIException,
@@ -82,7 +88,7 @@ final class AffirmHttpClient {
         }
     }
 
-    private static void handleAPIError(@NonNull AffirmError affirmError, int responseCode,
+    static void handleAPIError(@NonNull AffirmError affirmError, int responseCode,
                                        @Nullable String requestId) throws APIException,
             PermissionException, InvalidRequestException {
 
@@ -152,7 +158,7 @@ final class AffirmHttpClient {
                 .build();
     }
 
-    private Request getRequest(AffirmHttpRequest request) {
+    Request getRequest(AffirmHttpRequest request) {
         Request.Builder okHttpRequestBuilder = new Request.Builder();
         AffirmHttpRequest.Method method = request.getMethod();
         // Set method

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -88,29 +88,40 @@ final class AffirmHttpClient {
         }
     }
 
-    static void handleAPIError(@NonNull AffirmError affirmError, int responseCode,
-                                       @Nullable String requestId) throws APIException,
-            PermissionException, InvalidRequestException {
-
+    static AffirmException handleAPIError(
+            @NonNull AffirmError affirmError,
+            int responseCode,
+            @Nullable String requestId
+    ) {
         switch (responseCode) {
             case 400:
             case 404: {
-                throw new InvalidRequestException(
+                return new InvalidRequestException(
                         affirmError.message(),
                         affirmError.type(),
                         affirmError.field(),
                         requestId,
                         affirmError.status(),
                         affirmError,
-                        null);
+                        null
+                );
             }
             case 403: {
-                throw new PermissionException(affirmError.message(), requestId, responseCode,
-                        affirmError);
+                return new PermissionException(
+                        affirmError.message(),
+                        requestId,
+                        responseCode,
+                        affirmError
+                );
             }
             default: {
-                throw new APIException(affirmError.message(), requestId, responseCode, affirmError,
-                        null);
+                return new APIException(
+                        affirmError.message(),
+                        requestId,
+                        responseCode,
+                        affirmError,
+                        null
+                );
             }
         }
     }

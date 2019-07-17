@@ -37,20 +37,19 @@ class TrackerRequest implements AffirmRequest {
     @Override
     public void create() {
         AffirmPlugins plugins = AffirmPlugins.get();
-        AffirmHttpClient httpClient = plugins.restClient();
-
-        AffirmHttpRequest request = new AffirmHttpRequest.Builder()
-                .setUrl(getTrackerProtocol() + plugins.trackerBaseUrl() + TRACKER_PATH)
-                .setMethod(AffirmHttpRequest.Method.POST)
-                .setBody(new AffirmHttpBody(CONTENT_TYPE, trackingData.toString()))
-                .setTag(TAG_TRACKER)
-                .build();
 
         if (trackingCall != null) {
             trackingCall.cancel();
         }
 
-        trackingCall = httpClient.getOkHttpClientt().newCall(httpClient.getRequest(request));
+        trackingCall = plugins.restClient().getCallForRequest(
+                new AffirmHttpRequest.Builder()
+                        .setUrl(getTrackerProtocol() + plugins.trackerBaseUrl() + TRACKER_PATH)
+                        .setMethod(AffirmHttpRequest.Method.POST)
+                        .setBody(new AffirmHttpBody(CONTENT_TYPE, trackingData.toString()))
+                        .setTag(TAG_TRACKER)
+                        .build()
+        );
         trackingCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {

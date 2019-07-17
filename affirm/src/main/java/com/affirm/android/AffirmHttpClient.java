@@ -23,6 +23,8 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 
+import static com.affirm.android.AffirmConstants.HTTP;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
@@ -42,10 +44,6 @@ final class AffirmHttpClient {
 
     static AffirmHttpClient createClient(@Nullable OkHttpClient.Builder builder) {
         return new AffirmHttpClient(builder);
-    }
-
-    OkHttpClient getOkHttpClientt() {
-        return okHttpClient;
     }
 
     static AffirmException handleAPIError(
@@ -86,22 +84,31 @@ final class AffirmHttpClient {
         }
     }
 
-    void cancelCallWithTag(String tag) {
-        for (Call call : okHttpClient.dispatcher().queuedCalls()) {
-            Object requestTag = call.request().tag();
-            if (requestTag != null && requestTag.equals(tag)) {
-                call.cancel();
-            }
-        }
-        for (Call call : okHttpClient.dispatcher().runningCalls()) {
-            Object requestTag = call.request().tag();
-            if (requestTag != null && requestTag.equals(tag)) {
-                call.cancel();
-            }
-        }
+    static String getProtocol() {
+        return AffirmPlugins.get().baseUrl().contains(HTTP) ? "" : HTTPS_PROTOCOL;
     }
 
-    Request getRequest(AffirmHttpRequest request) {
+    @Nullable
+    static AffirmException createExceptionAndTrackFromResponse(
+            Request okHttpRequest,
+            Response response,
+            ResponseBody responseBody
+    ) {
+        AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(okHttpRequest, response));
+
+        if (responseBody != null && responseBody.contentLength() > 0) {
+            final AffirmError affirmError = AffirmPlugins.get().gson().fromJson(responseBody.charStream(), AffirmError.class);
+            return handleAPIError(affirmError, response.code(), response.headers().get(X_AFFIRM_REQUEST_ID));
+        }
+
+        return null;
+    }
+
+    Call getCallForRequest(AffirmHttpRequest request) {
+        return okHttpClient.newCall(getRequest(request));
+    }
+
+    private Request getRequest(AffirmHttpRequest request) {
         Request.Builder okHttpRequestBuilder = new Request.Builder();
         AffirmHttpRequest.Method method = request.getMethod();
         // Set method

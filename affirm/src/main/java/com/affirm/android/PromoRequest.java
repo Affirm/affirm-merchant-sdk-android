@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
-import com.affirm.android.model.AffirmError;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.PromoResponse;
 import com.google.gson.Gson;
@@ -20,13 +19,11 @@ import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import static com.affirm.android.AffirmConstants.PROMO_PATH;
 import static com.affirm.android.AffirmConstants.TAG_GET_NEW_PROMO;
-import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
@@ -89,20 +86,17 @@ class PromoRequest implements AffirmRequest {
 
         path.append("&logo_color=").append(affirmColor.getColor()).append("&logo_type=").append(affirmLogoType.getType());
 
-        AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
-        Request okHttpRequest = httpClient.getRequest(
-                new AffirmHttpRequest.Builder()
-                        .setUrl(AffirmApiHandler.getProtocol() + AffirmPlugins.get().baseUrl() + path.toString())
-                        .setMethod(AffirmHttpRequest.Method.GET)
-                        .setTag(TAG_GET_NEW_PROMO)
-                        .build()
-        );
-
         if (promoCall != null) {
             promoCall.cancel();
         }
 
-        promoCall = httpClient.getOkHttpClientt().newCall(okHttpRequest);
+        promoCall = AffirmPlugins.get().restClient().getCallForRequest(
+                new AffirmHttpRequest.Builder()
+                        .setUrl(AffirmHttpClient.getProtocol() + AffirmPlugins.get().baseUrl() + path.toString())
+                        .setMethod(AffirmHttpRequest.Method.GET)
+                        .setTag(TAG_GET_NEW_PROMO)
+                        .build()
+        );
         promoCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
@@ -113,26 +107,22 @@ class PromoRequest implements AffirmRequest {
                     if (responseBody != null) {
                         handleSuccessResponse(gson.fromJson(responseBody.string(), PromoResponse.class));
                     } else {
-                        handleErrorResponse(new IOException("Response was success, but body was null"));
+                        handleErrorResponse(new APIException("Response was success, but body was null", null));
                     }
                 } else {
-                    AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(okHttpRequest, response));
+                    AffirmException affirmException = AffirmHttpClient.createExceptionAndTrackFromResponse(call.request(), response, responseBody);
 
-                    if (responseBody != null && responseBody.contentLength() > 0) {
-                        AffirmError affirmError = gson.fromJson(responseBody.charStream(), AffirmError.class);
-                        String requestId = response.headers().get(X_AFFIRM_REQUEST_ID);
-
-                        AffirmException affirmException = AffirmHttpClient.handleAPIError(affirmError, response.code(), requestId);
-                        handleErrorResponse(affirmException);
-                    } else {
-                        handleErrorResponse(new IOException("Response was not successful"));
+                    if (affirmException == null) {
+                        affirmException = new APIException("Response was not successful", null);
                     }
+
+                    handleErrorResponse(affirmException);
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(okHttpRequest, null));
+                AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(call.request(), null));
                 handleErrorResponse(e);
             }
         });
@@ -153,7 +143,7 @@ class PromoRequest implements AffirmRequest {
         new Handler(Looper.getMainLooper()).post(() -> callback.onPromoWritten(promo, htmlPromo, showPrequal));
     }
 
-    private void handleErrorResponse(Throwable e) {
+    private void handleErrorResponse(Exception e) {
         AffirmLog.e(e.toString());
         new Handler(Looper.getMainLooper()).post(() -> callback.onFailure(new APIException(e.getMessage(), e)));
     }

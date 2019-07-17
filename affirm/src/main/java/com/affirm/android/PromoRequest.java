@@ -1,5 +1,8 @@
 package com.affirm.android;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -46,6 +49,8 @@ class PromoRequest extends AffirmRequest<Void> {
 
     @Override
     Void createTask() {
+        Handler handler =  new Handler(Looper.getMainLooper());
+
         AffirmApiHandler.fetchPromo(
                 promoId,
                 pageType,
@@ -61,13 +66,15 @@ class PromoRequest extends AffirmRequest<Void> {
                         final String promo = response.promo().ala();
                         final String htmlPromo = response.promo().htmlAla();
 
-                        callback.onPromoWritten(promo, htmlPromo, showPrequal);
+                       handler.post(() -> callback.onPromoWritten(promo, htmlPromo, showPrequal));
                     }
 
                     @Override
                     public void onError(@NonNull IOException e) {
                         AffirmLog.e(e.toString());
-                        callback.onFailure(new APIException(e.getMessage(), null, null, null, null));
+                        handler.post(() ->
+                                callback.onFailure(new APIException(e.getMessage(), null, null, null, null))
+                        );
                     }
                 }
         );

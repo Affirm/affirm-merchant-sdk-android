@@ -31,7 +31,7 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 
-class PromoRequest extends AffirmRequest<Call> {
+class PromoRequest implements AffirmRequest {
 
     @Nullable
     private final String promoId;
@@ -67,7 +67,7 @@ class PromoRequest extends AffirmRequest<Call> {
     }
 
     @Override
-    Call createTask() {
+    public void create() {
         int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
         StringBuilder path = new StringBuilder(
                 String.format(
@@ -87,7 +87,7 @@ class PromoRequest extends AffirmRequest<Call> {
             path.append("&page_type=").append(pageType.getType());
         }
 
-        path.append("&logo_color=").append(affirmColor).append("&logo_type=").append(affirmLogoType);
+        path.append("&logo_color=").append(affirmColor.getColor()).append("&logo_type=").append(affirmLogoType.getType());
 
         AffirmHttpClient httpClient = AffirmPlugins.get().restClient();
         Request okHttpRequest = httpClient.getRequest(
@@ -98,31 +98,35 @@ class PromoRequest extends AffirmRequest<Call> {
                         .build()
         );
 
+        if (promoCall != null) {
+            promoCall.cancel();
+        }
+
         promoCall = httpClient.getOkHttpClientt().newCall(okHttpRequest);
         promoCall.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    Gson gson = AffirmPlugins.get().gson();
-                    ResponseBody responseBody = response.body();
-                    String requestId = response.headers().get(X_AFFIRM_REQUEST_ID);
+                ResponseBody responseBody = response.body();
+                Gson gson = AffirmPlugins.get().gson();
 
-                    if (response.code() < 200 || response.code() >= 300) {
-                        if (responseBody != null && responseBody.contentLength() > 0) {
-                            AffirmError affirmError = gson.fromJson(responseBody.charStream(), AffirmError.class);
-                            AffirmException affirmException = AffirmHttpClient.handleAPIError(affirmError, response.code(), requestId);
-                            handleErrorResponse(affirmException);
-                        }
+                if (response.isSuccessful()) {
+                    if (responseBody != null) {
+                        handleSuccessResponse(gson.fromJson(responseBody.string(), PromoResponse.class));
                     } else {
-                        if (responseBody != null) {
-                            handleSuccessResponse(gson.fromJson(responseBody.string(), PromoResponse.class));
-                        } else {
-                            handleErrorResponse(new IOException("Response was success, but body was null"));
-                        }
+                        handleErrorResponse(new IOException("Response was success, but body was null"));
                     }
                 } else {
                     AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(okHttpRequest, response));
-                    handleErrorResponse(new IOException("Response was not successful"));
+
+                    if (responseBody != null && responseBody.contentLength() > 0) {
+                        AffirmError affirmError = gson.fromJson(responseBody.charStream(), AffirmError.class);
+                        String requestId = response.headers().get(X_AFFIRM_REQUEST_ID);
+
+                        AffirmException affirmException = AffirmHttpClient.handleAPIError(affirmError, response.code(), requestId);
+                        handleErrorResponse(affirmException);
+                    } else {
+                        handleErrorResponse(new IOException("Response was not successful"));
+                    }
                 }
             }
 
@@ -132,14 +136,13 @@ class PromoRequest extends AffirmRequest<Call> {
                 handleErrorResponse(e);
             }
         });
-
-        return promoCall;
     }
 
     @Override
-    void cancelTask() {
+    public void cancel() {
         if (promoCall != null) {
             promoCall.cancel();
+            promoCall = null;
         }
     }
 

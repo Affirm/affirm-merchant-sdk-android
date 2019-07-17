@@ -2,9 +2,7 @@ package com.affirm.android;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.Intent;
-import android.text.SpannableString;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,6 @@ import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.PromoPageType;
-import com.affirm.android.model.PromoRequestData;
 import com.affirm.android.model.VcnReason;
 
 import androidx.annotation.NonNull;

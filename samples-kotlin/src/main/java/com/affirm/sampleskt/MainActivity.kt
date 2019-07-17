@@ -36,14 +36,6 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
             CookiesUtil.clearCookies(this@MainActivity)
         }
 
-        val requestData = PromoRequestData.Builder()
-                .setPromoId(null)
-                .setPageType(null)
-                .setAmount(PRICE)
-                .setShowCta(true)
-                .build()
-
-
         Affirm.configureWithAmount(promo, null, PromoPageType.PRODUCT, PRICE, true)
     }
 

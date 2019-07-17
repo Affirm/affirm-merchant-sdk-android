@@ -1,9 +1,15 @@
 package com.affirm.android;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
@@ -12,6 +18,9 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+
+import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
+import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
 
 class PromotionButton extends AppCompatButton {
 

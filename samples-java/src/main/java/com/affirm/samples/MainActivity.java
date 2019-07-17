@@ -2,8 +2,6 @@ package com.affirm.samples;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -14,9 +12,6 @@ import com.affirm.android.AffirmColor;
 import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.CookiesUtil;
-import com.affirm.android.PromotionCallback;
-import com.affirm.android.SpannablePromoCallback;
-import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
@@ -26,7 +21,6 @@ import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.PromoPageType;
-import com.affirm.android.model.PromoRequestData;
 import com.affirm.android.model.Shipping;
 import com.affirm.android.model.VcnReason;
 

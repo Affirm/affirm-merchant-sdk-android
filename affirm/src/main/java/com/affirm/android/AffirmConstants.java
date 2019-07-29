@@ -69,4 +69,5 @@ public final class AffirmConstants {
 
     static final String HTML_FRAGMENT = "HTML_FRAGMENT";
     static final String REMOTE_CSS_URL = "REMOTE_CSS_URL";
+    static final String AFFIRM_FONT = "AFFIRM_FONT";
 }

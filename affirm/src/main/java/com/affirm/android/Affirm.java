@@ -594,7 +594,7 @@ public final class Affirm {
                         callbacks.onAffirmVcnCheckoutCancelled();
                     } else {
 
-                        if(data==null) {
+                        if (data == null) {
                             data = new Intent();
                             VcnReason reason = VcnReason.builder().setReason("canceled").build();
                             data.putExtra(VCN_REASON, reason);

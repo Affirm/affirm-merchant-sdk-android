@@ -14,6 +14,7 @@
         </attr>
         <attr name="htmlStyling" format="boolean"/>
         <attr name="affirmTextSize" format="dimension"/>
-        <attr name="affirmFont" format="string"/>
+        <attr name="affirmTextColor" format="color"/>
+        <attr name="affirmTextFont" format="reference"/>
     </declare-styleable>
 </resources>

@@ -24,7 +24,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         app:htmlStyling="false"
-        app:affirmTextSize="16sp"
+        app:affirmTextFont="@font/apercu_bold"
+        app:affirmTextColor="@android:color/black"
+        app:affirmTextSize="@dimen/affirm_promotion_size"
         app:affirmColor="AffirmColorTypeBlue"
         app:affirmLogoType="AffirmDisplayTypeLogo"/>
 

@@ -56,7 +56,9 @@ class TrackerRequest implements AffirmRequest {
                 if (!response.isSuccessful()) {
                     ResponseBody responseBody = response.body();
                     if (responseBody != null && responseBody.contentLength() > 0) {
-                        final AffirmError affirmError = AffirmPlugins.get().gson().fromJson(responseBody.charStream(), AffirmError.class);
+                        final AffirmError affirmError = AffirmPlugins.get()
+                                .gson()
+                                .fromJson(responseBody.charStream(), AffirmError.class);
 
                         AffirmException affirmException = AffirmHttpClient.handleAPIError(
                                 affirmError,

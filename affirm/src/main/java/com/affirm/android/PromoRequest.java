@@ -84,7 +84,10 @@ class PromoRequest implements AffirmRequest {
             path.append("&page_type=").append(pageType.getType());
         }
 
-        path.append("&logo_color=").append(affirmColor.getColor()).append("&logo_type=").append(affirmLogoType.getType());
+        path.append("&logo_color=")
+                .append(affirmColor.getColor())
+                .append("&logo_type=")
+                .append(affirmLogoType.getType());
 
         if (promoCall != null) {
             promoCall.cancel();
@@ -92,25 +95,41 @@ class PromoRequest implements AffirmRequest {
 
         promoCall = AffirmPlugins.get().restClient().getCallForRequest(
                 new AffirmHttpRequest.Builder()
-                        .setUrl(AffirmHttpClient.getProtocol() + AffirmPlugins.get().baseUrl() + path.toString())
+                        .setUrl(
+                                AffirmHttpClient.getProtocol()
+                                        + AffirmPlugins.get().baseUrl()
+                                        + path.toString()
+                        )
                         .setMethod(AffirmHttpRequest.Method.GET)
                         .setTag(TAG_GET_NEW_PROMO)
                         .build()
         );
         promoCall.enqueue(new Callback() {
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(
+                    @NotNull Call call,
+                    @NotNull Response response
+            ) throws IOException {
                 ResponseBody responseBody = response.body();
                 Gson gson = AffirmPlugins.get().gson();
 
                 if (response.isSuccessful()) {
                     if (responseBody != null) {
-                        handleSuccessResponse(gson.fromJson(responseBody.string(), PromoResponse.class));
+                        handleSuccessResponse(
+                                gson.fromJson(responseBody.string(), PromoResponse.class)
+                        );
                     } else {
-                        handleErrorResponse(new APIException("Response was success, but body was null", null));
+                        handleErrorResponse(
+                                new APIException("Response was success, but body was null", null)
+                        );
                     }
                 } else {
-                    AffirmException affirmException = AffirmHttpClient.createExceptionAndTrackFromResponse(call.request(), response, responseBody);
+                    AffirmException affirmException =
+                            AffirmHttpClient.createExceptionAndTrackFromResponse(
+                                    call.request(),
+                                    response,
+                                    responseBody
+                            );
 
                     if (affirmException == null) {
                         affirmException = new APIException("Response was not successful", null);
@@ -122,7 +141,14 @@ class PromoRequest implements AffirmRequest {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(call.request(), null));
+                AffirmTracker.track(
+                        NETWORK_ERROR,
+                        ERROR,
+                        createTrackingNetworkJsonObj(
+                                call.request(),
+                                null
+                        )
+                );
                 handleErrorResponse(e);
             }
         });
@@ -137,14 +163,22 @@ class PromoRequest implements AffirmRequest {
     }
 
     private void handleSuccessResponse(PromoResponse promoResponse) {
-        final boolean showPrequal = !promoResponse.promo().promoConfig().promoStyle().equals("fast");
+        final boolean showPrequal = !promoResponse.promo()
+                .promoConfig()
+                .promoStyle()
+                .equals("fast");
+
         final String promo = promoResponse.promo().ala();
         final String htmlPromo = promoResponse.promo().htmlAla();
-        new Handler(Looper.getMainLooper()).post(() -> callback.onPromoWritten(promo, htmlPromo, showPrequal));
+        new Handler(Looper.getMainLooper()).post(
+                () -> callback.onPromoWritten(promo, htmlPromo, showPrequal)
+        );
     }
 
     private void handleErrorResponse(Exception e) {
         AffirmLog.e(e.toString());
-        new Handler(Looper.getMainLooper()).post(() -> callback.onFailure(new APIException(e.getMessage(), e)));
+        new Handler(Looper.getMainLooper()).post(
+                () -> callback.onFailure(new APIException(e.getMessage(), e))
+        );
     }
 }

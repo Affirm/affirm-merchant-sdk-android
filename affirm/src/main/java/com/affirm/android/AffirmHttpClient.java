@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
-import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.AffirmError;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import okhttp3.Call;
-import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -94,11 +92,22 @@ final class AffirmHttpClient {
             Response response,
             ResponseBody responseBody
     ) {
-        AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(okHttpRequest, response));
+        AffirmTracker.track(
+                NETWORK_ERROR,
+                ERROR,
+                createTrackingNetworkJsonObj(okHttpRequest, response)
+        );
 
         if (responseBody != null && responseBody.contentLength() > 0) {
-            final AffirmError affirmError = AffirmPlugins.get().gson().fromJson(responseBody.charStream(), AffirmError.class);
-            return handleAPIError(affirmError, response.code(), response.headers().get(X_AFFIRM_REQUEST_ID));
+            final AffirmError affirmError = AffirmPlugins.get()
+                    .gson()
+                    .fromJson(responseBody.charStream(), AffirmError.class);
+
+            return handleAPIError(
+                    affirmError,
+                    response.code(),
+                    response.headers().get(X_AFFIRM_REQUEST_ID)
+            );
         }
 
         return null;

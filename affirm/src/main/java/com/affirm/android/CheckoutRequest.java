@@ -97,7 +97,11 @@ class CheckoutRequest implements AffirmRequest {
 
         checkoutCall = AffirmPlugins.get().restClient().getCallForRequest(
                 new AffirmHttpRequest.Builder()
-                        .setUrl(AffirmHttpClient.getProtocol() + AffirmPlugins.get().baseUrl() + CHECKOUT_PATH)
+                        .setUrl(
+                                AffirmHttpClient.getProtocol()
+                                        + AffirmPlugins.get().baseUrl()
+                                        + CHECKOUT_PATH
+                        )
                         .setMethod(AffirmHttpRequest.Method.POST)
                         .setBody(new AffirmHttpBody(CONTENT_TYPE, jsonRequest.toString()))
                         .setTag(useVCN ? TAG_VCN_CHECKOUT : TAG_CHECKOUT)
@@ -105,21 +109,34 @@ class CheckoutRequest implements AffirmRequest {
         );
         checkoutCall.enqueue(new Callback() {
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            public void onResponse(
+                    @NotNull Call call,
+                    @NotNull Response response
+            ) throws IOException {
                 ResponseBody responseBody = response.body();
 
                 if (response.isSuccessful()) {
                     if (responseBody != null) {
-                        CheckoutResponse checkoutResponse = gson.fromJson(responseBody.string(), CheckoutResponse.class);
+                        CheckoutResponse checkoutResponse = gson.fromJson(
+                                responseBody.string(),
+                                CheckoutResponse.class
+                        );
 
                         if (checkoutCallback != null) {
-                            new Handler(Looper.getMainLooper()).post(() -> checkoutCallback.onSuccess(checkoutResponse));
+                            new Handler(Looper.getMainLooper()).post(
+                                    () -> checkoutCallback.onSuccess(checkoutResponse)
+                            );
                         }
                     } else {
                         handleErrorResponse(new ConnectionException("i/o failure"));
                     }
                 } else {
-                    AffirmException affirmException = AffirmHttpClient.createExceptionAndTrackFromResponse(call.request(), response, responseBody);
+                    AffirmException affirmException =
+                            AffirmHttpClient.createExceptionAndTrackFromResponse(
+                                    call.request(),
+                                    response,
+                                    responseBody
+                            );
 
                     if (affirmException == null) {
                         affirmException = new APIException("Response was not successful", null);
@@ -131,7 +148,13 @@ class CheckoutRequest implements AffirmRequest {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                AffirmTracker.track(NETWORK_ERROR, ERROR, createTrackingNetworkJsonObj(call.request(), null));
+                AffirmTracker.track(
+                        NETWORK_ERROR, ERROR,
+                        createTrackingNetworkJsonObj(
+                                call.request(),
+                                null
+                        )
+                );
                 handleErrorResponse(new ConnectionException("i/o failure", e));
             }
         });

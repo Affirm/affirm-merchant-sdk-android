@@ -110,7 +110,7 @@ final class AffirmHttpClient {
             );
         }
 
-        return null;
+        return new APIException("Error getting exception from response", null);
     }
 
     Call getCallForRequest(AffirmHttpRequest request) {

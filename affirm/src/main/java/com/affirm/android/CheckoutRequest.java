@@ -128,7 +128,7 @@ class CheckoutRequest implements AffirmRequest {
                             );
                         }
                     } else {
-                        handleErrorResponse(new ConnectionException("i/o failure"));
+                        handleErrorResponse(new APIException("i/o failure", null));
                     }
                 } else {
                     AffirmException affirmException =

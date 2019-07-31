@@ -1,7 +1,10 @@
 package com.affirm.android;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.affirm.android.exception.APIException;
-import com.affirm.android.exception.ConnectionException;
+import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.AffirmError;
@@ -9,10 +12,7 @@ import com.affirm.android.model.AffirmError;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import okhttp3.Call;
-import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,6 +21,8 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 
+import static com.affirm.android.AffirmConstants.HTTP;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
@@ -42,114 +44,77 @@ final class AffirmHttpClient {
         return new AffirmHttpClient(builder);
     }
 
-    AffirmHttpResponse execute(final AffirmHttpRequest request) throws APIException,
-            PermissionException, InvalidRequestException, ConnectionException {
-        return execute(request, true);
-    }
-
-    AffirmHttpResponse execute(final AffirmHttpRequest request, boolean sendTrackEvent)
-            throws APIException, PermissionException, InvalidRequestException, ConnectionException {
-        Request okHttpRequest = getRequest(request);
-        Call call = okHttpClient.newCall(okHttpRequest);
-        try {
-            Response response = call.execute();
-
-            boolean responseSuccess = response.isSuccessful();
-            if (!responseSuccess && sendTrackEvent) {
-                AffirmTracker.track(NETWORK_ERROR, ERROR,
-                        createTrackingNetworkJsonObj(okHttpRequest, response));
-            }
-
-            final Headers headers = response.headers();
-            String requestId = headers.get(X_AFFIRM_REQUEST_ID);
-            if (response.code() < 200 || response.code() >= 300) {
-                ResponseBody responseBody = response.body();
-                if (responseBody != null && responseBody.contentLength() > 0) {
-                    final AffirmError affirmError = AffirmPlugins.get().gson()
-                            .fromJson(responseBody.charStream(), AffirmError.class);
-                    handleAPIError(affirmError, response.code(), requestId);
-                }
-            }
-            return getResponse(response);
-
-        } catch (IOException e) {
-            if (sendTrackEvent) {
-                AffirmTracker.track(NETWORK_ERROR, ERROR,
-                        createTrackingNetworkJsonObj(okHttpRequest, null));
-            }
-
-            throw new ConnectionException("i/o failure", e);
-        }
-    }
-
-    private static void handleAPIError(@NonNull AffirmError affirmError, int responseCode,
-                                       @Nullable String requestId) throws APIException,
-            PermissionException, InvalidRequestException {
-
+    static AffirmException handleAPIError(
+            @NonNull AffirmError affirmError,
+            int responseCode,
+            @Nullable String requestId
+    ) {
         switch (responseCode) {
             case 400:
             case 404: {
-                throw new InvalidRequestException(
+                return new InvalidRequestException(
                         affirmError.message(),
                         affirmError.type(),
                         affirmError.field(),
                         requestId,
                         affirmError.status(),
                         affirmError,
-                        null);
+                        null
+                );
             }
             case 403: {
-                throw new PermissionException(affirmError.message(), requestId, responseCode,
-                        affirmError);
+                return new PermissionException(
+                        affirmError.message(),
+                        requestId,
+                        responseCode,
+                        affirmError
+                );
             }
             default: {
-                throw new APIException(affirmError.message(), requestId, responseCode, affirmError,
-                        null);
+                return new APIException(
+                        affirmError.message(),
+                        requestId,
+                        responseCode,
+                        affirmError,
+                        null
+                );
             }
         }
     }
 
-    void cancelCallWithTag(String tag) {
-        for (Call call : okHttpClient.dispatcher().queuedCalls()) {
-            Object requestTag = call.request().tag();
-            if (requestTag != null && requestTag.equals(tag)) {
-                call.cancel();
-            }
-        }
-        for (Call call : okHttpClient.dispatcher().runningCalls()) {
-            Object requestTag = call.request().tag();
-            if (requestTag != null && requestTag.equals(tag)) {
-                call.cancel();
-            }
-        }
+    static String getProtocol() {
+        return AffirmPlugins.get().baseUrl().contains(HTTP) ? "" : HTTPS_PROTOCOL;
     }
 
-    private AffirmHttpResponse getResponse(Response response) throws IOException {
-        // Status code
-        int statusCode = response.code();
-        // Content
-        String content = null;
-        // Total size
-        int totalSize = 0;
-        // Content type
-        String contentType = null;
+    @Nullable
+    static AffirmException createExceptionAndTrackFromResponse(
+            Request okHttpRequest,
+            Response response,
+            ResponseBody responseBody
+    ) {
+        AffirmTracker.track(
+                NETWORK_ERROR,
+                ERROR,
+                createTrackingNetworkJsonObj(okHttpRequest, response)
+        );
 
-        ResponseBody body = response.body();
-        if (body != null) {
-            content = body.string();
-            totalSize = (int) body.contentLength();
+        if (responseBody != null && responseBody.contentLength() > 0) {
+            final AffirmError affirmError = AffirmPlugins.get()
+                    .gson()
+                    .fromJson(responseBody.charStream(), AffirmError.class);
 
-            MediaType mediaType = body.contentType();
-            if (mediaType != null) {
-                contentType = mediaType.toString();
-            }
+            return handleAPIError(
+                    affirmError,
+                    response.code(),
+                    response.headers().get(X_AFFIRM_REQUEST_ID)
+            );
         }
-        return new AffirmHttpResponse.Builder()
-                .setStatusCode(statusCode)
-                .setContent(content)
-                .setTotalSize(totalSize)
-                .setContentType(contentType)
-                .build();
+
+        return new APIException("Error getting exception from response", null);
+    }
+
+    Call getCallForRequest(AffirmHttpRequest request) {
+        return okHttpClient.newCall(getRequest(request));
     }
 
     private Request getRequest(AffirmHttpRequest request) {

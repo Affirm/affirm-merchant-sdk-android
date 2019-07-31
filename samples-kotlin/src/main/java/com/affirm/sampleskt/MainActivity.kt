@@ -8,7 +8,7 @@ import com.affirm.android.Affirm
 import com.affirm.android.CookiesUtil
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.ArrayList
+import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.set
 

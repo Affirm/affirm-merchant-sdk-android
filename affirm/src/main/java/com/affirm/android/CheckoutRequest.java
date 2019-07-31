@@ -1,109 +1,178 @@
 package com.affirm.android;
 
-import android.os.AsyncTask;
-
-import com.affirm.android.exception.APIException;
-import com.affirm.android.exception.ConnectionException;
-import com.affirm.android.exception.InvalidRequestException;
-import com.affirm.android.exception.PermissionException;
-import com.affirm.android.model.Checkout;
-import com.affirm.android.model.CheckoutResponse;
-
-import java.lang.ref.WeakReference;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-class CheckoutRequest extends AffirmRequest {
+import com.affirm.android.exception.APIException;
+import com.affirm.android.exception.AffirmException;
+import com.affirm.android.exception.ConnectionException;
+import com.affirm.android.model.Checkout;
+import com.affirm.android.model.CheckoutResponse;
+import com.affirm.android.model.Merchant;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
+import static com.affirm.android.AffirmConstants.CHECKOUT_PATH;
+import static com.affirm.android.AffirmConstants.CONTENT_TYPE;
+import static com.affirm.android.AffirmConstants.TAG_CHECKOUT;
+import static com.affirm.android.AffirmConstants.TAG_VCN_CHECKOUT;
+import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
+import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
+import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
+
+class CheckoutRequest implements AffirmRequest {
 
     @NonNull
     private final Checkout checkout;
     private final boolean useVCN;
     @Nullable
-    private final InnerCheckoutCallback callback;
+    private final InnerCheckoutCallback checkoutCallback;
+
+    private Call checkoutCall;
 
     CheckoutRequest(@NonNull Checkout checkout,
                     @Nullable InnerCheckoutCallback callback,
                     boolean useVCN) {
         this.checkout = checkout;
-        this.callback = callback;
+        this.checkoutCallback = callback;
         this.useVCN = useVCN;
     }
 
     @Override
-    void cancel() {
-        super.cancel();
+    public void create() {
+        Merchant merchant;
+
         if (useVCN) {
-            AffirmApiHandler.cancelVcnCheckoutCall();
+            merchant = Merchant.builder()
+                    .setPublicApiKey(AffirmPlugins.get().publicKey())
+                    .setUseVcn(true)
+                    .setName(AffirmPlugins.get().merchantName())
+                    .build();
         } else {
-            AffirmApiHandler.cancelCheckoutCall();
-        }
-    }
-
-    @Override
-    AsyncTask createTask() {
-        return new CheckoutTask(checkout, useVCN, callback);
-    }
-
-    @Override
-    void cancelTask() {
-        if (task != null) {
-            ((CheckoutTask) task).cancelTask();
-        }
-    }
-
-    private static class CheckoutTask extends
-            AsyncTask<Void, Void, AffirmResponseWrapper<CheckoutResponse>> {
-        @NonNull
-        private final Checkout mCheckout;
-        private final boolean mUseVcn;
-        @NonNull
-        private final WeakReference<InnerCheckoutCallback> mCallbackRef;
-
-        CheckoutTask(@NonNull final Checkout checkout,
-                     boolean useVCN,
-                     @Nullable final InnerCheckoutCallback callback) {
-            mCheckout = checkout;
-            mUseVcn = useVCN;
-            mCallbackRef = new WeakReference<>(callback);
+            merchant = Merchant.builder()
+                    .setPublicApiKey(AffirmPlugins.get().publicKey())
+                    .setConfirmationUrl(AFFIRM_CHECKOUT_CONFIRMATION_URL)
+                    .setCancelUrl(AFFIRM_CHECKOUT_CANCELLATION_URL)
+                    .setName(AffirmPlugins.get().merchantName())
+                    .build();
         }
 
-        void cancelTask() {
-            mCallbackRef.clear();
+        Gson gson = AffirmPlugins.get().gson();
+        final JsonParser jsonParser = new JsonParser();
+
+        final JsonObject merchantJson = jsonParser.parse(gson.toJson(merchant)).getAsJsonObject();
+        final JsonObject metadataJson = new JsonObject();
+
+        merchantJson.addProperty("user_confirmation_url_action", "GET");
+        metadataJson.addProperty("platform_type", "Affirm Android SDK");
+        metadataJson.addProperty("platform_affirm", BuildConfig.VERSION_NAME);
+
+        final JsonObject checkoutJson = jsonParser.parse(gson.toJson(checkout)).getAsJsonObject();
+
+        checkoutJson.add("merchant", merchantJson);
+        checkoutJson.addProperty("api_version", "v2");
+        checkoutJson.add("metadata", metadataJson);
+
+        final JsonObject jsonRequest = new JsonObject();
+        jsonRequest.add("checkout", checkoutJson);
+
+        if (checkoutCall != null) {
+            checkoutCall.cancel();
         }
 
-        @Override
-        protected AffirmResponseWrapper<CheckoutResponse> doInBackground(Void... params) {
-            try {
-                CheckoutResponse checkoutResponse;
-                if (mUseVcn) {
-                    checkoutResponse = AffirmApiHandler.executeVcnCheckout(mCheckout);
+        checkoutCall = AffirmPlugins.get().restClient().getCallForRequest(
+                new AffirmHttpRequest.Builder()
+                        .setUrl(
+                                AffirmHttpClient.getProtocol()
+                                        + AffirmPlugins.get().baseUrl()
+                                        + CHECKOUT_PATH
+                        )
+                        .setMethod(AffirmHttpRequest.Method.POST)
+                        .setBody(new AffirmHttpBody(CONTENT_TYPE, jsonRequest.toString()))
+                        .setTag(useVCN ? TAG_VCN_CHECKOUT : TAG_CHECKOUT)
+                        .build()
+        );
+        checkoutCall.enqueue(new Callback() {
+            @Override
+            public void onResponse(
+                    @NotNull Call call,
+                    @NotNull Response response
+            ) throws IOException {
+                ResponseBody responseBody = response.body();
+
+                if (response.isSuccessful()) {
+                    if (responseBody != null) {
+                        CheckoutResponse checkoutResponse = gson.fromJson(
+                                responseBody.string(),
+                                CheckoutResponse.class
+                        );
+
+                        if (checkoutCallback != null) {
+                            new Handler(Looper.getMainLooper()).post(
+                                    () -> checkoutCallback.onSuccess(checkoutResponse)
+                            );
+                        }
+                    } else {
+                        handleErrorResponse(new APIException("i/o failure", null));
+                    }
                 } else {
-                    checkoutResponse = AffirmApiHandler.executeCheckout(mCheckout);
-                }
-                return new AffirmResponseWrapper<>(checkoutResponse);
-            } catch (ConnectionException e) {
-                return new AffirmResponseWrapper<>(e);
-            } catch (APIException e) {
-                return new AffirmResponseWrapper<>(e);
-            } catch (PermissionException e) {
-                return new AffirmResponseWrapper<>(e);
-            } catch (InvalidRequestException e) {
-                return new AffirmResponseWrapper<>(e);
-            }
-        }
+                    AffirmException affirmException =
+                            AffirmHttpClient.createExceptionAndTrackFromResponse(
+                                    call.request(),
+                                    response,
+                                    responseBody
+                            );
 
-        @Override
-        protected void onPostExecute(@NonNull AffirmResponseWrapper<CheckoutResponse> result) {
-            final InnerCheckoutCallback checkoutCallback = mCallbackRef.get();
-            if (checkoutCallback != null) {
-                if (result.source != null) {
-                    checkoutCallback.onSuccess(result.source);
-                } else if (result.error != null) {
-                    AffirmLog.e(result.error.toString());
-                    checkoutCallback.onError(result.error);
+                    if (affirmException == null) {
+                        affirmException = new APIException("Response was not successful", null);
+                    }
+
+                    handleErrorResponse(affirmException);
                 }
             }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                AffirmTracker.track(
+                        NETWORK_ERROR, ERROR,
+                        createTrackingNetworkJsonObj(
+                                call.request(),
+                                null
+                        )
+                );
+                handleErrorResponse(new ConnectionException("i/o failure", e));
+            }
+        });
+    }
+
+    @Override
+    public void cancel() {
+        if (checkoutCall != null) {
+            checkoutCall.cancel();
+            checkoutCall = null;
+        }
+    }
+
+    private void handleErrorResponse(@NonNull AffirmException e) {
+        AffirmLog.e(e.toString());
+
+        if (checkoutCallback != null) {
+            new Handler(Looper.getMainLooper()).post(() -> checkoutCallback.onError(e));
         }
     }
 }

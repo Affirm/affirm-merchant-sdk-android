@@ -1,9 +1,5 @@
 package com.affirm.android;
 
-import com.affirm.android.exception.APIException;
-import com.affirm.android.exception.ConnectionException;
-import com.affirm.android.exception.InvalidRequestException;
-import com.affirm.android.exception.PermissionException;
 import com.affirm.android.utils.CheckoutFactory;
 
 import org.junit.Before;
@@ -24,8 +20,9 @@ public class CheckoutRequestTest {
     }
 
     @Test
-    public void testCheckout() throws ConnectionException, APIException, InvalidRequestException, PermissionException {
-        AffirmApiHandler.executeCheckout(CheckoutFactory.create());
+    public void testCheckout() {
+        CheckoutRequest checkoutRequest = new CheckoutRequest(CheckoutFactory.create(), null, false);
+        checkoutRequest.create();
     }
 }
 

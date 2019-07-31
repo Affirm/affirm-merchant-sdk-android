@@ -54,6 +54,7 @@ final Checkout checkout = Checkout.builder()
         .build();
 
 Affirm.startCheckout(this, checkout, false);
+//It is recommended that you round the total in the checkout request to two decimal places. Affirm SDK converts the float total to integer cents before initiating the checkout, so may round up or down depending on the decimal places. Ensure that the rounding in your app uses the same calculation across your other backend systems, otherwise, it may cause an error of 1 cent or more in the total validation on your end. 
 ```
 
 - `checkout` object contains details about the order 

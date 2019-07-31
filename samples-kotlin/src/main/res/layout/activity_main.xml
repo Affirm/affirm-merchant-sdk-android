@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
         android:id="@+id/title"
@@ -27,11 +27,22 @@
         app:affirmColor="AffirmColorTypeBlue"
         app:affirmLogoType="AffirmDisplayTypeLogo"/>
 
+    <TextView
+        android:id="@+id/promotionTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/promo"
+        android:layout_margin="8dp"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        tools:text="Pay as low as $69/month with Affirm" />
+
     <Button
         android:id="@+id/checkout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/promo"
+        android:layout_below="@+id/promotionTextView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:text="@string/checkout"

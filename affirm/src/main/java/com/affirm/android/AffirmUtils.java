@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
+import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
@@ -19,11 +23,14 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_END;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_START;
+import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
 
 public final class AffirmUtils {
 
@@ -32,6 +39,67 @@ public final class AffirmUtils {
 
     public static int decimalDollarsToIntegerCents(float amount) {
         return (int) (amount * 100);
+    }
+
+    static SpannableString createSpannableForText(
+            @NonNull String template,
+            float textSize,
+            @NonNull AffirmLogoType affirmLogoType,
+            @NonNull AffirmColor affirmColor,
+            @NonNull Context context
+    ) {
+        Resources resources = context.getResources();
+
+        Drawable logoDrawable = null;
+        if (affirmLogoType != AFFIRM_DISPLAY_TYPE_TEXT) {
+            logoDrawable = resources.getDrawable(affirmLogoType.getDrawableRes());
+        }
+
+        final int color = resources.getColor(affirmColor.getColorRes());
+
+        return getSpannable(template, textSize, logoDrawable, color);
+    }
+
+    private static SpannableString getSpannable(
+            @NonNull String template,
+            float textSize,
+            @Nullable Drawable logoDrawable,
+            int color
+    ) {
+        SpannableString spannableString;
+
+        int index = template.indexOf(LOGO_PLACEHOLDER);
+        if (logoDrawable != null && index != -1) {
+            spannableString = new SpannableString(template);
+            ImageSpan imageSpan = getLogoSpan(textSize, logoDrawable, color);
+            spannableString.setSpan(
+                    imageSpan,
+                    index,
+                    index + LOGO_PLACEHOLDER.length(),
+                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+            );
+        } else {
+            String onlyText = template.replace(LOGO_PLACEHOLDER, "");
+            spannableString = new SpannableString(onlyText);
+        }
+
+        return spannableString;
+    }
+
+    private static ImageSpan getLogoSpan(
+            float textSize,
+            @NonNull Drawable logoDrawable,
+            int color
+    ) {
+
+        float logoHeight = textSize * 1.f;
+        float ratio = (float) logoDrawable.getIntrinsicWidth() / logoDrawable.getIntrinsicHeight();
+
+        logoDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+
+        logoDrawable.setBounds(0, 0,
+                Math.round(logoHeight * ratio), Math.round(logoHeight));
+        return new ImageSpan(logoDrawable, ImageSpan.ALIGN_BASELINE);
     }
 
     static String readInputStream(@NonNull InputStream inputStream) throws IOException {

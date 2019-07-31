@@ -2,6 +2,8 @@ package com.affirm.samples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -11,7 +13,10 @@ import com.affirm.android.Affirm;
 import com.affirm.android.AffirmColor;
 import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
+import com.affirm.android.AffirmRequest;
 import com.affirm.android.CookiesUtil;
+import com.affirm.android.PromotionCallback;
+import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
@@ -21,6 +26,7 @@ import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.PromoPageType;
+import com.affirm.android.model.PromoRequestData;
 import com.affirm.android.model.Shipping;
 import com.affirm.android.model.VcnReason;
 
@@ -37,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
     private static final float PRICE = 1100f;
+    private AffirmRequest promoRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +107,39 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
         Affirm.configureWithAmount(affirmPromotionButton2, 1100, true);
+
+        TextView promoTextView = findViewById(R.id.promotionTextView);
+        PromoRequestData requestData = new PromoRequestData.Builder()
+                .setPromoId(null)
+                .setPageType(null)
+                .setAmount(PRICE)
+                .setShowCta(true)
+                .build();
+
+        promoRequest = Affirm.fetchPromotionAmount(requestData, promoTextView.getTextSize(), getBaseContext(), new PromotionCallback() {
+            @Override
+            public void onSuccess(@Nullable SpannableString spannableString) {
+                promoTextView.setText(spannableString);
+            }
+
+            @Override
+            public void onFailure(@NonNull AffirmException exception) {
+                Log.e(MainActivity.class.getSimpleName(), "Promo fetch failed", exception);
+                Toast.makeText(getBaseContext(), "Promo fetch failed", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        promoRequest.create();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        promoRequest.cancel();
     }
 
     private AffirmTrack trackModel() {

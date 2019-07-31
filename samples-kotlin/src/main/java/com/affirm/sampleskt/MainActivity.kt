@@ -2,10 +2,15 @@ package com.affirm.sampleskt
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
+import com.affirm.android.AffirmRequest
 import com.affirm.android.CookiesUtil
+import com.affirm.android.PromotionCallback
+import com.affirm.android.exception.AffirmException
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -19,6 +24,8 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
 
         private const val PRICE = 1100f
     }
+
+    private var promoRequest: AffirmRequest? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +44,34 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         }
 
         Affirm.configureWithAmount(promo, null, PromoPageType.PRODUCT, PRICE, true)
+
+        val requestData = PromoRequestData.Builder()
+                .setPromoId(null)
+                .setPageType(null)
+                .setAmount(PRICE)
+                .setShowCta(true)
+                .build()
+
+        promoRequest = Affirm.fetchPromotionAmount(requestData, promotionTextView.textSize, baseContext, object : PromotionCallback {
+            override fun onSuccess(spannableString: SpannableString?) {
+                promotionTextView.text = spannableString
+            }
+
+            override fun onFailure(exception: AffirmException) {
+                Log.e(MainActivity::class.java.simpleName, "Promo fetch failed", exception)
+                Toast.makeText(baseContext, "Promo fetch failed", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        promoRequest?.create()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        promoRequest?.cancel()
     }
 
     private fun trackModel(): AffirmTrack {

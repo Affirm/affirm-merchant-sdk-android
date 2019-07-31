@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,7 @@ import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.PromoPageType;
+import com.affirm.android.model.PromoRequestData;
 import com.affirm.android.model.VcnReason;
 
 import androidx.annotation.NonNull;
@@ -499,6 +501,53 @@ public final class Affirm {
         promotionButton.setOnClickListener(onClickListener);
     }
 
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param requestData  a class containing data about the request to make
+     * @param textSize the textSize for the span
+     * @param context  the context being used
+     * @param callback a class that's called when the request completes
+     */
+    public static AffirmRequest fetchPromotionAmount(
+            PromoRequestData requestData,
+            float textSize,
+            Context context,
+            final PromotionCallback callback
+    ) {
+        return new PromoRequest(
+                requestData.getPromoId(),
+                requestData.getPageType(),
+                requestData.getAmount(),
+                requestData.showCta(),
+                requestData.getAffirmColor(),
+                requestData.getAffirmLogoType(),
+                new SpannablePromoCallback() {
+                    @Override
+                    public void onPromoWritten(
+                            @NonNull String promo,
+                            @NonNull String htmlPromo,
+                            boolean showPrequal
+                    ) {
+                        callback.onSuccess(
+                                AffirmUtils.createSpannableForText(
+                                        promo,
+                                        textSize,
+                                        requestData.getAffirmLogoType(),
+                                        requestData.getAffirmColor(),
+                                        context
+                                )
+                        );
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull AffirmException exception) {
+                        callback.onFailure(exception);
+                    }
+                }
+        );
+    }
+
     // Add a blank fragment to handle the lifecycle of the activity
     private static LifeListenerFragment getLifeListenerFragment(Activity activity) {
         final FragmentManager manager = activity.getFragmentManager();
@@ -594,7 +643,7 @@ public final class Affirm {
                         callbacks.onAffirmVcnCheckoutCancelled();
                     } else {
 
-                        if(data==null) {
+                        if (data == null) {
                             data = new Intent();
                             VcnReason reason = VcnReason.builder().setReason("canceled").build();
                             data.putExtra(VCN_REASON, reason);

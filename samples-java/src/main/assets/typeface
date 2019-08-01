@@ -7,7 +7,7 @@
 <!--Use local font file-->
 <style type="text/css">
     @font-face {
-         font-family: 'apercu_bold';
-         src: url('file:///android_res/font/apercu_bold.ttf');
+         font-family: 'Lacquer-Regular';
+         src: url('file:///android_res/font/lacquer_regular.ttf');
     }
 </style>

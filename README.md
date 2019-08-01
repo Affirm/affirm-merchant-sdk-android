@@ -168,11 +168,20 @@ affirmPromotionButton2.configWithLocalStyling(
 ```
 
 - `configWithHtmlStyling` will use html style from Affirm server. 
-The sample of typeface declaration file can see [Typeface Declaration](/samples-java/src/main/assets/typeface).
+
+You can add fonts by following the steps below, so you can customize the fonts in html
+
+1. Add a font file in the /res/font/ directory. Such as [lacquer_regular.ttf](/samples-java/src/main/res/font/lacquer_regular.ttf).
+
+2. Add a declaration for the font file. You can check the detail in [typeface](/samples-java/src/main/assets/typeface)
+
+3. Use the font in the css file. You can check the detail in [remote_promo.css](/samples-java/src/main/assets/remote_promo.css).
+
 ```
 // If you want to custom the style of promo message, should pass the local or remote url and the file of typeface declaration
 affirmPromotionButton2.configWithHtmlStyling("file:///android_asset/remote_promo.css", typefaceDeclaration);
 ```
+
 
 Tapping on the `AffirmPromotionButton` automatically start prequalification flow.
 

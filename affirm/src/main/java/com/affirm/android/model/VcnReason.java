@@ -20,9 +20,14 @@ public abstract class VcnReason implements Parcelable {
     @SerializedName("reason")
     public abstract String reason();
 
+    @SerializedName("checkout_token")
+    public abstract String checkoutToken();
+
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract VcnReason.Builder setReason(String value);
+
+        public abstract VcnReason.Builder setCheckoutToken(String value);
 
         public abstract VcnReason build();
     }

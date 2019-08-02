@@ -24,6 +24,9 @@ import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.Shipping;
 import com.affirm.android.model.VcnReason;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +35,7 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks,
         Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
@@ -92,11 +96,20 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
         Affirm.configureWithAmount(affirmPromotionButton1, PromoPageType.PRODUCT, 1100, true);
 
+        // Default use Button to show the promo message with configWithLocalStyling. If you want to use WebView to show the promo message. You should use configWithHtmlStyling
+        affirmPromotionButton1.configWithLocalStyling(
+                AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
+                AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
+                ResourcesCompat.getFont(this, R.font.apercu_bold),
+                android.R.color.darker_gray,
+                R.dimen.affirm_promotion_size);
+
         // Option2 - Initialize by new
         AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
         // You can use local or remote css file, we suggest you can deploy the css file on the server.
-        affirmPromotionButton2.configWithHtmlStyling(true, "file:///android_asset/remote_promo.css");
-        affirmPromotionButton2.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
+        String typefaceDeclaration = readFileFromAssets("typeface");
+        // If you want to use WebView to show the promo message. You should use configWithHtmlStyling
+        affirmPromotionButton2.configWithHtmlStyling("file:///android_asset/remote_promo.css", typefaceDeclaration);
 
         ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
         Affirm.configureWithAmount(affirmPromotionButton2, 1100, true);
@@ -233,4 +246,35 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
     public void onAffirmPrequalError(@Nullable String message) {
         Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
     }
+
+    private  String readFileFromAssets(String fileName) {
+        StringBuilder returnString = new StringBuilder();
+        InputStream fIn = null;
+        InputStreamReader isr = null;
+        BufferedReader input = null;
+        try {
+            fIn = getResources().getAssets().open(fileName);
+            isr = new InputStreamReader(fIn);
+            input = new BufferedReader(isr);
+            String line;
+            while ((line = input.readLine()) != null) {
+                returnString.append(line);
+            }
+        } catch (Exception e) {
+            e.getMessage();
+        } finally {
+            try {
+                if (isr != null)
+                    isr.close();
+                if (fIn != null)
+                    fIn.close();
+                if (input != null)
+                    input.close();
+            } catch (Exception e2) {
+                e2.getMessage();
+            }
+        }
+        return returnString.toString();
+    }
+
 }

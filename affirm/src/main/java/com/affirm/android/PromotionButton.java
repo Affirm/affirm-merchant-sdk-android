@@ -2,10 +2,7 @@ package com.affirm.android;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -13,18 +10,16 @@ import android.text.style.ImageSpan;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
-import java.util.Locale;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 
 import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
 
 class PromotionButton extends AppCompatButton {
 
-    private Paint paint;
     private AffirmLogoType affirmLogoType;
     private AffirmColor affirmColor;
 
@@ -40,6 +35,10 @@ class PromotionButton extends AppCompatButton {
         setTextSize(TypedValue.COMPLEX_UNIT_PX, affirmTextSize);
     }
 
+    public void setAffirmTextColor(int colorRes) {
+        setTextColor(ContextCompat.getColor(getContext(), colorRes));
+    }
+
     public PromotionButton(@NonNull Context context) {
         this(context, null);
     }
@@ -53,19 +52,14 @@ class PromotionButton extends AppCompatButton {
                            @Nullable AttributeSet attrs,
                            int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
     }
 
     SpannableString updateSpan(@NonNull String template) {
         float textSize = getTextSize();
-        Typeface typeface = getTypeface();
-        return spannableFromEditText(template, textSize, typeface);
+        return spannableFromEditText(template, textSize);
     }
 
-    private SpannableString spannableFromEditText(@NonNull String template, float textSize,
-                                                  @NonNull Typeface typeface) {
+    private SpannableString spannableFromEditText(@NonNull String template, float textSize) {
         Resources resources = getResources();
 
         Drawable logoDrawable = null;
@@ -75,20 +69,13 @@ class PromotionButton extends AppCompatButton {
 
         final int color = resources.getColor(affirmColor.getColorRes());
 
-        return getSpannable(template, textSize, logoDrawable, typeface, color);
+        return getSpannable(template, textSize, logoDrawable, color);
     }
 
     private SpannableString getSpannable(@NonNull String template,
                                          float textSize,
                                          @Nullable Drawable logoDrawable,
-                                         @NonNull Typeface typeface, int color) {
-
-        paint.setTextSize(textSize);
-        paint.setTypeface(typeface);
-        Rect result = new Rect();
-        paint.getTextBounds(template.toUpperCase(Locale.getDefault()),
-                0, template.length(), result);
-
+                                         int color) {
         SpannableString spannableString;
 
         int index = template.indexOf(LOGO_PLACEHOLDER);

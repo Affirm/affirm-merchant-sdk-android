@@ -127,17 +127,19 @@ Affirm promotional messaging components—monthly payment messaging and educatio
 To display promotional messaging, SDK provides a `AffirmPromotionButton` class. `AffirmPromotionButton` is implemented as follows:
 
 ```xml
-<com.affirm.android.AffirmPromotionButton
-     android:id="@+id/promo"
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content"
-     android:layout_below="@id/price"
-     android:layout_centerHorizontal="true"
-     android:layout_marginTop="20dp"
-     android:textSize="16sp"
-     app:htmlStyling="false"
-     app:affirmColor="AffirmColorTypeBlue"
-     app:affirmLogoType="AffirmDisplayTypeLogo"/>
+ <com.affirm.android.AffirmPromotionButton
+    android:id="@+id/promo"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/price"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="20dp"
+    app:htmlStyling="false"
+    app:affirmTextFont="@font/apercu_bold"
+    app:affirmTextColor="@android:color/darker_gray"
+    app:affirmTextSize="16sp"
+    app:affirmColor="AffirmColorTypeBlue"
+    app:affirmLogoType="AffirmDisplayTypeLogo"/>
 ```
 or
 ```java
@@ -148,14 +150,39 @@ Affirm.configureWithAmount(affirmPromotionButton1, null, PromoPageType.PRODUCT, 
 or
 ```java
 // Option2 - Initialize by new
-// - configWithHtmlStyling will use html style from Affirm server
-// - configWithLocalStyling that you can set custom styles
 AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
-affirmPromotionButton2.configWithHtmlStyling(true);
-affirmPromotionButton2.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO);
 ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
 Affirm.configureWithAmount(affirmPromotionButton2, null, PromoPageType.PRODUCT, 1100, true);
 ```
+
+Configure the style of the AffirmPromotionButton
+
+- `configWithLocalStyling` that will use the local styles. 
+```
+// You can custom with the AffirmColor, AffirmLogoType, Typeface, TextSize, TextColor
+affirmPromotionButton2.configWithLocalStyling(
+                AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
+                AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
+                ResourcesCompat.getFont(this, R.font.apercu_bold),
+                android.R.color.darker_gray,
+                R.dimen.affirm_promotion_size);
+```
+
+- `configWithHtmlStyling` will use html style from Affirm server. 
+
+You can add fonts by following the steps below, so you can customize the fonts in html
+
+1. Add a font file in the /res/font/ directory. Such as [lacquer_regular.ttf](/samples-java/src/main/res/font/lacquer_regular.ttf).
+
+2. Add a declaration for the font file. You can check the detail in [typeface](/samples-java/src/main/assets/typeface)
+
+3. Use the font in the css file. You can check the detail in [remote_promo.css](/samples-java/src/main/assets/remote_promo.css).
+
+```
+// If you want to custom the style of promo message, should pass the local or remote url and the file of typeface declaration
+affirmPromotionButton2.configWithHtmlStyling("file:///android_asset/remote_promo.css", typefaceDeclaration);
+```
+
 
 Tapping on the `AffirmPromotionButton` automatically start prequalification flow.
 

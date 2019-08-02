@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
+import static com.affirm.android.AffirmConstants.AFFIRM_FONT;
 import static com.affirm.android.AffirmConstants.API_KEY;
 import static com.affirm.android.AffirmConstants.HTML_FRAGMENT;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
@@ -96,14 +97,14 @@ class PromotionWebView extends AffirmWebView implements AffirmWebChromeClient.Ca
         });
     }
 
-    void loadData(String promoHtml, String remoteCssUrl) {
-        final String html = initialHtml(promoHtml, remoteCssUrl);
+    void loadWebData(String promoHtml, String remoteCssUrl, String typeface) {
+        final String html = initialHtml(promoHtml, remoteCssUrl, typeface);
         loadDataWithBaseURL(
                 HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
                 html, TEXT_HTML, UTF_8, null);
     }
 
-    private String initialHtml(String promoHtml, String remoteCssUrl) {
+    private String initialHtml(String promoHtml, String remoteCssUrl, String typeface) {
         String html;
         try {
             final InputStream ins = getResources().openRawResource(R.raw.affirm_promo);
@@ -115,6 +116,7 @@ class PromotionWebView extends AffirmWebView implements AffirmWebChromeClient.Ca
         final HashMap<String, String> map = new HashMap<>();
         final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseJsUrl() + JS_PATH;
 
+        map.put(AFFIRM_FONT, typeface != null ? typeface : "");
         map.put(API_KEY, AffirmPlugins.get().publicKey());
         map.put(JAVASCRIPT, fullPath);
         map.put(HTML_FRAGMENT, promoHtml);

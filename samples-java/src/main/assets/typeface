@@ -1,0 +1,13 @@
+<!--You can choose to use local or remote font files-->
+
+
+<!--Use remote font file-->
+<!--<link href="https://fonts.googleapis.com/css?family=Hanalei&display=swap" rel="stylesheet">-->
+
+<!--Use local font file-->
+<style type="text/css">
+    @font-face {
+         font-family: 'Lacquer-Regular';
+         src: url('file:///android_res/font/lacquer_regular.ttf');
+    }
+</style>

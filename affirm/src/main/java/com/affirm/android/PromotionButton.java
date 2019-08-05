@@ -85,7 +85,7 @@ class PromotionButton extends AppCompatButton {
             spannableString.setSpan(imageSpan, index, index + LOGO_PLACEHOLDER.length(),
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         } else {
-            String onlyText = template.replace(LOGO_PLACEHOLDER, "");
+            String onlyText = template.replace(LOGO_PLACEHOLDER, "Affirm");
             spannableString = new SpannableString(onlyText);
         }
 

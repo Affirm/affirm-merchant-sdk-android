@@ -138,10 +138,6 @@ class CheckoutRequest implements AffirmRequest {
                                     responseBody
                             );
 
-                    if (affirmException == null) {
-                        affirmException = new APIException("Response was not successful", null);
-                    }
-
                     handleErrorResponse(affirmException);
                 }
             }

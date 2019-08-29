@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
@@ -28,6 +30,7 @@ import static com.affirm.android.AffirmConstants.PRODUCTION_URL;
 import static com.affirm.android.AffirmConstants.SANDBOX_JS_URL;
 import static com.affirm.android.AffirmConstants.SANDBOX_URL;
 import static com.affirm.android.AffirmConstants.TRACKER_URL;
+import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO;
 import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
 import static com.affirm.android.ModalActivity.ModalType.SITE;
 
@@ -259,6 +262,138 @@ public final class Affirm {
                 AffirmUtils.requireNonNull(publicKey, "public key cannot be null");
                 AffirmUtils.requireNonNull(environment, "environment cannot be null");
                 return new Configuration(this);
+            }
+        }
+    }
+
+    public static final class PromoRequestData {
+        @Nullable
+        private String promoId;
+
+        @Nullable
+        private PromoPageType pageType;
+
+        private float amount;
+        private boolean showCta;
+        @NonNull
+        private AffirmColor affirmColor;
+        @NonNull
+        private AffirmLogoType affirmLogoType;
+
+        private PromoRequestData(
+                @Nullable String promoId,
+                @Nullable PromoPageType pageType,
+                float amount,
+                boolean showCta,
+                @NonNull AffirmColor affirmColor,
+                @NonNull AffirmLogoType affirmLogoType
+        ) {
+            this.promoId = promoId;
+            this.pageType = pageType;
+            this.amount = amount;
+            this.showCta = showCta;
+            this.affirmColor = affirmColor;
+            this.affirmLogoType = affirmLogoType;
+        }
+
+        @Nullable
+        String getPromoId() {
+            return promoId;
+        }
+
+        @Nullable
+        PromoPageType getPageType() {
+            return pageType;
+        }
+
+        float getAmount() {
+            return amount;
+        }
+
+        boolean showCta() {
+            return showCta;
+        }
+
+        @NonNull
+        AffirmColor getAffirmColor() {
+            return affirmColor;
+        }
+
+        @NonNull
+        AffirmLogoType getAffirmLogoType() {
+            return affirmLogoType;
+        }
+
+        public static final class Builder {
+            @Nullable
+            private String promoId;
+            @Nullable
+            private PromoPageType pageType;
+            private float amount;
+            private boolean showCta;
+            private AffirmColor affirmColor;
+            private AffirmLogoType affirmLogoType;
+
+            /**
+             * @param amount  a float that represents the amount to retrieve pricing for
+             *                eg 112.02 as $112 and 2¢
+             * @param showCta whether need to show cta
+             */
+            public Builder(float amount, boolean showCta) {
+                this.amount = amount;
+                this.showCta = showCta;
+            }
+
+            /**
+             * @param promoId the client's modal id, it's optional
+             */
+            public PromoRequestData.Builder setPromoId(@Nullable String promoId) {
+                this.promoId = promoId;
+                return this;
+            }
+
+            /**
+             * @param pageType must be one of "banner, cart, category, homepage, landing,
+             *                 payment, product, search", it's optional
+             */
+            public PromoRequestData.Builder setPageType(@Nullable PromoPageType pageType) {
+                this.pageType = pageType;
+                return this;
+            }
+
+            /**
+             * @param affirmColor the color used for the affirm logo in the response, it's optional
+             */
+            public PromoRequestData.Builder setAffirmColor(@NonNull AffirmColor affirmColor) {
+                this.affirmColor = affirmColor;
+                return this;
+            }
+
+            /**
+             * @param logoType the type of affirm logo to use in the response, it's optional
+             */
+            public PromoRequestData.Builder setAffirmLogoType(@NonNull AffirmLogoType logoType) {
+                this.affirmLogoType = logoType;
+                return this;
+            }
+
+            public PromoRequestData build() {
+                if (affirmLogoType == null) {
+                    affirmLogoType = AFFIRM_DISPLAY_TYPE_LOGO;
+                }
+
+                if (affirmColor == null) {
+                    affirmColor = AFFIRM_COLOR_TYPE_BLUE;
+                }
+
+                return new PromoRequestData(
+                        promoId,
+                        pageType,
+                        amount,
+                        showCta,
+                        affirmColor,
+                        affirmLogoType
+                );
             }
         }
     }
@@ -499,6 +634,74 @@ public final class Affirm {
             }
         };
         promotionButton.setOnClickListener(onClickListener);
+    }
+
+    /**
+     * Fetch promotional message, you can display it yourself
+     *
+     * @param requestData a class containing data about the request to make
+     * @param textSize    the textSize for the span
+     * @param context     the context being used
+     * @param callback    a class that's called when the request completes
+     */
+    public static AffirmRequest fetchPromotion(
+            @NonNull PromoRequestData requestData,
+            float textSize,
+            @NonNull Context context,
+            @NonNull final PromotionCallback callback
+    ) {
+        return new PromoRequest(
+                requestData.getPromoId(),
+                requestData.getPageType(),
+                requestData.getAmount(),
+                requestData.showCta(),
+                requestData.getAffirmColor(),
+                requestData.getAffirmLogoType(),
+                false,
+                new SpannablePromoCallback() {
+                    @Override
+                    public void onPromoWritten(@NonNull String promo, boolean showPrequal) {
+                        callback.onSuccess(
+                                AffirmUtils.createSpannableForText(
+                                        promo,
+                                        textSize,
+                                        requestData.getAffirmLogoType(),
+                                        requestData.getAffirmColor(),
+                                        context
+                                ),
+                                showPrequal
+                        );
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull AffirmException exception) {
+                        callback.onFailure(exception);
+                    }
+                }
+        );
+    }
+
+    /**
+     * Handling events that click on the promotion message
+     *
+     * @param activity          activity {@link Activity}
+     * @param promoRequestModal a class contains the parameters required for the request
+     * @param showPrequal       This value comes from the callback of the method `fetchPromotion`
+     */
+    public static void onPromotionClick(@NonNull Activity activity,
+                                        @NonNull PromoRequestData promoRequestModal,
+                                        boolean showPrequal) {
+        if (showPrequal) {
+            PromoPageType pageType = promoRequestModal.getPageType();
+            String type = pageType != null ? pageType.getType() : null;
+            PrequalActivity.startActivity(activity, prequalRequest,
+                    promoRequestModal.getAmount(),
+                    promoRequestModal.getPromoId(),
+                    type);
+        } else {
+            ModalActivity.startActivity(activity,
+                    prequalRequest, promoRequestModal.getAmount(), PRODUCT, null);
+        }
     }
 
     // Add a blank fragment to handle the lifecycle of the activity

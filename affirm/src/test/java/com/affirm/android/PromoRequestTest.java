@@ -51,13 +51,13 @@ public class PromoRequestTest {
 
     @Test
     public void testPromo() {
-        Affirm.PromoRequestData requestDate = new Affirm.PromoRequestData.Builder(1100, true)
+        Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(1100, true)
                 .setPromoId(null)
                 .setPageType(null)
                 .build();
 
 
-        final AffirmRequest promoRequest = Affirm.fetchPromotion(requestDate, 16, RuntimeEnvironment.application, new PromotionCallback() {
+        final AffirmRequest promoRequest = Affirm.fetchPromotion(requestData, 16, RuntimeEnvironment.application, new PromotionCallback() {
             @Override
             public void onSuccess(@Nullable SpannableString spannableString, boolean showPrequal) {
                 assertNotNull(spannableString);

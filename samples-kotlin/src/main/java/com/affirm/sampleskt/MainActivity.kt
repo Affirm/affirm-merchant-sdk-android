@@ -45,15 +45,15 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         Affirm.configureWithAmount(promo, null, PromoPageType.PRODUCT, PRICE, true)
 
         // Fetch promotion, then use your own TextView to display
-        val requestDate = Affirm.PromoRequestData.Builder(PRICE, true)
+        val requestData = Affirm.PromoRequestData.Builder(PRICE, true)
                 .setPromoId(null)
                 .setPageType(null)
                 .build()
 
-        promoRequest = Affirm.fetchPromotion(requestDate, promotionTextView.textSize, this, object : PromotionCallback {
+        promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.textSize, this, object : PromotionCallback {
             override fun onSuccess(spannableString: SpannableString?, showPrequal: Boolean) {
                 promotionTextView.text = spannableString
-                promotionTextView.setOnClickListener { Affirm.onPromotionClick(this@MainActivity, requestDate, showPrequal) }
+                promotionTextView.setOnClickListener { Affirm.onPromotionClick(this@MainActivity, requestData, showPrequal) }
             }
 
             override fun onFailure(exception: AffirmException) {

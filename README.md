@@ -212,16 +212,16 @@ public void onAffirmPrequalError(String message) {
 - `onPromotionClick` This method handle events that click on the promotional message
 ```java
     TextView promotionTextView = findViewById(R.id.promotionTextView);
-    Affirm.PromoRequestData requestDate = new Affirm.PromoRequestData.Builder(PRICE, true)
+    Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(PRICE, true)
         .setPromoId(null)
         .setPageType(null)
         .build();
 
-    promoRequest = Affirm.fetchPromotion(requestDate, promotionTextView.getTextSize(), this, new PromotionCallback() {
+    promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.getTextSize(), this, new PromotionCallback() {
         @Override
         public void onSuccess(@Nullable SpannableString spannableString, boolean showPrequal) {
             promotionTextView.setText(spannableString);
-            promotionTextView.setOnClickListener(v -> Affirm.onPromotionClick(MainActivity.this, requestDate, showPrequal));
+            promotionTextView.setOnClickListener(v -> Affirm.onPromotionClick(MainActivity.this, requestData, showPrequal));
         }
    
         @Override

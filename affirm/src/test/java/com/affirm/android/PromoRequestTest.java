@@ -27,7 +27,7 @@ public class PromoRequestTest {
     public void testGetNewPromo() {
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull final String promo, @NonNull final String htmlPromo, final boolean showPrequal) {
+            public void onPromoWritten(@NonNull final String promo, final boolean showPrequal) {
                 assertNotNull(promo);
             }
 
@@ -38,7 +38,7 @@ public class PromoRequestTest {
         };
 
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(null, null, 1100, false, AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, callback);
+                new PromoRequest(null, null, 1100, false, AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, true, callback);
         affirmPromoRequest.create();
     }
 

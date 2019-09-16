@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +44,8 @@ class PromoRequest implements AffirmRequest {
     @NonNull
     private SpannablePromoCallback callback;
 
+    private boolean isHtmlStyle;
+
     private Call promoCall;
 
     PromoRequest(
@@ -52,6 +55,7 @@ class PromoRequest implements AffirmRequest {
             final boolean showCta,
             @NonNull final AffirmColor affirmColor,
             @NonNull final AffirmLogoType affirmLogoType,
+            boolean isHtmlStyle,
             @NonNull SpannablePromoCallback callback
     ) {
         this.promoId = promoId;
@@ -60,6 +64,7 @@ class PromoRequest implements AffirmRequest {
         this.showCta = showCta;
         this.affirmColor = affirmColor;
         this.affirmLogoType = affirmLogoType;
+        this.isHtmlStyle = isHtmlStyle;
         this.callback = callback;
     }
 
@@ -131,10 +136,6 @@ class PromoRequest implements AffirmRequest {
                                     responseBody
                             );
 
-                    if (affirmException == null) {
-                        affirmException = new APIException("Response was not successful", null);
-                    }
-
                     handleErrorResponse(affirmException);
                 }
             }
@@ -170,13 +171,18 @@ class PromoRequest implements AffirmRequest {
 
         final String promo = promoResponse.promo().ala();
         final String htmlPromo = promoResponse.promo().htmlAla();
-        new Handler(Looper.getMainLooper()).post(
-                () -> callback.onPromoWritten(promo, htmlPromo, showPrequal)
-        );
+
+        final String promoMessage = isHtmlStyle ? htmlPromo : promo;
+        if (TextUtils.isEmpty(promoMessage)) {
+            handleErrorResponse(new Exception("Promo message is null or empty!"));
+        } else {
+            new Handler(Looper.getMainLooper()).post(
+                    () -> callback.onPromoWritten(promoMessage, showPrequal)
+            );
+        }
     }
 
     private void handleErrorResponse(Exception e) {
-        AffirmLog.e(e.toString());
         new Handler(Looper.getMainLooper()).post(
                 () -> callback.onFailure(new APIException(e.getMessage(), e))
         );

@@ -86,7 +86,7 @@ final class AffirmHttpClient {
         return AffirmPlugins.get().baseUrl().contains(HTTP) ? "" : HTTPS_PROTOCOL;
     }
 
-    @Nullable
+    @NonNull
     static AffirmException createExceptionAndTrackFromResponse(
             Request okHttpRequest,
             Response response,

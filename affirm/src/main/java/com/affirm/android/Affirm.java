@@ -419,15 +419,16 @@ public final class Affirm {
         AffirmUtils.requireNonNull(promotionButton, "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull final String promo,
-                                       @NonNull final String htmlPromo, final boolean showPrequal) {
+            public void onPromoWritten(@NonNull final String promoMessage,
+                                       final boolean showPrequal) {
                 promotionButton.setTag(showPrequal);
-                promotionButton.setLabel(promotionButton.isHtmlStyle() ? htmlPromo : promo);
+                promotionButton.setLabel(promoMessage);
             }
 
             @Override
             public void onFailure(@NonNull AffirmException exception) {
                 AffirmLog.e(exception.toString());
+                promotionButton.setVisibility(View.GONE);
             }
         };
 
@@ -435,6 +436,7 @@ public final class Affirm {
                 new PromoRequest(promoId, pageType, amount, showCta,
                         promotionButton.getAffirmColor(),
                         promotionButton.getAffirmLogoType(),
+                        promotionButton.isHtmlStyle(),
                         callback);
 
         final LifecycleListener lifecycleListener = new LifecycleListener() {

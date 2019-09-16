@@ -124,6 +124,8 @@ Note - For VCN Checkout, all actions should be done using your existing payment 
 
 Affirm promotional messaging components—monthly payment messaging and educational modals—show customers how they can use Affirm to finance their purchases. Promos consist of promotional messaging, which appears directly in your app, and a modal, which which offers users an ability to prequalify.
 
+### Show promotional message with `AffirmPromotionButton`
+
 To display promotional messaging, SDK provides a `AffirmPromotionButton` class. `AffirmPromotionButton` is implemented as follows:
 
 ```xml
@@ -203,6 +205,45 @@ protected void onActivityResult(int requestCode, int resultCode, @Nullable Inten
 public void onAffirmPrequalError(String message) {
     Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
 }
+```
+
+### Fetch promotional message, then display it with your own `TextView`.
+- You can get promotional message via `fetchPromotion`, a `SpannableString` object is returned after the request is successful
+- `onPromotionClick` This method handle events that click on the promotional message
+```java
+    TextView promotionTextView = findViewById(R.id.promotionTextView);
+    Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(PRICE, true)
+        .setPromoId(null)
+        .setPageType(null)
+        .build();
+
+    promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.getTextSize(), this, new PromotionCallback() {
+        @Override
+        public void onSuccess(@Nullable SpannableString spannableString, boolean showPrequal) {
+            promotionTextView.setText(spannableString);
+            promotionTextView.setOnClickListener(v -> Affirm.onPromotionClick(MainActivity.this, requestData, showPrequal));
+        }
+   
+        @Override
+        public void onFailure(@NonNull AffirmException exception) {
+                   Toast.makeText(getBaseContext(), "Failed to get promo message, reason: " + exception.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+```
+
+- Call `create` method will initiate the request, and call `cancel` method to cancel the request.
+```java
+    @Override
+    protected void onStart() {
+        super.onStart();
+        promoRequest.create();
+    }
+
+    @Override
+    protected void onStop() {
+        promoRequest.cancel();
+        super.onStop();
+    }
 ```
 
 ## Track Order Confirmed

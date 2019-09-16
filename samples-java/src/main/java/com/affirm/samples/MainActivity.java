@@ -2,6 +2,7 @@ package com.affirm.samples;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -11,7 +12,10 @@ import com.affirm.android.Affirm;
 import com.affirm.android.AffirmColor;
 import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
+import com.affirm.android.AffirmRequest;
 import com.affirm.android.CookiesUtil;
+import com.affirm.android.PromotionCallback;
+import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
@@ -41,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
     private static final float PRICE = 1100f;
+    private AffirmRequest promoRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         // Option1 - Load via findViewById
         AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
-        Affirm.configureWithAmount(affirmPromotionButton1, PromoPageType.PRODUCT, 1100, true);
+        Affirm.configureWithAmount(affirmPromotionButton1, PromoPageType.PRODUCT, PRICE, true);
 
         // Default use Button to show the promo message with configWithLocalStyling. If you want to use WebView to show the promo message. You should use configWithHtmlStyling
         affirmPromotionButton1.configWithLocalStyling(
@@ -111,8 +116,41 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         // If you want to use WebView to show the promo message. You should use configWithHtmlStyling
         affirmPromotionButton2.configWithHtmlStyling("file:///android_asset/remote_promo.css", typefaceDeclaration);
 
-        ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
-        Affirm.configureWithAmount(affirmPromotionButton2, 1100, true);
+        ((FrameLayout) findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
+        Affirm.configureWithAmount(affirmPromotionButton2, PRICE, true);
+
+
+        // Fetch promotion, then use your own TextView to display
+        TextView promotionTextView = findViewById(R.id.promotionTextView);
+        Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(PRICE, true)
+                .setPromoId(null)
+                .setPageType(null)
+                .build();
+
+        promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.getTextSize(), this, new PromotionCallback() {
+            @Override
+            public void onSuccess(@Nullable SpannableString spannableString, boolean showPrequal) {
+                promotionTextView.setText(spannableString);
+                promotionTextView.setOnClickListener(v -> Affirm.onPromotionClick(MainActivity.this, requestData, showPrequal));
+            }
+
+            @Override
+            public void onFailure(@NonNull AffirmException exception) {
+                Toast.makeText(getBaseContext(), "Failed to get promo message, reason: " + exception.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        promoRequest.create();
+    }
+
+    @Override
+    protected void onStop() {
+        promoRequest.cancel();
+        super.onStop();
     }
 
     private AffirmTrack trackModel() {
@@ -247,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
     }
 
-    private  String readFileFromAssets(String fileName) {
+    private String readFileFromAssets(String fileName) {
         StringBuilder returnString = new StringBuilder();
         InputStream fIn = null;
         InputStreamReader isr = null;

@@ -12,11 +12,11 @@ ext {
 
     androidxAppCompatVersion = '1.0.2'
     junitVersion = "4.12"
-    testRunnerVersion = "1.0.2"
+    testRunnerVersion = "1.2.0"
     testEspressoVersion = "3.0.2"
     okhttpVersion = '3.14.1'
     gsonVersion = '2.8.5'
-    playServiceAuthVersion = '16.0.1'
+    playServiceAuthVersion = '17.0.0'
     autoValueGsonVersion = '0.4.6'
     autoValueParcelVersion = '0.2.5'
     truthVersion = '0.28'
@@ -35,7 +35,7 @@ android {
         versionCode VERSION_CODE.toInteger()
         versionName project.VERSION_NAME
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -121,7 +121,7 @@ dependencies {
     compileOnly "com.ryanharter.auto.value:auto-value-gson:${autoValueGsonVersion}"
     annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${autoValueParcelVersion}"
 
-    androidTestImplementation "com.android.support.test:runner:${testRunnerVersion}"
+    androidTestImplementation "androidx.test:runner:${testRunnerVersion}"
 
     testImplementation "org.robolectric:robolectric:${robolectricVersion}"
     testImplementation "com.google.truth:truth:${truthVersion}"

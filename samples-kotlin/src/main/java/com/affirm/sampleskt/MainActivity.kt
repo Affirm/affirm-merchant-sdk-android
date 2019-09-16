@@ -2,10 +2,14 @@ package com.affirm.sampleskt
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
+import com.affirm.android.AffirmRequest
 import com.affirm.android.CookiesUtil
+import com.affirm.android.PromotionCallback
+import com.affirm.android.exception.AffirmException
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -19,6 +23,8 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
 
         private const val PRICE = 1100f
     }
+
+    private var promoRequest: AffirmRequest? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +43,33 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         }
 
         Affirm.configureWithAmount(promo, null, PromoPageType.PRODUCT, PRICE, true)
+
+        // Fetch promotion, then use your own TextView to display
+        val requestData = Affirm.PromoRequestData.Builder(PRICE, true)
+                .setPromoId(null)
+                .setPageType(null)
+                .build()
+
+        promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.textSize, this, object : PromotionCallback {
+            override fun onSuccess(spannableString: SpannableString?, showPrequal: Boolean) {
+                promotionTextView.text = spannableString
+                promotionTextView.setOnClickListener { Affirm.onPromotionClick(this@MainActivity, requestData, showPrequal) }
+            }
+
+            override fun onFailure(exception: AffirmException) {
+                Toast.makeText(baseContext, "Failed to get promo message, reason: $exception", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        promoRequest?.create()
+    }
+
+    override fun onStop() {
+        promoRequest?.cancel()
+        super.onStop()
     }
 
     private fun trackModel(): AffirmTrack {

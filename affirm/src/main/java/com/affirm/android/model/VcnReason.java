@@ -2,6 +2,8 @@ package com.affirm.android.model;
 
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -20,6 +22,7 @@ public abstract class VcnReason implements Parcelable {
     @SerializedName("reason")
     public abstract String reason();
 
+    @Nullable
     @SerializedName("checkout_token")
     public abstract String checkoutToken();
 

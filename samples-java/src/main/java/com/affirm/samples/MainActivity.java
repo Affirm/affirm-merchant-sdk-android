@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
     private static final float PRICE = 1100f;
     private AffirmRequest promoRequest;
+    private Switch addressSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +59,22 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.checkout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startCheckout(MainActivity.this, checkoutModel(), false);
+                try {
+                    Affirm.startCheckout(MainActivity.this, checkoutModel(), false);
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), "Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         findViewById(R.id.vcnCheckout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Affirm.startCheckout(MainActivity.this, checkoutModel(), true);
+                try {
+                    Affirm.startCheckout(MainActivity.this, checkoutModel(), true);
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -139,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 Toast.makeText(getBaseContext(), "Failed to get promo message, reason: " + exception.toString(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        addressSwitch = findViewById(R.id.addressSwitch);
     }
 
     @Override
@@ -214,15 +226,23 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
 
-        return Checkout.builder()
-                .setOrderId("55555")
-                .setItems(items)
-                .setBilling(shipping)
-                .setShipping(shipping)
-                .setShippingAmount(0f)
-                .setTaxAmount(100f)
-                .setTotal(PRICE)
-                .build();
+        Checkout.Builder builder = Checkout.builder();
+        builder.setOrderId("55555");
+        builder.setItems(items);
+        builder.setShippingAmount(0f);
+        builder.setTaxAmount(100f);
+        builder.setTotal(PRICE);
+
+        boolean sendBillingAndShippingAddresses = addressSwitch.isChecked();
+        if (sendBillingAndShippingAddresses) {
+            builder.setBilling(shipping);
+            builder.setShipping(shipping);
+        }
+
+        Checkout checkout = builder.build();
+
+        checkout.setSendBillingAndShippingAddresses(sendBillingAndShippingAddresses);
+        return checkout;
     }
 
     @Override

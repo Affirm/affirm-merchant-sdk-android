@@ -10,11 +10,11 @@ public abstract class AffirmException extends Exception {
     protected static final long serialVersionUID = 1L;
 
     @Nullable
-    private final String mRequestId;
+    private final String requestId;
     @Nullable
-    private final Integer mStatusCode;
+    private final Integer statusCode;
     @Nullable
-    private final AffirmError mAffirmError;
+    private final AffirmError affirmError;
 
     public AffirmException(@Nullable String message, @Nullable String requestId,
                            @Nullable Integer statusCode) {
@@ -35,36 +35,42 @@ public abstract class AffirmException extends Exception {
                            @Nullable String requestId, @Nullable Integer statusCode,
                            @Nullable Throwable e) {
         super(message, e);
-        mAffirmError = affirmError;
-        mStatusCode = statusCode;
-        mRequestId = requestId;
+        this.affirmError = affirmError;
+        this.statusCode = statusCode;
+        this.requestId = requestId;
     }
 
     @Nullable
     public String getRequestId() {
-        return mRequestId;
+        return requestId;
     }
 
     @Nullable
     public Integer getStatusCode() {
-        return mStatusCode;
+        return statusCode;
     }
 
     @Nullable
     public AffirmError getAffirmError() {
-        return mAffirmError;
+        return affirmError;
     }
 
     @NonNull
     @Override
     public String toString() {
-        final String reqIdStr;
-        if (mRequestId != null) {
-            reqIdStr = ", request-id: " + mRequestId;
+        String reqIdStr;
+        if (requestId != null) {
+            reqIdStr = ", request-id: " + requestId;
         } else {
             reqIdStr = "";
         }
-        return super.toString() + reqIdStr;
+
+        reqIdStr = super.toString() + reqIdStr;
+
+        if (affirmError != null) {
+            reqIdStr = reqIdStr + ", " + affirmError.toString();
+        }
+        return reqIdStr;
     }
 }
 

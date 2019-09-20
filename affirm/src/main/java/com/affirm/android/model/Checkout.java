@@ -23,6 +23,19 @@ public abstract class Checkout implements Parcelable {
         return new AutoValue_Checkout.GsonTypeAdapter(gson);
     }
 
+    /**
+     * A flag whether to send addresses to Affirm server, default is true.
+     */
+    private boolean sendBillingAndShippingAddresses = true;
+
+    public boolean isSendBillingAndShippingAddresses() {
+        return sendBillingAndShippingAddresses;
+    }
+
+    public void setSendBillingAndShippingAddresses(boolean sendBillingAndShippingAddresses) {
+        this.sendBillingAndShippingAddresses = sendBillingAndShippingAddresses;
+    }
+
     // Your internal unique identifier representing the order. Maximum 500 characters. Required
     @Nullable
     @SerializedName("order_id")
@@ -37,6 +50,7 @@ public abstract class Checkout implements Parcelable {
     public abstract Map<String, Discount> discounts();
 
     // Customer contact information.
+    @Nullable
     public abstract Shipping shipping();
 
     // Customer contact information.

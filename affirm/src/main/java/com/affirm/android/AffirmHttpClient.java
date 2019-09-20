@@ -55,6 +55,7 @@ final class AffirmHttpClient {
                 return new InvalidRequestException(
                         affirmError.message(),
                         affirmError.type(),
+                        affirmError.fields(),
                         affirmError.field(),
                         requestId,
                         affirmError.status(),

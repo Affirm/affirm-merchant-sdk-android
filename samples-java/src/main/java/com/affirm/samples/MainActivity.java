@@ -3,9 +3,7 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
     private static final float PRICE = 1100f;
     private AffirmRequest promoRequest;
-    private Switch addressSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,56 +53,32 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         ((TextView) findViewById(R.id.price)).setText("$" + PRICE);
 
-        findViewById(R.id.checkout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Affirm.startCheckout(MainActivity.this, checkoutModel(), false);
-                } catch (Exception e) {
-                    Toast.makeText(getBaseContext(), "Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
-                }
+        findViewById(R.id.checkout).setOnClickListener(v -> {
+            try {
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), false);
+            } catch (Exception e) {
+                Toast.makeText(getBaseContext(), "Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
-        findViewById(R.id.vcnCheckout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Affirm.startCheckout(MainActivity.this, checkoutModel(), true);
-                } catch (Exception e) {
-                    Toast.makeText(getBaseContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
-                }
+        findViewById(R.id.vcnCheckout).setOnClickListener(v -> {
+            try {
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), true);
+            } catch (Exception e) {
+                Toast.makeText(getBaseContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
-        findViewById(R.id.siteModalButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Affirm.showSiteModal(MainActivity.this, "5LNMQ33SEUYHLNUC");
-            }
+        findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(MainActivity.this, "5LNMQ33SEUYHLNUC"));
+
+        findViewById(R.id.productModalButton).setOnClickListener(v -> Affirm.showProductModal(MainActivity.this, PRICE, "0Q97G0Z4Y4TLGHGB"));
+
+        findViewById(R.id.trackOrderConfirmed).setOnClickListener(v -> {
+            Toast.makeText(MainActivity.this, "Track successfully", Toast.LENGTH_SHORT).show();
+            Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
         });
 
-        findViewById(R.id.productModalButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Affirm.showProductModal(MainActivity.this, PRICE, "0Q97G0Z4Y4TLGHGB");
-            }
-        });
-
-        findViewById(R.id.trackOrderConfirmed).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Track successfully", Toast.LENGTH_SHORT).show();
-                Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
-            }
-        });
-
-        findViewById(R.id.clearCookies).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CookiesUtil.clearCookies(MainActivity.this);
-            }
-        });
+        findViewById(R.id.clearCookies).setOnClickListener(v -> CookiesUtil.clearCookies(MainActivity.this));
 
         // Option1 - Load via findViewById
         AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
@@ -149,8 +122,6 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 Toast.makeText(getBaseContext(), "Failed to get promo message, reason: " + exception.toString(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        addressSwitch = findViewById(R.id.addressSwitch);
     }
 
     @Override
@@ -226,23 +197,15 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
 
-        Checkout.Builder builder = Checkout.builder();
-        builder.setOrderId("55555");
-        builder.setItems(items);
-        builder.setShippingAmount(0f);
-        builder.setTaxAmount(100f);
-        builder.setTotal(PRICE);
-
-        boolean sendBillingAndShippingAddresses = addressSwitch.isChecked();
-        if (sendBillingAndShippingAddresses) {
-            builder.setBilling(shipping);
-            builder.setShipping(shipping);
-        }
-
-        Checkout checkout = builder.build();
-
-        checkout.setSendBillingAndShippingAddresses(sendBillingAndShippingAddresses);
-        return checkout;
+        return Checkout.builder()
+                .setOrderId("55555")
+                .setItems(items)
+                .setBilling(shipping)
+                .setShipping(shipping)
+                .setShippingAmount(0f)
+                .setTaxAmount(100f)
+                .setTotal(PRICE)
+                .build();
     }
 
     @Override

@@ -10,7 +10,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Affirm.initialize(new Affirm.Configuration.Builder("ZY2590ABAF62S9KM")
+        Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0")
                 .setEnvironment(Affirm.Environment.SANDBOX)
                 .setMerchantName(null)
                 .setReceiveReasonCodes("true")

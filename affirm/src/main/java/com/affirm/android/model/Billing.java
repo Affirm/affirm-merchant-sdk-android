@@ -10,17 +10,19 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
 @AutoValue
-public abstract class Shipping implements Parcelable {
+public abstract class Billing implements Parcelable {
     public static Builder builder() {
-        return new AutoValue_Shipping.Builder();
+        return new AutoValue_Billing.Builder();
     }
 
-    public static TypeAdapter<Shipping> typeAdapter(Gson gson) {
-        return new AutoValue_Shipping.GsonTypeAdapter(gson);
+    public static TypeAdapter<Billing> typeAdapter(Gson gson) {
+        return new AutoValue_Billing.GsonTypeAdapter(gson);
     }
 
+    @Nullable
     public abstract Address address();
 
+    @Nullable
     public abstract Name name();
 
     @Nullable
@@ -29,6 +31,7 @@ public abstract class Shipping implements Parcelable {
 
     @Nullable
     public abstract String email();
+
 
     @AutoValue.Builder
     public abstract static class Builder {
@@ -40,6 +43,6 @@ public abstract class Shipping implements Parcelable {
 
         public abstract Builder setEmail(String value);
 
-        public abstract Shipping build();
+        public abstract Billing build();
     }
 }

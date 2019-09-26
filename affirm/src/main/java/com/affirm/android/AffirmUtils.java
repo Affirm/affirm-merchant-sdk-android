@@ -113,13 +113,13 @@ public final class AffirmUtils {
         return null;
     }
 
-    static <T> void requireNonNull(T obj) {
+    public static <T> void requireNonNull(T obj) {
         if (obj == null) {
             throw new NullPointerException();
         }
     }
 
-    static <T> void requireNonNull(T obj, String message) {
+    public static <T> void requireNonNull(T obj, String message) {
         if (obj == null) {
             throw new NullPointerException(message);
         }

@@ -19,6 +19,7 @@ import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
 import com.affirm.android.model.AffirmTrackProduct;
+import com.affirm.android.model.Billing;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
@@ -196,11 +197,12 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .build();
 
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
+        final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
         return Checkout.builder()
                 .setOrderId("55555")
                 .setItems(items)
-                .setBilling(shipping)
+                .setBilling(billing)
                 .setShipping(shipping)
                 .setShippingAmount(0f)
                 .setTaxAmount(100f)

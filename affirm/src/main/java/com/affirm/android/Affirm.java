@@ -460,9 +460,6 @@ public final class Affirm {
                                      boolean useVCN) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
-        if (checkout.isSendBillingAndShippingAddresses() && checkout.shipping() == null) {
-            AffirmUtils.requireNonNull(checkout.shipping(), "shipping cannot be null");
-        }
         if (useVCN) {
             VcnCheckoutActivity.startActivity(
                     activity, vcnCheckoutRequest, checkout, receiveReasonCodes);

@@ -23,19 +23,6 @@ public abstract class Checkout implements Parcelable {
         return new AutoValue_Checkout.GsonTypeAdapter(gson);
     }
 
-    /**
-     * A flag whether to send addresses to Affirm server, default is true.
-     */
-    private boolean sendBillingAndShippingAddresses = true;
-
-    public boolean isSendBillingAndShippingAddresses() {
-        return sendBillingAndShippingAddresses;
-    }
-
-    public void setSendBillingAndShippingAddresses(boolean sendBillingAndShippingAddresses) {
-        this.sendBillingAndShippingAddresses = sendBillingAndShippingAddresses;
-    }
-
     // Your internal unique identifier representing the order. Maximum 500 characters. Required
     @Nullable
     @SerializedName("order_id")
@@ -50,12 +37,16 @@ public abstract class Checkout implements Parcelable {
     public abstract Map<String, Discount> discounts();
 
     // Customer contact information.
+    // The entire optional should be required, unless `sendShippingAddresses` to false
+    // to make it to optional
     @Nullable
-    public abstract Shipping shipping();
+    @SerializedName("shipping")
+    public abstract Shipping shippingAddress();
 
-    // Customer contact information.
+    // Customer contact information. optional
     @Nullable
-    public abstract Shipping billing();
+    @SerializedName("billing")
+    public abstract Billing billingAddress();
 
     // The total shipping amount; Defaults to 0.
     @SerializedName("shipping_amount")
@@ -77,9 +68,14 @@ public abstract class Checkout implements Parcelable {
 
     @AutoValue.Builder
     public abstract static class Builder {
-        private Float mCheckoutTotal;
-        private Float mTaxAmount;
-        private Float mShippingAmount;
+        /**
+         * A flag whether to send shipping addresses to Affirm server, default is true.
+         */
+        private boolean sendShippingAddresses = true;
+
+        private Shipping shipping;
+
+        private Billing billing;
 
         public abstract Builder setOrderId(String value);
 
@@ -87,9 +83,9 @@ public abstract class Checkout implements Parcelable {
 
         public abstract Builder setDiscounts(Map<String, Discount> value);
 
-        public abstract Builder setShipping(Shipping value);
+        abstract Builder setShippingAddress(Shipping value);
 
-        public abstract Builder setBilling(Shipping value);
+        abstract Builder setBillingAddress(Billing value);
 
         abstract Builder setShippingAmount(Integer value);
 
@@ -101,25 +97,44 @@ public abstract class Checkout implements Parcelable {
 
         abstract Checkout autoBuild();
 
+        public Builder setShipping(Shipping value) {
+            this.shipping = value;
+            return setShippingAddress(value);
+        }
+
+        public Builder setBilling(Billing value) {
+            this.billing = value;
+            return setBillingAddress(value);
+        }
+
         public Builder setTotal(@NonNull Float value) {
-            mCheckoutTotal = value;
-            return this;
+            return setTotal(AffirmUtils.decimalDollarsToIntegerCents(value));
         }
 
         public Builder setShippingAmount(@NonNull Float value) {
-            mShippingAmount = value;
-            return this;
+            return setShippingAmount(AffirmUtils.decimalDollarsToIntegerCents(value));
         }
 
         public Builder setTaxAmount(@NonNull Float value) {
-            mTaxAmount = value;
+            return setTaxAmount(AffirmUtils.decimalDollarsToIntegerCents(value));
+        }
+
+        public Builder setSendShippingAddresses(boolean value) {
+            sendShippingAddresses = value;
             return this;
         }
 
         public Checkout build() {
-            setTotal(AffirmUtils.decimalDollarsToIntegerCents(mCheckoutTotal));
-            setShippingAmount(AffirmUtils.decimalDollarsToIntegerCents(mShippingAmount));
-            setTaxAmount(AffirmUtils.decimalDollarsToIntegerCents(mTaxAmount));
+            if (sendShippingAddresses && shipping == null) {
+                throw new NullPointerException("Null shipping");
+            }
+            if (billing != null
+                    && billing.address() == null
+                    && billing.name() == null
+                    && billing.phoneNumber() == null
+                    && billing.email() == null) {
+                setBillingAddress(null);
+            }
             return autoBuild();
         }
     }

@@ -1,6 +1,7 @@
 package com.affirm.android.utils;
 
 import com.affirm.android.model.Address;
+import com.affirm.android.model.Billing;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
@@ -34,10 +35,11 @@ public class CheckoutFactory {
                 .build();
 
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
+        final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
         return Checkout.builder()
                 .setItems(items)
-                .setBilling(shipping)
+                .setBilling(billing)
                 .setShipping(shipping)
                 .setShippingAmount(1000f)
                 .setTaxAmount(100f)

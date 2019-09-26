@@ -129,9 +129,11 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setZipcode("94107")
                 .build()
         val shipping = Shipping.builder().setAddress(address).setName(name).build()
+        val billing = Billing.builder().setAddress(address).setName(name).build()
+
         return Checkout.builder()
                 .setItems(items)
-                .setBilling(shipping)
+                .setBilling(billing)
                 .setShipping(shipping)
                 .setShippingAmount(0f)
                 .setTaxAmount(100f)

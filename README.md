@@ -7,14 +7,14 @@ Affirm Android SDK allows you to offer Affirm monthly payments in your own app.
 
 Download via Gradle:
 ```groovy
-implementation "com.affirm:affirm-android-sdk:2.0.4"
+implementation "com.affirm:affirm-android-sdk:2.0.5"
 ```
 or Maven:
 ```xml
 <dependency>
   <groupId>com.affirm</groupId>
   <artifactId>affirm-android-sdk</artifactId>
-  <version>2.0.4</version>
+  <version>2.0.5</version>
 </dependency>
 ```
 Snapshots of the development version are available in [Sonatype's `snapshots` repository](https://oss.sonatype.org/content/repositories/snapshots/).
@@ -124,6 +124,8 @@ Note - For VCN Checkout, all actions should be done using your existing payment 
 
 Affirm promotional messaging components—monthly payment messaging and educational modals—show customers how they can use Affirm to finance their purchases. Promos consist of promotional messaging, which appears directly in your app, and a modal, which which offers users an ability to prequalify.
 
+### Show promotional message with `AffirmPromotionButton`
+
 To display promotional messaging, SDK provides a `AffirmPromotionButton` class. `AffirmPromotionButton` is implemented as follows:
 
 ```xml
@@ -205,6 +207,45 @@ public void onAffirmPrequalError(String message) {
 }
 ```
 
+### Fetch promotional message, then display it with your own `TextView`.
+- You can get promotional message via `fetchPromotion`, a `SpannableString` object is returned after the request is successful
+- `onPromotionClick` This method handle events that click on the promotional message
+```java
+    TextView promotionTextView = findViewById(R.id.promotionTextView);
+    Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(PRICE, true)
+        .setPromoId(null)
+        .setPageType(null)
+        .build();
+
+    promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.getTextSize(), this, new PromotionCallback() {
+        @Override
+        public void onSuccess(@Nullable SpannableString spannableString, boolean showPrequal) {
+            promotionTextView.setText(spannableString);
+            promotionTextView.setOnClickListener(v -> Affirm.onPromotionClick(MainActivity.this, requestData, showPrequal));
+        }
+   
+        @Override
+        public void onFailure(@NonNull AffirmException exception) {
+                   Toast.makeText(getBaseContext(), "Failed to get promo message, reason: " + exception.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+```
+
+- Call `create` method will initiate the request, and call `cancel` method to cancel the request.
+```java
+    @Override
+    protected void onStart() {
+        super.onStart();
+        promoRequest.create();
+    }
+
+    @Override
+    protected void onStop() {
+        promoRequest.cancel();
+        super.onStop();
+    }
+```
+
 ## Track Order Confirmed
 The trackOrderConfirmed event triggers when a customer completes their purchase. SDK provides `AffirmTrack` object to trigger the tracking.
 
@@ -224,7 +265,7 @@ Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
 1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. This step is optional. There is a step inside `affirm/build.gradle` to do this automatically.
 2. Run the `samples-java` or `samples-kotlin` within Android Studio.
 
-# Upgrade (from 1.x.x to 2.0.4)
+# Upgrade (from 1.x.x to 2.0.5)
 * If you are using an older version of the SDK, you can refer to this [upgrade document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/UPGRADE.md). We recommend that you install the latest version to access the most up-to-date features and experience. 
 
 # Changelog

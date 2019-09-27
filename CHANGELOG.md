@@ -1,6 +1,14 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.5 (September 26, 2019)
+- Bug Fix for null data exception on back - button
+- Convert requests to not use Async Task
+- Support type face, text size, and text color for promo messaging
+- Support local fonts
+- Handle empty ALA messages
+- Shipping/Billing consistent with direct API requirements
+
 ## Version 2.0.4 (July 12, 2019)
 - Add reason codes for VCN checkout cancellation
 

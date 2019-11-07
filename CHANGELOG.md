@@ -1,6 +1,10 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.6 (November 7, 2019)
+- Add landscape mode
+- Use BigDecimal with currency
+
 ## Version 2.0.5 (September 26, 2019)
 - Bug Fix for null data exception on back - button
 - Convert requests to not use Async Task

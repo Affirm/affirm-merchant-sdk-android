@@ -5,15 +5,16 @@ import com.google.common.truth.Truth;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 public class AffirmUtilsTest {
 
     @Test
     public void convertToAffirmAmounts() {
-        Truth.assertThat(AffirmUtils.decimalDollarsToIntegerCents(15.5f)).isEqualTo(1550);
-        Truth.assertThat(AffirmUtils.decimalDollarsToIntegerCents(15.5432f)).isEqualTo(1554);
-        Truth.assertThat(AffirmUtils.decimalDollarsToIntegerCents(3f)).isEqualTo(300);
+        Truth.assertThat(AffirmUtils.decimalDollarsToIntegerCents(BigDecimal.valueOf(15.5))).isEqualTo(1550);
+        Truth.assertThat(AffirmUtils.decimalDollarsToIntegerCents(BigDecimal.valueOf(15.5492))).isEqualTo(1554);
+        Truth.assertThat(AffirmUtils.decimalDollarsToIntegerCents(BigDecimal.valueOf(3.0))).isEqualTo(300);
     }
 
     @Test

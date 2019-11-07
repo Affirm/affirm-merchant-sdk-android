@@ -48,9 +48,9 @@ final Checkout checkout = Checkout.builder()
         .setItems(items)
         .setBilling(shipping)
         .setShipping(shipping)
-        .setShippingAmount(0f)
-        .setTaxAmount(100f)
-        .setTotal(1100f)
+        .setShippingAmount(BigDecimal.valueOf(0.0))
+        .setTaxAmount(BigDecimal.valueOf(100.0))
+        .setTotal(BigDecimal.valueOf(1100.0))
         .build();
 
 Affirm.startCheckout(this, checkout, false);
@@ -147,14 +147,14 @@ or
 ```java
 // Option1 - Load via findViewById
 AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
-Affirm.configureWithAmount(affirmPromotionButton1, null, PromoPageType.PRODUCT, 1100, true);
+Affirm.configureWithAmount(affirmPromotionButton1, null, PromoPageType.PRODUCT, BigDecimal.valueOf(1100.0), true);
 ```
 or
 ```java
 // Option2 - Initialize by new
 AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
 ((FrameLayout)findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
-Affirm.configureWithAmount(affirmPromotionButton2, null, PromoPageType.PRODUCT, 1100, true);
+Affirm.configureWithAmount(affirmPromotionButton2, null, PromoPageType.PRODUCT, BigDecimal.valueOf(1100.0), true);
 ```
 
 Configure the style of the AffirmPromotionButton

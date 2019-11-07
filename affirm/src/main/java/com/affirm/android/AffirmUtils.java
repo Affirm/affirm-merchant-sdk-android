@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -36,8 +37,8 @@ public final class AffirmUtils {
     private AffirmUtils() {
     }
 
-    public static int decimalDollarsToIntegerCents(float amount) {
-        return (int) (amount * 100);
+    public static int decimalDollarsToIntegerCents(BigDecimal amount) {
+        return amount.movePointRight(2).intValue();
     }
 
     static String readInputStream(@NonNull InputStream inputStream) throws IOException {

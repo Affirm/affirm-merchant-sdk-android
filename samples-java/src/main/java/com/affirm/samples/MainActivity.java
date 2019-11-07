@@ -31,6 +31,7 @@ import com.affirm.android.model.VcnReason;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,7 @@ import androidx.core.content.res.ResourcesCompat;
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks,
         Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
-    private static final float PRICE = 1100f;
+    private static final BigDecimal PRICE = BigDecimal.valueOf(1100.0);
     private AffirmRequest promoRequest;
 
     @Override
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                                 "/9df78eab33525d08d6e5fb8d27136e95/v/e/velocity-vw125-wheels-rims.jpg")
                 .setQty(1)
                 .setSku("wheel")
-                .setUnitPrice(1000f)
+                .setUnitPrice(BigDecimal.valueOf(1000.0))
                 .setUrl("http://merchant.com/great_deal_wheel")
                 .build();
 
@@ -204,8 +205,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .setItems(items)
                 .setBilling(billing)
                 .setShipping(shipping)
-                .setShippingAmount(0f)
-                .setTaxAmount(100f)
+                .setShippingAmount(BigDecimal.valueOf(0.0))
+                .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
                 .build();
     }

@@ -10,6 +10,8 @@ import com.google.gson.annotations.SerializedName;
 
 import androidx.annotation.NonNull;
 
+import java.math.BigDecimal;
+
 @AutoValue
 public abstract class Discount implements Parcelable {
     public static Builder builder() {
@@ -28,7 +30,7 @@ public abstract class Discount implements Parcelable {
 
     @AutoValue.Builder
     public abstract static class Builder {
-        private Float mAmount;
+        private BigDecimal mAmount;
 
         public abstract Builder setDisplayName(String value);
 
@@ -36,7 +38,7 @@ public abstract class Discount implements Parcelable {
 
         abstract Discount autoBuild();
 
-        public Builder setAmount(@NonNull Float value) {
+        public Builder setAmount(@NonNull BigDecimal value) {
             mAmount = value;
             return this;
         }

@@ -8,6 +8,7 @@ import com.affirm.android.exception.ConnectionException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
@@ -51,7 +52,7 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
         }
     }
 
-    static void startActivity(@NonNull Activity activity, int requestCode, float amount,
+    static void startActivity(@NonNull Activity activity, int requestCode, BigDecimal amount,
                               ModalType type, @Nullable String modalId) {
         final Intent intent = new Intent(activity, ModalActivity.class);
         final String stringAmount =

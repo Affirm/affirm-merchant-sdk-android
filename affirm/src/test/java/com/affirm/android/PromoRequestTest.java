@@ -15,6 +15,8 @@ import org.robolectric.RuntimeEnvironment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
+
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
@@ -44,14 +46,14 @@ public class PromoRequestTest {
         };
 
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(null, null, 1100, false, AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, true, callback);
+                new PromoRequest(null, null, BigDecimal.valueOf(1100.0), false, AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, true, callback);
         affirmPromoRequest.create();
     }
 
 
     @Test
     public void testPromo() {
-        Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(1100, true)
+        Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(BigDecimal.valueOf(1100.0), true)
                 .setPromoId(null)
                 .setPageType(null)
                 .build();

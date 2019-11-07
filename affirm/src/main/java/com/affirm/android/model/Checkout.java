@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -107,15 +108,15 @@ public abstract class Checkout implements Parcelable {
             return setBillingAddress(value);
         }
 
-        public Builder setTotal(@NonNull Float value) {
+        public Builder setTotal(@NonNull BigDecimal value) {
             return setTotal(AffirmUtils.decimalDollarsToIntegerCents(value));
         }
 
-        public Builder setShippingAmount(@NonNull Float value) {
+        public Builder setShippingAmount(@NonNull BigDecimal value) {
             return setShippingAmount(AffirmUtils.decimalDollarsToIntegerCents(value));
         }
 
-        public Builder setTaxAmount(@NonNull Float value) {
+        public Builder setTaxAmount(@NonNull BigDecimal value) {
             return setTaxAmount(AffirmUtils.decimalDollarsToIntegerCents(value));
         }
 

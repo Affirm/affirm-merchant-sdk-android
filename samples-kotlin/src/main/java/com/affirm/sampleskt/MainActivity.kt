@@ -12,6 +12,7 @@ import com.affirm.android.PromotionCallback
 import com.affirm.android.exception.AffirmException
 import com.affirm.android.model.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.math.BigDecimal
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.set
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
     companion object {
         private const val TAG = "MainActivity"
 
-        private const val PRICE = 1100f
+        private val PRICE = BigDecimal.valueOf(1100.0)
     }
 
     private var promoRequest: AffirmRequest? = null
@@ -115,7 +116,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                                 "/9df78eab33525d08d6e5fb8d27136e95/v/e/velocity-vw125-wheels-rims.jpg")
                 .setQty(1)
                 .setSku("wheel")
-                .setUnitPrice(1000f)
+                .setUnitPrice(BigDecimal.valueOf(1000.0))
                 .setUrl("http://merchant.com/great_deal_wheel")
                 .build()
         val items: MutableMap<String, Item> = HashMap()
@@ -135,8 +136,8 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setItems(items)
                 .setBilling(billing)
                 .setShipping(shipping)
-                .setShippingAmount(0f)
-                .setTaxAmount(100f)
+                .setShippingAmount(BigDecimal.valueOf(0.0))
+                .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
                 .build()
     }

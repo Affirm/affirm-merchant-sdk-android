@@ -7,6 +7,7 @@ import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.Shipping;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class CheckoutFactory {
                 .setImageUrl("http://www.image.com/111")
                 .setQty(1)
                 .setSku("wheel")
-                .setUnitPrice(1000f)
+                .setUnitPrice(BigDecimal.valueOf(1000.0))
                 .setUrl("http://merchant.com/great_deal_wheel")
                 .build();
 
@@ -41,9 +42,9 @@ public class CheckoutFactory {
                 .setItems(items)
                 .setBilling(billing)
                 .setShipping(shipping)
-                .setShippingAmount(1000f)
-                .setTaxAmount(100f)
-                .setTotal(1100f)
+                .setShippingAmount(BigDecimal.valueOf(1000.0))
+                .setTaxAmount(BigDecimal.valueOf(100.0))
+                .setTotal(BigDecimal.valueOf(1100.0))
                 .build();
     }
 }

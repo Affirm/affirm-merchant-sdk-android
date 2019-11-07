@@ -18,6 +18,8 @@ import com.affirm.android.model.VcnReason;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
+
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
@@ -273,7 +275,7 @@ public final class Affirm {
         @Nullable
         private PromoPageType pageType;
 
-        private float amount;
+        private BigDecimal amount;
         private boolean showCta;
         @NonNull
         private AffirmColor affirmColor;
@@ -283,7 +285,7 @@ public final class Affirm {
         private PromoRequestData(
                 @Nullable String promoId,
                 @Nullable PromoPageType pageType,
-                float amount,
+                BigDecimal amount,
                 boolean showCta,
                 @NonNull AffirmColor affirmColor,
                 @NonNull AffirmLogoType affirmLogoType
@@ -306,7 +308,7 @@ public final class Affirm {
             return pageType;
         }
 
-        float getAmount() {
+        BigDecimal getAmount() {
             return amount;
         }
 
@@ -329,7 +331,7 @@ public final class Affirm {
             private String promoId;
             @Nullable
             private PromoPageType pageType;
-            private float amount;
+            private BigDecimal amount;
             private boolean showCta;
             private AffirmColor affirmColor;
             private AffirmLogoType affirmLogoType;
@@ -339,7 +341,7 @@ public final class Affirm {
              *                eg 112.02 as $112 and 2¢
              * @param showCta whether need to show cta
              */
-            public Builder(float amount, boolean showCta) {
+            public Builder(BigDecimal amount, boolean showCta) {
                 this.amount = amount;
                 this.showCta = showCta;
             }
@@ -476,7 +478,7 @@ public final class Affirm {
      */
     public static void showSiteModal(@NonNull Activity activity, @Nullable String modalId) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
-        ModalActivity.startActivity(activity, 0, 0f, SITE, modalId);
+        ModalActivity.startActivity(activity, 0, BigDecimal.valueOf(0.0), SITE, modalId);
     }
 
     /**
@@ -486,7 +488,7 @@ public final class Affirm {
      * @param amount   (Float) eg 112.02 as $112 and ¢2
      * @param modalId  the client's modal id
      */
-    public static void showProductModal(@NonNull Activity activity, float amount,
+    public static void showProductModal(@NonNull Activity activity, BigDecimal amount,
                                         @Nullable String modalId) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         ModalActivity.startActivity(activity, 0, amount, PRODUCT, modalId);
@@ -500,7 +502,7 @@ public final class Affirm {
      * @param showCta         whether need to show cta
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
-                                           final float amount,
+                                           final BigDecimal amount,
                                            final boolean showCta) {
         configureWithAmount(promotionButton, null, null, amount, showCta);
     }
@@ -515,7 +517,7 @@ public final class Affirm {
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final String promoId,
-                                           final float amount,
+                                           final BigDecimal amount,
                                            final boolean showCta) {
         configureWithAmount(promotionButton, promoId, null, amount, showCta);
     }
@@ -531,7 +533,7 @@ public final class Affirm {
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final PromoPageType pageType,
-                                           final float amount,
+                                           final BigDecimal amount,
                                            final boolean showCta) {
         configureWithAmount(promotionButton, null, pageType, amount, showCta);
     }
@@ -549,7 +551,7 @@ public final class Affirm {
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final String promoId,
                                            @Nullable final PromoPageType pageType,
-                                           final float amount,
+                                           final BigDecimal amount,
                                            final boolean showCta) {
         AffirmUtils.requireNonNull(promotionButton, "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {

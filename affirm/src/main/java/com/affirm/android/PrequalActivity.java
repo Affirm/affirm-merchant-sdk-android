@@ -10,6 +10,8 @@ import com.affirm.android.exception.ConnectionException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.math.BigDecimal;
+
 import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmConstants.AMOUNT;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
@@ -28,7 +30,7 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     private String pageType;
 
     static void startActivity(@NonNull Activity activity, int requestCode,
-                              float amount, @Nullable String promoId,
+                              BigDecimal amount, @Nullable String promoId,
                               @Nullable String pageType) {
         final Intent intent = new Intent(activity, PrequalActivity.class);
         final String stringAmount =

@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Locale;
 
 import okhttp3.Call;
@@ -33,7 +34,7 @@ class PromoRequest implements AffirmRequest {
 
     @Nullable
     private final String promoId;
-    private final float dollarAmount;
+    private final BigDecimal dollarAmount;
     private final boolean showCta;
     @NonNull
     private final AffirmColor affirmColor;
@@ -51,7 +52,7 @@ class PromoRequest implements AffirmRequest {
     PromoRequest(
             @Nullable final String promoId,
             @Nullable final PromoPageType pageType,
-            final float dollarAmount,
+            final BigDecimal dollarAmount,
             final boolean showCta,
             @NonNull final AffirmColor affirmColor,
             @NonNull final AffirmLogoType affirmLogoType,

@@ -5,7 +5,8 @@ import androidx.annotation.ColorRes;
 public enum AffirmColor {
     AFFIRM_COLOR_TYPE_BLUE(0),
     AFFIRM_COLOR_TYPE_BLACK(1),
-    AFFIRM_COLOR_TYPE_WHITE(2);
+    AFFIRM_COLOR_TYPE_WHITE(2),
+    AFFIRM_COLOR_TYPE_BLUE_BLACK(3);
 
     private static final String BLUE = "blue";
     private static final String BLACK = "black";
@@ -38,6 +39,8 @@ public enum AffirmColor {
                 return R.color.affirm_black;
             case AFFIRM_COLOR_TYPE_BLUE:
                 return R.color.affirm_blue;
+            case AFFIRM_COLOR_TYPE_BLUE_BLACK:
+                return -1; // This is used for local style, no need to setColorFilter in this case
             default:
                 return R.color.affirm_white;
         }
@@ -46,6 +49,7 @@ public enum AffirmColor {
     protected String getColor() {
         switch (this) {
             case AFFIRM_COLOR_TYPE_BLUE:
+            case AFFIRM_COLOR_TYPE_BLUE_BLACK:
                 return BLUE;
             case AFFIRM_COLOR_TYPE_BLACK:
                 return BLACK;

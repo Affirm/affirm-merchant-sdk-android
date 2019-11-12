@@ -137,10 +137,11 @@ public final class AffirmUtils {
 
         Drawable logoDrawable = null;
         if (affirmLogoType != AFFIRM_DISPLAY_TYPE_TEXT) {
-            logoDrawable = resources.getDrawable(affirmLogoType.getDrawableRes());
+            logoDrawable = resources.getDrawable(affirmLogoType.getDrawableRes(affirmColor));
         }
 
-        final int color = resources.getColor(affirmColor.getColorRes());
+        int color = affirmColor.getColorRes() != -1
+                ? resources.getColor(affirmColor.getColorRes()) : -1;
 
         return getSpannable(template, textSize, logoDrawable, color);
     }
@@ -180,7 +181,9 @@ public final class AffirmUtils {
         float logoHeight = textSize * 1.f;
         float ratio = (float) logoDrawable.getIntrinsicWidth() / logoDrawable.getIntrinsicHeight();
 
-        logoDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        if (color != -1) {
+            logoDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        }
 
         logoDrawable.setBounds(0, 0,
                 Math.round(logoHeight * ratio), Math.round(logoHeight));

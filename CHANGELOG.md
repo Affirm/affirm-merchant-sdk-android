@@ -1,6 +1,10 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.7 (November 12, 2019)
+- Support for Blue and Black logo in text
+- Page type for independent modals
+
 ## Version 2.0.6 (November 7, 2019)
 - Add landscape mode
 - Use BigDecimal with currency

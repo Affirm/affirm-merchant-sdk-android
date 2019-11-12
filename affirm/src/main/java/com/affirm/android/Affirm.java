@@ -477,8 +477,22 @@ public final class Affirm {
      * @param modalId  the client's modal id
      */
     public static void showSiteModal(@NonNull Activity activity, @Nullable String modalId) {
+        showSiteModal(activity, modalId, null, null);
+    }
+
+    /**
+     * Start site modal
+     *
+     * @param activity activity {@link Activity}
+     * @param modalId  the client's modal id
+     * @param pageType need to use one of "banner, cart, category, homepage, landing,
+     *                 payment, product, search"
+     */
+    public static void showSiteModal(@NonNull Activity activity, @Nullable String modalId,
+                                     @Nullable PromoPageType pageType, @Nullable String promoId) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
-        ModalActivity.startActivity(activity, 0, BigDecimal.valueOf(0.0), SITE, modalId);
+        ModalActivity.startActivity(activity, 0, BigDecimal.valueOf(0.0), SITE, modalId,
+                pageType != null ? pageType.getType() : null, promoId);
     }
 
     /**
@@ -490,8 +504,26 @@ public final class Affirm {
      */
     public static void showProductModal(@NonNull Activity activity, BigDecimal amount,
                                         @Nullable String modalId) {
+        showProductModal(activity, amount, modalId, null, null);
+    }
+
+    /**
+     * Start product modal
+     *
+     * @param activity activity {@link Activity}
+     * @param amount   (Float) eg 112.02 as $112 and ¢2
+     * @param modalId  the client's modal id
+     * @param pageType need to use one of "banner, cart, category, homepage, landing,
+     *                 payment, product, search"
+     */
+    public static void showProductModal(@NonNull Activity activity,
+                                        BigDecimal amount,
+                                        @Nullable String modalId,
+                                        @Nullable PromoPageType pageType,
+                                        @Nullable String promoId) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
-        ModalActivity.startActivity(activity, 0, amount, PRODUCT, modalId);
+        ModalActivity.startActivity(activity, 0, amount, PRODUCT, modalId,
+                pageType != null ? pageType.getType() : null, promoId);
     }
 
     /**
@@ -626,13 +658,14 @@ public final class Affirm {
                 return;
             }
             boolean showPrequal = (boolean) v.getTag();
+            String type = pageType != null ? pageType.getType() : null;
             if (showPrequal) {
-                String type = pageType != null ? pageType.getType() : null;
                 PrequalActivity.startActivity(activity,
                         prequalRequest, amount, promoId, type);
             } else {
                 ModalActivity.startActivity(activity,
-                        prequalRequest, amount, PRODUCT, null);
+                        prequalRequest, amount, PRODUCT, null,
+                        type, promoId);
             }
         };
         promotionButton.setOnClickListener(onClickListener);
@@ -693,16 +726,17 @@ public final class Affirm {
     public static void onPromotionClick(@NonNull Activity activity,
                                         @NonNull PromoRequestData promoRequestModal,
                                         boolean showPrequal) {
+        PromoPageType pageType = promoRequestModal.getPageType();
+        String type = pageType != null ? pageType.getType() : null;
         if (showPrequal) {
-            PromoPageType pageType = promoRequestModal.getPageType();
-            String type = pageType != null ? pageType.getType() : null;
             PrequalActivity.startActivity(activity, prequalRequest,
                     promoRequestModal.getAmount(),
                     promoRequestModal.getPromoId(),
                     type);
         } else {
             ModalActivity.startActivity(activity,
-                    prequalRequest, promoRequestModal.getAmount(), PRODUCT, null);
+                    prequalRequest, promoRequestModal.getAmount(), PRODUCT, null,
+                    type, promoRequestModal.getPromoId());
         }
     }
 

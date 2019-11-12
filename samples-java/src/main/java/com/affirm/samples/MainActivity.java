@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(MainActivity.this, "5LNMQ33SEUYHLNUC"));
 
-        findViewById(R.id.productModalButton).setOnClickListener(v -> Affirm.showProductModal(MainActivity.this, PRICE, "0Q97G0Z4Y4TLGHGB"));
+        findViewById(R.id.productModalButton).setOnClickListener(v -> Affirm.showProductModal(MainActivity.this, PRICE, null, PromoPageType.PRODUCT, null));
 
         findViewById(R.id.trackOrderConfirmed).setOnClickListener(v -> {
             Toast.makeText(MainActivity.this, "Track successfully", Toast.LENGTH_SHORT).show();

@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         // Default use Button to show the promo message with configWithLocalStyling. If you want to use WebView to show the promo message. You should use configWithHtmlStyling
         affirmPromotionButton1.configWithLocalStyling(
-                AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
+                AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
                 ResourcesCompat.getFont(this, R.font.apercu_bold),
                 android.R.color.darker_gray,

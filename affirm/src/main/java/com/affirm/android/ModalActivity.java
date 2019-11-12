@@ -25,7 +25,9 @@ import static com.affirm.android.AffirmConstants.JAVASCRIPT;
 import static com.affirm.android.AffirmConstants.JS_PATH;
 import static com.affirm.android.AffirmConstants.MAP_EXTRA;
 import static com.affirm.android.AffirmConstants.MODAL_ID;
+import static com.affirm.android.AffirmConstants.PAGE_TYPE;
 import static com.affirm.android.AffirmConstants.PREQUAL_ERROR;
+import static com.affirm.android.AffirmConstants.PROMO_ID;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
 import static com.affirm.android.AffirmConstants.TYPE_EXTRA;
 import static com.affirm.android.AffirmConstants.UTF_8;
@@ -53,7 +55,8 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
     }
 
     static void startActivity(@NonNull Activity activity, int requestCode, BigDecimal amount,
-                              ModalType type, @Nullable String modalId) {
+                              ModalType type, @Nullable String modalId, @Nullable String pageType,
+                              @Nullable String promoId) {
         final Intent intent = new Intent(activity, ModalActivity.class);
         final String stringAmount =
                 String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
@@ -65,6 +68,8 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
         map.put(JAVASCRIPT, fullPath);
         map.put(CANCEL_URL, AFFIRM_CHECKOUT_CANCELLATION_URL);
         map.put(MODAL_ID, modalId == null ? "" : modalId);
+        map.put(PAGE_TYPE, pageType == null ? "" : pageType);
+        map.put(PROMO_ID, promoId == null ? "" : promoId);
 
         intent.putExtra(TYPE_EXTRA, type);
         intent.putExtra(MAP_EXTRA, map);

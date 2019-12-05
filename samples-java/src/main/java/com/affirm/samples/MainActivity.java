@@ -12,6 +12,7 @@ import com.affirm.android.AffirmColor;
 import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.AffirmRequest;
+import com.affirm.android.BuildConfig;
 import com.affirm.android.CookiesUtil;
 import com.affirm.android.PromotionCallback;
 import com.affirm.android.exception.AffirmException;
@@ -200,6 +201,10 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
         final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("platform_type", "Affirm Android SDK");
+        metadata.put("platform_affirm", BuildConfig.VERSION_NAME);
+
         return Checkout.builder()
                 .setOrderId("55555")
                 .setItems(items)
@@ -208,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
+                .setMetadata(metadata)
                 .build();
     }
 

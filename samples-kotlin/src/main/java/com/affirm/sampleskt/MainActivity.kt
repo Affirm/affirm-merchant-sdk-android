@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
 import com.affirm.android.AffirmRequest
+import com.affirm.android.BuildConfig
 import com.affirm.android.CookiesUtil
 import com.affirm.android.PromotionCallback
 import com.affirm.android.exception.AffirmException
@@ -132,6 +133,10 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val shipping = Shipping.builder().setAddress(address).setName(name).build()
         val billing = Billing.builder().setAddress(address).setName(name).build()
 
+        val metadata: MutableMap<String, String> = HashMap()
+        metadata["platform_type"] = "Affirm Android SDK"
+        metadata["platform_affirm"] = BuildConfig.VERSION_NAME
+
         return Checkout.builder()
                 .setItems(items)
                 .setBilling(billing)
@@ -139,6 +144,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
+                .setMetadata(metadata)
                 .build()
     }
 

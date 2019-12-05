@@ -26,6 +26,7 @@ import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
+import static com.affirm.android.AffirmConstants.PRODUCTION_PROMO_URL;
 import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmConstants.PRODUCTION_JS_URL;
 import static com.affirm.android.AffirmConstants.PRODUCTION_URL;
@@ -81,15 +82,17 @@ public final class Affirm {
     }
 
     public enum Environment {
-        SANDBOX(SANDBOX_URL, SANDBOX_JS_URL, TRACKER_URL),
-        PRODUCTION(PRODUCTION_URL, PRODUCTION_JS_URL, TRACKER_URL);
+        SANDBOX(SANDBOX_URL, SANDBOX_URL, SANDBOX_JS_URL, TRACKER_URL),
+        PRODUCTION(PRODUCTION_URL, PRODUCTION_PROMO_URL, PRODUCTION_JS_URL, TRACKER_URL);
 
         final String baseUrl;
+        final String basePromoUrl;
         final String trackerBaseUrl;
         final String jsUrl;
 
-        Environment(String baseUrl, String jsUrl, String trackerBaseUrl) {
+        Environment(String baseUrl, String basePromoUrl, String jsUrl, String trackerBaseUrl) {
             this.baseUrl = baseUrl;
+            this.basePromoUrl = basePromoUrl;
             this.jsUrl = jsUrl;
             this.trackerBaseUrl = trackerBaseUrl;
         }

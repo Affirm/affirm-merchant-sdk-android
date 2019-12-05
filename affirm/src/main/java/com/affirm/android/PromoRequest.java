@@ -103,7 +103,7 @@ class PromoRequest implements AffirmRequest {
                 new AffirmHttpRequest.Builder()
                         .setUrl(
                                 AffirmHttpClient.getProtocol()
-                                        + AffirmPlugins.get().baseUrl()
+                                        + AffirmPlugins.get().basePromoUrl()
                                         + path.toString()
                         )
                         .setMethod(AffirmHttpRequest.Method.GET)

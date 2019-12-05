@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         // Fetch promotion, then use your own TextView to display
         TextView promotionTextView = findViewById(R.id.promotionTextView);
         Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(PRICE, true)
-                .setPromoId(null)
                 .setPageType(null)
                 .build();
 

@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val affirmTrackOrder = AffirmTrackOrder.builder()
                 .setStoreName("Affirm Store")
                 .setCoupon("SUMMER2018")
-                .setCurrency("USD")
+                .setCurrency("USD")  // "CAD" for canadian, "USD" for American
                 .setDiscount(0)
                 .setPaymentMethod("Visa")
                 .setRevenue(2920)
@@ -122,13 +122,26 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val items: MutableMap<String, Item> = HashMap()
         items["wheel"] = item
         val name = Name.builder().setFull("John Smith").build()
-        val address = Address.builder()
+
+        //  In canadian, use CAAddress
+//        val address = CAAddress.builder()
+//                .setStreet1("123 Alder Creek Dr.")
+//                .setStreet2("Floor 7")
+//                .setCity("Toronto")
+//                .setRegion1Code("ON")
+//                .setPostalCode("M4B 1B3")
+//                .setCountryCode("CA")
+//                .build()
+
+        //  In US, use USAddress
+        val address = USAddress.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
                 .setLine1("333 Kansas st")
                 .setState("CA")
                 .setZipcode("94107")
                 .build()
+
         val shipping = Shipping.builder().setAddress(address).setName(name).build()
         val billing = Billing.builder().setAddress(address).setName(name).build()
 
@@ -139,6 +152,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
+                .setCurrency("USD") // "CAD" for canadian, "USD" for American
                 .build()
     }
 

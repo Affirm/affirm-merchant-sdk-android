@@ -27,11 +27,6 @@ import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.VCN_REASON;
-import static com.affirm.android.AffirmConstants.PRODUCTION_JS_URL;
-import static com.affirm.android.AffirmConstants.PRODUCTION_URL;
-import static com.affirm.android.AffirmConstants.SANDBOX_JS_URL;
-import static com.affirm.android.AffirmConstants.SANDBOX_URL;
-import static com.affirm.android.AffirmConstants.TRACKER_URL;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO;
 import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
 import static com.affirm.android.ModalActivity.ModalType.SITE;
@@ -80,23 +75,34 @@ public final class Affirm {
         void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails);
     }
 
+    public enum Location {
+        US, CA
+    }
+
     public enum Environment {
-        SANDBOX(SANDBOX_URL, SANDBOX_JS_URL, TRACKER_URL),
-        PRODUCTION(PRODUCTION_URL, PRODUCTION_JS_URL, TRACKER_URL);
+        SANDBOX,
+        PRODUCTION;
 
-        final String baseUrl;
-        final String trackerBaseUrl;
-        final String jsUrl;
-
-        Environment(String baseUrl, String jsUrl, String trackerBaseUrl) {
-            this.baseUrl = baseUrl;
-            this.jsUrl = jsUrl;
-            this.trackerBaseUrl = trackerBaseUrl;
+        String baseUrl() {
+            switch (this) {
+                case SANDBOX:
+                    return AffirmConstants.getSandboxUrl();
+                default:
+                    return AffirmConstants.getProductionUrl();
+            }
         }
 
-        @Override
-        public String toString() {
-            return "Environment{" + baseUrl + ", " + trackerBaseUrl + '}';
+        String baseJsUrl() {
+            switch (this) {
+                case SANDBOX:
+                    return AffirmConstants.getSandboxJsUrl();
+                default:
+                    return AffirmConstants.getProductionJsUrl();
+            }
+        }
+
+        String trackerBaseUrl() {
+            return AffirmConstants.getTrackerUrl();
         }
     }
 
@@ -252,6 +258,11 @@ public final class Affirm {
              */
             public Builder setPrequalRequestCode(int prequalRequestCode) {
                 this.prequalRequestCode = prequalRequestCode;
+                return this;
+            }
+
+            public Builder setLocation(Location location) {
+                AffirmConstants.setLocation(location);
                 return this;
             }
 

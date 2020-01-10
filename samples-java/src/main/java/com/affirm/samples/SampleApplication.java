@@ -10,7 +10,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0")
+        Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0") // In Canadian, should use Canada public API key
                 .setEnvironment(Affirm.Environment.SANDBOX)
                 .setMerchantName(null)
                 .setReceiveReasonCodes("true")
@@ -18,6 +18,7 @@ public class SampleApplication extends Application {
                 .setCheckoutRequestCode(8001)
                 .setVcnCheckoutRequestCode(8002)
                 .setPrequalRequestCode(8003)
+                .setLocation(Affirm.Location.US)  // "CA" for Canadian, "US" for American (If not set, default will use US)
                 .build()
         );
     }

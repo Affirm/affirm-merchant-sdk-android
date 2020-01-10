@@ -6,6 +6,7 @@ import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.Shipping;
+import com.affirm.android.model.USAddress;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class CheckoutFactory {
         items.put("wheel", item);
 
         final Name name = Name.builder().setFull("John Smith").build();
-        final Address address = Address.builder()
+        final Address address = USAddress.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
                 .setLine1("333 Kansas st")
@@ -45,6 +46,7 @@ public class CheckoutFactory {
                 .setShippingAmount(BigDecimal.valueOf(1000.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(BigDecimal.valueOf(1100.0))
+                .setCurrency("USD")
                 .build();
     }
 }

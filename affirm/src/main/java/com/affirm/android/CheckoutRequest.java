@@ -19,6 +19,7 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -83,6 +84,11 @@ class CheckoutRequest implements AffirmRequest {
         metadataJson.addProperty("platform_affirm", BuildConfig.VERSION_NAME);
 
         final JsonObject checkoutJson = jsonParser.parse(gson.toJson(checkout)).getAsJsonObject();
+
+        JsonObject address = jsonParser
+                .parse(gson.toJson(Objects.requireNonNull(checkout.shippingAddress()).address()))
+                .getAsJsonObject();
+        ((JsonObject) checkoutJson.get("shipping")).add("address", address);
 
         checkoutJson.add("merchant", merchantJson);
         checkoutJson.addProperty("api_version", "v2");

@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -67,22 +68,22 @@ class AffirmPlugins {
     }
 
     String baseUrl() {
-        return configuration.environment.baseUrl;
+        return configuration.environment.baseUrl();
     }
 
     String baseJsUrl() {
-        return configuration.environment.jsUrl;
+        return configuration.environment.baseJsUrl();
     }
 
     String trackerBaseUrl() {
-        return configuration.environment.trackerBaseUrl;
+        return configuration.environment.trackerBaseUrl();
     }
 
     synchronized Gson gson() {
         if (gson == null) {
-            gson =
-                    new GsonBuilder()
-                            .registerTypeAdapterFactory(AffirmAdapterFactory.create()).create();
+            gson = new GsonBuilder()
+                    .registerTypeAdapterFactory(AffirmAdapterFactory.create())
+                    .create();
         }
         return gson;
     }

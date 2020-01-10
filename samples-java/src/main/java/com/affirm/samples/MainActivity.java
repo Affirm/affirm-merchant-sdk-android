@@ -23,6 +23,7 @@ import com.affirm.android.model.Billing;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
+import com.affirm.android.model.Metadata;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.Shipping;
@@ -200,6 +201,13 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
         final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
+        final Metadata metadata = Metadata.builder()
+                .setShippingType("UPS Ground")
+                .setEntityName("internal-sub_brand-name")
+                .setPlatformType("Affirm Android SDK")
+                .setWebhookSessionId("ABC123")
+                .build();
+
         return Checkout.builder()
                 .setOrderId("55555")
                 .setItems(items)
@@ -208,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
+                .setMetadata(metadata)
                 .build();
     }
 

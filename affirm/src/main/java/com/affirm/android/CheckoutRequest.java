@@ -76,17 +76,12 @@ class CheckoutRequest implements AffirmRequest {
         final JsonParser jsonParser = new JsonParser();
 
         final JsonObject merchantJson = jsonParser.parse(gson.toJson(merchant)).getAsJsonObject();
-        final JsonObject metadataJson = new JsonObject();
-
         merchantJson.addProperty("user_confirmation_url_action", "GET");
-        metadataJson.addProperty("platform_type", "Affirm Android SDK");
-        metadataJson.addProperty("platform_affirm", BuildConfig.VERSION_NAME);
 
         final JsonObject checkoutJson = jsonParser.parse(gson.toJson(checkout)).getAsJsonObject();
 
         checkoutJson.add("merchant", merchantJson);
         checkoutJson.addProperty("api_version", "v2");
-        checkoutJson.add("metadata", metadataJson);
 
         final JsonObject jsonRequest = new JsonObject();
         jsonRequest.add("checkout", checkoutJson);

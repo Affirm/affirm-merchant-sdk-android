@@ -65,7 +65,8 @@ public abstract class Checkout implements Parcelable {
     // A hash of keys to values for any metadata to be passed into checkout and stored.
     // 'entity_name' is a protected key, and will show up in your settlement reporting.
     @Nullable
-    public abstract Map<String, String> metadata();
+    @SerializedName("metadata")
+    public abstract Metadata metadata();
 
     @AutoValue.Builder
     public abstract static class Builder {
@@ -94,7 +95,7 @@ public abstract class Checkout implements Parcelable {
 
         abstract Builder setTotal(Integer value);
 
-        public abstract Builder setMetadata(Map<String, String> value);
+        public abstract Builder setMetadata(Metadata value);
 
         abstract Checkout autoBuild();
 

@@ -132,6 +132,13 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val shipping = Shipping.builder().setAddress(address).setName(name).build()
         val billing = Billing.builder().setAddress(address).setName(name).build()
 
+        val metadata = Metadata.builder()
+                .setShippingType("UPS Ground")
+                .setEntityName("internal-sub_brand-name")
+                .setPlatformType("Affirm Android SDK")
+                .setWebhookSessionId("ABC123")
+                .build()
+
         return Checkout.builder()
                 .setItems(items)
                 .setBilling(billing)
@@ -139,6 +146,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
+                .setMetadata(metadata)
                 .build()
     }
 

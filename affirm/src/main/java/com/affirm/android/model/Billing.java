@@ -20,7 +20,7 @@ public abstract class Billing implements Parcelable {
     }
 
     @Nullable
-    public abstract Address address();
+    public abstract AbstractAddress address();
 
     @Nullable
     public abstract Name name();
@@ -35,7 +35,7 @@ public abstract class Billing implements Parcelable {
 
     @AutoValue.Builder
     public abstract static class Builder {
-        public abstract Builder setAddress(Address value);
+        public abstract Builder setAddress(AbstractAddress value);
 
         public abstract Builder setName(Name value);
 

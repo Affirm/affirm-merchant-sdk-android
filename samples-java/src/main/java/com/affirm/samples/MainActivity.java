@@ -15,18 +15,19 @@ import com.affirm.android.AffirmRequest;
 import com.affirm.android.CookiesUtil;
 import com.affirm.android.PromotionCallback;
 import com.affirm.android.exception.AffirmException;
+import com.affirm.android.model.AbstractAddress;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
 import com.affirm.android.model.AffirmTrackProduct;
 import com.affirm.android.model.Billing;
+import com.affirm.android.model.CAAddress;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.Shipping;
-import com.affirm.android.model.USAddress;
 import com.affirm.android.model.VcnReason;
 
 import java.io.BufferedReader;
@@ -191,8 +192,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         final Name name = Name.builder().setFull("John Smith").build();
 
-        //  In US, use USAddress
-        final Address address = USAddress.builder()
+        //  In US, use Address
+        final Address address = Address.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
                 .setLine1("333 Kansas st")
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .build();
 
         //  In canadian, use CAAddress
-//        final Address address = CAAddress.builder()
+//        final AbstractAddress address = CAAddress.builder()
 //                .setStreet1("123 Alder Creek Dr.")
 //                .setStreet2("Floor 7")
 //                .setCity("Toronto")

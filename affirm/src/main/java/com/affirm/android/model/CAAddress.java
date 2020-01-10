@@ -8,7 +8,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
 @AutoValue
-public abstract class CAAddress extends Address {
+public abstract class CAAddress extends AbstractAddress {
 
     public static CAAddress.Builder builder() {
         return new AutoValue_CAAddress.Builder();

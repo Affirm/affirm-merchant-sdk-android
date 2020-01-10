@@ -133,8 +133,8 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
 //                .setCountryCode("CA")
 //                .build()
 
-        //  In US, use USAddress
-        val address = USAddress.builder()
+        //  In US, use Address
+        val address = Address.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
                 .setLine1("333 Kansas st")

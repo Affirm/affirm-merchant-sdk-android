@@ -38,6 +38,7 @@ public abstract class Checkout implements Parcelable {
     public abstract Map<String, Discount> discounts();
 
     // Enter "CAD" for the currency type.
+    @Nullable
     @SerializedName("currency")
     public abstract String currency();
 

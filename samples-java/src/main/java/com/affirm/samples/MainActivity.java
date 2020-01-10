@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
-                .setCurrency("USD") // "CAD" for canadian, "USD" for American
+                .setCurrency("USD") // For Canadian, you must set "CAD"; For American, this is optional, you can set "USD" or not set.
                 .build();
     }
 

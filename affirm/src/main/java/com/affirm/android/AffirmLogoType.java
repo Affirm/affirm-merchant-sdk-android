@@ -43,7 +43,7 @@ public enum AffirmLogoType {
                     return R.drawable.affirm_blue_black_logo_transparent_bg;
                 case AFFIRM_DISPLAY_TYPE_SYMBOL:
                 case AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW:
-                    return R.drawable.affirm_blue_black_solid_circle_transparent_bg;
+                    return R.drawable.affirm_blue_black_hollow_circle_transparent_bg;
                 default:
                     return R.drawable.affirm_blue_black_logo_transparent_bg;
             }
@@ -52,7 +52,6 @@ public enum AffirmLogoType {
                 case AFFIRM_DISPLAY_TYPE_LOGO:
                     return R.drawable.affirm_black_logo_transparent_bg;
                 case AFFIRM_DISPLAY_TYPE_SYMBOL:
-                    return R.drawable.affirm_black_solid_circle_transparent_bg;
                 case AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW:
                     return R.drawable.affirm_black_hollow_circle_transparent_bg;
                 default:
@@ -63,12 +62,9 @@ public enum AffirmLogoType {
 
     protected String getType() {
         switch (this) {
-            case AFFIRM_DISPLAY_TYPE_LOGO:
-                return LOGO;
             case AFFIRM_DISPLAY_TYPE_TEXT:
                 return TEXT;
             case AFFIRM_DISPLAY_TYPE_SYMBOL:
-                return SYMBOL;
             case AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW:
                 return SYMBOL;
             default:

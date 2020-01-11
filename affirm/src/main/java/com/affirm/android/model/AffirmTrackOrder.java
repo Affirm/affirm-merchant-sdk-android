@@ -93,7 +93,11 @@ public abstract class AffirmTrackOrder implements Parcelable {
 
         public abstract Builder setCoupon(String value);
 
-        public abstract Builder setCurrency(String value);
+        abstract Builder setCurrency(String value);
+
+        public Builder setCurrency(Currency currency) {
+            return setCurrency(currency.getValue());
+        }
 
         public abstract Builder setDiscount(Integer value);
 

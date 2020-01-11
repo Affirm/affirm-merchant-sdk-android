@@ -11,6 +11,7 @@ import com.affirm.android.CookiesUtil
 import com.affirm.android.PromotionCallback
 import com.affirm.android.exception.AffirmException
 import com.affirm.android.model.*
+import com.affirm.android.model.Currency
 import kotlinx.android.synthetic.main.activity_main.*
 import java.math.BigDecimal
 import java.util.*
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val affirmTrackOrder = AffirmTrackOrder.builder()
                 .setStoreName("Affirm Store")
                 .setCoupon("SUMMER2018")
-                .setCurrency("USD")  // "CAD" for canadian, "USD" for American
+                .setCurrency(Currency.USD)  // "CAD" for canadian, "USD" for American
                 .setDiscount(0)
                 .setPaymentMethod("Visa")
                 .setRevenue(2920)
@@ -152,7 +153,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
-                .setCurrency("USD") // For Canadian, you must set "CAD"; For American, this is optional, you can set "USD" or not set.
+                .setCurrency(Currency.USD) // For Canadian, you must set "CAD"; For American, this is optional, you can set "USD" or not set.
                 .build()
     }
 

@@ -99,7 +99,11 @@ public abstract class Checkout implements Parcelable {
 
         abstract Builder setTotal(Integer value);
 
-        public abstract Builder setCurrency(String value);
+        abstract Builder setCurrency(String value);
+
+        public Builder setCurrency(Currency currency) {
+            return setCurrency(currency.getValue());
+        }
 
         public abstract Builder setMetadata(Map<String, String> value);
 

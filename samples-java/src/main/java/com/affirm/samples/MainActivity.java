@@ -24,6 +24,7 @@ import com.affirm.android.model.Billing;
 import com.affirm.android.model.CAAddress;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
+import com.affirm.android.model.Currency;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.PromoPageType;
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         final AffirmTrackOrder affirmTrackOrder = AffirmTrackOrder.builder()
                 .setStoreName("Affirm Store")
                 .setCoupon("SUMMER2018")
-                .setCurrency("USD")  // "CAD" for canadian, "USD" for American
+                .setCurrency(Currency.USD)  // "CAD" for canadian, "USD" for American
                 .setDiscount(0)
                 .setPaymentMethod("Visa")
                 .setRevenue(2920)
@@ -222,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
-                .setCurrency("USD") // For Canadian, you must set "CAD"; For American, this is optional, you can set "USD" or not set.
+                .setCurrency(Currency.USD) // For Canadian, you must set "CAD"; For American, this is optional, you can set "USD" or not set.
                 .build();
     }
 

@@ -135,7 +135,6 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val metadata = Metadata.builder()
                 .setShippingType("UPS Ground")
                 .setEntityName("internal-sub_brand-name")
-                .setPlatformType("Affirm Android SDK")
                 .setWebhookSessionId("ABC123")
                 .build()
 

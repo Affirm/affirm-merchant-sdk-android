@@ -42,7 +42,6 @@ public class CheckoutFactory {
         final Metadata metadata = Metadata.builder()
                 .setShippingType("UPS Ground")
                 .setEntityName("internal-sub_brand-name")
-                .setPlatformType("Affirm Android SDK")
                 .setWebhookSessionId("ABC123")
                 .build();
 

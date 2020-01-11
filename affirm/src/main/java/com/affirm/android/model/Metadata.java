@@ -28,10 +28,6 @@ public abstract class Metadata implements Parcelable {
     public abstract String entityName();
 
     @Nullable
-    @SerializedName("platform_type")
-    public abstract String platformType();
-
-    @Nullable
     @SerializedName("webhook_session_id")
     public abstract String webhookSessionId();
 
@@ -41,11 +37,10 @@ public abstract class Metadata implements Parcelable {
 
     @AutoValue.Builder
     public abstract static class Builder {
+
         public abstract Builder setShippingType(String value);
 
         public abstract Builder setEntityName(String value);
-
-        public abstract Builder setPlatformType(String value);
 
         public abstract Builder setWebhookSessionId(String value);
 

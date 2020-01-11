@@ -62,6 +62,8 @@ public enum AffirmLogoType {
 
     protected String getType() {
         switch (this) {
+            case AFFIRM_DISPLAY_TYPE_LOGO:
+                return LOGO;
             case AFFIRM_DISPLAY_TYPE_TEXT:
                 return TEXT;
             case AFFIRM_DISPLAY_TYPE_SYMBOL:

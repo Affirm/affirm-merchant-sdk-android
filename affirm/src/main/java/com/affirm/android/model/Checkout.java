@@ -40,7 +40,7 @@ public abstract class Checkout implements Parcelable {
     // Enter "CAD" for the currency type.
     @Nullable
     @SerializedName("currency")
-    public abstract String currency();
+    public abstract Currency currency();
 
     // Customer contact information.
     // The entire optional should be required, unless `sendShippingAddresses` to false
@@ -99,11 +99,7 @@ public abstract class Checkout implements Parcelable {
 
         abstract Builder setTotal(Integer value);
 
-        abstract Builder setCurrency(String value);
-
-        public Builder setCurrency(Currency currency) {
-            return setCurrency(currency.getValue());
-        }
+        public abstract Builder setCurrency(Currency value);
 
         public abstract Builder setMetadata(Map<String, String> value);
 

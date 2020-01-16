@@ -214,7 +214,6 @@ public void onAffirmPrequalError(String message) {
 ```java
     TextView promotionTextView = findViewById(R.id.promotionTextView);
     Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(PRICE, true)
-        .setPromoId(null)
         .setPageType(null)
         .build();
 

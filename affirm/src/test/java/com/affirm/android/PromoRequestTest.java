@@ -54,7 +54,6 @@ public class PromoRequestTest {
     @Test
     public void testPromo() {
         Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(BigDecimal.valueOf(1100.0), true)
-                .setPromoId(null)
                 .setPageType(null)
                 .build();
 

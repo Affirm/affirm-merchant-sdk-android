@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
 
         // Fetch promotion, then use your own TextView to display
         val requestData = Affirm.PromoRequestData.Builder(PRICE, true)
-                .setPromoId(null)
                 .setPageType(null)
                 .build()
 

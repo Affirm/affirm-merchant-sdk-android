@@ -138,7 +138,7 @@ public final class AffirmUtils {
 
         Drawable logoDrawable = null;
         if (affirmLogoType != AFFIRM_DISPLAY_TYPE_TEXT) {
-            logoDrawable = resources.getDrawable(affirmLogoType.getDrawableRes(affirmColor));
+            logoDrawable = resources.getDrawable(affirmLogoType.getDrawableRes(affirmColor)).mutate();
         }
 
         return getSpannable(template, textSize, logoDrawable, affirmColor, resources);

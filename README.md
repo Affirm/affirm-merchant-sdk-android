@@ -51,6 +51,7 @@ final Checkout checkout = Checkout.builder()
         .setShippingAmount(BigDecimal.valueOf(0.0))
         .setTaxAmount(BigDecimal.valueOf(100.0))
         .setTotal(BigDecimal.valueOf(1100.0))
+        .setMetadata(metadata)
         .build();
 
 Affirm.startCheckout(this, checkout, false);

@@ -38,9 +38,8 @@ public enum AffirmColor {
             case AFFIRM_COLOR_TYPE_BLACK:
                 return R.color.affirm_black;
             case AFFIRM_COLOR_TYPE_BLUE:
-                return R.color.affirm_blue;
             case AFFIRM_COLOR_TYPE_BLUE_BLACK:
-                return -1; // This is used for local style, no need to setColorFilter in this case
+                return R.color.affirm_blue;
             default:
                 return R.color.affirm_white;
         }

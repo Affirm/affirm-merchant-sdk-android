@@ -12,6 +12,7 @@ import com.affirm.android.AffirmColor;
 import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.AffirmRequest;
+import com.affirm.android.BuildConfig;
 import com.affirm.android.CookiesUtil;
 import com.affirm.android.PromotionCallback;
 import com.affirm.android.exception.AffirmException;
@@ -111,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         // Fetch promotion, then use your own TextView to display
         TextView promotionTextView = findViewById(R.id.promotionTextView);
         Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(PRICE, true)
-                .setPromoId(null)
                 .setPageType(null)
                 .build();
 
@@ -215,6 +215,10 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
         final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("platform_type", "Affirm Android SDK");
+        metadata.put("platform_affirm", BuildConfig.VERSION_NAME);
+
         return Checkout.builder()
                 .setOrderId("55555")
                 .setItems(items)
@@ -224,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
                 .setCurrency(Currency.USD) // For Canadian, you must set "CAD"; For American, this is optional, you can set "USD" or not set.
+                .setMetadata(metadata)
                 .build();
     }
 

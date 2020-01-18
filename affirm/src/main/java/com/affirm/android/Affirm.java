@@ -104,6 +104,15 @@ public final class Affirm {
         String trackerBaseUrl() {
             return AffirmConstants.getTrackerUrl();
         }
+
+        String basePromoUrl() {
+            switch (this) {
+                case SANDBOX:
+                    return AffirmConstants.getStagingPromoUrl();
+                default:
+                    return AffirmConstants.getProductionPromoUrl();
+            }
+        }
     }
 
     public static final class Configuration {

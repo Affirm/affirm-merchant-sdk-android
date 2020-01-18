@@ -59,11 +59,30 @@ public final class AffirmConstants {
         }
     }
 
+    static String getStagingPromoUrl() {
+        switch (location) {
+            case CA:
+                return CA_SANDBOX_URL;
+            default:
+                return SANDBOX_URL;
+        }
+    }
+
+    static String getProductionPromoUrl() {
+        switch (location) {
+            case CA:
+                return CA_PRODUCTION_PROMO_URL;
+            default:
+                return PRODUCTION_PROMO_URL;
+        }
+    }
+
     // CA URL
     private static final String CA_SANDBOX_URL = "sandbox.affirm.ca";
     private static final String CA_SANDBOX_JS_URL = "cdn1-sandbox.affirm.ca";
     private static final String CA_TRACKER_URL = "tracker.affirm.ca";
     private static final String CA_PRODUCTION_URL = "api.affirm.ca";
+    private static final String CA_PRODUCTION_PROMO_URL = "www.affirm.ca";
     private static final String CA_PRODUCTION_JS_URL = "cdn1.affirm.ca";
 
     // US URL
@@ -71,6 +90,7 @@ public final class AffirmConstants {
     private static final String SANDBOX_JS_URL = "cdn1-sandbox.affirm.com";
     private static final String TRACKER_URL = "tracker.affirm.com";
     private static final String PRODUCTION_URL = "api.affirm.com";
+    private static final String PRODUCTION_PROMO_URL = "www.affirm.com";
     private static final String PRODUCTION_JS_URL = "cdn1.affirm.com";
 
     static final String CHECKOUT_PATH = "/api/v2/checkout/";

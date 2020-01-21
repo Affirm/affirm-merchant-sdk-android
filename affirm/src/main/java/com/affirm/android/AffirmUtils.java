@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK;
 import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_END;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_START;
@@ -137,27 +138,26 @@ public final class AffirmUtils {
 
         Drawable logoDrawable = null;
         if (affirmLogoType != AFFIRM_DISPLAY_TYPE_TEXT) {
-            logoDrawable = resources.getDrawable(affirmLogoType.getDrawableRes(affirmColor));
+            logoDrawable = resources.getDrawable(
+                    affirmLogoType.getDrawableRes(affirmColor)).mutate();
         }
 
-        int color = affirmColor.getColorRes() != -1
-                ? resources.getColor(affirmColor.getColorRes()) : -1;
-
-        return getSpannable(template, textSize, logoDrawable, color);
+        return getSpannable(template, textSize, logoDrawable, affirmColor, resources);
     }
 
     private static SpannableString getSpannable(
             @NonNull String template,
             float textSize,
             @Nullable Drawable logoDrawable,
-            int color
+            @NonNull AffirmColor affirmColor,
+            @NonNull Resources resources
     ) {
         SpannableString spannableString;
 
         int index = template.indexOf(LOGO_PLACEHOLDER);
         if (logoDrawable != null && index != -1) {
             spannableString = new SpannableString(template);
-            ImageSpan imageSpan = getLogoSpan(textSize, logoDrawable, color);
+            ImageSpan imageSpan = getLogoSpan(textSize, logoDrawable, affirmColor, resources);
             spannableString.setSpan(
                     imageSpan,
                     index,
@@ -175,14 +175,17 @@ public final class AffirmUtils {
     private static ImageSpan getLogoSpan(
             float textSize,
             @NonNull Drawable logoDrawable,
-            int color
+            @NonNull AffirmColor affirmColor,
+            @NonNull Resources resources
     ) {
 
         float logoHeight = textSize * 1.f;
         float ratio = (float) logoDrawable.getIntrinsicWidth() / logoDrawable.getIntrinsicHeight();
 
-        if (color != -1) {
-            logoDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        // Should not setColorFilter for blue_black logo
+        if (affirmColor != AFFIRM_COLOR_TYPE_BLUE_BLACK) {
+            logoDrawable.setColorFilter(
+                    resources.getColor(affirmColor.getColorRes()), PorterDuff.Mode.SRC_ATOP);
         }
 
         logoDrawable.setBounds(0, 0,

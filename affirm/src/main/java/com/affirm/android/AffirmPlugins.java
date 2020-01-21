@@ -70,6 +70,10 @@ class AffirmPlugins {
         return configuration.environment.baseUrl;
     }
 
+    String basePromoUrl() {
+        return configuration.environment.basePromoUrl;
+    }
+
     String baseJsUrl() {
         return configuration.environment.jsUrl;
     }

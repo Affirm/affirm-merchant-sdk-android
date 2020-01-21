@@ -11,6 +11,7 @@ public final class AffirmConstants {
     static final String SANDBOX_JS_URL = "cdn1-sandbox.affirm.com";
     static final String TRACKER_URL = "tracker.affirm.com";
     static final String PRODUCTION_URL = "api.affirm.com";
+    static final String PRODUCTION_PROMO_URL = "www.affirm.com";
     static final String PRODUCTION_JS_URL = "cdn1.affirm.com";
     static final String CHECKOUT_PATH = "/api/v2/checkout/";
     static final String TRACKER_PATH = "/collect";

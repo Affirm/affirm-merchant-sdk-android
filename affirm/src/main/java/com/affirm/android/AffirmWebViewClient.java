@@ -1,5 +1,7 @@
 package com.affirm.android;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -30,9 +32,26 @@ abstract class AffirmWebViewClient extends WebViewClient {
         return !url.startsWith(HTTP);
     }
 
+    // This method was deprecated in API level 23
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onReceivedError(WebView view, int errorCode, String description,
+                                String failingUrl) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return;
+        }
+        callbacks.onWebViewError(new ConnectionException(errorCode + ", " + description));
+    }
+
+    @TargetApi(android.os.Build.VERSION_CODES.M)
     @Override
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-        callbacks.onWebViewError(new ConnectionException(error.toString()));
+        // Please be aware that the new SDK 23 callback will be called for any resource
+        // (iframe, image, etc) that failed to load, not just for the main page
+        if (request.isForMainFrame()) {
+            callbacks.onWebViewError(new ConnectionException(
+                    error.getErrorCode() + ", " + error.getDescription().toString()));
+        }
     }
 
     public interface WebViewClientCallbacks {

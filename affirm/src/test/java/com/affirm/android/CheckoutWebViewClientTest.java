@@ -1,5 +1,6 @@
 package com.affirm.android;
 
+import android.os.Build;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -52,9 +53,15 @@ public class CheckoutWebViewClientTest {
     public void onReceivedError() {
         WebResourceRequest resourceRequest = Mockito.mock(WebResourceRequest.class);
         WebResourceError error = Mockito.mock(WebResourceError.class);
-        when(error.toString()).thenReturn("error msg");
+        when(error.getDescription()).thenReturn("error msg");
 
-        affirmWebViewClient.onReceivedError(webview, resourceRequest, error);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            affirmWebViewClient.onReceivedError(webview, resourceRequest, error);
+        } else {
+            affirmWebViewClient.onReceivedError(webview, error.getErrorCode(),
+                    error.getDescription() != null ? error.getDescription().toString() : "",
+                    resourceRequest.getUrl() != null ? resourceRequest.getUrl().toString() : "");
+        }
         Mockito.verify(callbacks, never()).onWebViewError(new ConnectionException("error msg"));
     }
 }

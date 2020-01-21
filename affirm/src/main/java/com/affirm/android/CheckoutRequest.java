@@ -27,10 +27,21 @@ import okhttp3.ResponseBody;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
+import static com.affirm.android.AffirmConstants.API_VERSION_KEY;
+import static com.affirm.android.AffirmConstants.API_VERSION_VALUE;
+import static com.affirm.android.AffirmConstants.CHECKOUT;
 import static com.affirm.android.AffirmConstants.CHECKOUT_PATH;
 import static com.affirm.android.AffirmConstants.CONTENT_TYPE;
+import static com.affirm.android.AffirmConstants.MERCHANT;
+import static com.affirm.android.AffirmConstants.METADATA;
+import static com.affirm.android.AffirmConstants.PLATFORM_AFFIRM_KEY;
+import static com.affirm.android.AffirmConstants.PLATFORM_AFFIRM_VALUE;
+import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_KEY;
+import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_VALUE;
 import static com.affirm.android.AffirmConstants.TAG_CHECKOUT;
 import static com.affirm.android.AffirmConstants.TAG_VCN_CHECKOUT;
+import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_KEY;
+import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_VALUE;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
@@ -76,21 +87,21 @@ class CheckoutRequest implements AffirmRequest {
         final JsonParser jsonParser = new JsonParser();
 
         final JsonObject merchantJson = jsonParser.parse(gson.toJson(merchant)).getAsJsonObject();
-        merchantJson.addProperty("user_confirmation_url_action", "GET");
+        merchantJson.addProperty(USER_CONFIRMATION_URL_ACTION_KEY, USER_CONFIRMATION_URL_ACTION_VALUE);
 
         final JsonObject checkoutJson = jsonParser.parse(gson.toJson(checkout)).getAsJsonObject();
 
-        checkoutJson.add("merchant", merchantJson);
-        checkoutJson.addProperty("api_version", "v2");
+        checkoutJson.add(MERCHANT, merchantJson);
+        checkoutJson.addProperty(API_VERSION_KEY, API_VERSION_VALUE);
 
         final JsonObject metadataJson =
                 jsonParser.parse(gson.toJson(checkout.metadata())).getAsJsonObject();
-        metadataJson.addProperty("platform_type", "Affirm Android SDK");
-        metadataJson.addProperty("platform_affirm", BuildConfig.VERSION_NAME);
-        checkoutJson.add("metadata", metadataJson);
+        metadataJson.addProperty(PLATFORM_TYPE_KEY, PLATFORM_TYPE_VALUE);
+        metadataJson.addProperty(PLATFORM_AFFIRM_KEY, PLATFORM_AFFIRM_VALUE);
+        checkoutJson.add(METADATA, metadataJson);
 
         final JsonObject jsonRequest = new JsonObject();
-        jsonRequest.add("checkout", checkoutJson);
+        jsonRequest.add(CHECKOUT, checkoutJson);
 
         if (checkoutCall != null) {
             checkoutCall.cancel();

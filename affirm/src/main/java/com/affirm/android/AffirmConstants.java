@@ -151,4 +151,22 @@ public final class AffirmConstants {
     static final String HTML_FRAGMENT = "HTML_FRAGMENT";
     static final String REMOTE_CSS_URL = "REMOTE_CSS_URL";
     static final String AFFIRM_FONT = "AFFIRM_FONT";
+
+    static final String USER_CONFIRMATION_URL_ACTION_KEY = "user_confirmation_url_action";
+    static final String USER_CONFIRMATION_URL_ACTION_VALUE = "GET";
+
+    static final String PLATFORM_TYPE_KEY = "platform_type";
+    static final String PLATFORM_TYPE_VALUE = "Affirm Android SDK";
+    static final String PLATFORM_AFFIRM_KEY = "platform_affirm";
+    static final String PLATFORM_AFFIRM_VALUE = BuildConfig.VERSION_NAME;
+
+    static final String API_VERSION_KEY = "api_version";
+    static final String API_VERSION_VALUE = "v2";
+
+    static final String MERCHANT = "merchant";
+    static final String METADATA = "metadata";
+    static final String CHECKOUT = "checkout";
+
+    static final String SHIPPING = "shipping";
+    static final String ADDRESS = "address";
 }

@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
 import com.affirm.android.AffirmRequest
-import com.affirm.android.BuildConfig
 import com.affirm.android.CookiesUtil
 import com.affirm.android.PromotionCallback
 import com.affirm.android.exception.AffirmException
@@ -146,9 +145,11 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val shipping = Shipping.builder().setAddress(address).setName(name).build()
         val billing = Billing.builder().setAddress(address).setName(name).build()
 
-        val metadata: MutableMap<String, String> = HashMap()
-        metadata["platform_type"] = "Affirm Android SDK"
-        metadata["platform_affirm"] = BuildConfig.VERSION_NAME
+        val metadata = Metadata.builder()
+                .setShippingType("UPS Ground")
+                .setEntityName("internal-sub_brand-name")
+                .setWebhookSessionId("ABC123")
+                .build()
 
         return Checkout.builder()
                 .setItems(items)

@@ -12,7 +12,6 @@ import com.affirm.android.AffirmColor;
 import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.AffirmRequest;
-import com.affirm.android.BuildConfig;
 import com.affirm.android.CookiesUtil;
 import com.affirm.android.PromotionCallback;
 import com.affirm.android.exception.AffirmException;
@@ -27,6 +26,7 @@ import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Currency;
 import com.affirm.android.model.Item;
+import com.affirm.android.model.Metadata;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.Shipping;
@@ -215,9 +215,11 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
         final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
-        final Map<String, String> metadata = new HashMap<>();
-        metadata.put("platform_type", "Affirm Android SDK");
-        metadata.put("platform_affirm", BuildConfig.VERSION_NAME);
+        final Metadata metadata = Metadata.builder()
+                .setShippingType("UPS Ground")
+                .setEntityName("internal-sub_brand-name")
+                .setWebhookSessionId("ABC123")
+                .build();
 
         return Checkout.builder()
                 .setOrderId("55555")

@@ -1,6 +1,17 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.8 (January 22, 2019)
+- Change promos call to hit base url
+- Add metatdata examples
+- Remove promo ID from example code
+- Fix unnecessary connection exception
+- Update logos
+- Fix Affirm color type white not working
+- Fix drawable colors
+- Add support for webhook session IDs
+- Add support for Canadian checkouts
+
 ## Version 2.0.7 (November 12, 2019)
 - Support for Blue and Black logo in text
 - Page type for independent modals

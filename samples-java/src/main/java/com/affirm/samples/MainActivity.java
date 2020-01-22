@@ -12,18 +12,21 @@ import com.affirm.android.AffirmColor;
 import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.AffirmRequest;
-import com.affirm.android.BuildConfig;
 import com.affirm.android.CookiesUtil;
 import com.affirm.android.PromotionCallback;
 import com.affirm.android.exception.AffirmException;
+import com.affirm.android.model.AbstractAddress;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
 import com.affirm.android.model.AffirmTrackProduct;
 import com.affirm.android.model.Billing;
+import com.affirm.android.model.CAAddress;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
+import com.affirm.android.model.Currency;
 import com.affirm.android.model.Item;
+import com.affirm.android.model.Metadata;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.Shipping;
@@ -142,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         final AffirmTrackOrder affirmTrackOrder = AffirmTrackOrder.builder()
                 .setStoreName("Affirm Store")
                 .setCoupon("SUMMER2018")
-                .setCurrency("USD")
+                .setCurrency(Currency.USD)  // "CAD" for canadian, "USD" for American
                 .setDiscount(0)
                 .setPaymentMethod("Visa")
                 .setRevenue(2920)
@@ -189,6 +192,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         items.put("wheel", item);
 
         final Name name = Name.builder().setFull("John Smith").build();
+
+        //  In US, use Address
         final Address address = Address.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
@@ -197,12 +202,24 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .setZipcode("94107")
                 .build();
 
+        //  In canadian, use CAAddress
+//        final AbstractAddress address = CAAddress.builder()
+//                .setStreet1("123 Alder Creek Dr.")
+//                .setStreet2("Floor 7")
+//                .setCity("Toronto")
+//                .setRegion1Code("ON")
+//                .setPostalCode("M4B 1B3")
+//                .setCountryCode("CA")
+//                .build();
+
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
         final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
-        final Map<String, String> metadata = new HashMap<>();
-        metadata.put("platform_type", "Affirm Android SDK");
-        metadata.put("platform_affirm", BuildConfig.VERSION_NAME);
+        final Metadata metadata = Metadata.builder()
+                .setShippingType("UPS Ground")
+                .setEntityName("internal-sub_brand-name")
+                .setWebhookSessionId("ABC123")
+                .build();
 
         return Checkout.builder()
                 .setOrderId("55555")
@@ -212,6 +229,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
+                .setCurrency(Currency.USD) // For Canadian, you must set "CAD"; For American, this is optional, you can set "USD" or not set.
                 .setMetadata(metadata)
                 .build();
     }

@@ -3,7 +3,9 @@ package com.affirm.android.utils;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.Billing;
 import com.affirm.android.model.Checkout;
+import com.affirm.android.model.Currency;
 import com.affirm.android.model.Item;
+import com.affirm.android.model.Metadata;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.Shipping;
 
@@ -38,6 +40,12 @@ public class CheckoutFactory {
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
         final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
+        final Metadata metadata = Metadata.builder()
+                .setShippingType("UPS Ground")
+                .setEntityName("internal-sub_brand-name")
+                .setWebhookSessionId("ABC123")
+                .build();
+
         return Checkout.builder()
                 .setItems(items)
                 .setBilling(billing)
@@ -45,6 +53,8 @@ public class CheckoutFactory {
                 .setShippingAmount(BigDecimal.valueOf(1000.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(BigDecimal.valueOf(1100.0))
+                .setMetadata(metadata)
+                .setCurrency(Currency.USD)
                 .build();
     }
 }

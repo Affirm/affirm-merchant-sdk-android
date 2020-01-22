@@ -37,6 +37,11 @@ public abstract class Checkout implements Parcelable {
     @Nullable
     public abstract Map<String, Discount> discounts();
 
+    // Enter "CAD" for the currency type.
+    @Nullable
+    @SerializedName("currency")
+    public abstract Currency currency();
+
     // Customer contact information.
     // The entire optional should be required, unless `sendShippingAddresses` to false
     // to make it to optional
@@ -96,6 +101,8 @@ public abstract class Checkout implements Parcelable {
         abstract Builder setTotal(Integer value);
 
         public abstract Builder setMetadata(Metadata value);
+
+        public abstract Builder setCurrency(Currency value);
 
         abstract Checkout autoBuild();
 

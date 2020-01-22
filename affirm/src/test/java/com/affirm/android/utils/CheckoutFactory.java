@@ -3,6 +3,7 @@ package com.affirm.android.utils;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.Billing;
 import com.affirm.android.model.Checkout;
+import com.affirm.android.model.Currency;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.Metadata;
 import com.affirm.android.model.Name;
@@ -53,6 +54,7 @@ public class CheckoutFactory {
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(BigDecimal.valueOf(1100.0))
                 .setMetadata(metadata)
+                .setCurrency(Currency.USD)
                 .build();
     }
 }

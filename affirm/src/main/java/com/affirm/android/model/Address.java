@@ -1,16 +1,15 @@
 package com.affirm.android.model;
 
-import android.os.Parcelable;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 
-import androidx.annotation.Nullable;
-
 @AutoValue
-public abstract class Address implements Parcelable {
-    public static Builder builder() {
+public abstract class Address extends AbstractAddress {
+
+    public static Address.Builder builder() {
         return new AutoValue_Address.Builder();
     }
 

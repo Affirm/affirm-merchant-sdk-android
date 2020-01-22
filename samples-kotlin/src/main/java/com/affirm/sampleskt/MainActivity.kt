@@ -11,6 +11,7 @@ import com.affirm.android.CookiesUtil
 import com.affirm.android.PromotionCallback
 import com.affirm.android.exception.AffirmException
 import com.affirm.android.model.*
+import com.affirm.android.model.Currency
 import kotlinx.android.synthetic.main.activity_main.*
 import java.math.BigDecimal
 import java.util.*
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val affirmTrackOrder = AffirmTrackOrder.builder()
                 .setStoreName("Affirm Store")
                 .setCoupon("SUMMER2018")
-                .setCurrency("USD")
+                .setCurrency(Currency.USD)  // "CAD" for canadian, "USD" for American
                 .setDiscount(0)
                 .setPaymentMethod("Visa")
                 .setRevenue(2920)
@@ -121,6 +122,18 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val items: MutableMap<String, Item> = HashMap()
         items["wheel"] = item
         val name = Name.builder().setFull("John Smith").build()
+
+        //  In canadian, use CAAddress
+//        val address = CAAddress.builder()
+//                .setStreet1("123 Alder Creek Dr.")
+//                .setStreet2("Floor 7")
+//                .setCity("Toronto")
+//                .setRegion1Code("ON")
+//                .setPostalCode("M4B 1B3")
+//                .setCountryCode("CA")
+//                .build()
+
+        //  In US, use Address
         val address = Address.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
@@ -128,6 +141,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setState("CA")
                 .setZipcode("94107")
                 .build()
+
         val shipping = Shipping.builder().setAddress(address).setName(name).build()
         val billing = Billing.builder().setAddress(address).setName(name).build()
 
@@ -144,6 +158,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
+                .setCurrency(Currency.USD) // For Canadian, you must set "CAD"; For American, this is optional, you can set "USD" or not set.
                 .setMetadata(metadata)
                 .build()
     }

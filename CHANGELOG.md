@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.9 (February 11, 2019)
+- Add backend support for VCN
+
 ## Version 2.0.8 (January 22, 2019)
 - Change promos call to hit base url
 - Add metatdata examples

@@ -2,6 +2,8 @@ package com.affirm.android.model;
 
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -17,18 +19,22 @@ public abstract class CardDetails implements Parcelable {
         return new AutoValue_CardDetails.GsonTypeAdapter(gson);
     }
 
+    @Nullable
     @SerializedName("cardholder_name")
     public abstract String cardholderName();
 
     @SerializedName("checkout_token")
     public abstract String checkoutToken();
 
+    @Nullable
     @SerializedName("cvv")
     public abstract String cvv();
 
+    @Nullable
     @SerializedName("expiration")
     public abstract String expiration();
 
+    @Nullable
     @SerializedName("number")
     public abstract String number();
 

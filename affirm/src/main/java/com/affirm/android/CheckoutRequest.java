@@ -12,7 +12,6 @@ import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 import com.affirm.android.model.Merchant;
-import com.affirm.android.model.Shipping;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -26,7 +25,6 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import static com.affirm.android.AffirmConstants.ADDRESS;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
 import static com.affirm.android.AffirmConstants.API_VERSION_KEY;
@@ -40,7 +38,6 @@ import static com.affirm.android.AffirmConstants.PLATFORM_AFFIRM_KEY;
 import static com.affirm.android.AffirmConstants.PLATFORM_AFFIRM_VALUE;
 import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_KEY;
 import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_VALUE;
-import static com.affirm.android.AffirmConstants.SHIPPING;
 import static com.affirm.android.AffirmConstants.TAG_CHECKOUT;
 import static com.affirm.android.AffirmConstants.TAG_VCN_CHECKOUT;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_KEY;
@@ -98,13 +95,6 @@ class CheckoutRequest implements AffirmRequest {
         metadataJson.addProperty(PLATFORM_AFFIRM_KEY, PLATFORM_AFFIRM_VALUE);
 
         final JsonObject checkoutJson = jsonParser.parse(gson.toJson(checkout)).getAsJsonObject();
-        final Shipping shipping = checkout.shippingAddress();
-        if (shipping != null) {
-            JsonObject address = jsonParser
-                    .parse(gson.toJson(shipping.address()))
-                    .getAsJsonObject();
-            ((JsonObject) checkoutJson.get(SHIPPING)).add(ADDRESS, address);
-        }
         checkoutJson.add(MERCHANT, merchantJson);
         checkoutJson.addProperty(API_VERSION_KEY, API_VERSION_VALUE);
         checkoutJson.add(METADATA, metadataJson);

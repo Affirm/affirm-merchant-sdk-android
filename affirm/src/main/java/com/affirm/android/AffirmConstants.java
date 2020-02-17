@@ -166,7 +166,4 @@ public final class AffirmConstants {
     static final String MERCHANT = "merchant";
     static final String METADATA = "metadata";
     static final String CHECKOUT = "checkout";
-
-    static final String SHIPPING = "shipping";
-    static final String ADDRESS = "address";
 }

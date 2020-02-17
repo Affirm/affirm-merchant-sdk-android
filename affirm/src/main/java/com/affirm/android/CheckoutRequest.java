@@ -19,14 +19,12 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import static com.affirm.android.AffirmConstants.ADDRESS;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
 import static com.affirm.android.AffirmConstants.API_VERSION_KEY;
@@ -40,7 +38,6 @@ import static com.affirm.android.AffirmConstants.PLATFORM_AFFIRM_KEY;
 import static com.affirm.android.AffirmConstants.PLATFORM_AFFIRM_VALUE;
 import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_KEY;
 import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_VALUE;
-import static com.affirm.android.AffirmConstants.SHIPPING;
 import static com.affirm.android.AffirmConstants.TAG_CHECKOUT;
 import static com.affirm.android.AffirmConstants.TAG_VCN_CHECKOUT;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_KEY;
@@ -58,6 +55,9 @@ class CheckoutRequest implements AffirmRequest {
     private final InnerCheckoutCallback checkoutCallback;
 
     private Call checkoutCall;
+
+    private final JsonParser jsonParser = new JsonParser();
+    private final Gson gson = AffirmPlugins.get().gson();
 
     CheckoutRequest(@NonNull Checkout checkout,
                     @Nullable InnerCheckoutCallback callback,
@@ -86,25 +86,18 @@ class CheckoutRequest implements AffirmRequest {
                     .build();
         }
 
-        Gson gson = AffirmPlugins.get().gson();
-        final JsonParser jsonParser = new JsonParser();
-
-        final JsonObject merchantJson = jsonParser.parse(gson.toJson(merchant)).getAsJsonObject();
+        final JsonObject merchantJson = parseToJsonObject(merchant);
         merchantJson
                 .addProperty(USER_CONFIRMATION_URL_ACTION_KEY, USER_CONFIRMATION_URL_ACTION_VALUE);
-        final JsonObject metadataJson =
-                jsonParser.parse(gson.toJson(checkout.metadata())).getAsJsonObject();
-        metadataJson.addProperty(PLATFORM_TYPE_KEY, PLATFORM_TYPE_VALUE);
-        metadataJson.addProperty(PLATFORM_AFFIRM_KEY, PLATFORM_AFFIRM_VALUE);
 
-        final JsonObject checkoutJson = jsonParser.parse(gson.toJson(checkout)).getAsJsonObject();
-        JsonObject address = jsonParser
-                .parse(gson.toJson(Objects.requireNonNull(checkout.shippingAddress()).address()))
-                .getAsJsonObject();
-        ((JsonObject) checkoutJson.get(SHIPPING)).add(ADDRESS, address);
+        final JsonObject checkoutJson = parseToJsonObject(checkout);
         checkoutJson.add(MERCHANT, merchantJson);
         checkoutJson.addProperty(API_VERSION_KEY, API_VERSION_VALUE);
-        checkoutJson.add(METADATA, metadataJson);
+
+        // Need to set `platform_type` & `platform_affirm` by default
+        final JsonObject metadataJson = checkoutJson.getAsJsonObject(METADATA);
+        metadataJson.addProperty(PLATFORM_TYPE_KEY, PLATFORM_TYPE_VALUE);
+        metadataJson.addProperty(PLATFORM_AFFIRM_KEY, PLATFORM_AFFIRM_VALUE);
 
         final JsonObject jsonRequest = new JsonObject();
         jsonRequest.add(CHECKOUT, checkoutJson);
@@ -188,5 +181,9 @@ class CheckoutRequest implements AffirmRequest {
         if (checkoutCallback != null) {
             new Handler(Looper.getMainLooper()).post(() -> checkoutCallback.onError(e));
         }
+    }
+
+    private JsonObject parseToJsonObject(Object object) {
+        return jsonParser.parse(gson.toJson(object)).getAsJsonObject();
     }
 }

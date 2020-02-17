@@ -2,7 +2,9 @@ package com.affirm.android;
 
 import android.webkit.CookieManager;
 
+import com.affirm.android.model.AbstractAddress;
 import com.affirm.android.model.AffirmAdapterFactory;
+import com.affirm.android.model.AddressSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -87,6 +89,7 @@ class AffirmPlugins {
         if (gson == null) {
             gson = new GsonBuilder()
                     .registerTypeAdapterFactory(AffirmAdapterFactory.create())
+                    .registerTypeAdapter(AbstractAddress.class, new AddressSerializer())
                     .create();
         }
         return gson;

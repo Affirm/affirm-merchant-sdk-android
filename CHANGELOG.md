@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.10 (February 17, 2019)
+- Bug-fix
+
 ## Version 2.0.9 (February 11, 2019)
 - Add backend support for VCN
 

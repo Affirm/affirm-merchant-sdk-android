@@ -95,7 +95,10 @@ class CheckoutRequest implements AffirmRequest {
         checkoutJson.addProperty(API_VERSION_KEY, API_VERSION_VALUE);
 
         // Need to set `platform_type` & `platform_affirm` by default
-        final JsonObject metadataJson = checkoutJson.getAsJsonObject(METADATA);
+        JsonObject metadataJson = checkoutJson.getAsJsonObject(METADATA);
+        if (metadataJson == null) {
+            metadataJson = new JsonObject();
+        }
         metadataJson.addProperty(PLATFORM_TYPE_KEY, PLATFORM_TYPE_VALUE);
         metadataJson.addProperty(PLATFORM_AFFIRM_KEY, PLATFORM_AFFIRM_VALUE);
 

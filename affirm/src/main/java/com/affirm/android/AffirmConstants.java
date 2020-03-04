@@ -77,21 +77,43 @@ public final class AffirmConstants {
         }
     }
 
+    static String getStagingInvalidCheckoutRedirectUrl() {
+        switch (location) {
+            case CA:
+                return CA_SANDBOX_INVALID_CHECKOUT_REDIRECT_URL;
+            default:
+                return SANDBOX_INVALID_CHECKOUT_REDIRECT_URL;
+        }
+    }
+
+    static String getProductionInvalidCheckoutRedirectUrl() {
+        switch (location) {
+            case CA:
+                return CA_PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL;
+            default:
+                return PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL;
+        }
+    }
+
     // CA URL
     private static final String CA_SANDBOX_URL = "sandbox.affirm.ca";
     private static final String CA_SANDBOX_JS_URL = "cdn1-sandbox.affirm.ca";
+    private static final String CA_SANDBOX_INVALID_CHECKOUT_REDIRECT_URL = "sandbox.affirm.ca/u/";
     private static final String CA_TRACKER_URL = "tracker.affirm.ca";
     private static final String CA_PRODUCTION_URL = "api.affirm.ca";
     private static final String CA_PRODUCTION_PROMO_URL = "www.affirm.ca";
     private static final String CA_PRODUCTION_JS_URL = "cdn1.affirm.ca";
+    private static final String CA_PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL = "api.affirm.ca/u/";
 
     // US URL
     private static final String SANDBOX_URL = "sandbox.affirm.com";
     private static final String SANDBOX_JS_URL = "cdn1-sandbox.affirm.com";
+    private static final String SANDBOX_INVALID_CHECKOUT_REDIRECT_URL = "sandbox.affirm.com/u/";
     private static final String TRACKER_URL = "tracker.affirm.com";
     private static final String PRODUCTION_URL = "api.affirm.com";
     private static final String PRODUCTION_PROMO_URL = "www.affirm.com";
     private static final String PRODUCTION_JS_URL = "cdn1.affirm.com";
+    private static final String PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL = "api.affirm.com/u/";
 
     static final String CHECKOUT_PATH = "/api/v2/checkout/";
     static final String TRACKER_PATH = "/collect";
@@ -166,4 +188,6 @@ public final class AffirmConstants {
     static final String MERCHANT = "merchant";
     static final String METADATA = "metadata";
     static final String CHECKOUT = "checkout";
+
+    static final String INVALID_CHECKOUT_MESSAGE = "Checkout status is in an invalid state.";
 }

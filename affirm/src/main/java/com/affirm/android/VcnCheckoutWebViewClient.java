@@ -17,6 +17,8 @@ import java.net.URLDecoder;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.INVALID_CHECKOUT_MESSAGE;
 
 final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     private final Callbacks callbacks;
@@ -24,10 +26,6 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     private final String receiveReasonCodes;
     private static final String VCN_CHECKOUT_REGEX = "data=";
     private static final String ENCODING_FORMAT = "UTF-8";
-    private static final String INVALID_CHECKOUT_REDIRECT_URL =
-            "https://sandbox.affirm.com/u/";
-    private static final String INVALID_CHECKOUT_MESSAGE =
-            "Checkout status is in an invalid state.";
 
     VcnCheckoutWebViewClient(@NonNull Gson gson, @NonNull String receiveReasonCodes,
                              @NonNull Callbacks callbacks) {
@@ -40,7 +38,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     @Nullable
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        if (request.getUrl().toString().equals(INVALID_CHECKOUT_REDIRECT_URL)) {
+        if (request.getUrl().toString().equals(HTTPS_PROTOCOL + AffirmPlugins.get().baseInvalidCheckoutRedirectUrl())) {
             callbacks.onWebViewError(
                     new ConnectionException(INVALID_CHECKOUT_MESSAGE)
             );

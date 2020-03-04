@@ -85,6 +85,10 @@ class AffirmPlugins {
         return configuration.environment.trackerBaseUrl();
     }
 
+    String baseInvalidCheckoutRedirectUrl() {
+        return configuration.environment.baseInvalidCheckoutRedirectUrl();
+    }
+
     synchronized Gson gson() {
         if (gson == null) {
             gson = new GsonBuilder()

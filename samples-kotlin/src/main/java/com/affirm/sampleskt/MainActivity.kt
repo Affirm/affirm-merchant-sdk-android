@@ -145,11 +145,12 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
         val shipping = Shipping.builder().setAddress(address).setName(name).build()
         val billing = Billing.builder().setAddress(address).setName(name).build()
 
-        val metadata = Metadata.builder()
-                .setShippingType("UPS Ground")
-                .setEntityName("internal-sub_brand-name")
-                .setWebhookSessionId("ABC123")
-                .build()
+        // More details on https://docs.affirm.com/affirm-developers/reference/the-metadata-object
+        val metadata = mapOf(
+                "webhook_session_id" to "ABC123",
+                "shipping_type" to "UPS Ground",
+                "entity_name" to "internal-sub_brand-name"
+        )
 
         return Checkout.builder()
                 .setItems(items)

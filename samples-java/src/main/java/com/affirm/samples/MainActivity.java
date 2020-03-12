@@ -15,18 +15,15 @@ import com.affirm.android.AffirmRequest;
 import com.affirm.android.CookiesUtil;
 import com.affirm.android.PromotionCallback;
 import com.affirm.android.exception.AffirmException;
-import com.affirm.android.model.AbstractAddress;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
 import com.affirm.android.model.AffirmTrackProduct;
 import com.affirm.android.model.Billing;
-import com.affirm.android.model.CAAddress;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Currency;
 import com.affirm.android.model.Item;
-import com.affirm.android.model.Metadata;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.Shipping;
@@ -215,11 +212,11 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
         final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
-        final Metadata metadata = Metadata.builder()
-                .setShippingType("UPS Ground")
-                .setEntityName("internal-sub_brand-name")
-                .setWebhookSessionId("ABC123")
-                .build();
+        // More details on https://docs.affirm.com/affirm-developers/reference/the-metadata-object
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("webhook_session_id", "ABC123");
+        metadata.put("shipping_type", "UPS Ground");
+        metadata.put("entity_name", "internal-sub_brand-name");
 
         return Checkout.builder()
                 .setOrderId("55555")

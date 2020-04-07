@@ -29,11 +29,19 @@
             android:textSize="18sp"
             tools:text="Pay as low as $69/month with Affirm" />
 
+        <com.affirm.android.PromotionWebView
+            android:id="@+id/htmlPromotionWebView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/promotionTextView"
+            android:layout_marginTop="20dp"
+            android:gravity="center" />
+
         <com.affirm.android.AffirmPromotionButton
             android:id="@+id/promo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/promotionTextView"
+            android:layout_below="@id/htmlPromotionWebView"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             app:affirmColor="AffirmColorTypeBlue"

@@ -86,7 +86,6 @@ public class AffirmPromotionButton extends FrameLayout {
         promotionButton.setAffirmLogoType(affirmLogoType);
 
         promotionWebView = new PromotionWebView(context);
-        promotionWebView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
     }
 
     protected void setLabel(@NonNull String text) {

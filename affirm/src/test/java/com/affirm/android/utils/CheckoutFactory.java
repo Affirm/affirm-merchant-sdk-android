@@ -5,7 +5,6 @@ import com.affirm.android.model.Billing;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Currency;
 import com.affirm.android.model.Item;
-import com.affirm.android.model.Metadata;
 import com.affirm.android.model.Name;
 import com.affirm.android.model.Shipping;
 
@@ -40,11 +39,10 @@ public class CheckoutFactory {
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
         final Billing billing = Billing.builder().setAddress(address).setName(name).build();
 
-        final Metadata metadata = Metadata.builder()
-                .setShippingType("UPS Ground")
-                .setEntityName("internal-sub_brand-name")
-                .setWebhookSessionId("ABC123")
-                .build();
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("webhook_session_id", "ABC123");
+        metadata.put("shipping_type", "UPS Ground");
+        metadata.put("entity_name", "internal-sub_brand-name");
 
         return Checkout.builder()
                 .setItems(items)

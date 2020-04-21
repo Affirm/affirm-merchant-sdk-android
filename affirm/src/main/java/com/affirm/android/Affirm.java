@@ -113,6 +113,15 @@ public final class Affirm {
                     return AffirmConstants.getProductionPromoUrl();
             }
         }
+
+        String baseInvalidCheckoutRedirectUrl() {
+            switch (this) {
+                case SANDBOX:
+                    return AffirmConstants.getStagingInvalidCheckoutRedirectUrl();
+                default:
+                    return AffirmConstants.getProductionInvalidCheckoutRedirectUrl();
+            }
+        }
     }
 
     public static final class Configuration {

@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -24,7 +25,7 @@ import static com.affirm.android.AffirmConstants.REMOTE_CSS_URL;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
 import static com.affirm.android.AffirmConstants.UTF_8;
 
-class PromotionWebView extends AffirmWebView implements AffirmWebChromeClient.Callbacks,
+public class PromotionWebView extends AffirmWebView implements AffirmWebChromeClient.Callbacks,
         AffirmWebViewClient.WebViewClientCallbacks {
 
     private OnClickListener webViewClickListener;
@@ -33,8 +34,12 @@ class PromotionWebView extends AffirmWebView implements AffirmWebChromeClient.Ca
         this.webViewClickListener = webViewClickListener;
     }
 
-    PromotionWebView(Context context) {
-        super(context);
+    public PromotionWebView(Context context) {
+        this(context, null);
+    }
+
+    public PromotionWebView(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
@@ -95,9 +100,10 @@ class PromotionWebView extends AffirmWebView implements AffirmWebChromeClient.Ca
                 return false;
             }
         });
+        setBackgroundColor(getResources().getColor(android.R.color.transparent));
     }
 
-    void loadWebData(String promoHtml, String remoteCssUrl, String typeface) {
+    public void loadWebData(String promoHtml, String remoteCssUrl, String typeface) {
         final String html = initialHtml(promoHtml, remoteCssUrl, typeface);
         loadDataWithBaseURL(
                 HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),

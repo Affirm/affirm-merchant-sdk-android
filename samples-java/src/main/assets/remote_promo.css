@@ -10,3 +10,9 @@
     font-family:'Lacquer-Regular';
     !important;
 }
+body {
+    font-family: 'Lacquer-Regular';
+    font-weight: normal;
+    text-align: center;
+    !important;
+}

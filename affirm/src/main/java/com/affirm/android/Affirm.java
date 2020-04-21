@@ -8,15 +8,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.VcnReason;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
 
@@ -714,6 +714,57 @@ public final class Affirm {
             @NonNull Context context,
             @NonNull final PromotionCallback callback
     ) {
+        SpannablePromoCallback promoCallback = new SpannablePromoCallback() {
+            @Override
+            public void onPromoWritten(@NonNull String promo,
+                                       boolean showPrequal) {
+                callback.onSuccess(
+                        AffirmUtils.createSpannableForText(
+                                promo,
+                                textSize,
+                                requestData.getAffirmLogoType(),
+                                requestData.getAffirmColor(),
+                                context
+                        ),
+                        showPrequal
+                );
+            }
+
+            @Override
+            public void onFailure(@NonNull AffirmException exception) {
+                callback.onFailure(exception);
+            }
+        };
+        return buildPromoRequest(requestData, promoCallback, false);
+    }
+
+    /**
+     * Fetch promotional html message, you can display it yourself
+     *
+     * @param requestData a class containing data about the request to make
+     * @param callback    a class that's called when the request completes
+     */
+    public static AffirmRequest fetchHtmlPromotion(
+            @NonNull PromoRequestData requestData,
+            @NonNull final HtmlPromotionCallback callback
+    ) {
+        SpannablePromoCallback promoCallback = new SpannablePromoCallback() {
+            @Override
+            public void onPromoWritten(@NonNull String promo,
+                                       boolean showPrequal) {
+                callback.onSuccess(promo, showPrequal);
+            }
+
+            @Override
+            public void onFailure(@NonNull AffirmException exception) {
+                callback.onFailure(exception);
+            }
+        };
+        return buildPromoRequest(requestData, promoCallback, true);
+    }
+
+    private static PromoRequest buildPromoRequest(@NonNull PromoRequestData requestData,
+                            SpannablePromoCallback promoCallback, Boolean isHtmlStyle) {
         return new PromoRequest(
                 requestData.getPromoId(),
                 requestData.getPageType(),
@@ -721,27 +772,8 @@ public final class Affirm {
                 requestData.showCta(),
                 requestData.getAffirmColor(),
                 requestData.getAffirmLogoType(),
-                false,
-                new SpannablePromoCallback() {
-                    @Override
-                    public void onPromoWritten(@NonNull String promo, boolean showPrequal) {
-                        callback.onSuccess(
-                                AffirmUtils.createSpannableForText(
-                                        promo,
-                                        textSize,
-                                        requestData.getAffirmLogoType(),
-                                        requestData.getAffirmColor(),
-                                        context
-                                ),
-                                showPrequal
-                        );
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull AffirmException exception) {
-                        callback.onFailure(exception);
-                    }
-                }
+                isHtmlStyle,
+                promoCallback
         );
     }
 

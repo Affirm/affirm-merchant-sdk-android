@@ -13,7 +13,9 @@ import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.AffirmRequest;
 import com.affirm.android.CookiesUtil;
+import com.affirm.android.HtmlPromotionCallback;
 import com.affirm.android.PromotionCallback;
+import com.affirm.android.PromotionWebView;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Address;
 import com.affirm.android.model.AffirmTrack;
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
     private static final BigDecimal PRICE = BigDecimal.valueOf(1100.0);
     private AffirmRequest promoRequest;
+    private AffirmRequest htmlPromoRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,17 +127,34 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 Toast.makeText(getBaseContext(), "Failed to get promo message, reason: " + exception.toString(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        PromotionWebView htmlPromotionWebView = findViewById(R.id.htmlPromotionWebView);
+        htmlPromoRequest = Affirm.fetchHtmlPromotion(requestData, new HtmlPromotionCallback() {
+
+            @Override
+            public void onSuccess(@Nullable String htmlPromo, boolean showPrequal) {
+                htmlPromotionWebView.loadWebData(htmlPromo, "file:///android_asset/remote_promo.css", typefaceDeclaration);
+                htmlPromotionWebView.setWebViewClickListener(v -> Affirm.onPromotionClick(MainActivity.this, requestData, showPrequal));
+            }
+
+            @Override
+            public void onFailure(@NonNull AffirmException exception) {
+                Toast.makeText(getBaseContext(), "Failed to get html promo message, reason: " + exception.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         promoRequest.create();
+        htmlPromoRequest.create();
     }
 
     @Override
     protected void onStop() {
         promoRequest.cancel();
+        htmlPromoRequest.cancel();
         super.onStop();
     }
 

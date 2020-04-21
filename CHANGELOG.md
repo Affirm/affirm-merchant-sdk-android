@@ -1,13 +1,19 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
-## Version 2.0.10 (February 17, 2019)
+## Version 2.0.11 (April 21, 2020)
+- Bug-fix
+- Added HTML support to build custom webviews
+- Promotional message is called outside of lifecycle
+- Metadata is an optional custom object
+
+## Version 2.0.10 (February 17, 2020)
 - Bug-fix
 
-## Version 2.0.9 (February 11, 2019)
+## Version 2.0.9 (February 11, 2020)
 - Add backend support for VCN
 
-## Version 2.0.8 (January 22, 2019)
+## Version 2.0.8 (January 22, 2020)
 - Change promos call to hit base url
 - Add metatdata examples
 - Remove promo ID from example code

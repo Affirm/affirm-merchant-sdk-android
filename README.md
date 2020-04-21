@@ -7,14 +7,14 @@ Affirm Android SDK allows you to offer Affirm monthly payments in your own app.
 
 Download via Gradle:
 ```groovy
-implementation "com.affirm:affirm-android-sdk:2.0.10"
+implementation "com.affirm:affirm-android-sdk:2.0.11"
 ```
 or Maven:
 ```xml
 <dependency>
   <groupId>com.affirm</groupId>
   <artifactId>affirm-android-sdk</artifactId>
-  <version>2.0.10</version>
+  <version>2.0.11</version>
 </dependency>
 ```
 Snapshots of the development version are available in [Sonatype's `snapshots` repository](https://oss.sonatype.org/content/repositories/snapshots/).
@@ -266,7 +266,7 @@ Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
 1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. This step is optional. There is a step inside `affirm/build.gradle` to do this automatically.
 2. Run the `samples-java` or `samples-kotlin` within Android Studio.
 
-# Upgrade (from 1.x.x to 2.0.10)
+# Upgrade (from 1.x.x to 2.0.11)
 * If you are using an older version of the SDK, you can refer to this [upgrade document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/UPGRADE.md). We recommend that you install the latest version to access the most up-to-date features and experience. 
 
 # Changelog

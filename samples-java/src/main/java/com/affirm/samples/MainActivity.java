@@ -88,8 +88,6 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         // Option1 - Load via findViewById
         AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
-        Affirm.configureWithAmount(affirmPromotionButton1, PromoPageType.PRODUCT, PRICE, true);
-
         // Default use Button to show the promo message with configWithLocalStyling. If you want to use WebView to show the promo message. You should use configWithHtmlStyling
         affirmPromotionButton1.configWithLocalStyling(
                 AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK,
@@ -97,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 ResourcesCompat.getFont(this, R.font.apercu_bold),
                 android.R.color.darker_gray,
                 R.dimen.affirm_promotion_size);
+
+        Affirm.configureWithAmount(affirmPromotionButton1, PromoPageType.PRODUCT, PRICE, true);
 
         // Option2 - Initialize by new
         AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);

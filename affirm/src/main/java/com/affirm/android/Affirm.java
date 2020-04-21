@@ -640,7 +640,7 @@ public final class Affirm {
         final LifecycleListener lifecycleListener = new LifecycleListener() {
             @Override
             public void onStart() {
-                affirmPromoRequest.create();
+
             }
 
             @Override
@@ -680,6 +680,8 @@ public final class Affirm {
                 fragment.removeLifeListener(lifecycleListener);
             }
         });
+
+        affirmPromoRequest.create();
 
         final View.OnClickListener onClickListener = v -> {
             Activity activity = AffirmUtils.getActivityFromView(v);

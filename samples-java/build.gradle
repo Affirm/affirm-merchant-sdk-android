@@ -8,6 +8,8 @@ android {
         minSdkVersion 21
         targetSdkVersion rootProject.ext.compileSdkVersion
 
+        consumerProguardFiles 'proguard-rules.pro'
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

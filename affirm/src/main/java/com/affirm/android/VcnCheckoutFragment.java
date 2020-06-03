@@ -1,0 +1,182 @@
+package com.affirm.android;
+
+import android.content.Context;
+import android.net.Uri;
+import android.os.Bundle;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
+import com.affirm.android.exception.AffirmException;
+import com.affirm.android.exception.ConnectionException;
+import com.affirm.android.model.CardDetails;
+import com.affirm.android.model.Checkout;
+import com.affirm.android.model.CheckoutResponse;
+import com.affirm.android.model.VcnReason;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
+import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
+import static com.affirm.android.AffirmConstants.CANCELLED_CB_URL;
+import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_RECEIVE_REASON_CODES;
+import static com.affirm.android.AffirmConstants.CONFIRM_CB_URL;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.TEXT_HTML;
+import static com.affirm.android.AffirmConstants.URL;
+import static com.affirm.android.AffirmConstants.URL2;
+import static com.affirm.android.AffirmConstants.UTF_8;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_SUCCESS;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_SUCCESS;
+import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
+import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
+
+public final class VcnCheckoutFragment extends CheckoutBaseFragment
+        implements VcnCheckoutWebViewClient.Callbacks {
+
+    private static final String VCN_CHECKOUT = "VCN_Checkout";
+    private static final String TAG = TAG_PREFIX + "." + VCN_CHECKOUT;
+
+    private String receiveReasonCodes;
+
+    private Affirm.VcnCheckoutCallbacks listener;
+
+    private VcnCheckoutFragment() {
+    }
+
+    static VcnCheckoutFragment newInstance(@NonNull AppCompatActivity activity,
+                                           @IdRes int containerViewId,
+                                           @NonNull Checkout checkout,
+                                           String receiveReasonCodes) {
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        if (fragmentManager.findFragmentByTag(TAG) != null) {
+            return (VcnCheckoutFragment) fragmentManager.findFragmentByTag(TAG);
+        }
+
+        VcnCheckoutFragment fragment = new VcnCheckoutFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(CHECKOUT_EXTRA, checkout);
+        bundle.putString(CHECKOUT_RECEIVE_REASON_CODES, receiveReasonCodes);
+        fragment.setArguments(bundle);
+
+        addFragment(fragmentManager, containerViewId, fragment, TAG);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        AffirmUtils.requireNonNull(getArguments(), "mArguments cannot be null");
+        receiveReasonCodes = getArguments().getString(CHECKOUT_RECEIVE_REASON_CODES);
+    }
+
+    @Override
+    void initViews() {
+        webView.setWebViewClient(new VcnCheckoutWebViewClient(
+                AffirmPlugins.get().gson(), receiveReasonCodes, this));
+        webView.setWebChromeClient(new AffirmWebChromeClient(this));
+    }
+
+    @Override
+    boolean useVCN() {
+        return true;
+    }
+
+    @Override
+    InnerCheckoutCallback innerCheckoutCallback() {
+        return new InnerCheckoutCallback() {
+            @Override
+            public void onError(@NonNull AffirmException exception) {
+                AffirmTracker.track(VCN_CHECKOUT_CREATION_FAIL, ERROR, null);
+                removeFragment(TAG);
+                if (listener != null) {
+                    listener.onAffirmVcnCheckoutError(exception.toString());
+                }
+            }
+
+            @Override
+            public void onSuccess(@NonNull CheckoutResponse response) {
+                AffirmTracker.track(VCN_CHECKOUT_CREATION_SUCCESS, INFO, null);
+                final String html = initialHtml(response);
+                final Uri uri = Uri.parse(response.redirectUrl());
+                webView.loadDataWithBaseURL(HTTPS_PROTOCOL + uri.getHost(), html,
+                        TEXT_HTML, UTF_8, null);
+            }
+        };
+    }
+
+    private String initialHtml(@NonNull CheckoutResponse response) {
+        String html;
+        try {
+            final InputStream ins = getResources().openRawResource(R.raw.affirm_vcn_checkout);
+            html = AffirmUtils.readInputStream(ins);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        final HashMap<String, String> map = new HashMap<>();
+
+        map.put(URL, response.redirectUrl());
+        map.put(URL2, response.redirectUrl());
+        map.put(CONFIRM_CB_URL, AFFIRM_CHECKOUT_CONFIRMATION_URL);
+        map.put(CANCELLED_CB_URL, AFFIRM_CHECKOUT_CANCELLATION_URL);
+        return AffirmUtils.replacePlaceholders(html, map);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof Affirm.VcnCheckoutCallbacks) {
+            listener = (Affirm.VcnCheckoutCallbacks) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        listener = null;
+        super.onDetach();
+    }
+
+    @Override
+    public void onWebViewConfirmation(@NonNull CardDetails cardDetails) {
+        AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
+        removeFragment(TAG);
+        if (listener != null) {
+            listener.onAffirmVcnCheckoutSuccess(cardDetails);
+        }
+    }
+
+    @Override
+    public void onWebViewError(@NonNull ConnectionException error) {
+        AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_FAIL, ERROR, null);
+        removeFragment(TAG);
+        if (listener != null) {
+            listener.onAffirmVcnCheckoutError(error.toString());
+        }
+    }
+
+    @Override
+    public void onWebViewCancellation() {
+        removeFragment(TAG);
+        if (listener != null) {
+            listener.onAffirmVcnCheckoutCancelled();
+        }
+    }
+
+    @Override
+    public void onWebViewCancellationReason(@NonNull VcnReason vcnReason) {
+        removeFragment(TAG);
+        if (listener != null) {
+            listener.onAffirmVcnCheckoutCancelledReason(vcnReason);
+        }
+    }
+}

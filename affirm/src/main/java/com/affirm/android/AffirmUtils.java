@@ -1,6 +1,5 @@
 package com.affirm.android;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
@@ -104,11 +103,11 @@ public final class AffirmUtils {
         }
     }
 
-    static Activity getActivityFromView(View view) {
+    static AppCompatActivity getActivityFromView(View view) {
         Context context = view.getContext();
         while (context instanceof ContextWrapper) {
-            if (context instanceof Activity) {
-                return (Activity) context;
+            if (context instanceof AppCompatActivity) {
+                return (AppCompatActivity) context;
             }
             context = ((ContextWrapper) context).getBaseContext();
         }

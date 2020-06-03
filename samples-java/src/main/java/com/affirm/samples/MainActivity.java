@@ -86,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         findViewById(R.id.clearCookies).setOnClickListener(v -> CookiesUtil.clearCookies(MainActivity.this));
 
+        findViewById(R.id.fragmentUsages).setOnClickListener(v -> startActivity(new Intent(this, FragmentUsagesActivity.class)));
+
         // Option1 - Load via findViewById
         AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);
         // Default use Button to show the promo message with configWithLocalStyling. If you want to use WebView to show the promo message. You should use configWithHtmlStyling

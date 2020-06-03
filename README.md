@@ -262,6 +262,30 @@ Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
 - Since there is no callback, it will return success after 10 seconds timeout
 - We will replace using the HTTP API after the API is done
 
+## Fragment supports
+We also support using fragment directly, only need to pass a ViewGroup id, we will put the `AffirmFragment` in this specified view.
+```java
+    // checkout
+    // In your activity, you need implements Affirm.CheckoutCallbacks
+    Affirm.startCheckout(this, R.id.container, checkoutModel(), false);
+
+    // vcn checkout
+    // In your activity, you need implements Affirm.VcnCheckoutCallbacks
+    Affirm.startCheckout(this, R.id.container, checkoutModel(), true);
+
+    // promotion
+    AffirmPromotionButton affirmPromotionButton = findViewById(R.id.promo);
+    Affirm.configureWithAmount(R.id.container, affirmPromotionButton, PromoPageType.PRODUCT, PRICE, true);
+
+    // site modal
+    // In your activity, you need implements Affirm.PrequalCallbacks
+    Affirm.showSiteModal(FragmentUsagesActivity.this, R.id.container, "5LNMQ33SEUYHLNUC");
+
+    // product modal
+    // In your activity, you need implements Affirm.PrequalCallbacks
+    Affirm.showProductModal(FragmentUsagesActivity.this, R.id.container, PRICE, null, PromoPageType.PRODUCT, null)
+```
+
 # Example
 1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. This step is optional. There is a step inside `affirm/build.gradle` to do this automatically.
 2. Run the `samples-java` or `samples-kotlin` within Android Studio.

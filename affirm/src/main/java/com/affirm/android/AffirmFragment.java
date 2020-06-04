@@ -1,6 +1,5 @@
 package com.affirm.android;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,37 +14,25 @@ import androidx.fragment.app.FragmentManager;
 
 public abstract class AffirmFragment extends Fragment implements AffirmWebChromeClient.Callbacks {
 
-    static final String TAG_PREFIX = "AffirmFragment";
+    protected static final String TAG_PREFIX = "AffirmFragment";
 
-    WebView webView;
+    protected WebView webView;
     private View progressIndicator;
 
     abstract void initViews();
 
     abstract void onAttached();
 
-    static void addFragment(FragmentManager fragmentManager, @IdRes int containerViewId,
-                            @NonNull Fragment fragment, @NonNull String tag) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try {
-                fragmentManager.beginTransaction().add(containerViewId, fragment, tag).commitNow();
-            } catch (IllegalStateException | NullPointerException e) {
-                fragmentManager.beginTransaction().add(containerViewId, fragment, tag).commit();
-                try {
-                    fragmentManager.executePendingTransactions();
-                } catch (IllegalStateException ignored) {
-                }
-            }
-        } else {
-            fragmentManager.beginTransaction().add(containerViewId, fragment, tag).commit();
-            try {
-                fragmentManager.executePendingTransactions();
-            } catch (IllegalStateException ignored) {
-            }
-        }
+    protected static void addFragment(FragmentManager fragmentManager, @IdRes int containerViewId,
+                                      @NonNull Fragment fragment, @NonNull String tag) {
+        fragmentManager
+                .beginTransaction()
+                .add(containerViewId, fragment, tag)
+                .commitAllowingStateLoss();
+        fragmentManager.executePendingTransactions();
     }
 
-    void removeFragment(@NonNull String tag) {
+    protected void removeFragment(@NonNull String tag) {
         FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager == null) {
             return;
@@ -76,9 +63,7 @@ public abstract class AffirmFragment extends Fragment implements AffirmWebChrome
         webView = view.findViewById(R.id.webview);
         progressIndicator = view.findViewById(R.id.progressIndicator);
 
-        if (getActivity() != null) {
-            AffirmUtils.debuggableWebView(getActivity());
-        }
+        AffirmUtils.debuggableWebView(getActivity());
         initViews();
         onAttached();
     }

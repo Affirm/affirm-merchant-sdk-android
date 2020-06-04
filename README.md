@@ -264,26 +264,81 @@ Affirm.trackOrderConfirmed(MainActivity.this, trackModel());
 
 ## Fragment supports
 We also support using fragment directly, only need to pass a ViewGroup id, we will put the `AffirmFragment` in this specified view.
+
+- Checkout
 ```java
-    // checkout
-    // In your activity, you need implements Affirm.CheckoutCallbacks
+    // In your activity, you need to implement Affirm.CheckoutCallbacks
     Affirm.startCheckout(this, R.id.container, checkoutModel(), false);
 
-    // vcn checkout
-    // In your activity, you need implements Affirm.VcnCheckoutCallbacks
+    // - Affirm.CheckoutCallbacks
+    @Override
+    public void onAffirmCheckoutSuccess(@NonNull String token) {
+        Toast.makeText(this, "Checkout token: " + token, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmCheckoutCancelled() {
+        Toast.makeText(this, "Checkout Cancelled", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmCheckoutError(@Nullable String message) {
+        Toast.makeText(this, "Checkout Error: " + message, Toast.LENGTH_LONG).show();
+    }
+```
+
+- VCN checkout
+```java
+    // In your activity, you need to implement Affirm.VcnCheckoutCallbacks
     Affirm.startCheckout(this, R.id.container, checkoutModel(), true);
 
-    // promotion
+    // - Affirm.VcnCheckoutCallbacks
+    @Override
+    public void onAffirmVcnCheckoutCancelled() {
+        Toast.makeText(this, "Vcn Checkout Cancelled", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmVcnCheckoutCancelledReason(@NonNull VcnReason vcnReason) {
+        Toast.makeText(this, "Vcn Checkout Cancelled: " + vcnReason.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmVcnCheckoutError(@Nullable String message) {
+        Toast.makeText(this, "Vcn Checkout Error: " + message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails) {
+        Toast.makeText(this, "Vcn Checkout Card: " + cardDetails.toString(), Toast.LENGTH_LONG).show();
+    }
+```
+
+- Promotion
+```java
     AffirmPromotionButton affirmPromotionButton = findViewById(R.id.promo);
     Affirm.configureWithAmount(R.id.container, affirmPromotionButton, PromoPageType.PRODUCT, PRICE, true);
+```
 
-    // site modal
-    // In your activity, you need implements Affirm.PrequalCallbacks
+- Site modal
+```java
+    // In your activity, you need to implement Affirm.PrequalCallbacks
     Affirm.showSiteModal(FragmentUsagesActivity.this, R.id.container, "5LNMQ33SEUYHLNUC");
 
-    // product modal
-    // In your activity, you need implements Affirm.PrequalCallbacks
+    @Override
+    public void onAffirmPrequalError(@Nullable String message) {
+        Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
+    }
+```
+- Product modal
+```java
+    // In your activity, you need to implement Affirm.PrequalCallbacks
     Affirm.showProductModal(FragmentUsagesActivity.this, R.id.container, PRICE, null, PromoPageType.PRODUCT, null)
+
+    @Override
+    public void onAffirmPrequalError(@Nullable String message) {
+        Toast.makeText(this, "Prequal Error: " + message, Toast.LENGTH_LONG).show();
+    }
 ```
 
 # Example

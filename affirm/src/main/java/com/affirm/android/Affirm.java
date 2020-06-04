@@ -730,12 +730,12 @@ public final class Affirm {
                                            @Nullable final PromoPageType pageType,
                                            final BigDecimal amount,
                                            final boolean showCta) {
-        final View.OnClickListener onClickListener = v -> {
-            Activity activity = AffirmUtils.getActivityFromView(v);
+        final View.OnClickListener onClickListener = promotionView -> {
+            Activity activity = AffirmUtils.getActivityFromView(promotionView);
             if (activity == null || promotionButton.isEmpty()) {
                 return;
             }
-            boolean showPrequal = (boolean) v.getTag();
+            boolean showPrequal = (boolean) promotionView.getTag();
             String type = pageType != null ? pageType.getType() : null;
             if (showPrequal) {
                 PrequalActivity.startActivity(activity,
@@ -768,12 +768,12 @@ public final class Affirm {
             final BigDecimal amount,
             final boolean showCta) {
 
-        final View.OnClickListener onClickListener = v -> {
-            AppCompatActivity activity = AffirmUtils.getActivityFromView(v);
+        final View.OnClickListener onClickListener = promotionView -> {
+            AppCompatActivity activity = AffirmUtils.getActivityFromView(promotionView);
             if (activity == null || promotionButton.isEmpty()) {
                 return;
             }
-            boolean showPrequal = (boolean) v.getTag();
+            boolean showPrequal = (boolean) promotionView.getTag();
             String type = pageType != null ? pageType.getType() : null;
             if (showPrequal) {
                 PrequalFragment.newInstance(activity, containerViewId, amount,

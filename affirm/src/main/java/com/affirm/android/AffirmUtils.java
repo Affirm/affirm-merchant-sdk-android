@@ -65,8 +65,9 @@ public final class AffirmUtils {
         return text;
     }
 
-    static void debuggableWebView(@NonNull Context context) {
-        if (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)) {
+    static void debuggableWebView(Context context) {
+        if (context != null
+                && 0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
     }

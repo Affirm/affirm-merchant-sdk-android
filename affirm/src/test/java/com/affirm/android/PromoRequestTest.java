@@ -1,10 +1,9 @@
 package com.affirm.android;
 
-import android.app.Application;
-import android.content.Context;
 import android.text.SpannableString;
 
 import com.affirm.android.exception.AffirmException;
+import com.affirm.android.model.Item;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -45,8 +46,21 @@ public class PromoRequestTest {
             }
         };
 
+        final List<Item> items = new ArrayList<>();
+        items.add(Item.builder()
+                .setDisplayName("Great Deal Wheel")
+                .setImageUrl(
+                        "http://www.m2motorsportinc.com/media/catalog/product/cache/1/thumbnail" +
+                                "/9df78eab33525d08d6e5fb8d27136e95/v/e/velocity-vw125-wheels-rims.jpg")
+                .setQty(1)
+                .setSku("wheel")
+                .setUnitPrice(BigDecimal.valueOf(1000.0))
+                .setUrl("http://merchant.com/great_deal_wheel")
+                .build()
+        );
+
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(null, null, BigDecimal.valueOf(1100.0), false, AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, true, null, callback);
+                new PromoRequest(null, null, BigDecimal.valueOf(1100.0), false, AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, true, items, callback);
         affirmPromoRequest.create();
     }
 

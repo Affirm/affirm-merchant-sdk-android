@@ -379,7 +379,7 @@ public final class Affirm {
             private List<Item> items;
 
             /**
-             * @param amount  a float that represents the amount to retrieve pricing for
+             * @param amount  a BigDecimal that represents the amount to retrieve pricing for
              *                eg 112.02 as $112 and 2¢
              * @param showCta whether need to show cta
              */
@@ -547,7 +547,7 @@ public final class Affirm {
      * Start product modal
      *
      * @param activity activity {@link Activity}
-     * @param amount   (Float) eg 112.02 as $112 and ¢2
+     * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
      * @param modalId  the client's modal id
      */
     public static void showProductModal(@NonNull Activity activity, BigDecimal amount,
@@ -559,7 +559,7 @@ public final class Affirm {
      * Start product modal
      *
      * @param activity activity {@link Activity}
-     * @param amount   (Float) eg 112.02 as $112 and ¢2
+     * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
      * @param modalId  the client's modal id
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
      *                 payment, product, search"
@@ -578,7 +578,7 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -591,7 +591,7 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */
@@ -607,7 +607,7 @@ public final class Affirm {
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
      * @param promoId         the client's modal id
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -622,7 +622,7 @@ public final class Affirm {
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
      * @param promoId         the client's modal id
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */
@@ -640,7 +640,7 @@ public final class Affirm {
      * @param promotionButton AffirmPromotionButton to show the promo message
      * @param pageType        need to use one of "banner, cart, category, homepage, landing,
      *                        payment, product, search"
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -656,7 +656,7 @@ public final class Affirm {
      * @param promotionButton AffirmPromotionButton to show the promo message
      * @param pageType        need to use one of "banner, cart, category, homepage, landing,
      *                        payment, product, search"
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */
@@ -675,7 +675,7 @@ public final class Affirm {
      * @param promoId         the client's modal id
      * @param pageType        need to use one of "banner, cart, category, homepage, landing,
      *                        payment, product, search"
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -693,7 +693,7 @@ public final class Affirm {
      * @param promoId         the client's modal id
      * @param pageType        need to use one of "banner, cart, category, homepage, landing,
      *                        payment, product, search"
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */

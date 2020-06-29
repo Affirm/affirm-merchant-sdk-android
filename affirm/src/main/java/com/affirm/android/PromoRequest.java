@@ -1,5 +1,6 @@
 package com.affirm.android;
 
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
+import com.affirm.android.model.Item;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.PromoResponse;
 import com.google.gson.Gson;
@@ -17,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
 import okhttp3.Call;
@@ -42,6 +45,8 @@ class PromoRequest implements AffirmRequest {
     private final AffirmLogoType affirmLogoType;
     @Nullable
     private final PromoPageType pageType;
+    @Nullable
+    private final List<Item> items;
     @NonNull
     private SpannablePromoCallback callback;
 
@@ -57,6 +62,7 @@ class PromoRequest implements AffirmRequest {
             @NonNull final AffirmColor affirmColor,
             @NonNull final AffirmLogoType affirmLogoType,
             boolean isHtmlStyle,
+            @Nullable List<Item> items,
             @NonNull SpannablePromoCallback callback
     ) {
         this.promoId = promoId;
@@ -66,6 +72,7 @@ class PromoRequest implements AffirmRequest {
         this.affirmColor = affirmColor;
         this.affirmLogoType = affirmLogoType;
         this.isHtmlStyle = isHtmlStyle;
+        this.items = items;
         this.callback = callback;
     }
 
@@ -94,6 +101,10 @@ class PromoRequest implements AffirmRequest {
                 .append(affirmColor.getColor())
                 .append("&logo_type=")
                 .append(affirmLogoType.getType());
+
+        if (items != null) {
+            path.append("&items=").append(Uri.encode(AffirmPlugins.get().gson().toJson(items)));
+        }
 
         if (promoCall != null) {
             promoCall.cancel();

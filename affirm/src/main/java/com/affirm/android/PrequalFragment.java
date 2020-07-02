@@ -21,6 +21,7 @@ import static com.affirm.android.AffirmConstants.PROMO_ID;
 import static com.affirm.android.AffirmConstants.REFERRING_URL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.PREQUAL_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
+import static com.affirm.android.AffirmTracker.createTrackingExceptionJsonObj;
 
 public final class PrequalFragment extends AffirmFragment
         implements PrequalWebViewClient.Callbacks {
@@ -103,7 +104,7 @@ public final class PrequalFragment extends AffirmFragment
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmTracker.track(PREQUAL_WEBVIEW_FAIL, ERROR, null);
+        AffirmTracker.track(PREQUAL_WEBVIEW_FAIL, ERROR, createTrackingExceptionJsonObj(error));
         removeFragment(TAG);
         if (listener != null) {
             listener.onAffirmPrequalError(error.toString());

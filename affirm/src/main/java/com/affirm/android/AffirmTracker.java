@@ -2,14 +2,16 @@ package com.affirm.android;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.affirm.android.exception.AffirmException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -112,6 +114,13 @@ final class AffirmTracker {
             jsonObject.add("status_code", null);
             jsonObject.add(affirmRequestIDHeader, null);
         }
+        return jsonObject;
+    }
+
+    @NonNull
+    static JsonObject createTrackingExceptionJsonObj(@NonNull AffirmException exception) {
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("message", exception.toString());
         return jsonObject;
     }
 }

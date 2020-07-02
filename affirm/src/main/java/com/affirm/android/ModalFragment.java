@@ -34,6 +34,7 @@ import static com.affirm.android.AffirmConstants.UTF_8;
 import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
+import static com.affirm.android.AffirmTracker.createTrackingExceptionJsonObj;
 
 public final class ModalFragment extends AffirmFragment implements ModalWebViewClient.Callbacks {
 
@@ -136,11 +137,14 @@ public final class ModalFragment extends AffirmFragment implements ModalWebViewC
 
     private String initialHtml() {
         String html;
+        InputStream ins = null;
         try {
-            final InputStream ins = getResources().openRawResource(type.templateRes);
+            ins = getResources().openRawResource(type.templateRes);
             html = AffirmUtils.readInputStream(ins);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            AffirmUtils.closeInputStream(ins);
         }
 
         return AffirmUtils.replacePlaceholders(html, map);
@@ -156,7 +160,7 @@ public final class ModalFragment extends AffirmFragment implements ModalWebViewC
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmTracker.track(type.failureEvent, ERROR, null);
+        AffirmTracker.track(type.failureEvent, ERROR, createTrackingExceptionJsonObj(error));
         removeFragment(TAG);
         if (listener != null) {
             listener.onAffirmPrequalError(error.toString());

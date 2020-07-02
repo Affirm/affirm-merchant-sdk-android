@@ -20,6 +20,7 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_FA
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_SUCCESS;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
+import static com.affirm.android.AffirmTracker.createTrackingExceptionJsonObj;
 
 public final class CheckoutFragment extends CheckoutBaseFragment
         implements CheckoutWebViewClient.Callbacks {
@@ -80,7 +81,8 @@ public final class CheckoutFragment extends CheckoutBaseFragment
         return new InnerCheckoutCallback() {
             @Override
             public void onError(@NonNull AffirmException exception) {
-                AffirmTracker.track(CHECKOUT_CREATION_FAIL, ERROR, null);
+                AffirmTracker.track(CHECKOUT_CREATION_FAIL, ERROR,
+                        createTrackingExceptionJsonObj(exception));
                 removeFragment(TAG);
                 if (listener != null) {
                     listener.onAffirmCheckoutError(exception.toString());
@@ -97,7 +99,7 @@ public final class CheckoutFragment extends CheckoutBaseFragment
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmTracker.track(CHECKOUT_WEBVIEW_FAIL, ERROR, null);
+        AffirmTracker.track(CHECKOUT_WEBVIEW_FAIL, ERROR, createTrackingExceptionJsonObj(error));
         removeFragment(TAG);
         if (listener != null) {
             listener.onAffirmCheckoutError(error.toString());

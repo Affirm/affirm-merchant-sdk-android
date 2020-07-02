@@ -35,6 +35,7 @@ public abstract class AffirmFragment extends Fragment implements AffirmWebChrome
     protected void removeFragment(@NonNull String tag) {
         FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager == null) {
+            AffirmLog.d("The fragment is getting detached from the Activity");
             return;
         }
         Fragment fragment = fragmentManager.findFragmentByTag(tag);

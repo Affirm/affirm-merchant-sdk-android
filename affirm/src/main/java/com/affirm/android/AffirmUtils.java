@@ -13,6 +13,11 @@ import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,11 +25,6 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK;
 import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
@@ -52,6 +52,16 @@ public final class AffirmUtils {
         }
 
         return total.toString();
+    }
+
+    static void closeInputStream(@Nullable InputStream inputStream) {
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                AffirmLog.e("Failed to close InputStream!", e);
+            }
+        }
     }
 
     static String replacePlaceholders(@NonNull String text, @NonNull Map<String, String> map) {

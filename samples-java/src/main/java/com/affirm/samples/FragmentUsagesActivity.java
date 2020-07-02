@@ -52,7 +52,7 @@ public class FragmentUsagesActivity extends AppCompatActivity implements Affirm.
             }
         });
 
-        findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(FragmentUsagesActivity.this, R.id.container, "5LNMQ33SEUYHLNUC"));
+        findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(FragmentUsagesActivity.this, R.id.container, Config.MODAL_ID));
 
         findViewById(R.id.productModalButton).setOnClickListener(v -> Affirm.showProductModal(FragmentUsagesActivity.this, R.id.container, PRICE, null, PromoPageType.PRODUCT, null));
     }

@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
             }
         });
 
-        findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(MainActivity.this, "5LNMQ33SEUYHLNUC"));
+        findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(MainActivity.this,  Config.MODAL_ID));
 
         findViewById(R.id.productModalButton).setOnClickListener(v -> Affirm.showProductModal(MainActivity.this, PRICE, null, PromoPageType.PRODUCT, null));
 

@@ -38,6 +38,7 @@ import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIE
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_SUCCESS;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
+import static com.affirm.android.AffirmTracker.createTrackingExceptionJsonObj;
 
 public final class VcnCheckoutFragment extends CheckoutBaseFragment
         implements VcnCheckoutWebViewClient.Callbacks {
@@ -96,7 +97,8 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
         return new InnerCheckoutCallback() {
             @Override
             public void onError(@NonNull AffirmException exception) {
-                AffirmTracker.track(VCN_CHECKOUT_CREATION_FAIL, ERROR, null);
+                AffirmTracker.track(VCN_CHECKOUT_CREATION_FAIL, ERROR,
+                        createTrackingExceptionJsonObj(exception));
                 removeFragment(TAG);
                 if (listener != null) {
                     listener.onAffirmVcnCheckoutError(exception.toString());
@@ -116,11 +118,14 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
 
     private String initialHtml(@NonNull CheckoutResponse response) {
         String html;
+        InputStream ins = null;
         try {
-            final InputStream ins = getResources().openRawResource(R.raw.affirm_vcn_checkout);
+            ins = getResources().openRawResource(R.raw.affirm_vcn_checkout);
             html = AffirmUtils.readInputStream(ins);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            AffirmUtils.closeInputStream(ins);
         }
 
         final HashMap<String, String> map = new HashMap<>();
@@ -157,7 +162,8 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_FAIL, ERROR, null);
+        AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_FAIL, ERROR,
+                createTrackingExceptionJsonObj(error));
         removeFragment(TAG);
         if (listener != null) {
             listener.onAffirmVcnCheckoutError(error.toString());

@@ -112,11 +112,14 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
 
     private String initialHtml(String promoHtml, String remoteCssUrl, String typeface) {
         String html;
+        InputStream ins = null;
         try {
-            final InputStream ins = getResources().openRawResource(R.raw.affirm_promo);
+            ins = getResources().openRawResource(R.raw.affirm_promo);
             html = AffirmUtils.readInputStream(ins);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            AffirmUtils.closeInputStream(ins);
         }
 
         final HashMap<String, String> map = new HashMap<>();

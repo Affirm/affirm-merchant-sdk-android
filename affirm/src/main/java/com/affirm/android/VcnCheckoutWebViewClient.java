@@ -38,7 +38,8 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     @Nullable
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        if (request.getUrl().toString().equals(HTTPS_PROTOCOL + AffirmPlugins.get().baseInvalidCheckoutRedirectUrl())) {
+        if (request.getUrl().toString().equals(HTTPS_PROTOCOL
+                + AffirmPlugins.get().baseInvalidCheckoutRedirectUrl())) {
             callbacks.onWebViewError(
                     new ConnectionException(INVALID_CHECKOUT_MESSAGE)
             );

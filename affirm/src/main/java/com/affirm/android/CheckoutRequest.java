@@ -145,7 +145,8 @@ class CheckoutRequest implements AffirmRequest {
                             }
                         } catch (JsonSyntaxException | IOException e) {
                             handleErrorResponse(
-                                    new APIException("Some error occurred while parsing the checkout response", e)
+                                    new APIException("Some error occurred while parsing the "
+                                            + "checkout response", e)
                             );
                         }
                     } else {

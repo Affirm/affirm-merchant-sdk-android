@@ -139,7 +139,8 @@ class PromoRequest implements AffirmRequest {
                             );
                         } catch (JsonSyntaxException | IOException e) {
                             handleErrorResponse(
-                                    new APIException("Some error occurred while parsing the promo response", e)
+                                    new APIException("Some error occurred while parsing the "
+                                            + "promo response", e)
                             );
                         }
                     } else {

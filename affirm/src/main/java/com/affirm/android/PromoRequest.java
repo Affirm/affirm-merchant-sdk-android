@@ -14,6 +14,7 @@ import com.affirm.android.model.Item;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.PromoResponse;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -126,15 +127,21 @@ class PromoRequest implements AffirmRequest {
             public void onResponse(
                     @NotNull Call call,
                     @NotNull Response response
-            ) throws IOException {
+            ) {
                 ResponseBody responseBody = response.body();
                 Gson gson = AffirmPlugins.get().gson();
 
                 if (response.isSuccessful()) {
                     if (responseBody != null) {
-                        handleSuccessResponse(
-                                gson.fromJson(responseBody.string(), PromoResponse.class)
-                        );
+                        try {
+                            handleSuccessResponse(
+                                    gson.fromJson(responseBody.string(), PromoResponse.class)
+                            );
+                        } catch (JsonSyntaxException | IOException e) {
+                            handleErrorResponse(
+                                    new APIException("Some error occurred while parsing the promo response", e)
+                            );
+                        }
                     } else {
                         handleErrorResponse(
                                 new APIException("Response was success, but body was null", null)

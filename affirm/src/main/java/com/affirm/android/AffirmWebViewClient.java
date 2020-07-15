@@ -7,9 +7,9 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.affirm.android.exception.ConnectionException;
-
 import androidx.annotation.NonNull;
+
+import com.affirm.android.exception.ConnectionException;
 
 import static com.affirm.android.AffirmConstants.HTTP;
 
@@ -25,10 +25,13 @@ abstract class AffirmWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        if (hasCallbackUrl(view, url)) {
-            return true;
+        try {
+            if (hasCallbackUrl(view, url)) {
+                return true;
+            }
+        } catch (Exception e) {
+            AffirmLog.e("Override url failed: " + e.toString());
         }
-
         return !url.startsWith(HTTP);
     }
 

@@ -15,6 +15,7 @@ import com.affirm.android.model.Merchant;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -126,19 +127,26 @@ class CheckoutRequest implements AffirmRequest {
             public void onResponse(
                     @NotNull Call call,
                     @NotNull Response response
-            ) throws IOException {
+            ) {
                 ResponseBody responseBody = response.body();
 
                 if (response.isSuccessful()) {
                     if (responseBody != null) {
-                        CheckoutResponse checkoutResponse = gson.fromJson(
-                                responseBody.string(),
-                                CheckoutResponse.class
-                        );
+                        try {
+                            CheckoutResponse checkoutResponse = gson.fromJson(
+                                    responseBody.string(),
+                                    CheckoutResponse.class
+                            );
 
-                        if (checkoutCallback != null) {
-                            new Handler(Looper.getMainLooper()).post(
-                                    () -> checkoutCallback.onSuccess(checkoutResponse)
+                            if (checkoutCallback != null) {
+                                new Handler(Looper.getMainLooper()).post(
+                                        () -> checkoutCallback.onSuccess(checkoutResponse)
+                                );
+                            }
+                        } catch (JsonSyntaxException | IOException e) {
+                            handleErrorResponse(
+                                    new APIException("Some error occurred while parsing the "
+                                            + "checkout response", e)
                             );
                         }
                     } else {

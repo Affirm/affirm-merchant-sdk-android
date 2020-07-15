@@ -2,10 +2,13 @@ package com.affirm.android;
 
 import androidx.annotation.NonNull;
 
+import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.AffirmError;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -56,17 +59,20 @@ class TrackerRequest implements AffirmRequest {
                 if (!response.isSuccessful()) {
                     ResponseBody responseBody = response.body();
                     if (responseBody != null && responseBody.contentLength() > 0) {
-                        final AffirmError affirmError = AffirmPlugins.get()
-                                .gson()
-                                .fromJson(responseBody.charStream(), AffirmError.class);
-
-                        AffirmException affirmException = AffirmHttpClient.handleAPIError(
-                                affirmError,
-                                response.code(),
-                                response.headers().get(X_AFFIRM_REQUEST_ID)
-                        );
-
-                        handleException(affirmException);
+                        try {
+                            final AffirmError affirmError = AffirmPlugins.get()
+                                    .gson()
+                                    .fromJson(responseBody.charStream(), AffirmError.class);
+                            AffirmException affirmException = AffirmHttpClient.handleAPIError(
+                                    affirmError,
+                                    response.code(),
+                                    response.headers().get(X_AFFIRM_REQUEST_ID)
+                            );
+                            handleException(affirmException);
+                        } catch (JsonSyntaxException | JsonIOException e) {
+                            handleException(new APIException("Some error occurred while parsing "
+                                    + "the error response", e));
+                        }
                     }
                 }
             }

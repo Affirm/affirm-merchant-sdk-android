@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
@@ -75,7 +76,7 @@ final class AffirmTracker {
 
             fillTrackingData(eventName, data, level);
             return data;
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | JsonIOException e) {
             return new JsonObject();
         }
     }

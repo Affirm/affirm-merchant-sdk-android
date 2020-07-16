@@ -105,14 +105,14 @@ final class AffirmHttpClient {
             try {
                 final AffirmError affirmError = AffirmPlugins.get()
                         .gson()
-                        .fromJson(responseBody.charStream(), AffirmError.class);
+                        .fromJson(responseBody.string(), AffirmError.class);
 
                 return handleAPIError(
                         affirmError,
                         response.code(),
                         response.headers().get(X_AFFIRM_REQUEST_ID)
                 );
-            } catch (JsonSyntaxException | JsonIOException e) {
+            } catch (JsonSyntaxException | JsonIOException | IOException e) {
                 return new APIException("Some error occurred while parsing the error response", e);
             }
         }

@@ -62,14 +62,14 @@ class TrackerRequest implements AffirmRequest {
                         try {
                             final AffirmError affirmError = AffirmPlugins.get()
                                     .gson()
-                                    .fromJson(responseBody.charStream(), AffirmError.class);
+                                    .fromJson(responseBody.string(), AffirmError.class);
                             AffirmException affirmException = AffirmHttpClient.handleAPIError(
                                     affirmError,
                                     response.code(),
                                     response.headers().get(X_AFFIRM_REQUEST_ID)
                             );
                             handleException(affirmException);
-                        } catch (JsonSyntaxException | JsonIOException e) {
+                        } catch (JsonSyntaxException | JsonIOException | IOException e) {
                             handleException(new APIException("Some error occurred while parsing "
                                     + "the error response", e));
                         }

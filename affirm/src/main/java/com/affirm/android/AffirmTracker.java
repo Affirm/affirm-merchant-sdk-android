@@ -2,14 +2,17 @@ package com.affirm.android;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -66,13 +69,16 @@ final class AffirmTracker {
     private static JsonObject addTrackingData(@NonNull String eventName,
                                               @Nullable JsonObject eventData,
                                               @NonNull TrackingLevel level) {
-
         final Gson gson = new Gson();
-        final JsonObject data = eventData == null ? new JsonObject()
-                : gson.fromJson(gson.toJson(eventData, JsonObject.class), JsonObject.class);
+        try {
+            final JsonObject data = eventData == null ? new JsonObject()
+                    : gson.fromJson(gson.toJson(eventData, JsonObject.class), JsonObject.class);
 
-        fillTrackingData(eventName, data, level);
-        return data;
+            fillTrackingData(eventName, data, level);
+            return data;
+        } catch (JsonSyntaxException | JsonIOException e) {
+            return new JsonObject();
+        }
     }
 
     private static void fillTrackingData(@NonNull String eventName,

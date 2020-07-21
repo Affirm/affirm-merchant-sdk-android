@@ -1,6 +1,10 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.12 (July 21, 2020)
+- Improved excpetion handling
+- Support for SKU based financing programs
+
 ## Version 2.0.11 (April 21, 2020)
 - Bug-fix
 - Added HTML support to build custom webviews

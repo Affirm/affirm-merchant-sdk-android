@@ -1,15 +1,14 @@
+import com.github.spotbugs.snom.SpotBugsTask
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'pmd'
-apply plugin: 'findbugs'
+apply plugin: 'com.github.spotbugs'
 apply plugin: 'checkstyle'
 apply from: 'maven-push.gradle'
 
 ext {
-    BUILD_TOOLS_VERSION = "28.0.3"
-    COMPILE_SDK_VERSION = 28
-
     androidxAppCompatVersion = '1.0.2'
     junitVersion = "4.12"
     testRunnerVersion = "1.2.0"
@@ -23,15 +22,15 @@ ext {
     mockitoCoreVersion = '2.21.0'
     robolectricVersion = '4.1'
 }
-
+def VERSION_CODE = 3
 
 android {
-    compileSdkVersion COMPILE_SDK_VERSION
-    buildToolsVersion BUILD_TOOLS_VERSION
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion COMPILE_SDK_VERSION
+        targetSdkVersion rootProject.ext.compileSdkVersion
         versionCode VERSION_CODE.toInteger()
         versionName project.VERSION_NAME
 
@@ -59,23 +58,23 @@ android {
 }
 
 pmd {
-    toolVersion = '5.5.2'
+    toolVersion = '6.10.0'
 }
 
-findbugs {
-    toolVersion = "3.0.1"
+spotbugs {
+    toolVersion = "3.1.10"
 }
 
 checkstyle {
     toolVersion = '7.3'
 }
 
-task findbugs(type: FindBugs) {
-    excludeFilter file('config/findbugs/exclude.xml')
-    classes = files("$project.buildDir/intermediates/javac")
-    source = fileTree('src/main/java')
-    classpath = files()
-    effort = 'max'
+task spotbugsTask(type: SpotBugsTask) {
+    excludeFilter = file('config/spotbugs/exclude.xml')
+    classes = fileTree("$project.buildDir/intermediates/javac")
+    sourceDirs = fileTree('src/main/java')
+    auxClassPaths = files()
+    effort = "max"
     reports {
         xml.enabled = false
         html.enabled = true
@@ -100,11 +99,11 @@ task checkstyle(type: Checkstyle) {
     classpath = files()
 }
 
-task findbugsWrapper(dependsOn: 'findbugs') {}
+task spotbugsWrapper(dependsOn: 'spotbugsTask') {}
 task pmdWrapper(dependsOn: 'pmd') {}
 task checkstyleWrapper(dependsOn: 'checkstyle') {}
 
-build.dependsOn findbugsWrapper
+build.dependsOn spotbugsWrapper
 check.dependsOn pmdWrapper
 check.dependsOn checkstyleWrapper
 
@@ -126,7 +125,7 @@ dependencies {
     testImplementation "org.robolectric:robolectric:${robolectricVersion}"
     testImplementation "com.google.truth:truth:${truthVersion}"
     testImplementation "org.mockito:mockito-core:${mockitoCoreVersion}"
-    
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {

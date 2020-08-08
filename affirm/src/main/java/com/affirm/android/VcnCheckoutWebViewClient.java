@@ -53,6 +53,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     boolean hasCallbackUrl(WebView view, String url) {
         if (url.contains(AFFIRM_CHECKOUT_CONFIRMATION_URL)) {
             final String encodedString = url.split(VCN_CHECKOUT_REGEX)[1];
+            AffirmLog.d("VCN checkout confirmed: " + encodedString);
             try {
                 final String json = URLDecoder.decode(encodedString, ENCODING_FORMAT);
                 final CardDetails cardDetails = gson.fromJson(json, CardDetails.class);
@@ -63,6 +64,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
             return true;
         } else if (url.contains(AFFIRM_CHECKOUT_CANCELLATION_URL)) {
             final String encodedString = url.split(VCN_CHECKOUT_REGEX)[1];
+            AffirmLog.d("VCN checkout cancelled: " + encodedString);
             try {
                 final String json = URLDecoder.decode(encodedString, ENCODING_FORMAT);
                 final VcnReason vcnReason = gson.fromJson(json, VcnReason.class);

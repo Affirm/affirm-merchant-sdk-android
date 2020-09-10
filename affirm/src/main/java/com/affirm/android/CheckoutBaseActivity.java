@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import static com.affirm.android.Affirm.RESULT_ERROR;
+import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 
@@ -17,6 +18,8 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
     private CheckoutRequest checkoutRequest;
 
     private Checkout checkout;
+
+    private String caas;
 
     abstract boolean useVCN();
 
@@ -31,8 +34,10 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
     void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             checkout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
+            caas = savedInstanceState.getString(CHECKOUT_CAAS_EXTRA);
         } else {
             checkout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
+            caas = getIntent().getStringExtra(CHECKOUT_CAAS_EXTRA);
         }
     }
 
@@ -41,11 +46,12 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(CHECKOUT_EXTRA, checkout);
+        outState.putString(CHECKOUT_CAAS_EXTRA, caas);
     }
 
     @Override
     void onAttached() {
-        checkoutRequest = new CheckoutRequest(checkout, getInnerCheckoutCallback(), useVCN());
+        checkoutRequest = new CheckoutRequest(checkout, getInnerCheckoutCallback(), caas, useVCN());
         checkoutRequest.create();
     }
 

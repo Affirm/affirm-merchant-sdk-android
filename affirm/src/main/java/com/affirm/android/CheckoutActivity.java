@@ -9,7 +9,9 @@ import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_CREATION_FAIL;
@@ -23,9 +25,10 @@ public class CheckoutActivity extends CheckoutBaseActivity
         implements CheckoutWebViewClient.Callbacks {
 
     static void startActivity(@NonNull Activity activity, int requestCode,
-                              @NonNull Checkout checkout) {
+                              @NonNull Checkout checkout, @Nullable String caas) {
         final Intent intent = new Intent(activity, CheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
+        intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         activity.startActivityForResult(intent, requestCode);
     }
 

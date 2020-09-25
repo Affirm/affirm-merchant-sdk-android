@@ -16,10 +16,12 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
 import static com.affirm.android.AffirmConstants.CANCELLED_CB_URL;
+import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CONFIRM_CB_URL;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
@@ -42,12 +44,13 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     private static String receiveReasonCodes;
 
     static void startActivity(@NonNull Activity activity, int requestCode,
-                              @NonNull Checkout checkout,
+                              @NonNull Checkout checkout, @Nullable String caas,
                               @NonNull String configReceiveReasonCodes) {
 
         receiveReasonCodes = configReceiveReasonCodes;
         final Intent intent = new Intent(activity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
+        intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         activity.startActivityForResult(intent, requestCode);
     }
 

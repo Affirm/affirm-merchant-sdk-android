@@ -3,6 +3,7 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,7 +62,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         findViewById(R.id.checkout).setOnClickListener(v -> {
             try {
-                Affirm.startCheckout(MainActivity.this, checkoutModel(), false);
+                String cass = ((EditText)findViewById(R.id.cass)).getText().toString();
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), cass, false);
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -69,7 +71,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         findViewById(R.id.vcnCheckout).setOnClickListener(v -> {
             try {
-                Affirm.startCheckout(MainActivity.this, checkoutModel(), true);
+                String cass = ((EditText) findViewById(R.id.cass)).getText().toString();
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), cass, true);
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }

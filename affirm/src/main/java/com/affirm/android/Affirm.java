@@ -508,13 +508,27 @@ public final class Affirm {
      */
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                      boolean useVCN) {
+        startCheckout(activity, checkout, null, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param activity activity {@link Activity}
+     * @param checkout checkout object that contains address & shipping info & others...
+     * @param caas     caas merchant-level attribute
+     * @param useVCN   Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
+                                     @Nullable String caas, boolean useVCN) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
             VcnCheckoutActivity.startActivity(
-                    activity, vcnCheckoutRequest, checkout, receiveReasonCodes);
+                    activity, vcnCheckoutRequest, checkout, caas, receiveReasonCodes);
         } else {
-            CheckoutActivity.startActivity(activity, checkoutRequest, checkout);
+            CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas);
         }
     }
 

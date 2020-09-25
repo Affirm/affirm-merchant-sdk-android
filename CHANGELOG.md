@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.13 (September 25, 2020)
+- Added support for CaaS identifier in standard and VCN checkout
+
 ## Version 2.0.12 (July 21, 2020)
 - Improved excpetion handling
 - Support for SKU based financing programs

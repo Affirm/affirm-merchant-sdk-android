@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/affirm_screen_horizontal_margin"
+    android:paddingVertical="@dimen/affirm_screen_vertical_margin">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/vcn_display_how_use"
+        android:textAppearance="@style/AffirmTitle2.Medium" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:srcCompat="@drawable/ic_credit_card"
+        app:tint="@color/affirm_indigo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/online"
+        android:textAllCaps="true"
+        android:textAppearance="@style/AffirmSmall.Medium" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_horizontal"
+        android:paddingHorizontal="@dimen/affirm_screen_horizontal_margin"
+        android:text="@string/vcn_display_how_use_online"
+        android:textAppearance="@style/AffirmSmall" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:srcCompat="@drawable/ic_shopping_cart"
+        app:tint="@color/affirm_indigo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/in_store"
+        android:textAllCaps="true"
+        android:textAppearance="@style/AffirmSmall.Medium" />
+
+    <TextView
+        android:id="@+id/inStoreHowToUse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_horizontal"
+        android:paddingHorizontal="@dimen/affirm_screen_horizontal_margin"
+        android:text="@string/vcn_display_how_use_instore"
+        android:textAppearance="@style/AffirmSmall" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/how_use_got_it"
+        style="@style/AffirmButton.Raised.FullWidth.Indigo"
+        android:layout_marginTop="40dp"
+        android:text="@string/got_it"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vcnEditOrCancel" />
+
+</LinearLayout>

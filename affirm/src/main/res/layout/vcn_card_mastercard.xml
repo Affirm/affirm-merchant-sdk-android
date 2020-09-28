@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vcnCardMastercardFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/affirm_transparent"
+    android:padding="16dp"
+    tools:background="@drawable/vcn_bg_card"
+    tools:layout_height="214dp"
+    tools:layout_width="337dp">
+
+    <TextView
+        android:id="@+id/vcnDisplayCardNumberMastercard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:textAppearance="@style/AffirmMono"
+        android:textColor="@color/affirm_white"
+        android:textSize="21sp"
+        tools:text="0123 4567 8901 2345" />
+
+    <ImageView
+        android:id="@+id/vcnMasterCardLogo"
+        android:layout_width="50dp"
+        android:layout_height="28dp"
+        android:layout_gravity="top|right"
+        app:srcCompat="@drawable/vcn_ic_mastercard_logo" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_marginBottom="8dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha=".64"
+                android:text="@string/expires"
+                android:textAllCaps="true"
+                android:textAppearance="@style/AffirmSmall.SemiBold"
+                android:textColor="@color/affirm_white"
+                android:textSize="12dp"
+                tools:ignore="SpUsage" />
+
+            <TextView
+                android:id="@+id/vcnDisplayCardExpirationMastercard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vcn_empty_expiration"
+                android:textAppearance="@style/AffirmMono"
+                android:textColor="@color/affirm_white"
+                android:textSize="16dp"
+                tools:ignore="SpUsage"
+                tools:text="05/17" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/vcnDisplayCvvSectionMastercard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha=".64"
+                android:text="@string/cvc"
+                android:textAllCaps="true"
+                android:textAppearance="@style/AffirmSmall.SemiBold"
+                android:textColor="@color/affirm_white"
+                android:textSize="12dp"
+                tools:ignore="SpUsage" />
+
+            <TextView
+                android:id="@+id/vcnDisplayCardCvvMastercard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/AffirmMono"
+                android:textColor="@color/affirm_white"
+                android:textIsSelectable="true"
+                android:textSize="16dp"
+                tools:ignore="SpUsage"
+                tools:text="123" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

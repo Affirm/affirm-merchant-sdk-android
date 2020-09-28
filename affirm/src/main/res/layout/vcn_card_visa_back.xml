@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vcnCardVisaBackFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bordered_outline_black100_with_white_solid"
+    android:padding="16dp"
+    tools:layout_height="214dp"
+    tools:layout_width="337dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/vcnCardVisaBackAffirmLogo"
+            android:layout_width="72dp"
+            android:layout_height="28dp"
+            android:layout_gravity="top|start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/affirm_logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/affirm_small_font_size"
+            android:layout_marginStart="@dimen/default_gap"
+            android:includeFontPadding="false"
+            android:text="@string/limited_use_virtual_card"
+            android:textAppearance="@style/AffirmSmall"
+            android:textColor="@color/affirm_black90"
+            app:layout_constraintBottom_toBottomOf="@id/vcnCardVisaBackAffirmLogo"
+            app:layout_constraintStart_toEndOf="@id/vcnCardVisaBackAffirmLogo" />
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="top|end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_circle_right_arrow" />
+
+        <TextView
+            android:id="@+id/authorizedCardholderVisaBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/authorized_cardholder"
+            android:textAppearance="@style/AffirmBody.Medium"
+            android:textColor="@color/affirm_black100"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vcnCardVisaBackAffirmLogo" />
+
+        <TextView
+            android:id="@+id/visaDisclosure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:lineSpacingMultiplier="1.25"
+            android:text="@string/visa_disclosure"
+            android:textAppearance="@style/AffirmXSmall"
+            android:textColor="@color/affirm_black60"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

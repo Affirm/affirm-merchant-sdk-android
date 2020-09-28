@@ -18,6 +18,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import org.jetbrains.annotations.NotNull;
+import org.joda.money.Money;
 
 import java.io.IOException;
 
@@ -41,6 +42,7 @@ import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_KEY;
 import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_VALUE;
 import static com.affirm.android.AffirmConstants.TAG_CHECKOUT;
 import static com.affirm.android.AffirmConstants.TAG_VCN_CHECKOUT;
+import static com.affirm.android.AffirmConstants.TOTAL;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_KEY;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_VALUE;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
@@ -51,6 +53,8 @@ class CheckoutRequest implements AffirmRequest {
 
     @NonNull
     private final Checkout checkout;
+    @Nullable
+    private final Money money;
     private final boolean useVCN;
     @Nullable
     private final InnerCheckoutCallback checkoutCallback;
@@ -63,8 +67,10 @@ class CheckoutRequest implements AffirmRequest {
     private final Gson gson = AffirmPlugins.get().gson();
 
     CheckoutRequest(@NonNull Checkout checkout, @Nullable InnerCheckoutCallback callback,
-                    @Nullable String caas, boolean useVCN) {
+                    @Nullable String caas, @Nullable Money money, boolean useVCN) {
+
         this.checkout = checkout;
+        this.money = money;
         this.checkoutCallback = callback;
         this.caas = caas;
         this.useVCN = useVCN;
@@ -96,6 +102,10 @@ class CheckoutRequest implements AffirmRequest {
                 .addProperty(USER_CONFIRMATION_URL_ACTION_KEY, USER_CONFIRMATION_URL_ACTION_VALUE);
 
         final JsonObject checkoutJson = parseToJsonObject(checkout);
+        if (money != null) {
+            checkoutJson.addProperty(TOTAL,
+                    AffirmUtils.decimalDollarsToIntegerCents(money.getAmount()));
+        }
         checkoutJson.add(MERCHANT, merchantJson);
         checkoutJson.addProperty(API_VERSION_KEY, API_VERSION_VALUE);
 

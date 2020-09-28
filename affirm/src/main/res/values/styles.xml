@@ -1,0 +1,10 @@
+<resources>
+
+    <style name="AffirmDefaultTheme" parent="Theme.AppCompat.Light">
+        <item name="android:actionMenuTextColor">@color/affirm_white</item>
+        <item name="colorPrimary">@color/affirm_color_primary</item>
+        <item name="colorPrimaryDark">@color/affirm_color_primary_dark</item>
+        <item name="colorAccent">@color/affirm_color_accent</item>
+    </style>
+
+</resources>

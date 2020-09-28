@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/affirm_transparent20">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/affirm_raised_button_radius" />
+            <solid android:color="@color/affirm_white" />
+        </shape>
+    </item>
+</ripple>

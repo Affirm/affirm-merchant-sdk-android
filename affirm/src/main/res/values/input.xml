@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <style name="AffirmInputEditText">
+    <item name="android:inputType">none</item>
+    <item name="android:clickable">false</item>
+    <item name="android:cursorVisible">false</item>
+    <item name="android:focusable">false</item>
+    <item name="android:focusableInTouchMode">false</item>
+    <item name="android:editable">false</item>
+  </style>
+
+  <style name="AffirmInputEditText.Money">
+    <item name="android:textAppearance">@style/AffirmInput</item>
+    <item name="android:textColorHint">@color/affirm_black60</item>
+    <item name="android:background">@color/affirm_transparent</item>
+  </style>
+</resources>

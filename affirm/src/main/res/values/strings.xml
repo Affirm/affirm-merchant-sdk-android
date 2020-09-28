@@ -1,3 +1,35 @@
 <resources>
     <string name="affirm">Affirm</string>
+    <string name="vcn_amount_title">How much is your purchase?</string>
+    <string name="vcn_amount_help">Remember to add tax and shipping. You\'ll get back any amount you don\'t use.</string>
+    <string name="zero_whole_dollar_hint">$0</string>
+    <string name="action_bar_next">Next</string>
+    <string name="vcn_expiration">Valid {{time_left}}</string>
+    <string name="edit_or_cancel_card">Edit or cancel card</string>
+    <string name="card_number">Card number</string>
+    <string name="expires">Expires</string>
+    <string name="vcn_empty_expiration">--/--</string>
+    <string name="cvc">CVC</string>
+    <string name="cvv">CVV</string>
+    <string name="limited_use_virtual_card">Limited Use Virtual Card</string>
+    <string name="authorized_cardholder"> Authorized Cardholder: %s</string>
+    <string name="contact_us">Contact us</string>
+    <string name="visa_disclosure">The Affirm Card is funded by Cross River Bank, Member FDIC, and issued by Sutton Bank, Member FDIC, pursuant to license from Visa U.S.A. Inc. The Affirm Card is powered by Marqeta.</string>
+    <string name="edit_amount_or_cancel_card">Edit amount or cancel card</string>
+    <string name="edit_amount_card">Edit card amount</string>
+    <string name="cancel_card">Cancel card</string>
+    <string name="edit_amount">Edit amount</string>
+    <string name="never_mind">Never mind</string>
+    <string name="edit_amount_card_message">Editing your virtual card amount will cancel your current card. Are you sure you want to edit the amount?</string>
+    <string name="cancel_card_message">You\'re about to cancel your virtual card to %s. Are you sure you want to cancel?</string>
+    <string name="copy_to_clipboard">Copy card number</string>
+    <string name="copy_to_clipboard_copied">Card number copied!</string>
+    <string name="question">Question</string>
+    <string name="vcn_display_how_use">How do I use this card?</string>
+    <string name="online">Online</string>
+    <string name="vcn_display_how_use_online">Enter the card number at checkout, along with your own billing address.</string>
+    <string name="in_store">In store</string>
+    <string name="vcn_display_how_use_instore">Show your virtual card to the cashier, and ask them to key in the card number as a credit card transaction.</string>
+    <string name="got_it">Got it</string>
+    <string name="card_valid_expiration">This card is valid for %s</string>
 </resources>

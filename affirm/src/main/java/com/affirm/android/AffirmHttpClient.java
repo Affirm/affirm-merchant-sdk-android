@@ -145,28 +145,28 @@ final class AffirmHttpClient {
 
         // Set request body
         AffirmHttpBody body = request.getBody();
-        AffirmOkHttpRequestBody okHttpRequestBody = null;
+        RequestBody okHttpRequestBody;
         if (body != null) {
             okHttpRequestBody = new AffirmOkHttpRequestBody(body);
+        } else {
+            okHttpRequestBody = RequestBody.create(null, new byte[0]);
         }
 
         // set request tag
         okHttpRequestBuilder.tag(request.getTag());
 
-        if (okHttpRequestBody != null) {
-            switch (method) {
-                case PUT:
-                    okHttpRequestBuilder.put(okHttpRequestBody);
-                    break;
-                case POST:
-                    okHttpRequestBuilder.post(okHttpRequestBody);
-                    break;
-                case DELETE:
-                    okHttpRequestBuilder.delete(okHttpRequestBody);
-                    break;
-                default:
-                    break;
-            }
+        switch (method) {
+            case PUT:
+                okHttpRequestBuilder.put(okHttpRequestBody);
+                break;
+            case POST:
+                okHttpRequestBuilder.post(okHttpRequestBody);
+                break;
+            case DELETE:
+                okHttpRequestBuilder.delete(okHttpRequestBody);
+                break;
+            default:
+                break;
         }
         return okHttpRequestBuilder.build();
     }

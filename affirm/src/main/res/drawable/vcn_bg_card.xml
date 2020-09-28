@@ -1,0 +1,19 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/affirm_corner_radius" />
+        </shape>
+    </item>
+    <item
+        android:id="@+id/backgroundColor"
+        android:drawable="@color/affirm_indigo" />
+
+    <item android:drawable="@drawable/vcn_bg_black_gradient" />
+
+    <item>
+        <bitmap
+            android:src="@drawable/noise"
+            android:tileMode="repeat" />
+    </item>
+</layer-list>

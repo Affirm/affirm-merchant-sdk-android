@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/vcnShowMerchantName"
+        style="@style/AffirmTitle2.Medium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/affirm_black100"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Random stuff" />
+
+    <FrameLayout
+        android:id="@+id/vcnShowCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vcnShowMerchantName">
+
+        <include
+            layout="@layout/view_vcn_card"
+            android:visibility="invisible" />
+
+    </FrameLayout>
+
+    <com.affirm.android.widget.CountDownTimerView
+        android:id="@+id/vcnCountdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:textAppearance="@style/AffirmSmall.Medium"
+        android:textColor="@color/affirm_black100"
+        android:visibility="invisible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vcnShowCard" />
+
+    <TextView
+        android:id="@+id/vcnEditOrCancel"
+        style="@style/AffirmTitle2.Medium"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/affirm_flat_button_height"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="@dimen/affirm_screen_horizontal_margin"
+        android:layout_marginRight="@dimen/affirm_screen_horizontal_margin"
+        android:gravity="center"
+        android:text="@string/edit_or_cancel_card"
+        android:textColor="@color/affirm_indigo"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vcnCountdown" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/vcnCopyCardNumber"
+        style="@style/AffirmButton.Raised.FullWidth.Indigo"
+        android:layout_marginLeft="@dimen/affirm_screen_horizontal_margin"
+        android:layout_marginRight="@dimen/affirm_screen_horizontal_margin"
+        android:text="@string/copy_to_clipboard"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vcnEditOrCancel" />
+
+    <com.affirm.android.AffirmProgressBar
+        android:id="@+id/indeterminateBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="@dimen/affirm_progressbar_dimen"
+        android:layout_height="@dimen/affirm_progressbar_dimen"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

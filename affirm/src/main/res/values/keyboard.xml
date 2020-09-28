@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="affirm_key_style" format="reference" />
+    <attr name="affirm_backspace_drawable" format="reference" />
+
+    <!-- Small Devices dimensions for keyboard-->
+    <dimen name="affirm_keyboard_height">224dp</dimen>
+    <dimen name="affirm_keyboard_padding_bottom">0dp</dimen>
+    <dimen name="affirm_keyboard_padding_top">0dp</dimen>
+
+    <style name="AffirmNumericKeyboardStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/affirm_keyboard_height</item>
+        <item name="android:paddingTop">@dimen/affirm_keyboard_padding_top</item>
+        <item name="android:paddingBottom">@dimen/affirm_keyboard_padding_bottom</item>
+    </style>
+
+    <style name="AffirmNumericKeyboardTheme" parent="AffirmKeyboard">
+        <item name="affirm_key_style">@style/AffirmButton.Flat</item>
+        <item name="affirm_backspace_drawable">@drawable/ic_backspace</item>
+    </style>
+</resources>

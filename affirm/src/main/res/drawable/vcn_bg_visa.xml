@@ -1,0 +1,4 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/rounded_solid_blueberry" />
+    <item android:drawable="@drawable/vcn_bg_black_gradient" />
+</layer-list>

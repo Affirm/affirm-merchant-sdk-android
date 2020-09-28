@@ -7,5 +7,8 @@
     <string name="track_order_confirmed">Track Order Confirmed</string>
     <string name="show_indicator">Show Indicator</string>
     <string name="clear_cookies">Clear Cookies</string>
-
+    <string-array name="vcn_checkout_new_flow_array">
+        <item>New Credit Card</item>
+        <item>Show Credit Card</item>
+    </string-array>
 </resources>

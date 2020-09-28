@@ -2,16 +2,17 @@ package com.affirm.android;
 
 import android.webkit.CookieManager;
 
+import androidx.annotation.NonNull;
+
 import com.affirm.android.model.AbstractAddress;
-import com.affirm.android.model.AffirmAdapterFactory;
 import com.affirm.android.model.AddressSerializer;
+import com.affirm.android.model.AffirmAdapterFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
@@ -89,6 +90,10 @@ class AffirmPlugins {
         return configuration.environment.baseInvalidCheckoutRedirectUrl();
     }
 
+    String privateKey() {
+        return configuration.privateKey;
+    }
+
     synchronized Gson gson() {
         if (gson == null) {
             gson = new GsonBuilder()
@@ -109,6 +114,11 @@ class AffirmPlugins {
                 builder.addHeader("Content-Type", "application/json");
                 builder.addHeader("Affirm-User-Agent", "Affirm-Android-SDK");
                 builder.addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME);
+
+                if (privateKey() != null) {
+                    final String basic = Credentials.basic(publicKey(), privateKey());
+                    builder.addHeader("Authorization", basic);
+                }
 
                 CookieManager cookieManager = CookieManager.getInstance();
                 String cookie = cookieManager

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <dimen name="affirm_input_font_size">56sp</dimen>
+    <dimen name="affirm_body_font_size">17sp</dimen>
+    <dimen name="affirm_header_section_font_size">26sp</dimen>
+    <dimen name="affirm_numeric_keyboard_font_size">28sp</dimen>
+    <dimen name="affirm_title1_font_size">40sp</dimen>
+    <dimen name="affirm_title2_font_size">22sp</dimen>
+    <dimen name="affirm_small_font_size">14sp</dimen>
+    <dimen name="affirm_x_small_font_size">12sp</dimen>
+
+    <item name="affirm_header_spacing" format="float" type="dimen">1.2</item>
+    <item name="affirm_title_spacing" format="float" type="dimen">1</item>
+    <item name="affirm_body_spacing" format="float" type="dimen">1.5</item>
+    <item name="affirm_small_spacing" format="float" type="dimen">1.5</item>
+    <item name="affirm_x_small_spacing" format="float" type="dimen">1.5</item>
+
+    <style name="AffirmTitle1">
+        <item name="android:fontFamily">@font/calibre_regular</item>
+        <item name="android:lineSpacingMultiplier">@dimen/affirm_title_spacing</item>
+        <item name="android:textSize">@dimen/affirm_title1_font_size</item>
+    </style>
+
+    <style name="AffirmTitle1.Bold">
+        <item name="android:fontFamily">@font/calibre_bold</item>
+    </style>
+
+    <style name="AffirmTitle2">
+        <item name="android:fontFamily">@font/calibre_regular</item>
+        <item name="android:lineSpacingMultiplier">@dimen/affirm_title_spacing</item>
+        <item name="android:textSize">@dimen/affirm_title2_font_size</item>
+    </style>
+
+    <style name="AffirmTitle2.SemiBold">
+        <item name="android:fontFamily">@font/calibre_semibold</item>
+    </style>
+
+    <style name="AffirmTitle2.Medium">
+        <item name="android:fontFamily">@font/calibre_medium</item>
+    </style>
+
+    <style name="AffirmInput">
+        <item name="android:textSize">@dimen/affirm_input_font_size</item>
+        <item name="android:fontFamily">@font/calibre_regular</item>
+    </style>
+
+    <style name="AffirmKeyboard">
+        <item name="android:textSize">@dimen/affirm_numeric_keyboard_font_size</item>
+        <item name="android:fontFamily">@font/calibre_regular</item>
+    </style>
+
+    <style name="AffirmBody">
+        <item name="android:fontFamily">@font/calibre_regular</item>
+        <item name="android:lineSpacingMultiplier">@dimen/affirm_body_spacing</item>
+        <item name="android:textSize">@dimen/affirm_body_font_size</item>
+    </style>
+
+    <style name="AffirmBody.Medium">
+        <item name="android:fontFamily">@font/calibre_medium</item>
+    </style>
+
+    <style name="AffirmSectionHeader">
+        <item name="android:fontFamily">@font/calibre_regular</item>
+        <item name="android:lineSpacingMultiplier">@dimen/affirm_header_spacing</item>
+    </style>
+
+    <style name="AffirmSectionHeader.Large">
+        <item name="android:textSize">@dimen/affirm_header_section_font_size</item>
+        <item name="android:fontFamily">@font/calibre_semibold</item>
+    </style>
+
+    <style name="AffirmXSmall">
+        <item name="android:textSize">@dimen/affirm_x_small_font_size</item>
+        <item name="android:fontFamily">@font/calibre_regular</item>
+        <item name="android:lineSpacingMultiplier">@dimen/affirm_x_small_spacing</item>
+    </style>
+
+    <style name="AffirmSmall">
+        <item name="android:textSize">@dimen/affirm_small_font_size</item>
+        <item name="android:fontFamily">@font/calibre_regular</item>
+        <item name="android:lineSpacingMultiplier">@dimen/affirm_small_spacing</item>
+    </style>
+
+    <style name="AffirmSmall.Medium">
+        <item name="android:fontFamily">@font/calibre_medium</item>
+    </style>
+
+    <style name="AffirmSmall.SemiBold">
+        <item name="android:fontFamily">@font/calibre_semibold</item>
+    </style>
+
+    <style name="AffirmMono">
+        <item name="android:fontFamily">@font/alma_mono_bold</item>
+    </style>
+
+</resources>

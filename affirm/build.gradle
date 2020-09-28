@@ -109,6 +109,10 @@ check.dependsOn checkstyleWrapper
 
 dependencies {
     implementation "androidx.appcompat:appcompat:${androidxAppCompatVersion}"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.1"
+    implementation "androidx.gridlayout:gridlayout:1.0.0"
+    implementation "org.joda:joda-money:0.12"
+    implementation "com.google.android.material:material:1.2.1"
     testImplementation "junit:junit:${junitVersion}"
 
     api "com.squareup.okhttp3:okhttp:${okhttpVersion}"

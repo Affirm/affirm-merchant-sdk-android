@@ -6,7 +6,7 @@
     android:id="@+id/vcnCardVisaBackFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bordered_outline_black100_with_white_solid"
+    android:background="@drawable/affirm_white_solid"
     android:padding="16dp"
     tools:layout_height="214dp"
     tools:layout_width="337dp">
@@ -42,7 +42,7 @@
             android:layout_gravity="top|end"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_circle_right_arrow" />
+            app:srcCompat="@drawable/affirm_ic_circle_right_arrow" />
 
         <TextView
             android:id="@+id/authorizedCardholderVisaBack"
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/authorized_cardholder"
-            android:textAppearance="@style/AffirmBody.Medium"
+            android:textAppearance="@style/AffirmBody"
             android:textColor="@color/affirm_black100"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/vcnCardVisaBackAffirmLogo" />

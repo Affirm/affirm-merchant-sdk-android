@@ -7,13 +7,13 @@
     </item>
     <item
         android:id="@+id/backgroundColor"
-        android:drawable="@color/affirm_indigo" />
+        android:drawable="@color/affirm_color_primary" />
 
-    <item android:drawable="@drawable/vcn_bg_black_gradient" />
+    <item android:drawable="@drawable/affirm_vcn_bg_black_gradient" />
 
     <item>
         <bitmap
-            android:src="@drawable/noise"
+            android:src="@drawable/affirm_noise"
             android:tileMode="repeat" />
     </item>
 </layer-list>

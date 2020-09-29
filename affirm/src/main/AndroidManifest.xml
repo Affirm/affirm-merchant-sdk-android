@@ -8,21 +8,25 @@
             android:name=".CheckoutActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTop"
+            android:theme="@style/AffirmDefaultTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".VcnCheckoutActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTop"
+            android:theme="@style/AffirmDefaultTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ModalActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTop"
+            android:theme="@style/AffirmDefaultTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".PrequalActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleTop"
+            android:theme="@style/AffirmDefaultTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".LoanAmountActivity"

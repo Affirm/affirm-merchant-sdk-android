@@ -27,10 +27,7 @@
     <style name="AffirmButton.Flat">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">@dimen/affirm_flat_button_height</item>
-        <item name="android:paddingLeft">@dimen/affirm_flat_button_horizontal_margin</item>
-        <item name="android:paddingRight">@dimen/affirm_flat_button_horizontal_margin</item>
-        <item name="android:paddingTop">@dimen/affirm_flat_button_vertical_margin</item>
-        <item name="android:paddingBottom">@dimen/affirm_flat_button_vertical_margin</item>
+        <item name="android:textColor">@color/affirm_black</item>
     </style>
 
     <style name="AffirmButton.Raised">
@@ -38,19 +35,19 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:paddingLeft">@dimen/affirm_raised_button_side_padding</item>
         <item name="android:paddingRight">@dimen/affirm_raised_button_side_padding</item>
-        <item name="android:background">@drawable/raised_button_default</item>
+        <item name="android:background">@drawable/affirm_raised_button_default</item>
         <item name="android:elevation">@dimen/affirm_raised_button_elevation</item>
     </style>
 
     <style name="AffirmButton.Raised.FullWidth">
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:background">@drawable/raised_button_full_width</item>
+        <item name="android:background">@drawable/affirm_raised_button_full_width</item>
     </style>
 
     <style name="AffirmButton.Raised.FullWidth.Indigo">
         <item name="android:textColor">@color/affirm_white</item>
-        <item name="android:background">@drawable/raised_button_full_width_indigo</item>
+        <item name="android:background">@drawable/affirm_raised_button_full_width_indigo</item>
         <item name="android:theme">@style/AffirmButtonTheme.Light</item>
     </style>
 </resources>

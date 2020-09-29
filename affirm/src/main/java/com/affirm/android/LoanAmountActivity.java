@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.affirm.android.model.Checkout;
 import com.affirm.android.widget.MoneyFormattedEditText;
@@ -36,7 +37,6 @@ public class LoanAmountActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        AffirmUtils.showCloseActionBar(this);
         if (savedInstanceState != null) {
             checkout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
             caas = savedInstanceState.getString(CHECKOUT_CAAS_EXTRA);
@@ -46,6 +46,12 @@ public class LoanAmountActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loan_amount);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.affirm_ic_baseline_close_black);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         NumericKeyboardView numericKeyboardView = findViewById(R.id.keyboard);
         loanAmountEditText = findViewById(R.id.loanAmountEditText);

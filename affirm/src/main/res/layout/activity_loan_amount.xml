@@ -5,6 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
+
     <TextView
         style="@style/AffirmSectionHeader.Large"
         android:layout_width="wrap_content"
@@ -55,7 +60,7 @@
     <com.affirm.android.widget.NumericKeyboardView
         android:id="@+id/keyboard"
         style="@style/AffirmNumericKeyboardStyle"
-        android:background="@drawable/keyboard_top_border"
+        android:background="@drawable/affirm_keyboard_top_border"
         android:theme="@style/AffirmNumericKeyboardTheme" />
 
 </LinearLayout>

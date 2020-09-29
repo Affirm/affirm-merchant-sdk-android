@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <style name="AffirmDefaultTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
@@ -6,6 +7,7 @@
         <item name="colorPrimary">@color/affirm_color_primary</item>
         <item name="colorPrimaryDark">@color/affirm_color_primary_dark</item>
         <item name="colorAccent">@color/affirm_color_accent</item>
+        <item name="android:statusBarColor">@color/affirm_white</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
-
 </resources>

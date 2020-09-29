@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.Toolbar;
 
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.CardCancelResponse;
@@ -43,7 +44,6 @@ public class VcnDisplayActivity extends AppCompatActivity implements CardRequest
     private CardDetails cardDetails;
 
     private VCNCardView vcnCardView;
-    private TextView vcnShowMerchantName;
     private AppCompatButton vcnCopyCardNumber;
     private AffirmProgressBar indeterminateBar;
     private TextView vcnEditOrCancel;
@@ -60,7 +60,6 @@ public class VcnDisplayActivity extends AppCompatActivity implements CardRequest
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        AffirmUtils.showCloseActionBar(this);
         if (savedInstanceState != null) {
             checkoutId = savedInstanceState.getString(CHECKOUT_ID);
             checkout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
@@ -70,10 +69,17 @@ public class VcnDisplayActivity extends AppCompatActivity implements CardRequest
         }
         request = new CardRequest(Objects.requireNonNull(checkoutId), this);
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_vcn_display);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.affirm_color_primary));
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.affirm_ic_baseline_close_black);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(AffirmPlugins.get().merchantName());
+
         vcnCardView = findViewById(R.id.vcnCardView);
-        vcnShowMerchantName = findViewById(R.id.vcnShowMerchantName);
         indeterminateBar = findViewById(R.id.indeterminateBar);
         vcnCopyCardNumber = findViewById(R.id.vcnCopyCardNumber);
         vcnEditOrCancel = findViewById(R.id.vcnEditOrCancel);
@@ -227,7 +233,6 @@ public class VcnDisplayActivity extends AppCompatActivity implements CardRequest
 
         cardDetails = response;
         vcnCardView.setVcn(cardDetails);
-        vcnShowMerchantName.setText(AffirmPlugins.get().merchantName());
     }
 
     private void startLoading() {

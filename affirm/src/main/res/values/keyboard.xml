@@ -17,6 +17,6 @@
 
     <style name="AffirmNumericKeyboardTheme" parent="AffirmKeyboard">
         <item name="affirm_key_style">@style/AffirmButton.Flat</item>
-        <item name="affirm_backspace_drawable">@drawable/ic_backspace</item>
+        <item name="affirm_backspace_drawable">@drawable/affirm_ic_backspace</item>
     </style>
 </resources>

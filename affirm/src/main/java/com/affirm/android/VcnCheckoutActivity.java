@@ -119,6 +119,7 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     public void onWebViewConfirmation(@NonNull CardDetails cardDetails) {
         AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
         if (newFlow) {
+            CardExpirationUtils.saveCachedCheckoutId(getApplicationContext(), cardDetails.id());
             Affirm.startVcnDisplay(this, Objects.requireNonNull(cardDetails.id()));
         } else {
             final Intent intent = new Intent();

@@ -35,7 +35,6 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
     @Override
     void beforeOnCreate() {
-        AffirmUtils.hideActionBar(this);
     }
 
     @Override

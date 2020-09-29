@@ -6,7 +6,7 @@
     android:id="@+id/vcnCardVisaFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/vcn_bg_visa"
+    android:background="@drawable/affirm_vcn_bg_visa"
     android:padding="16dp"
     tools:layout_height="214dp"
     tools:layout_width="337dp">
@@ -24,7 +24,7 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_gravity="top|end"
-        app:srcCompat="@drawable/ic_circle_info"
+        app:srcCompat="@drawable/affirm_ic_circle_info"
         app:tint="@color/affirm_white" />
 
     <LinearLayout
@@ -137,7 +137,7 @@
             android:layout_gravity="bottom|end"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/vcn_visa_logo" />
+            app:srcCompat="@drawable/affirm_vcn_visa_logo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

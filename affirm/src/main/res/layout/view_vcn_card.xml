@@ -19,7 +19,8 @@
         android:layout_height="match_parent"
         android:background="@color/affirm_transparent"
         android:backgroundTint="@color/affirm_transparent"
-        app:cardCornerRadius="@dimen/affirm_corner_radius">
+        app:cardCornerRadius="@dimen/affirm_corner_radius"
+        app:cardUseCompatPadding="true">
 
         <ImageView
             android:id="@+id/cardExpiredMask"
@@ -35,7 +36,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:alpha="0.8"
-            android:background="@drawable/bordered_outline_white"
+            android:background="@drawable/affirm_bordered_outline_white"
             android:paddingLeft="18dp"
             android:paddingTop="6dp"
             android:paddingRight="18dp"

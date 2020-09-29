@@ -11,7 +11,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.view.View;
-import android.view.Window;
 import android.webkit.WebView;
 
 import java.io.BufferedReader;
@@ -24,8 +23,6 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK;
 import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
@@ -69,38 +66,6 @@ public final class AffirmUtils {
     static void debuggableWebView(@NonNull Context context) {
         if (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)) {
             WebView.setWebContentsDebuggingEnabled(true);
-        }
-    }
-
-    static void hideActionBar(@NonNull AppCompatActivity activity) {
-        activity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-        if (activity.getActionBar() != null) {
-            activity.getActionBar().hide();
-        } else if (activity.getSupportActionBar() != null) {
-            activity.getSupportActionBar().hide();
-        }
-    }
-
-    static void showCloseActionBar(@NonNull AppCompatActivity activity) {
-        activity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-
-        Drawable drawable =
-                ContextCompat.getDrawable(activity, R.drawable.affirm_ic_baseline_close);
-        if (drawable != null) {
-            drawable.setColorFilter(
-                    ContextCompat.getColor(activity, R.color.affirm_ic_close_color),
-                    PorterDuff.Mode.SRC_ATOP);
-        }
-        if (activity.getActionBar() != null) {
-            activity.getActionBar().show();
-            activity.getActionBar().setDisplayShowTitleEnabled(false);
-            activity.getActionBar().setDisplayHomeAsUpEnabled(true);
-            activity.getActionBar().setHomeAsUpIndicator(drawable);
-        } else if (activity.getSupportActionBar() != null) {
-            activity.getSupportActionBar().show();
-            activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
-            activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            activity.getSupportActionBar().setHomeAsUpIndicator(drawable);
         }
     }
 

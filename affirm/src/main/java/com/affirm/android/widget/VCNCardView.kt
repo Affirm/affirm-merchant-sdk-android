@@ -51,7 +51,7 @@ class VCNCardView(context: Context, attrs: AttributeSet) :
                 setUpFlipAnimation(visaFrontView, visaBackView)
             }
             CardBrand.MasterCard -> {
-                cardViewInVCNCardView.background = ContextCompat.getDrawable(context, R.drawable.vcn_bg_card)
+                cardViewInVCNCardView.background = ContextCompat.getDrawable(context, R.drawable.affirm_vcn_bg_card)
                 val mastercardView = inflate(context, R.layout.vcn_card_mastercard, null)
                 cardViewInVCNCardView.addView(mastercardView, 0)
 

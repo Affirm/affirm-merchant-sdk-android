@@ -1,7 +1,7 @@
 <resources>
-    <color name="affirm_color_primary">#008577</color>
-    <color name="affirm_color_primary_dark">#00574B</color>
-    <color name="affirm_color_accent">#D81B60</color>
+    <color name="affirm_color_primary">#0F9CED</color>
+    <color name="affirm_color_primary_dark">#0083C7</color>
+    <color name="affirm_color_accent">#23292F</color>
 
     <color name="affirm_indigo">#0FA0EA</color>
     <color name="affirm_black">#23292F</color>

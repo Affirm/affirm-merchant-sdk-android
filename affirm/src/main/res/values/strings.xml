@@ -27,9 +27,7 @@
     <string name="question">Question</string>
     <string name="vcn_display_how_use">How do I use this card?</string>
     <string name="online">Online</string>
-    <string name="vcn_display_how_use_online">Enter the card number at checkout, along with your own billing address.</string>
-    <string name="in_store">In store</string>
-    <string name="vcn_display_how_use_instore">Show your virtual card to the cashier, and ask them to key in the card number as a credit card transaction.</string>
+    <string name="vcn_display_how_use_online">Enter the card number at checkout, along with your own name and billing address.</string>
     <string name="got_it">Got it</string>
     <string name="card_valid_expiration">This card is valid for %s</string>
 </resources>

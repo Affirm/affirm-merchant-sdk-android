@@ -589,7 +589,6 @@ public final class Affirm {
      * @param checkoutId checkout id
      */
     protected static void startVcnDisplay(@NonNull Activity activity, @NonNull String checkoutId) {
-        CardExpirationUtils.saveCachedCheckoutId(activity.getApplicationContext(), checkoutId);
         VcnDisplayActivity.startActivity(activity, vcnCheckoutRequest, checkoutId, null);
     }
 

@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:background="@color/affirm_transparent"
     android:padding="16dp"
-    tools:background="@drawable/vcn_bg_card"
+    tools:background="@drawable/affirm_vcn_bg_card"
     tools:layout_height="214dp"
     tools:layout_width="337dp">
 
@@ -27,7 +27,7 @@
         android:layout_width="50dp"
         android:layout_height="28dp"
         android:layout_gravity="top|right"
-        app:srcCompat="@drawable/vcn_ic_mastercard_logo" />
+        app:srcCompat="@drawable/affirm_vcn_ic_mastercard_logo" />
 
     <LinearLayout
         android:layout_width="wrap_content"

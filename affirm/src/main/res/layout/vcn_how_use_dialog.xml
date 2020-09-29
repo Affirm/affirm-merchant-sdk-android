@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        app:srcCompat="@drawable/ic_credit_card"
+        app:srcCompat="@drawable/affirm_ic_credit_card"
         app:tint="@color/affirm_indigo" />
 
     <TextView
@@ -36,33 +36,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal"
+        android:lineSpacingExtra="3dp"
         android:paddingHorizontal="@dimen/affirm_screen_horizontal_margin"
         android:text="@string/vcn_display_how_use_online"
-        android:textAppearance="@style/AffirmSmall" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:srcCompat="@drawable/ic_shopping_cart"
-        app:tint="@color/affirm_indigo" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/in_store"
-        android:textAllCaps="true"
-        android:textAppearance="@style/AffirmSmall.Medium" />
-
-    <TextView
-        android:id="@+id/inStoreHowToUse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center_horizontal"
-        android:paddingHorizontal="@dimen/affirm_screen_horizontal_margin"
-        android:text="@string/vcn_display_how_use_instore"
         android:textAppearance="@style/AffirmSmall" />
 
     <androidx.appcompat.widget.AppCompatButton

@@ -562,6 +562,17 @@ public final class Affirm {
      * @param checkout checkout object that contains address & shipping info & others...
      */
     public static void startNewVcnCheckoutFlow(@NonNull Activity activity,
+                                               @NonNull Checkout checkout) {
+        startNewVcnCheckoutFlow(activity, checkout, null);
+    }
+
+    /**
+     * Start new VCN checkout flow - Contains loan amount page & vcn display page
+     *
+     * @param activity activity {@link Activity}
+     * @param checkout checkout object that contains address & shipping info & others...
+     */
+    public static void startNewVcnCheckoutFlow(@NonNull Activity activity,
                                                @NonNull Checkout checkout,
                                                @Nullable String caas) {
         AffirmUtils.requireNonNull(activity);
@@ -580,7 +591,6 @@ public final class Affirm {
                 CardExpirationUtils.getCachedCheckoutId(activity.getApplicationContext()),
                 checkout);
     }
-
 
     /**
      * Start vcn display page in new vcn checkout flow

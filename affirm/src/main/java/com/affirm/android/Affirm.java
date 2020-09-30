@@ -587,6 +587,9 @@ public final class Affirm {
      * @param checkout checkout object that contains address & shipping info & others...
      */
     public static void startVcnDisplay(@NonNull Activity activity, @NonNull Checkout checkout) {
+        if (!existCachedCard(activity.getApplicationContext())) {
+            throw new IllegalStateException("No cached checkout or checkout have expired");
+        }
         VcnDisplayActivity.startActivity(activity, vcnCheckoutRequest,
                 CardExpirationUtils.getCachedCheckoutId(activity.getApplicationContext()),
                 checkout);

@@ -12,8 +12,8 @@ We provide a new vcn checkout process, which will include these two screens at t
     Affirm.startNewVcnCheckoutFlow(MainActivity.this, checkoutModel());
 ```
 
-- If the checkout has not expired, you can also open the vcn display page by the following method.
-Also you must include the checkout object, we can edit the checkout.
+- We also provide an API to open the vcn display page directly (the prerequisite is that the checkout has a cache and has not expired)
+Also you must include the checkout object, we can edit the checkout on the vcn display page.
 ```
     if (Affirm.existCachedCard(getApplicationContext())) {
         Affirm.startVcnDisplay(MainActivity.this, checkoutModel());

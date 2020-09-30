@@ -32,15 +32,14 @@ import static com.affirm.android.Affirm.RESULT_CHECKOUT_EDIT_FROM_MERCHANT;
 import static com.affirm.android.Affirm.RESULT_CHECKOUT_EDIT_FROM_NEW_FLOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ID;
-import static com.affirm.android.CardRequestType.CANCEL;
-import static com.affirm.android.CardRequestType.EDIT;
-import static com.affirm.android.CardRequestType.GET;
 
-public class VcnDisplayActivity extends AppCompatActivity implements CardRequestCallback {
+public class VcnDisplayActivity extends AppCompatActivity {
 
     private String checkoutId;
     private Checkout checkout;
-    private CardRequest request;
+    private GetCardRequest getCardRequest;
+    private DeleteCardRequest cancelCardRequest;
+    private DeleteCardRequest editCardRequest;
     private CardDetails cardDetails;
 
     private VCNCardView vcnCardView;
@@ -67,7 +66,62 @@ public class VcnDisplayActivity extends AppCompatActivity implements CardRequest
             checkoutId = getIntent().getStringExtra(CHECKOUT_ID);
             checkout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
         }
-        request = new CardRequest(Objects.requireNonNull(checkoutId), this);
+        getCardRequest = new GetCardRequest(Objects.requireNonNull(checkoutId),
+                new GetCardRequestCallback() {
+            @Override
+            public void onError(@NonNull AffirmException exception) {
+                showError(exception);
+            }
+
+            @Override
+            public void onGetCardSuccess(@NonNull CardDetails response) {
+                endLoading();
+                vcnEditOrCancel.setVisibility(View.VISIBLE);
+                vcnCopyCardNumber.setVisibility(View.VISIBLE);
+                vcnCardView.setVisibility(View.VISIBLE);
+                vcnCountdown.setVisibility(View.VISIBLE);
+
+                cardDetails = response;
+                vcnCardView.setVcn(cardDetails);
+            }
+        });
+        cancelCardRequest = new DeleteCardRequest(Objects.requireNonNull(checkoutId),
+                new DeleteCardRequestCallback() {
+            @Override
+            public void onError(@NonNull AffirmException exception) {
+                showError(exception);
+            }
+
+            @Override
+            public void onCancelCardSuccess(@NonNull CardCancelResponse response) {
+                setResult(RESULT_CHECKOUT_CANCEL);
+                CardExpirationUtils.clearCachedCheckoutId(getApplicationContext());
+                finish();
+            }
+        });
+        editCardRequest = new DeleteCardRequest(Objects.requireNonNull(checkoutId),
+                new DeleteCardRequestCallback() {
+
+            @Override
+            public void onError(@NonNull AffirmException exception) {
+                showError(exception);
+            }
+
+            @Override
+            public void onCancelCardSuccess(@NonNull CardCancelResponse response) {
+                if (checkout != null) {
+                    // the page start from merchant, should restart the load amount page
+                    Intent intent = new Intent();
+                    intent.putExtra(CHECKOUT_EXTRA, checkout);
+                    setResult(RESULT_CHECKOUT_EDIT_FROM_MERCHANT, intent);
+                } else {
+                    setResult(RESULT_CHECKOUT_EDIT_FROM_NEW_FLOW);
+                }
+                CardExpirationUtils.clearCachedCheckoutId(getApplicationContext());
+                finish();
+            }
+        });
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vcn_display);
 
@@ -107,13 +161,15 @@ public class VcnDisplayActivity extends AppCompatActivity implements CardRequest
 
     @Override
     protected void onDestroy() {
-        request.cancel();
+        getCardRequest.cancel();
+        cancelCardRequest.cancel();
+        editCardRequest.cancel();
         super.onDestroy();
     }
 
     private void onStartFetchCard() {
         startLoading();
-        request.create(GET);
+        getCardRequest.create();
     }
 
     private void onCancelCard() {
@@ -123,7 +179,7 @@ public class VcnDisplayActivity extends AppCompatActivity implements CardRequest
                 AffirmPlugins.get().merchantName()));
         builder.setPositiveButton(R.string.cancel_card, (dialog, which) -> {
             startLoading();
-            request.create(CANCEL);
+            cancelCardRequest.create();
         });
         builder.setNegativeButton(R.string.never_mind, (dialog, which) -> dialog.dismiss());
         builder.show();
@@ -135,7 +191,7 @@ public class VcnDisplayActivity extends AppCompatActivity implements CardRequest
         builder.setMessage(R.string.edit_amount_card_message);
         builder.setPositiveButton(R.string.edit_amount, (dialog, which) -> {
             startLoading();
-            request.create(EDIT);
+            editCardRequest.create();
         });
         builder.setNegativeButton(R.string.never_mind, (dialog, which) -> dialog.dismiss());
         builder.show();
@@ -190,49 +246,9 @@ public class VcnDisplayActivity extends AppCompatActivity implements CardRequest
         finish();
     }
 
-    @Override
-    public void onError(@NonNull AffirmException exception) {
+    private void showError(@NonNull AffirmException exception) {
         endLoading();
         Toast.makeText(this, exception.toString(), Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onCardCancelSuccess(@NonNull CardCancelResponse response,
-                                    @NonNull CardRequestType type) {
-        endLoading();
-        switch (type) {
-            case CANCEL:
-                setResult(RESULT_CHECKOUT_CANCEL);
-                CardExpirationUtils.clearCachedCheckoutId(getApplicationContext());
-                finish();
-                break;
-            case EDIT:
-                if (checkout != null) {
-                    // the page start from merchant, should restart the load amount page
-                    Intent intent = new Intent();
-                    intent.putExtra(CHECKOUT_EXTRA, checkout);
-                    setResult(RESULT_CHECKOUT_EDIT_FROM_MERCHANT, intent);
-                } else {
-                    setResult(RESULT_CHECKOUT_EDIT_FROM_NEW_FLOW);
-                }
-                CardExpirationUtils.clearCachedCheckoutId(getApplicationContext());
-                finish();
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void onCardFetchSuccess(@NonNull CardDetails response, @NonNull CardRequestType type) {
-        endLoading();
-        vcnEditOrCancel.setVisibility(View.VISIBLE);
-        vcnCopyCardNumber.setVisibility(View.VISIBLE);
-        vcnCardView.setVisibility(View.VISIBLE);
-        vcnCountdown.setVisibility(View.VISIBLE);
-
-        cardDetails = response;
-        vcnCardView.setVcn(cardDetails);
     }
 
     private void startLoading() {

@@ -1,11 +1,15 @@
 package com.affirm.android;
 
+import java.math.BigDecimal;
+
 public final class AffirmConstants {
 
     private AffirmConstants() {
     }
 
     static final String SDK_NAME = "Affirm";
+
+    static final BigDecimal maxPrice = BigDecimal.valueOf(17500.00);
 
     // Default location is US
     private static Affirm.Location location = Affirm.Location.US;

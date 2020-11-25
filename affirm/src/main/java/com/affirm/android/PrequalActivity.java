@@ -89,7 +89,7 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
         if (items != null) {
             path.append("&items=").append(Uri.encode(AffirmPlugins.get().gson().toJson(items)));
         }
-        webView.loadUrl(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl() + path.toString());
+        webView.loadUrl(HTTPS_PROTOCOL + AffirmPlugins.get().basePromoUrl() + path.toString());
     }
 
     @Override

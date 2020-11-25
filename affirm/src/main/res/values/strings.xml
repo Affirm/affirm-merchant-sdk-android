@@ -22,7 +22,7 @@
     <string name="never_mind">Never mind</string>
     <string name="edit_amount_card_message">Editing your virtual card amount will cancel your current card. Are you sure you want to edit the amount?</string>
     <string name="cancel_card_message">You\'re about to cancel your virtual card to %s. Are you sure you want to cancel?</string>
-    <string name="copy_to_clipboard">Copy card number</string>
+    <string name="copy_to_clipboard">Copy Card and Continue</string>
     <string name="copy_to_clipboard_copied">Card number copied!</string>
     <string name="question">Question</string>
     <string name="vcn_display_how_use">How do I use this card?</string>

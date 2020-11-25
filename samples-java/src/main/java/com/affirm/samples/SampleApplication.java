@@ -19,7 +19,6 @@ public class SampleApplication extends Application {
                 .setVcnCheckoutRequestCode(8002)
                 .setPrequalRequestCode(8003)
                 .setLocation(Affirm.Location.US)  // "CA" for Canadian, "US" for American (If not set, default will use US)
-                .setPrivateKey("EnZAoKpzVIYAjgjDlUCvCPXd6PdM15Qz")
                 .setMerchantName("Merchant Name")
                 .build()
         );

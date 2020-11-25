@@ -115,7 +115,6 @@ public final class AffirmConstants {
     private static final String PRODUCTION_JS_URL = "cdn1.affirm.com";
     private static final String PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL = "api.affirm.com/u/";
 
-    static final String CANCEL_CHECKOUT_CARD_PATH = "/api/v2/cards/%s/cancel";
     static final String GET_CHECKOUT_CARD_PATH = "/api/v2/cards/%s";
     static final String CHECKOUT_PATH = "/api/v2/checkout/";
     static final String TRACKER_PATH = "/collect";
@@ -163,7 +162,6 @@ public final class AffirmConstants {
     static final String CHECKOUT_CAAS_EXTRA = "checkout_caas_extra";
     static final String CHECKOUT_MONEY = "checkout_money";
     static final String CREDIT_DETAILS = "credit_details";
-    static final String CHECKOUT_ID = "checkout_id";
     static final String VCN_REASON = "vcn_reason";
     static final String NEW_FLOW = "new_flow";
 

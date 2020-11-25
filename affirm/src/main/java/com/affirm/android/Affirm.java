@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
+import com.affirm.android.model.CardDetailsInner;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.PromoPageType;
@@ -23,14 +24,11 @@ import org.joda.money.Money;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
-import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
-import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.VCN_REASON;
@@ -57,9 +55,7 @@ public final class Affirm {
     private static String receiveReasonCodes;
 
     static final int RESULT_ERROR = -8575;
-    static final int RESULT_CHECKOUT_EDIT_FROM_MERCHANT = -8576;
-    static final int RESULT_CHECKOUT_EDIT_FROM_NEW_FLOW = -8577;
-    static final int RESULT_CHECKOUT_CANCEL = -8578;
+    static final int RESULT_CHECKOUT_CANCEL = -8576;
 
     private static final String LIFE_FRAGMENT_TAG = "LifeFragmentTag";
 
@@ -138,12 +134,10 @@ public final class Affirm {
         final String publicKey;
         final Environment environment;
         final String merchantName;
-        final String privateKey;
 
         Configuration(Builder builder) {
             this.publicKey = builder.publicKey;
             this.merchantName = builder.merchantName;
-            this.privateKey = builder.privateKey;
 
             if (builder.environment != null) {
                 this.environment = builder.environment;
@@ -184,7 +178,6 @@ public final class Affirm {
             private int vcnCheckoutRequestCode;
             private int prequalRequestCode;
             private String receiveReasonCodes;
-            private String privateKey;
 
             /**
              * @param publicKey Set the public key to be used by Affirm.
@@ -294,11 +287,6 @@ public final class Affirm {
 
             public Builder setLocation(Location location) {
                 AffirmConstants.setLocation(location);
-                return this;
-            }
-
-            public Builder setPrivateKey(String privateKey) {
-                this.privateKey = privateKey;
                 return this;
             }
 
@@ -550,9 +538,8 @@ public final class Affirm {
     /**
      * Check if there is a cached card
      */
-    public static boolean existCachedCard(Context applicationContext) {
-        return CardExpirationUtils.getCachedCheckoutId(applicationContext) != null
-                && !CardExpirationUtils.isCardExpired(applicationContext);
+    public static boolean existCachedCard() {
+        return AffirmPlugins.get().getCachedCardDetails() != null;
     }
 
     /**
@@ -571,6 +558,7 @@ public final class Affirm {
      *
      * @param activity activity {@link Activity}
      * @param checkout checkout object that contains address & shipping info & others...
+     * @param caas     caas merchant-level attribute
      */
     public static void startNewVcnCheckoutFlow(@NonNull Activity activity,
                                                @NonNull Checkout checkout,
@@ -580,29 +568,33 @@ public final class Affirm {
         startLoanAmount(activity, checkout, caas);
     }
 
+
     /**
      * Start vcn display page from merchant
      *
      * @param activity activity {@link Activity}
      * @param checkout checkout object that contains address & shipping info & others...
      */
-    public static void startVcnDisplay(@NonNull Activity activity, @NonNull Checkout checkout) {
-        if (!existCachedCard(activity.getApplicationContext())) {
-            throw new IllegalStateException("No cached checkout or checkout have expired");
-        }
-        VcnDisplayActivity.startActivity(activity, vcnCheckoutRequest,
-                CardExpirationUtils.getCachedCheckoutId(activity.getApplicationContext()),
-                checkout);
+    public static void startVcnDisplay(@NonNull Activity activity,
+                                       @NonNull Checkout checkout) {
+        startVcnDisplay(activity, checkout, null);
     }
 
     /**
-     * Start vcn display page in new vcn checkout flow
+     * Start vcn display page from merchant
      *
-     * @param activity   activity {@link Activity}
-     * @param checkoutId checkout id
+     * @param activity activity {@link Activity}
+     * @param checkout checkout object that contains address & shipping info & others...
+     * @param caas     caas merchant-level attribute
      */
-    protected static void startVcnDisplay(@NonNull Activity activity, @NonNull String checkoutId) {
-        VcnDisplayActivity.startActivity(activity, vcnCheckoutRequest, checkoutId, null);
+    public static void startVcnDisplay(@NonNull Activity activity,
+                                       @NonNull Checkout checkout,
+                                       @Nullable String caas) {
+        CardDetailsInner cardDetailsInner = AffirmPlugins.get().getCachedCardDetails();
+        if (cardDetailsInner == null) {
+            throw new IllegalStateException("No cached checkout or checkout have expired");
+        }
+        VcnDisplayActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas);
     }
 
     /**
@@ -1114,13 +1106,8 @@ public final class Affirm {
                     break;
                 case RESULT_CHECKOUT_CANCEL:
                     callbacks.onAffirmVcnCheckoutCancelledReason(VcnReason.builder()
-                            .setReason("Checkout canceled after confirmed")
+                            .setReason("Checkout canceled")
                             .build());
-                    break;
-                case RESULT_CHECKOUT_EDIT_FROM_MERCHANT:
-                    startNewVcnCheckoutFlow((Activity) callbacks,
-                            Objects.requireNonNull(data).getParcelableExtra(CHECKOUT_EXTRA),
-                            data.getStringExtra(CHECKOUT_CAAS_EXTRA));
                     break;
                 default:
                     break;

@@ -22,8 +22,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <include
-            layout="@layout/view_vcn_card"
-            android:visibility="invisible" />
+            layout="@layout/view_vcn_card" />
 
     </FrameLayout>
 
@@ -35,7 +34,6 @@
         android:layout_marginBottom="8dp"
         android:textAppearance="@style/AffirmSmall.Medium"
         android:textColor="@color/affirm_black100"
-        android:visibility="invisible"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/vcnShowCard" />
@@ -51,7 +49,6 @@
         android:gravity="center"
         android:text="@string/edit_or_cancel_card"
         android:textColor="@color/affirm_color_primary"
-        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/vcnCountdown" />
@@ -62,22 +59,8 @@
         android:layout_marginLeft="@dimen/affirm_screen_horizontal_margin"
         android:layout_marginRight="@dimen/affirm_screen_horizontal_margin"
         android:text="@string/copy_to_clipboard"
-        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/vcnEditOrCancel" />
-
-    <com.affirm.android.AffirmProgressBar
-        android:id="@+id/indeterminateBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="@dimen/affirm_progressbar_dimen"
-        android:layout_height="@dimen/affirm_progressbar_dimen"
-        android:layout_gravity="center"
-        android:indeterminate="true"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

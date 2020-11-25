@@ -27,7 +27,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
     protected boolean newFlow;
 
-    private String caas;
+    protected String caas;
 
     abstract boolean useVCN();
 

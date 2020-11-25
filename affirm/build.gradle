@@ -1,8 +1,8 @@
 import com.github.spotbugs.snom.SpotBugsTask
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'pmd'
 apply plugin: 'com.github.spotbugs'
 apply plugin: 'checkstyle'

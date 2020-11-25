@@ -17,7 +17,6 @@ import com.affirm.android.widget.NumericKeyboardView;
 
 import org.joda.money.Money;
 
-import static com.affirm.android.Affirm.RESULT_CHECKOUT_EDIT_FROM_NEW_FLOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 
@@ -90,10 +89,7 @@ public class LoanAmountActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode != RESULT_CHECKOUT_EDIT_FROM_NEW_FLOW) {
-            setResult(resultCode, data);
-            finish();
-        }
+        setResult(resultCode, data);
+        finish();
     }
 }

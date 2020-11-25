@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         });
 
         findViewById(R.id.vcnCheckout).setOnLongClickListener(v -> {
-            if (Affirm.existCachedCard(getApplicationContext())) {
+            if (Affirm.existCachedCard()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 String[] items = getResources().getStringArray(R.array.vcn_checkout_new_flow_array);
                 builder.setItems(items, (dialog, which) -> {
@@ -95,7 +95,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                             break;
                         case 1:
                             try {
-                                Affirm.startVcnDisplay(MainActivity.this, checkoutModel());
+                                String cass = ((EditText)findViewById(R.id.cass)).getText().toString();
+                                Affirm.startVcnDisplay(MainActivity.this, checkoutModel(), cass);
                             } catch (Exception e) {
                                 Toast.makeText(getBaseContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
                             }

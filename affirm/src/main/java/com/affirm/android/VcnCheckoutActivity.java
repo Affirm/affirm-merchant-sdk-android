@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.CardDetails;
+import com.affirm.android.model.CardDetailsInner;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 import com.affirm.android.model.VcnReason;
@@ -18,8 +19,8 @@ import org.joda.money.Money;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Objects;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
@@ -119,8 +120,11 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     public void onWebViewConfirmation(@NonNull CardDetails cardDetails) {
         AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
         if (newFlow) {
-            CardExpirationUtils.saveCachedCheckoutId(getApplicationContext(), cardDetails.id());
-            Affirm.startVcnDisplay(this, Objects.requireNonNull(cardDetails.id()));
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.HOUR, 24);
+            AffirmPlugins.get().setCacheCardDetails(
+                    new CardDetailsInner(cardDetails, calendar.getTime()));
+            Affirm.startVcnDisplay(this, checkout, caas);
         } else {
             final Intent intent = new Intent();
             intent.putExtra(CREDIT_DETAILS, cardDetails);

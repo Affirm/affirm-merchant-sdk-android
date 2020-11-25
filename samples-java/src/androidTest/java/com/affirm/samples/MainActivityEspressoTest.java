@@ -72,7 +72,7 @@ public class MainActivityEspressoTest {
 
         onWebView().withTimeout(20, TimeUnit.SECONDS)
                 .withElement(findElement(Locator.ID, "prequal-header"))
-                .check(webMatches(getText(), containsString("Make easy monthly payments over 3, 6, or 12 months")));
+                .check(webMatches(getText(), containsString("Pay over time")));
 
         SystemClock.sleep(2000);
 

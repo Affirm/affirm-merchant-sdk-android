@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.checkout).setOnClickListener(v -> {
             try {
                 String cass = ((EditText)findViewById(R.id.cass)).getText().toString();
-                Affirm.startCheckout(MainActivity.this, checkoutModel(), cass, false);
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), cass, 10, false);
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         findViewById(R.id.vcnCheckout).setOnClickListener(v -> {
             try {
                 String cass = ((EditText) findViewById(R.id.cass)).getText().toString();
-                Affirm.startCheckout(MainActivity.this, checkoutModel(), cass, true);
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), cass, 10, true);
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }

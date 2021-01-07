@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 
@@ -20,6 +21,8 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
     private Checkout checkout;
 
     private String caas;
+
+    private int cardAuthWindow;
 
     abstract boolean useVCN();
 
@@ -35,9 +38,11 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
         if (savedInstanceState != null) {
             checkout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
             caas = savedInstanceState.getString(CHECKOUT_CAAS_EXTRA);
+            cardAuthWindow = savedInstanceState.getInt(CHECKOUT_CARD_AUTH_WINDOW, -1);
         } else {
             checkout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
             caas = getIntent().getStringExtra(CHECKOUT_CAAS_EXTRA);
+            cardAuthWindow = getIntent().getIntExtra(CHECKOUT_CARD_AUTH_WINDOW, -1);
         }
     }
 
@@ -51,7 +56,8 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
     @Override
     void onAttached() {
-        checkoutRequest = new CheckoutRequest(checkout, getInnerCheckoutCallback(), caas, useVCN());
+        checkoutRequest = new CheckoutRequest(checkout, getInnerCheckoutCallback(), caas, useVCN(),
+                cardAuthWindow);
         checkoutRequest.create();
     }
 

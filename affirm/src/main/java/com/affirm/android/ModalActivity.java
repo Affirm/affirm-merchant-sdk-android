@@ -104,7 +104,7 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
     void onAttached() {
         final String html = initialHtml();
         webView.loadDataWithBaseURL(
-                HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
+                HTTPS_PROTOCOL + AffirmPlugins.get().basePromoUrl(),
                 html, TEXT_HTML, UTF_8, null);
     }
 

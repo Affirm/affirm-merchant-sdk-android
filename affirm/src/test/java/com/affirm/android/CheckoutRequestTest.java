@@ -21,13 +21,19 @@ public class CheckoutRequestTest {
 
     @Test
     public void testCheckout() {
-        CheckoutRequest checkoutRequest = new CheckoutRequest(CheckoutFactory.create(), null, null, null, false);
+        CheckoutRequest checkoutRequest = new CheckoutRequest(CheckoutFactory.create(), null, null, null, false, -1);
         checkoutRequest.create();
     }
 
     @Test
     public void testCheckoutWithCaas() {
-        CheckoutRequest checkoutRequest = new CheckoutRequest(CheckoutFactory.create(), null, "4626b631-c5bc-4c4e-800b-dd5fa27ef8b8", null, false);
+        CheckoutRequest checkoutRequest = new CheckoutRequest(CheckoutFactory.create(), null, "4626b631-c5bc-4c4e-800b-dd5fa27ef8b8", null, false, -1);
+        checkoutRequest.create();
+    }
+
+    @Test
+    public void testCheckoutWithCardAuthWindow() {
+        CheckoutRequest checkoutRequest = new CheckoutRequest(CheckoutFactory.create(), null, null, null, false, 10);
         checkoutRequest.create();
     }
 }

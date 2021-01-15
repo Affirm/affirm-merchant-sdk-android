@@ -13,7 +13,7 @@ ext {
     junitVersion = "4.12"
     testRunnerVersion = "1.2.0"
     testEspressoVersion = "3.0.2"
-    okhttpVersion = '3.14.1'
+    okhttpVersion = '4.9.0'
     gsonVersion = '2.8.5'
     playServiceAuthVersion = '17.0.0'
     autoValueGsonVersion = '0.4.6'

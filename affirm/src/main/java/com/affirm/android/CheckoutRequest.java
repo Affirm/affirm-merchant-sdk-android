@@ -60,6 +60,7 @@ class CheckoutRequest implements AffirmRequest {
     private final InnerCheckoutCallback checkoutCallback;
     @Nullable
     private final String caas;
+    private final int cardAuthWindow;
 
     private Call checkoutCall;
 
@@ -67,25 +68,27 @@ class CheckoutRequest implements AffirmRequest {
     private final Gson gson = AffirmPlugins.get().gson();
 
     CheckoutRequest(@NonNull Checkout checkout, @Nullable InnerCheckoutCallback callback,
-                    @Nullable String caas, @Nullable Money money, boolean useVCN) {
-
+                    @Nullable String caas, @Nullable Money money, boolean useVCN,
+                    int cardAuthWindow) {
         this.checkout = checkout;
         this.money = money;
         this.checkoutCallback = callback;
         this.caas = caas;
         this.useVCN = useVCN;
+        this.cardAuthWindow = cardAuthWindow;
     }
 
     @Override
     public void create() {
         Merchant merchant;
-
+        Integer authWindow = cardAuthWindow >= 0 ? cardAuthWindow : null;
         if (useVCN) {
             merchant = Merchant.builder()
                     .setPublicApiKey(AffirmPlugins.get().publicKey())
                     .setUseVcn(true)
                     .setName(AffirmPlugins.get().merchantName())
                     .setCaas(caas)
+                    .setCardAuthWindow(authWindow)
                     .build();
         } else {
             merchant = Merchant.builder()
@@ -94,6 +97,7 @@ class CheckoutRequest implements AffirmRequest {
                     .setCancelUrl(AFFIRM_CHECKOUT_CANCELLATION_URL)
                     .setName(AffirmPlugins.get().merchantName())
                     .setCaas(caas)
+                    .setCardAuthWindow(authWindow)
                     .build();
         }
 

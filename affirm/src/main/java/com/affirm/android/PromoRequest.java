@@ -79,6 +79,11 @@ class PromoRequest implements AffirmRequest {
 
     @Override
     public void create() {
+        if (dollarAmount.compareTo(AffirmConstants.maxPrice) > 0) {
+            handleErrorResponse(new IllegalArgumentException("Affirm: data-amount is higher than the maximum ($17500)."));
+            return;
+        }
+
         int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
         StringBuilder path = new StringBuilder(
                 String.format(

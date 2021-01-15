@@ -519,6 +519,20 @@ public final class Affirm {
      * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
      * to get the processed result
      *
+     * @param activity       activity {@link Activity}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     * @param useVCN         Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
+                                     int cardAuthWindow, boolean useVCN) {
+        startCheckout(activity, checkout, null, cardAuthWindow, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
      * @param activity activity {@link Activity}
      * @param checkout checkout object that contains address & shipping info & others...
      * @param caas     caas merchant-level attribute
@@ -526,12 +540,28 @@ public final class Affirm {
      */
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                      @Nullable String caas, boolean useVCN) {
-        AffirmUtils.requireNonNull(activity);
-        AffirmUtils.requireNonNull(checkout);
+        startCheckout(activity, checkout, caas, -1, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param activity       activity {@link Activity}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param caas           caas merchant-level attribute
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     * @param useVCN         Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
+                                     @Nullable String caas, int cardAuthWindow, boolean useVCN) {
+        AffirmUtils.requireNonNull(activity, "activity cannot be null");
+        AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
             startVcnCheckout(activity, checkout, caas, null, false);
         } else {
-            CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas);
+            CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,
+                    cardAuthWindow);
         }
     }
 

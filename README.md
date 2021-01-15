@@ -1,7 +1,7 @@
 Affirm Android SDK
 ==================
 
-Affirm Android SDK allows you to offer Affirm monthly payments in your own app.
+Affirm Android SDK allows you to offer Affirm in your own app.
 
 # Installation
 
@@ -124,7 +124,7 @@ Note - For VCN Checkout, all actions should be done using your existing payment 
 
 ## Promotional Messaging
 
-Affirm promotional messaging components—monthly payment messaging and educational modals—show customers how they can use Affirm to finance their purchases. Promos consist of promotional messaging, which appears directly in your app, and a modal, which which offers users an ability to prequalify.
+Affirm promotional messaging components—payment messaging and educational modals—show customers how they can use Affirm to finance their purchases. Promos consist of promotional messaging, which appears directly in your app, and a modal, which which offers users an ability to prequalify.
 
 ### Show promotional message with `AffirmPromotionButton`
 

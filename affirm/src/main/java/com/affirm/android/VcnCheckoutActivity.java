@@ -26,6 +26,7 @@ import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_UR
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
 import static com.affirm.android.AffirmConstants.CANCELLED_CB_URL;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_MONEY;
 import static com.affirm.android.AffirmConstants.CONFIRM_CB_URL;
@@ -51,7 +52,7 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout, @Nullable String caas,
-                              @Nullable Money money,
+                              @Nullable Money money, int cardAuthWindow,
                               @NonNull String configReceiveReasonCodes,
                               boolean newFlow) {
 
@@ -62,6 +63,7 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         intent.putExtra(CHECKOUT_MONEY, money);
         intent.putExtra(NEW_FLOW, newFlow);
+        intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
         activity.startActivityForResult(intent, requestCode);
     }
 

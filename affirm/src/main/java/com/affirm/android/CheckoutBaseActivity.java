@@ -12,6 +12,7 @@ import org.joda.money.Money;
 
 import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_MONEY;
@@ -29,6 +30,8 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
     protected String caas;
 
+    private int cardAuthWindow;
+
     abstract boolean useVCN();
 
     abstract InnerCheckoutCallback getInnerCheckoutCallback();
@@ -44,11 +47,13 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
             caas = savedInstanceState.getString(CHECKOUT_CAAS_EXTRA);
             money = (Money) savedInstanceState.getSerializable(CHECKOUT_MONEY);
             newFlow = savedInstanceState.getBoolean(NEW_FLOW);
+            cardAuthWindow = savedInstanceState.getInt(CHECKOUT_CARD_AUTH_WINDOW, -1);
         } else {
             checkout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
             caas = getIntent().getStringExtra(CHECKOUT_CAAS_EXTRA);
             money = (Money) getIntent().getSerializableExtra(CHECKOUT_MONEY);
             newFlow = getIntent().getBooleanExtra(NEW_FLOW, false);
+            cardAuthWindow = getIntent().getIntExtra(CHECKOUT_CARD_AUTH_WINDOW, -1);
         }
     }
 
@@ -64,8 +69,8 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
 
     @Override
     void onAttached() {
-        checkoutRequest = new CheckoutRequest(checkout,
-                getInnerCheckoutCallback(), caas, money, useVCN());
+        checkoutRequest = new CheckoutRequest(checkout, getInnerCheckoutCallback(), caas, money,
+                useVCN(), cardAuthWindow);
         checkoutRequest.create();
     }
 

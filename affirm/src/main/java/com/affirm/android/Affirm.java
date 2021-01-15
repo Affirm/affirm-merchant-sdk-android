@@ -558,7 +558,8 @@ public final class Affirm {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
-            startVcnCheckout(activity, checkout, caas, null, false);
+            startVcnCheckout(activity, checkout, caas, null, false,
+                    cardAuthWindow);
         } else {
             CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,
                     cardAuthWindow);
@@ -593,11 +594,25 @@ public final class Affirm {
     public static void startNewVcnCheckoutFlow(@NonNull Activity activity,
                                                @NonNull Checkout checkout,
                                                @Nullable String caas) {
-        AffirmUtils.requireNonNull(activity);
-        AffirmUtils.requireNonNull(checkout);
-        startLoanAmount(activity, checkout, caas);
+        startNewVcnCheckoutFlow(activity, checkout, caas, -1);
     }
 
+    /**
+     * Start new VCN checkout flow - Contains loan amount page & vcn display page
+     *
+     * @param activity       activity {@link Activity}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param caas           caas merchant-level attribute
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     */
+    public static void startNewVcnCheckoutFlow(@NonNull Activity activity,
+                                               @NonNull Checkout checkout,
+                                               @Nullable String caas,
+                                               int cardAuthWindow) {
+        AffirmUtils.requireNonNull(activity);
+        AffirmUtils.requireNonNull(checkout);
+        startLoanAmount(activity, checkout, caas, cardAuthWindow);
+    }
 
     /**
      * Start vcn display page from merchant
@@ -634,8 +649,9 @@ public final class Affirm {
      * @param checkout checkout object that contains address & shipping info & others...
      */
     protected static void startLoanAmount(@NonNull Activity activity, @NonNull Checkout checkout,
-                                          @Nullable String caas) {
-        LoanAmountActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas);
+                                          @Nullable String caas, int cardAuthWindow) {
+        LoanAmountActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas,
+                cardAuthWindow);
     }
 
     /**
@@ -643,9 +659,9 @@ public final class Affirm {
      */
     protected static void startVcnCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                            @Nullable String caas, @Nullable Money money,
-                                           boolean newFlow) {
+                                           boolean newFlow, int cardAuthWindow) {
         VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas, money,
-                receiveReasonCodes, newFlow);
+                cardAuthWindow, receiveReasonCodes, newFlow);
     }
 
     /**

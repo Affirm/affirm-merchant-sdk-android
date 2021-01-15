@@ -18,6 +18,7 @@ import com.affirm.android.widget.NumericKeyboardView;
 import org.joda.money.Money;
 
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 
 public class LoanAmountActivity extends AppCompatActivity {
@@ -25,12 +26,15 @@ public class LoanAmountActivity extends AppCompatActivity {
     private Checkout checkout;
     private MoneyFormattedEditText loanAmountEditText;
     private String caas;
+    private int cardAuthWindow;
 
     public static void startActivity(@NonNull Activity activity, int requestCode,
-                                     @NonNull Checkout checkout, @Nullable String caas) {
+                                     @NonNull Checkout checkout, @Nullable String caas,
+                                     int cardAuthWindow) {
         Intent intent = new Intent(activity, LoanAmountActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
+        intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -39,9 +43,11 @@ public class LoanAmountActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             checkout = savedInstanceState.getParcelable(CHECKOUT_EXTRA);
             caas = savedInstanceState.getString(CHECKOUT_CAAS_EXTRA);
+            cardAuthWindow = savedInstanceState.getInt(CHECKOUT_CARD_AUTH_WINDOW, -1);
         } else {
             checkout = getIntent().getParcelableExtra(CHECKOUT_EXTRA);
             caas = getIntent().getStringExtra(CHECKOUT_CAAS_EXTRA);
+            cardAuthWindow = getIntent().getIntExtra(CHECKOUT_CARD_AUTH_WINDOW, -1);
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loan_amount);
@@ -79,7 +85,8 @@ public class LoanAmountActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.menu_next) {
             Money money = loanAmountEditText.getRaw();
             if (!money.isZero()) {
-                Affirm.startVcnCheckout(this, checkout, caas, money, true);
+                Affirm.startVcnCheckout(this, checkout, caas, money, true,
+                        cardAuthWindow);
                 return true;
             }
         }

@@ -56,7 +56,6 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
                               @NonNull String configReceiveReasonCodes,
                               boolean newFlow) {
 
-
         receiveReasonCodes = configReceiveReasonCodes;
         final Intent intent = new Intent(activity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);

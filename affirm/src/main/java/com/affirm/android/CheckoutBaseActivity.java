@@ -65,6 +65,7 @@ abstract class CheckoutBaseActivity extends AffirmActivity {
         outState.putString(CHECKOUT_CAAS_EXTRA, caas);
         outState.putSerializable(CHECKOUT_MONEY, money);
         outState.putBoolean(NEW_FLOW, newFlow);
+        outState.putInt(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
     }
 
     @Override

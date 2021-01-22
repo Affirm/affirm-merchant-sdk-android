@@ -100,13 +100,7 @@ task checkstyle(type: Checkstyle) {
     classpath = files()
 }
 
-task pmdWrapper(dependsOn: 'pmd') {}
-task checkstyleWrapper(dependsOn: 'checkstyle') {}
-
-check.dependsOn "spotbugsDebug"
-check.dependsOn "spotbugsRelease"
-check.dependsOn pmdWrapper
-check.dependsOn checkstyleWrapper
+check.dependsOn "spotbugsDebug", "spotbugsRelease", "pmd", "checkstyle"
 
 dependencies {
     implementation "androidx.appcompat:appcompat:${androidxAppCompatVersion}"

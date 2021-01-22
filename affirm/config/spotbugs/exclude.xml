@@ -7,7 +7,7 @@
         <Class name="~.*\.Manifest\$.*"/>
     </Match>
     <Match>
-        <Bug code="ST"/>
-        <Class name="com.affirm.affirmsdk.di.AffirmInjector"/>
+        <Class name="~.*GsonTypeAdapter" />
+        <Bug pattern="RV_RETURN_VALUE_IGNORED"/>
     </Match>
 </FindBugsFilter>

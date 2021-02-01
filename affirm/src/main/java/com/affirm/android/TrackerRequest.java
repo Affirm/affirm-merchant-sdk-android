@@ -1,6 +1,8 @@
 package com.affirm.android;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
@@ -16,6 +18,7 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -29,12 +32,21 @@ import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 class TrackerRequest implements AffirmRequest {
 
     @NonNull
-    private JsonObject trackingData;
+    private final JsonObject trackingData;
+
+    @NonNull
+    OkHttpClient okHttpClient;
 
     private Call trackingCall;
 
     TrackerRequest(@NonNull JsonObject trackingData) {
+        this(null, trackingData);
+    }
+
+    @VisibleForTesting
+    TrackerRequest(@Nullable OkHttpClient okHttpClient, @NonNull JsonObject trackingData) {
         this.trackingData = trackingData;
+        this.okHttpClient = okHttpClient;
     }
 
     @Override
@@ -45,7 +57,7 @@ class TrackerRequest implements AffirmRequest {
             trackingCall.cancel();
         }
 
-        trackingCall = plugins.restClient().getCallForRequest(
+        trackingCall = plugins.restClient().getCallForRequest(okHttpClient,
                 new AffirmHttpRequest.Builder()
                         .setUrl(getTrackerProtocol() + plugins.trackerBaseUrl() + TRACKER_PATH)
                         .setMethod(AffirmHttpRequest.Method.POST)

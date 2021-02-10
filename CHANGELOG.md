@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.15 (February 9, 2021)
+- Improved critical error handling
+
 ## Version 2.0.14 (January 15, 2021)
 - Added support for VCN authorization window
 - Enhancements and updates to Promotional Messaging

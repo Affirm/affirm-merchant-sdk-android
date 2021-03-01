@@ -1,20 +1,20 @@
 Affirm Android SDK
 ==================
 
-Affirm Android SDK allows you to offer Affirm monthly payments in your own app.
+Affirm Android SDK allows you to offer Affirm in your own app.
 
 # Installation
 
 Download via Gradle:
 ```groovy
-implementation "com.affirm:affirm-android-sdk:2.0.11"
+implementation "com.affirm:affirm-android-sdk:2.0.15"
 ```
 or Maven:
 ```xml
 <dependency>
   <groupId>com.affirm</groupId>
   <artifactId>affirm-android-sdk</artifactId>
-  <version>2.0.11</version>
+  <version>2.0.15</version>
 </dependency>
 ```
 Snapshots of the development version are available in [Sonatype's `snapshots` repository](https://oss.sonatype.org/content/repositories/snapshots/).
@@ -124,7 +124,7 @@ Note - For VCN Checkout, all actions should be done using your existing payment 
 
 ## Promotional Messaging
 
-Affirm promotional messaging components—monthly payment messaging and educational modals—show customers how they can use Affirm to finance their purchases. Promos consist of promotional messaging, which appears directly in your app, and a modal, which which offers users an ability to prequalify.
+Affirm promotional messaging components—payment messaging and educational modals—show customers how they can use Affirm to finance their purchases. Promos consist of promotional messaging, which appears directly in your app, and a modal, which which offers users an ability to prequalify.
 
 ### Show promotional message with `AffirmPromotionButton`
 
@@ -345,7 +345,7 @@ We also support using fragment directly, only need to pass a ViewGroup id, we wi
 1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. This step is optional. There is a step inside `affirm/build.gradle` to do this automatically.
 2. Run the `samples-java` or `samples-kotlin` within Android Studio.
 
-# Upgrade (from 1.x.x to 2.0.11)
+# Upgrade (from 1.x.x to 2.0.14)
 * If you are using an older version of the SDK, you can refer to this [upgrade document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/UPGRADE.md). We recommend that you install the latest version to access the most up-to-date features and experience. 
 
 # Changelog

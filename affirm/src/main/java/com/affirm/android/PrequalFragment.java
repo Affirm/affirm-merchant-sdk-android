@@ -1,6 +1,7 @@
 package com.affirm.android;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IdRes;
@@ -10,11 +11,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import com.affirm.android.exception.ConnectionException;
+import com.affirm.android.model.Item;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.affirm.android.AffirmConstants.AMOUNT;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.ITEMS;
 import static com.affirm.android.AffirmConstants.PAGE_TYPE;
 import static com.affirm.android.AffirmConstants.PREQUAL_PATH;
 import static com.affirm.android.AffirmConstants.PROMO_ID;
@@ -34,6 +39,7 @@ public final class PrequalFragment extends AffirmFragment
     private String amount;
     private String promoId;
     private String pageType;
+    private List<Item> items;
 
     private PrequalFragment() {
     }
@@ -42,7 +48,8 @@ public final class PrequalFragment extends AffirmFragment
                                        @IdRes int containerViewId,
                                        @NonNull BigDecimal amount,
                                        @Nullable String promoId,
-                                       @Nullable String pageType) {
+                                       @Nullable String pageType,
+                                       List<Item> items) {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         if (fragmentManager.findFragmentByTag(TAG) != null) {
             return (PrequalFragment) fragmentManager.findFragmentByTag(TAG);
@@ -54,6 +61,7 @@ public final class PrequalFragment extends AffirmFragment
         bundle.putString(AMOUNT, stringAmount);
         bundle.putString(PROMO_ID, promoId);
         bundle.putString(PAGE_TYPE, pageType);
+        bundle.putParcelableArrayList(ITEMS, new ArrayList<>(items));
         fragment.setArguments(bundle);
 
         addFragment(fragmentManager, containerViewId, fragment, TAG);
@@ -69,6 +77,7 @@ public final class PrequalFragment extends AffirmFragment
         amount = getArguments().getString(AMOUNT);
         promoId = getArguments().getString(PROMO_ID);
         pageType = getArguments().getString(PAGE_TYPE);
+        items = getArguments().getParcelableArrayList(ITEMS);
     }
 
     @Override
@@ -80,10 +89,13 @@ public final class PrequalFragment extends AffirmFragment
     @Override
     void onAttached() {
         String publicKey = AffirmPlugins.get().publicKey();
-        String path = String.format(PREQUAL_PATH,
-                publicKey, amount, promoId, REFERRING_URL);
+        StringBuilder path = new StringBuilder(String.format(PREQUAL_PATH,
+                publicKey, amount, promoId, REFERRING_URL));
         if (pageType != null) {
-            path += "&page_type=" + pageType;
+            path.append("&page_type=").append(pageType);
+        }
+        if (items != null) {
+            path.append("&items=").append(Uri.encode(AffirmPlugins.get().gson().toJson(items)));
         }
         webView.loadUrl(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl() + path);
     }

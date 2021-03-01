@@ -3,9 +3,15 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.affirm.android.Affirm;
 import com.affirm.android.AffirmColor;
@@ -40,11 +46,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
-
 public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCallbacks,
         Affirm.VcnCheckoutCallbacks, Affirm.PrequalCallbacks {
 
@@ -61,7 +62,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         findViewById(R.id.checkout).setOnClickListener(v -> {
             try {
-                Affirm.startCheckout(MainActivity.this, checkoutModel(), false);
+                String cass = ((EditText)findViewById(R.id.cass)).getText().toString();
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), cass, 10, false);
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -69,7 +71,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
 
         findViewById(R.id.vcnCheckout).setOnClickListener(v -> {
             try {
-                Affirm.startCheckout(MainActivity.this, checkoutModel(), true);
+                String cass = ((EditText) findViewById(R.id.cass)).getText().toString();
+                Affirm.startCheckout(MainActivity.this, checkoutModel(), cass, 10, true);
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -98,7 +101,20 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
                 android.R.color.darker_gray,
                 R.dimen.affirm_promotion_size);
 
-        Affirm.configureWithAmount(affirmPromotionButton1, PromoPageType.PRODUCT, PRICE, true);
+        final List<Item> items = new ArrayList<>();
+        items.add(Item.builder()
+                .setDisplayName("Great Deal Wheel")
+                .setImageUrl(
+                        "http://www.m2motorsportinc.com/media/catalog/product/cache/1/thumbnail" +
+                                "/9df78eab33525d08d6e5fb8d27136e95/v/e/velocity-vw125-wheels-rims.jpg")
+                .setQty(1)
+                .setSku("wheel")
+                .setUnitPrice(BigDecimal.valueOf(1000.0))
+                .setUrl("http://merchant.com/great_deal_wheel")
+                .build()
+        );
+
+        Affirm.configureWithAmount(affirmPromotionButton1, PromoPageType.PRODUCT, PRICE, true, items);
 
         // Option2 - Initialize by new
         AffirmPromotionButton affirmPromotionButton2 = new AffirmPromotionButton(this);
@@ -108,13 +124,15 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         affirmPromotionButton2.configWithHtmlStyling("file:///android_asset/remote_promo.css", typefaceDeclaration);
 
         ((FrameLayout) findViewById(R.id.promo_container)).addView(affirmPromotionButton2);
-        Affirm.configureWithAmount(affirmPromotionButton2, PRICE, true);
-
+        Affirm.configureWithAmount(affirmPromotionButton2, PRICE, true, items);
 
         // Fetch promotion, then use your own TextView to display
         TextView promotionTextView = findViewById(R.id.promotionTextView);
+
+
         Affirm.PromoRequestData requestData = new Affirm.PromoRequestData.Builder(PRICE, true)
                 .setPageType(null)
+                .setItems(items)
                 .build();
 
         promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.getTextSize(), this, new PromotionCallback() {

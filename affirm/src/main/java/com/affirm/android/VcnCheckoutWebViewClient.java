@@ -11,6 +11,7 @@ import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.VcnReason;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -38,8 +39,8 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
     @Nullable
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        if (request.getUrl().toString()
-                .equals(HTTPS_PROTOCOL + AffirmPlugins.get().baseInvalidCheckoutRedirectUrl())) {
+        if (request.getUrl().toString().equals(HTTPS_PROTOCOL
+                + AffirmPlugins.get().baseInvalidCheckoutRedirectUrl())) {
             callbacks.onWebViewError(
                     new ConnectionException(INVALID_CHECKOUT_MESSAGE)
             );
@@ -56,7 +57,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
                 final String json = URLDecoder.decode(encodedString, ENCODING_FORMAT);
                 final CardDetails cardDetails = gson.fromJson(json, CardDetails.class);
                 callbacks.onWebViewConfirmation(cardDetails);
-            } catch (UnsupportedEncodingException e) {
+            } catch (UnsupportedEncodingException | JsonSyntaxException e) {
                 throw new RuntimeException(e);
             }
             return true;
@@ -71,7 +72,7 @@ final class VcnCheckoutWebViewClient extends AffirmWebViewClient {
                 } else {
                     callbacks.onWebViewCancellationReason(vcnReason);
                 }
-            } catch (UnsupportedEncodingException e) {
+            } catch (UnsupportedEncodingException | JsonSyntaxException e) {
                 throw new RuntimeException(e);
             }
             return true;

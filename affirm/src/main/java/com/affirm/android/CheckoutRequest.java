@@ -15,6 +15,7 @@ import com.affirm.android.model.Merchant;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -53,29 +54,35 @@ class CheckoutRequest implements AffirmRequest {
     private final boolean useVCN;
     @Nullable
     private final InnerCheckoutCallback checkoutCallback;
+    @Nullable
+    private final String caas;
+    private final int cardAuthWindow;
 
     private Call checkoutCall;
 
     private final JsonParser jsonParser = new JsonParser();
     private final Gson gson = AffirmPlugins.get().gson();
 
-    CheckoutRequest(@NonNull Checkout checkout,
-                    @Nullable InnerCheckoutCallback callback,
-                    boolean useVCN) {
+    CheckoutRequest(@NonNull Checkout checkout, @Nullable InnerCheckoutCallback callback,
+                    @Nullable String caas, boolean useVCN, int cardAuthWindow) {
         this.checkout = checkout;
         this.checkoutCallback = callback;
+        this.caas = caas;
         this.useVCN = useVCN;
+        this.cardAuthWindow = cardAuthWindow;
     }
 
     @Override
     public void create() {
         Merchant merchant;
-
+        Integer authWindow = cardAuthWindow >= 0 ? cardAuthWindow : null;
         if (useVCN) {
             merchant = Merchant.builder()
                     .setPublicApiKey(AffirmPlugins.get().publicKey())
                     .setUseVcn(true)
                     .setName(AffirmPlugins.get().merchantName())
+                    .setCaas(caas)
+                    .setCardAuthWindow(authWindow)
                     .build();
         } else {
             merchant = Merchant.builder()
@@ -83,6 +90,8 @@ class CheckoutRequest implements AffirmRequest {
                     .setConfirmationUrl(AFFIRM_CHECKOUT_CONFIRMATION_URL)
                     .setCancelUrl(AFFIRM_CHECKOUT_CANCELLATION_URL)
                     .setName(AffirmPlugins.get().merchantName())
+                    .setCaas(caas)
+                    .setCardAuthWindow(authWindow)
                     .build();
         }
 
@@ -126,19 +135,26 @@ class CheckoutRequest implements AffirmRequest {
             public void onResponse(
                     @NotNull Call call,
                     @NotNull Response response
-            ) throws IOException {
+            ) {
                 ResponseBody responseBody = response.body();
 
                 if (response.isSuccessful()) {
                     if (responseBody != null) {
-                        CheckoutResponse checkoutResponse = gson.fromJson(
-                                responseBody.string(),
-                                CheckoutResponse.class
-                        );
+                        try {
+                            CheckoutResponse checkoutResponse = gson.fromJson(
+                                    responseBody.string(),
+                                    CheckoutResponse.class
+                            );
 
-                        if (checkoutCallback != null) {
-                            new Handler(Looper.getMainLooper()).post(
-                                    () -> checkoutCallback.onSuccess(checkoutResponse)
+                            if (checkoutCallback != null) {
+                                new Handler(Looper.getMainLooper()).post(
+                                        () -> checkoutCallback.onSuccess(checkoutResponse)
+                                );
+                            }
+                        } catch (JsonSyntaxException | IOException e) {
+                            handleErrorResponse(
+                                    new APIException("Some error occurred while parsing the "
+                                            + "checkout response", e)
                             );
                         }
                     } else {

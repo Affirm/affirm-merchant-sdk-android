@@ -59,11 +59,20 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp" />
 
+        <EditText
+            android:id="@+id/cass"
+            android:layout_marginHorizontal="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_below="@id/promo_container"
+            android:hint="cass"/>
+
         <Button
             android:id="@+id/checkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/promo_container"
+            android:layout_below="@id/cass"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
             android:text="@string/checkout" />

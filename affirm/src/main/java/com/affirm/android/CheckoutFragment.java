@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -13,6 +14,8 @@ import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.CheckoutResponse;
 
+import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_CREATION_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_CREATION_SUCCESS;
@@ -35,8 +38,9 @@ public final class CheckoutFragment extends CheckoutBaseFragment
 
     static CheckoutFragment newInstance(@NonNull AppCompatActivity activity,
                                         @IdRes int containerViewId,
-                                        @NonNull Checkout checkout) {
-
+                                        @NonNull Checkout checkout,
+                                        @Nullable String caas,
+                                        int cardAuthWindow) {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         if (fragmentManager.findFragmentByTag(TAG) != null) {
             return (CheckoutFragment) fragmentManager.findFragmentByTag(TAG);
@@ -45,6 +49,8 @@ public final class CheckoutFragment extends CheckoutBaseFragment
         CheckoutFragment fragment = new CheckoutFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(CHECKOUT_EXTRA, checkout);
+        bundle.putString(CHECKOUT_CAAS_EXTRA, caas);
+        bundle.putInt(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
         fragment.setArguments(bundle);
 
         addFragment(fragmentManager, containerViewId, fragment, TAG);

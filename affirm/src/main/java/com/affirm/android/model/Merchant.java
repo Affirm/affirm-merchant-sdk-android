@@ -52,6 +52,14 @@ public abstract class Merchant implements Parcelable {
     @SerializedName("use_vcn")
     public abstract Boolean useVcn();
 
+    @Nullable
+    @SerializedName("caas")
+    public abstract String caas();
+
+    @Nullable
+    @SerializedName("card_auth_window")
+    public abstract Integer cardAuthWindow();
+
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder setPublicApiKey(String value);
@@ -63,6 +71,10 @@ public abstract class Merchant implements Parcelable {
         public abstract Builder setName(String value);
 
         public abstract Builder setUseVcn(Boolean value);
+
+        public abstract Builder setCaas(String value);
+
+        public abstract Builder setCardAuthWindow(Integer value);
 
         public abstract Merchant build();
     }

@@ -24,6 +24,8 @@ import java.util.HashMap;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
 import static com.affirm.android.AffirmConstants.CANCELLED_CB_URL;
+import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_RECEIVE_REASON_CODES;
 import static com.affirm.android.AffirmConstants.CONFIRM_CB_URL;
@@ -56,7 +58,9 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
     static VcnCheckoutFragment newInstance(@NonNull AppCompatActivity activity,
                                            @IdRes int containerViewId,
                                            @NonNull Checkout checkout,
-                                           String receiveReasonCodes) {
+                                           String receiveReasonCodes,
+                                           @Nullable String caas,
+                                           int cardAuthWindow) {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         if (fragmentManager.findFragmentByTag(TAG) != null) {
             return (VcnCheckoutFragment) fragmentManager.findFragmentByTag(TAG);
@@ -66,6 +70,8 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
         Bundle bundle = new Bundle();
         bundle.putParcelable(CHECKOUT_EXTRA, checkout);
         bundle.putString(CHECKOUT_RECEIVE_REASON_CODES, receiveReasonCodes);
+        bundle.putString(CHECKOUT_CAAS_EXTRA, caas);
+        bundle.putInt(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
         fragment.setArguments(bundle);
 
         addFragment(fragmentManager, containerViewId, fragment, TAG);

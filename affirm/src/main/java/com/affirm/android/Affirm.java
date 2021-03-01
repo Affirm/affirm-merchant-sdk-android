@@ -18,10 +18,12 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.Checkout;
+import com.affirm.android.model.Item;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.VcnReason;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -314,6 +316,8 @@ public final class Affirm {
         private AffirmColor affirmColor;
         @NonNull
         private AffirmLogoType affirmLogoType;
+        @Nullable
+        private List<Item> items;
 
         private PromoRequestData(
                 @Nullable String promoId,
@@ -321,7 +325,8 @@ public final class Affirm {
                 BigDecimal amount,
                 boolean showCta,
                 @NonNull AffirmColor affirmColor,
-                @NonNull AffirmLogoType affirmLogoType
+                @NonNull AffirmLogoType affirmLogoType,
+                @Nullable List<Item> items
         ) {
             this.promoId = promoId;
             this.pageType = pageType;
@@ -329,6 +334,7 @@ public final class Affirm {
             this.showCta = showCta;
             this.affirmColor = affirmColor;
             this.affirmLogoType = affirmLogoType;
+            this.items = items;
         }
 
         @Nullable
@@ -359,6 +365,11 @@ public final class Affirm {
             return affirmLogoType;
         }
 
+        @Nullable
+        List<Item> getItems() {
+            return items;
+        }
+
         public static final class Builder {
             @Nullable
             private String promoId;
@@ -368,9 +379,11 @@ public final class Affirm {
             private boolean showCta;
             private AffirmColor affirmColor;
             private AffirmLogoType affirmLogoType;
+            @Nullable
+            private List<Item> items;
 
             /**
-             * @param amount  a float that represents the amount to retrieve pricing for
+             * @param amount  a BigDecimal that represents the amount to retrieve pricing for
              *                eg 112.02 as $112 and 2¢
              * @param showCta whether need to show cta
              */
@@ -412,6 +425,11 @@ public final class Affirm {
                 return this;
             }
 
+            public PromoRequestData.Builder setItems(@Nullable List<Item> items) {
+                this.items = items;
+                return this;
+            }
+
             public PromoRequestData build() {
                 if (affirmLogoType == null) {
                     affirmLogoType = AFFIRM_DISPLAY_TYPE_LOGO;
@@ -427,7 +445,8 @@ public final class Affirm {
                         amount,
                         showCta,
                         affirmColor,
-                        affirmLogoType
+                        affirmLogoType,
+                        items
                 );
             }
         }
@@ -493,12 +512,57 @@ public final class Affirm {
      */
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                      boolean useVCN) {
+        startCheckout(activity, checkout, null, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param activity       activity {@link Activity}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     * @param useVCN         Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
+                                     int cardAuthWindow, boolean useVCN) {
+        startCheckout(activity, checkout, null, cardAuthWindow, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param activity activity {@link Activity}
+     * @param checkout checkout object that contains address & shipping info & others...
+     * @param caas     caas merchant-level attribute
+     * @param useVCN   Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
+                                     @Nullable String caas, boolean useVCN) {
+        startCheckout(activity, checkout, caas, -1, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param activity       activity {@link Activity}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param caas           caas merchant-level attribute
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     * @param useVCN         Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
+                                     @Nullable String caas, int cardAuthWindow, boolean useVCN) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
-            VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout);
+            VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas,
+                    cardAuthWindow);
         } else {
-            CheckoutActivity.startActivity(activity, checkoutRequest, checkout);
+            CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,
+                    cardAuthWindow);
         }
     }
 
@@ -515,12 +579,15 @@ public final class Affirm {
     public static AffirmFragment startCheckout(@NonNull AppCompatActivity activity,
                                                @IdRes int containerViewId,
                                                @NonNull Checkout checkout,
+                                               @Nullable String caas,
+                                               int cardAuthWindow,
                                                boolean useVCN) {
         if (useVCN) {
             return VcnCheckoutFragment.newInstance(activity,
-                    containerViewId, checkout, receiveReasonCodes);
+                    containerViewId, checkout, receiveReasonCodes, caas, cardAuthWindow);
         } else {
-            return CheckoutFragment.newInstance(activity, containerViewId, checkout);
+            return CheckoutFragment.newInstance(activity,
+                    containerViewId, checkout, caas, cardAuthWindow);
         }
     }
 
@@ -568,7 +635,7 @@ public final class Affirm {
      * Start product modal
      *
      * @param activity activity {@link Activity}
-     * @param amount   (Float) eg 112.02 as $112 and ¢2
+     * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
      * @param modalId  the client's modal id
      */
     public static void showProductModal(@NonNull Activity activity, BigDecimal amount,
@@ -596,7 +663,7 @@ public final class Affirm {
      * Start product modal
      *
      * @param activity activity {@link Activity}
-     * @param amount   (Float) eg 112.02 as $112 and ¢2
+     * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
      * @param modalId  the client's modal id
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
      *                 payment, product, search"
@@ -637,7 +704,7 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -667,8 +734,23 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     * @param items           A list of item objects.
+     */
+    public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
+                                           final BigDecimal amount,
+                                           final boolean showCta,
+                                           @Nullable final List<Item> items) {
+        configureWithAmount(promotionButton, null, null, amount, showCta, items);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param promotionButton AffirmPromotionButton to show the promo message
      * @param promoId         the client's modal id
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -682,9 +764,26 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param promoId         the client's modal id
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     * @param items           A list of item objects.
+     */
+    public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
+                                           @Nullable final String promoId,
+                                           final BigDecimal amount,
+                                           final boolean showCta,
+                                           @Nullable final List<Item> items) {
+        configureWithAmount(promotionButton, promoId, null, amount, showCta, items);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param promotionButton AffirmPromotionButton to show the promo message
      * @param pageType        need to use one of "banner, cart, category, homepage, landing,
      *                        payment, product, search"
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -719,10 +818,28 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     * @param items           A list of item objects.
+     */
+    public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
+                                           @Nullable final PromoPageType pageType,
+                                           final BigDecimal amount,
+                                           final boolean showCta,
+                                           @Nullable final List<Item> items) {
+        configureWithAmount(promotionButton, null, pageType, amount, showCta, items);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param promotionButton AffirmPromotionButton to show the promo message
      * @param promoId         the client's modal id
      * @param pageType        need to use one of "banner, cart, category, homepage, landing,
      *                        payment, product, search"
-     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -730,6 +847,45 @@ public final class Affirm {
                                            @Nullable final PromoPageType pageType,
                                            final BigDecimal amount,
                                            final boolean showCta) {
+        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, null);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param containerViewId The specified view will contain the fragment
+     * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param promoId         the client's modal id
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     */
+    public static void configureWithAmount(@IdRes int containerViewId,
+                                           @NonNull final AffirmPromotionButton promotionButton,
+                                           @Nullable final String promoId,
+                                           @Nullable final PromoPageType pageType,
+                                           final BigDecimal amount,
+                                           final boolean showCta) {
+        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, null);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param promoId         the client's modal id
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     */
+    public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
+                                           @Nullable final String promoId,
+                                           @Nullable final PromoPageType pageType,
+                                           final BigDecimal amount,
+                                           final boolean showCta,
+                                           @Nullable final List<Item> items) {
         final View.OnClickListener onClickListener = promotionView -> {
             Activity activity = AffirmUtils.getActivityFromView(promotionView);
             if (activity == null || promotionButton.isEmpty()) {
@@ -739,14 +895,15 @@ public final class Affirm {
             String type = pageType != null ? pageType.getType() : null;
             if (showPrequal) {
                 PrequalActivity.startActivity(activity,
-                        prequalRequest, amount, promoId, type);
+                        prequalRequest, amount, promoId, type, items);
             } else {
                 ModalActivity.startActivity(activity,
                         prequalRequest, amount, PRODUCT, null,
                         type, promoId);
             }
         };
-        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, onClickListener);
+        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, items,
+                onClickListener);
     }
 
     /**
@@ -766,7 +923,8 @@ public final class Affirm {
             @Nullable final String promoId,
             @Nullable final PromoPageType pageType,
             final BigDecimal amount,
-            final boolean showCta) {
+            final boolean showCta,
+            @Nullable final List<Item> items) {
 
         final View.OnClickListener onClickListener = promotionView -> {
             AppCompatActivity activity = AffirmUtils.getActivityFromView(promotionView);
@@ -777,13 +935,13 @@ public final class Affirm {
             String type = pageType != null ? pageType.getType() : null;
             if (showPrequal) {
                 PrequalFragment.newInstance(activity, containerViewId, amount,
-                        promoId, type);
+                        promoId, type, items);
             } else {
                 ModalFragment.newInstance(activity, containerViewId, amount,
                         PRODUCT, null, type, promoId);
             }
         };
-        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, onClickListener);
+        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, items, onClickListener);
     }
 
     private static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -791,6 +949,7 @@ public final class Affirm {
                                             @Nullable final PromoPageType pageType,
                                             final BigDecimal amount,
                                             final boolean showCta,
+                                            @Nullable final List<Item> items,
                                             View.OnClickListener onClickListener) {
         AffirmUtils.requireNonNull(promotionButton, "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
@@ -813,6 +972,7 @@ public final class Affirm {
                         promotionButton.getAffirmColor(),
                         promotionButton.getAffirmLogoType(),
                         promotionButton.isHtmlStyle(),
+                        items,
                         callback);
 
         final LifecycleListener lifecycleListener = new LifecycleListener() {
@@ -937,6 +1097,7 @@ public final class Affirm {
                 requestData.getAffirmColor(),
                 requestData.getAffirmLogoType(),
                 isHtmlStyle,
+                requestData.getItems(),
                 promoCallback
         );
     }
@@ -957,7 +1118,8 @@ public final class Affirm {
             PrequalActivity.startActivity(activity, prequalRequest,
                     promoRequestModal.getAmount(),
                     promoRequestModal.getPromoId(),
-                    type);
+                    type,
+                    promoRequestModal.getItems());
         } else {
             ModalActivity.startActivity(activity,
                     prequalRequest, promoRequestModal.getAmount(), PRODUCT, null,
@@ -981,7 +1143,10 @@ public final class Affirm {
         String type = pageType != null ? pageType.getType() : null;
         if (showPrequal) {
             return PrequalFragment.newInstance(activity, containerViewId,
-                    promoRequestModal.getAmount(), promoRequestModal.getPromoId(), type);
+                    promoRequestModal.getAmount(),
+                    promoRequestModal.getPromoId(),
+                    type,
+                    promoRequestModal.getItems());
         } else {
             return ModalFragment.newInstance(activity, containerViewId,
                     promoRequestModal.getAmount(), PRODUCT, null, type,

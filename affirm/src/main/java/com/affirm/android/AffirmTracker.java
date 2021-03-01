@@ -7,7 +7,9 @@ import androidx.annotation.Nullable;
 
 import com.affirm.android.exception.AffirmException;
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -68,13 +70,16 @@ final class AffirmTracker {
     private static JsonObject addTrackingData(@NonNull String eventName,
                                               @Nullable JsonObject eventData,
                                               @NonNull TrackingLevel level) {
-
         final Gson gson = new Gson();
-        final JsonObject data = eventData == null ? new JsonObject()
-                : gson.fromJson(gson.toJson(eventData, JsonObject.class), JsonObject.class);
+        try {
+            final JsonObject data = eventData == null ? new JsonObject()
+                    : gson.fromJson(gson.toJson(eventData, JsonObject.class), JsonObject.class);
 
-        fillTrackingData(eventName, data, level);
-        return data;
+            fillTrackingData(eventName, data, level);
+            return data;
+        } catch (JsonSyntaxException | JsonIOException e) {
+            return new JsonObject();
+        }
     }
 
     private static void fillTrackingData(@NonNull String eventName,

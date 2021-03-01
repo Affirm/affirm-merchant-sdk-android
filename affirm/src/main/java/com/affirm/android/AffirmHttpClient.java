@@ -8,6 +8,8 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.AffirmError;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -100,15 +102,19 @@ final class AffirmHttpClient {
         );
 
         if (responseBody != null && responseBody.contentLength() > 0) {
-            final AffirmError affirmError = AffirmPlugins.get()
-                    .gson()
-                    .fromJson(responseBody.charStream(), AffirmError.class);
+            try {
+                final AffirmError affirmError = AffirmPlugins.get()
+                        .gson()
+                        .fromJson(responseBody.string(), AffirmError.class);
 
-            return handleAPIError(
-                    affirmError,
-                    response.code(),
-                    response.headers().get(X_AFFIRM_REQUEST_ID)
-            );
+                return handleAPIError(
+                        affirmError,
+                        response.code(),
+                        response.headers().get(X_AFFIRM_REQUEST_ID)
+                );
+            } catch (JsonSyntaxException | JsonIOException | IOException e) {
+                return new APIException("Some error occurred while parsing the error response", e);
+            }
         }
 
         return new APIException("Error getting exception from response", null);

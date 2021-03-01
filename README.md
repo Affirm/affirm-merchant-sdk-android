@@ -268,7 +268,7 @@ We also support using fragment directly, only need to pass a ViewGroup id, we wi
 - Checkout
 ```java
     // In your activity, you need to implement Affirm.CheckoutCallbacks
-    Affirm.startCheckout(this, R.id.container, checkoutModel(), false);
+    Affirm.startCheckout(this, R.id.container, checkoutModel(), null, 10, false);
 
     // - Affirm.CheckoutCallbacks
     @Override
@@ -290,7 +290,7 @@ We also support using fragment directly, only need to pass a ViewGroup id, we wi
 - VCN checkout
 ```java
     // In your activity, you need to implement Affirm.VcnCheckoutCallbacks
-    Affirm.startCheckout(this, R.id.container, checkoutModel(), true);
+    Affirm.startCheckout(this, R.id.container, checkoutModel(), null, 10, true);
 
     // - Affirm.VcnCheckoutCallbacks
     @Override

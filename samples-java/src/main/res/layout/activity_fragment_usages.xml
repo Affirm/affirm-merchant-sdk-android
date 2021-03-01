@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="20dp"
         android:layout_marginTop="20dp"
         app:affirmColor="AffirmColorTypeBlue"
         app:affirmLogoType="AffirmDisplayTypeLogo"

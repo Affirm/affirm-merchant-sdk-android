@@ -38,7 +38,7 @@ public class FragmentUsagesActivity extends AppCompatActivity implements Affirm.
 
         findViewById(R.id.checkout).setOnClickListener(v -> {
             try {
-                Affirm.startCheckout(this, R.id.container, checkoutModel(), false);
+                Affirm.startCheckout(this, R.id.container, checkoutModel(), null, 10, false);
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
@@ -46,7 +46,7 @@ public class FragmentUsagesActivity extends AppCompatActivity implements Affirm.
 
         findViewById(R.id.vcnCheckout).setOnClickListener(v -> {
             try {
-                Affirm.startCheckout(this, R.id.container, checkoutModel(), true);
+                Affirm.startCheckout(this, R.id.container, checkoutModel(), null, 10, true);
             } catch (Exception e) {
                 Toast.makeText(getBaseContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }

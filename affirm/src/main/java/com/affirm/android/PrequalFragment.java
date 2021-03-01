@@ -61,7 +61,9 @@ public final class PrequalFragment extends AffirmFragment
         bundle.putString(AMOUNT, stringAmount);
         bundle.putString(PROMO_ID, promoId);
         bundle.putString(PAGE_TYPE, pageType);
-        bundle.putParcelableArrayList(ITEMS, new ArrayList<>(items));
+        if (items != null) {
+            bundle.putParcelableArrayList(ITEMS, new ArrayList<>(items));
+        }
         fragment.setArguments(bundle);
 
         addFragment(fragmentManager, containerViewId, fragment, TAG);

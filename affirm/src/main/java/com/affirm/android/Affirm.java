@@ -941,7 +941,8 @@ public final class Affirm {
                         PRODUCT, null, type, promoId);
             }
         };
-        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, items, onClickListener);
+        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, items,
+                onClickListener);
     }
 
     private static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
@@ -951,7 +952,8 @@ public final class Affirm {
                                             final boolean showCta,
                                             @Nullable final List<Item> items,
                                             View.OnClickListener onClickListener) {
-        AffirmUtils.requireNonNull(promotionButton, "AffirmPromotionButton cannot be null");
+        AffirmUtils.requireNonNull(promotionButton,
+                "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(@NonNull final String promoMessage,

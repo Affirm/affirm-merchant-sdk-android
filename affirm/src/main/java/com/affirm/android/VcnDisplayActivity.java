@@ -22,6 +22,8 @@ import com.affirm.android.model.Checkout;
 import com.affirm.android.widget.CountDownTimerView;
 import com.affirm.android.widget.VCNCardView;
 
+import java.util.Locale;
+
 import static com.affirm.android.Affirm.RESULT_CHECKOUT_CANCEL;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
@@ -63,11 +65,13 @@ public class VcnDisplayActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(AffirmPlugins.get().merchantName());
         }
 
+        TextView vcnShowAmount = findViewById(R.id.vcnShowAmount);
         VCNCardView vcnCardView = findViewById(R.id.vcnCardView);
         AppCompatButton vcnCopyCardNumber = findViewById(R.id.vcnCopyCardNumber);
         TextView vcnEditOrCancel = findViewById(R.id.vcnEditOrCancel);
         CountDownTimerView vcnCountdown = findViewById(R.id.vcnCountdown);
 
+        vcnShowAmount.setText(String.format(Locale.ROOT, "$%.2f", checkout.total() / 100f));
         CardDetailsInner cardDetailsInner = AffirmPlugins.get().getCachedCardDetails();
         vcnCardView.setVcn(cardDetailsInner.getCardDetails());
         vcnCountdown.start(cardDetailsInner.getExpirationDate());

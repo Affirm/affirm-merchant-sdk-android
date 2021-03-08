@@ -72,6 +72,10 @@ class AffirmPlugins {
         return configuration.merchantName;
     }
 
+    String cardTip() {
+        return configuration.cardTip;
+    }
+
     Affirm.Environment environment() {
         return configuration.environment;
     }

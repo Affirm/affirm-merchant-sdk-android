@@ -134,10 +134,12 @@ public final class Affirm {
         final String publicKey;
         final Environment environment;
         final String merchantName;
+        final String cardTip;
 
         Configuration(Builder builder) {
             this.publicKey = builder.publicKey;
             this.merchantName = builder.merchantName;
+            this.cardTip = builder.cardTip;
 
             if (builder.environment != null) {
                 this.environment = builder.environment;
@@ -178,6 +180,7 @@ public final class Affirm {
             private int vcnCheckoutRequestCode;
             private int prequalRequestCode;
             private String receiveReasonCodes;
+            private String cardTip;
 
             /**
              * @param publicKey Set the public key to be used by Affirm.
@@ -287,6 +290,18 @@ public final class Affirm {
 
             public Builder setLocation(Location location) {
                 AffirmConstants.setLocation(location);
+                return this;
+            }
+
+            /**
+             * Allow an option to pass a text string and set that string to a text label below the
+             * Virtual Card image
+             *
+             * @param cardTip the text want to show
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setCardTip(@Nullable String cardTip) {
+                this.cardTip = cardTip;
                 return this;
             }
 

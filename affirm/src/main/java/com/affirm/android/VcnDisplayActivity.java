@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -66,12 +67,22 @@ public class VcnDisplayActivity extends AppCompatActivity {
         }
 
         TextView vcnShowAmount = findViewById(R.id.vcnShowAmount);
+        TextView vcnCardTip = findViewById(R.id.vcnCardTip);
         VCNCardView vcnCardView = findViewById(R.id.vcnCardView);
         AppCompatButton vcnCopyCardNumber = findViewById(R.id.vcnCopyCardNumber);
         TextView vcnEditOrCancel = findViewById(R.id.vcnEditOrCancel);
         CountDownTimerView vcnCountdown = findViewById(R.id.vcnCountdown);
 
         vcnShowAmount.setText(String.format(Locale.ROOT, "$%.2f", checkout.total() / 100f));
+
+        String cardTip = AffirmPlugins.get().cardTip();
+        if (!TextUtils.isEmpty(cardTip)) {
+            vcnCardTip.setText(cardTip);
+            vcnCardTip.setVisibility(View.VISIBLE);
+        } else {
+            vcnCardTip.setVisibility(View.GONE);
+        }
+
         CardDetailsInner cardDetailsInner = AffirmPlugins.get().getCachedCardDetails();
         vcnCardView.setVcn(cardDetailsInner.getCardDetails());
         vcnCountdown.start(cardDetailsInner.getExpirationDate());

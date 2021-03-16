@@ -1,8 +1,6 @@
 package com.affirm.android;
 
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -13,29 +11,19 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.PromoResponse;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
-
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.PROMO_PATH;
-import static com.affirm.android.AffirmConstants.TAG_GET_NEW_PROMO;
-import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
-import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
-import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 
-class PromoRequest implements AffirmRequest {
+class PromoRequest implements AffirmRequest, AffirmApiRepository.AffirmApiListener<PromoResponse> {
 
+    private final AffirmApiRepository repository;
     @Nullable
     private final String promoId;
     private final BigDecimal dollarAmount;
@@ -49,11 +37,9 @@ class PromoRequest implements AffirmRequest {
     @Nullable
     private final List<Item> items;
     @NonNull
-    private SpannablePromoCallback callback;
+    private final SpannablePromoCallback callback;
 
-    private boolean isHtmlStyle;
-
-    private Call promoCall;
+    private final boolean isHtmlStyle;
 
     PromoRequest(
             @Nullable final String promoId,
@@ -75,6 +61,7 @@ class PromoRequest implements AffirmRequest {
         this.isHtmlStyle = isHtmlStyle;
         this.items = items;
         this.callback = callback;
+        this.repository = new AffirmApiRepository();
     }
 
     @Override
@@ -113,80 +100,23 @@ class PromoRequest implements AffirmRequest {
             path.append("&items=").append(Uri.encode(AffirmPlugins.get().gson().toJson(items)));
         }
 
-        if (promoCall != null) {
-            promoCall.cancel();
-        }
+        final String url = HTTPS_PROTOCOL + AffirmPlugins.get().basePromoUrl() + path.toString();
+        this.repository.promoRequest(url, this);
+    }
 
-        promoCall = AffirmPlugins.get().restClient().getCallForRequest(
-                new AffirmHttpRequest.Builder()
-                        .setUrl(
-                                AffirmHttpClient.getProtocol()
-                                        + AffirmPlugins.get().basePromoUrl()
-                                        + path.toString()
-                        )
-                        .setMethod(AffirmHttpRequest.Method.GET)
-                        .setTag(TAG_GET_NEW_PROMO)
-                        .build()
-        );
-        promoCall.enqueue(new Callback() {
-            @Override
-            public void onResponse(
-                    @NotNull Call call,
-                    @NotNull Response response
-            ) {
-                ResponseBody responseBody = response.body();
-                Gson gson = AffirmPlugins.get().gson();
+    @Override
+    public void onResponse(@NotNull PromoResponse response) {
+        handleSuccessResponse(response);
+    }
 
-                if (response.isSuccessful()) {
-                    if (responseBody != null) {
-                        try {
-                            handleSuccessResponse(
-                                    gson.fromJson(responseBody.string(), PromoResponse.class)
-                            );
-                        } catch (JsonSyntaxException | IOException e) {
-                            handleErrorResponse(
-                                    new APIException("Some error occurred while parsing the "
-                                            + "promo response", e)
-                            );
-                        }
-                    } else {
-                        handleErrorResponse(
-                                new APIException("Response was success, but body was null", null)
-                        );
-                    }
-                } else {
-                    AffirmException affirmException =
-                            AffirmHttpClient.createExceptionAndTrackFromResponse(
-                                    call.request(),
-                                    response,
-                                    responseBody
-                            );
-
-                    handleErrorResponse(affirmException);
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                AffirmTracker.track(
-                        NETWORK_ERROR,
-                        ERROR,
-                        createTrackingNetworkJsonObj(
-                                call.request(),
-                                null
-                        )
-                );
-                handleErrorResponse(e);
-            }
-        });
+    @Override
+    public void onFailed(@NotNull AffirmException exception) {
+        handleErrorResponse(exception);
     }
 
     @Override
     public void cancel() {
-        if (promoCall != null) {
-            promoCall.cancel();
-            promoCall = null;
-        }
+        this.repository.cancelRequest();
     }
 
     private void handleSuccessResponse(PromoResponse promoResponse) {
@@ -202,15 +132,11 @@ class PromoRequest implements AffirmRequest {
         if (TextUtils.isEmpty(promoMessage)) {
             handleErrorResponse(new Exception("Promo message is null or empty!"));
         } else {
-            new Handler(Looper.getMainLooper()).post(
-                    () -> callback.onPromoWritten(promoMessage, showPrequal)
-            );
+            callback.onPromoWritten(promoMessage, showPrequal);
         }
     }
 
     private void handleErrorResponse(Exception e) {
-        new Handler(Looper.getMainLooper()).post(
-                () -> callback.onFailure(new APIException(e.getMessage(), e))
-        );
+        callback.onFailure(new APIException(e.getMessage(), e));
     }
 }

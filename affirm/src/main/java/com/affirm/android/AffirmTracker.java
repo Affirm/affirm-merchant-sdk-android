@@ -13,10 +13,6 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import okhttp3.Headers;
-import okhttp3.Request;
-import okhttp3.Response;
-
 final class AffirmTracker {
 
     private static final AtomicInteger localLogCounter = new AtomicInteger();
@@ -101,19 +97,19 @@ final class AffirmTracker {
     }
 
     @NonNull
-    static JsonObject createTrackingNetworkJsonObj(@NonNull Request request,
-                                                   @Nullable Response response) {
+    static JsonObject createTrackingNetworkJsonObj(@NonNull AffirmHttpRequest request,
+                                                   @Nullable AffirmHttpResponse response) {
         final JsonObject jsonObject = new JsonObject();
         final String affirmRequestIDHeader = "X-Affirm-Request-Id";
-        jsonObject.addProperty("url", request.url().toString());
-        jsonObject.addProperty("method", request.method());
+        jsonObject.addProperty("url", request.getUrl());
+        jsonObject.addProperty("method", request.getMethod().getCode());
         if (response != null) {
-            final Headers headers = response.headers();
-            jsonObject.addProperty("status_code", response.code());
-            jsonObject.addProperty(affirmRequestIDHeader, headers.get(affirmRequestIDHeader));
-            jsonObject.addProperty("x-amz-cf-id", headers.get("x-amz-cf-id"));
-            jsonObject.addProperty("x-affirm-using-cdn", headers.get("x-affirm-using-cdn"));
-            jsonObject.addProperty("x-cache", headers.get("x-cache"));
+            jsonObject.addProperty("status_code", response.getCode());
+            jsonObject.addProperty(affirmRequestIDHeader, response.getRequestId());
+            jsonObject.addProperty("x-amz-cf-id", response.getHeaderValue("x-amz-cf-id"));
+            jsonObject.addProperty("x-affirm-using-cdn",
+                    response.getHeaderValue("x-affirm-using-cdn"));
+            jsonObject.addProperty("x-cache", response.getHeaderValue("x-cache"));
         } else {
             jsonObject.add("status_code", null);
             jsonObject.add(affirmRequestIDHeader, null);

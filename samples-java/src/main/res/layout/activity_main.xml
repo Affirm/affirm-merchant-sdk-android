@@ -18,11 +18,27 @@
             android:layout_toRightOf="@+id/imageView"
             android:text="Great Wheel Deal" />
 
+        <ToggleButton
+            android:id="@+id/toggleInline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/price"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:textOff="@string/toggle_inline_off"
+            android:textOn="@string/toggle_inline_on" />
+
+        <com.affirm.android.InlineCheckoutWebView
+            android:id="@+id/inline"
+            android:layout_below="@id/toggleInline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <TextView
             android:id="@+id/promotionTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/price"
+            android:layout_below="@id/inline"
             android:layout_margin="8dp"
             android:gravity="center"
             android:textColor="@android:color/black"

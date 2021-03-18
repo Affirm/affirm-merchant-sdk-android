@@ -3,10 +3,12 @@ package com.affirm.samples;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +22,7 @@ import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.AffirmRequest;
 import com.affirm.android.CookiesUtil;
 import com.affirm.android.HtmlPromotionCallback;
+import com.affirm.android.InlineCheckoutWebView;
 import com.affirm.android.PromotionCallback;
 import com.affirm.android.PromotionWebView;
 import com.affirm.android.exception.AffirmException;
@@ -57,6 +60,19 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        InlineCheckoutWebView inlineCheckoutWebView = findViewById(R.id.inline);
+        ((ToggleButton) findViewById(R.id.toggleInline)).setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                inlineCheckoutWebView.setVisibility(View.VISIBLE);
+                Affirm.displayInlineCheckout(checkoutModel(), inlineCheckoutWebView);
+                inlineCheckoutWebView.setLearnMoreClickListener(v -> {
+                    Toast.makeText(getBaseContext(), "Learn More Clicked", Toast.LENGTH_SHORT).show();
+                });
+            } else {
+                inlineCheckoutWebView.setVisibility(View.GONE);
+            }
+        });
 
         ((TextView) findViewById(R.id.price)).setText("$" + PRICE);
 

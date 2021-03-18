@@ -471,6 +471,18 @@ public final class Affirm {
 
 
     /**
+     * Display inline checkout content
+     *
+     * @param checkout              checkout object that contains address & shipping info & others...
+     * @param inlineCheckoutWebView InlineCheckoutWebView to show the inline checkout content
+     */
+    public static void displayInlineCheckout(@NonNull final Checkout checkout,
+                                             @NonNull final InlineCheckoutWebView
+                                                     inlineCheckoutWebView) {
+        inlineCheckoutWebView.loadWebData(checkout);
+    }
+
+    /**
      * Start track order
      *
      * @param activity    activity {@link Activity}

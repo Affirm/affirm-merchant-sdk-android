@@ -197,4 +197,9 @@ public final class AffirmConstants {
     static final String CHECKOUT = "checkout";
 
     static final String INVALID_CHECKOUT_MESSAGE = "Checkout status is in an invalid state.";
+
+    static final String INLINE_CHECKOUT = "INLINE_CHECKOUT";
+    static final String INLINE_LEARN_MORE_CB_URL = "INLINE_LEARN_MORE_CB_URL";
+    static final String INLINE_LEARN_MORE_CLICK_URL = "affirm://inline/clicked";
+    static final String INLINE_CHECKOUT_DIV = "affirm-inline-checkout";
 }

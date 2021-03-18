@@ -7,5 +7,7 @@
     <string name="track_order_confirmed">Track Order Confirmed</string>
     <string name="show_indicator">Show Indicator</string>
     <string name="clear_cookies">Clear Cookies</string>
+    <string name="toggle_inline_off">Display Inline Checkout</string>
+    <string name="toggle_inline_on">Hide Inline Checkout</string>
 
 </resources>

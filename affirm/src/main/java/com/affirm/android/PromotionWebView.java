@@ -105,9 +105,7 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
 
     public void loadWebData(String promoHtml, String remoteCssUrl, String typeface) {
         final String html = initialHtml(promoHtml, remoteCssUrl, typeface);
-        loadDataWithBaseURL(
-                HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
-                html, TEXT_HTML, UTF_8, null);
+        loadDataWithBaseURL(null, html, TEXT_HTML, UTF_8, null);
     }
 
     private String initialHtml(String promoHtml, String remoteCssUrl, String typeface) {

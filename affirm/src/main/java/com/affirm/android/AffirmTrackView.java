@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.AffirmTrack;
 import com.google.gson.JsonArray;
@@ -19,8 +21,6 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-
-import androidx.annotation.NonNull;
 
 import static com.affirm.android.AffirmConstants.API_KEY;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
@@ -94,12 +94,14 @@ public class AffirmTrackView extends FrameLayout
 
     private String initialHtml() {
         String html;
+        InputStream ins = null;
         try {
-            final InputStream ins =
-                    getResources().openRawResource(R.raw.affirm_track_order_confirmed);
+            ins = getResources().openRawResource(R.raw.affirm_track_order_confirmed);
             html = AffirmUtils.readInputStream(ins);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            AffirmUtils.closeInputStream(ins);
         }
         final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseJsUrl() + JS_PATH;
 

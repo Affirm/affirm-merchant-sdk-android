@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
             }
         });
 
-        findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(MainActivity.this, "5LNMQ33SEUYHLNUC"));
+        findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(MainActivity.this,  Config.MODAL_ID));
 
         findViewById(R.id.productModalButton).setOnClickListener(v -> Affirm.showProductModal(MainActivity.this, PRICE, null, PromoPageType.PRODUCT, null));
 
@@ -88,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements Affirm.CheckoutCa
         });
 
         findViewById(R.id.clearCookies).setOnClickListener(v -> CookiesUtil.clearCookies(MainActivity.this));
+
+        findViewById(R.id.fragmentUsages).setOnClickListener(v -> startActivity(new Intent(this, FragmentUsagesActivity.class)));
 
         // Option1 - Load via findViewById
         AffirmPromotionButton affirmPromotionButton1 = findViewById(R.id.promo);

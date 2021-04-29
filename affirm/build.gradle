@@ -13,9 +13,9 @@ ext {
     junitVersion = "4.12"
     testRunnerVersion = "1.2.0"
     testEspressoVersion = "3.0.2"
-    okhttpVersion = '4.9.0'
     gsonVersion = '2.8.5'
     playServiceAuthVersion = '17.0.0'
+    kotlinCoroutinesVersion = '1.4.1'
     autoValueGsonVersion = '0.4.6'
     autoValueParcelVersion = '0.2.5'
     truthVersion = '0.28'
@@ -106,8 +106,10 @@ dependencies {
     implementation "androidx.appcompat:appcompat:${androidxAppCompatVersion}"
     testImplementation "junit:junit:${junitVersion}"
 
-    api "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     api "com.google.code.gson:gson:${gsonVersion}"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
 
     implementation "com.google.android.gms:play-services-auth:${playServiceAuthVersion}"
 

@@ -1,27 +1,17 @@
 package com.affirm.android;
 
-import android.webkit.CookieManager;
-
 import com.affirm.android.model.AbstractAddress;
 import com.affirm.android.model.AffirmAdapterFactory;
 import com.affirm.android.model.AddressSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.util.concurrent.TimeUnit;
-
 import androidx.annotation.NonNull;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 class AffirmPlugins {
 
     private static final Object LOCK = new Object();
     private static AffirmPlugins instance;
     private final Affirm.Configuration configuration;
-
-    private AffirmHttpClient restClient;
     private Gson gson;
 
     AffirmPlugins(@NonNull Affirm.Configuration configuration) {
@@ -97,32 +87,5 @@ class AffirmPlugins {
                     .create();
         }
         return gson;
-    }
-
-    synchronized AffirmHttpClient restClient() {
-        if (restClient == null) {
-            OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-            //add it as the first interceptor
-            clientBuilder.interceptors().add(0, chain -> {
-                final Request.Builder builder = chain.request().newBuilder();
-                builder.addHeader("Accept", "application/json");
-                builder.addHeader("Content-Type", "application/json");
-                builder.addHeader("Affirm-User-Agent", "Affirm-Android-SDK");
-                builder.addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME);
-
-                CookieManager cookieManager = CookieManager.getInstance();
-                String cookie = cookieManager
-                        .getCookie(AffirmConstants.HTTPS_PROTOCOL + baseUrl());
-                if (cookie != null) {
-                    builder.addHeader("Cookie", cookie);
-                }
-                return chain.proceed(builder.build());
-            });
-            clientBuilder.connectTimeout(5, TimeUnit.SECONDS);
-            clientBuilder.readTimeout(30, TimeUnit.SECONDS);
-            clientBuilder.followRedirects(false);
-            restClient = AffirmHttpClient.createClient(clientBuilder);
-        }
-        return restClient;
     }
 }

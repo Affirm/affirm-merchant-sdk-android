@@ -30,7 +30,6 @@ dependencies {
 
     // aar
 //    implementation(name: 'affirm', ext: 'aar')
-//    implementation "com.squareup.okhttp3:okhttp:3.12.1"
 //    implementation "com.google.code.gson:gson:2.8.5"
 
     // maven

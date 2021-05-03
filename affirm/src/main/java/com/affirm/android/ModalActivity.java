@@ -14,6 +14,7 @@ import java.util.HashMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
+import androidx.fragment.app.Fragment;
 
 import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
@@ -54,10 +55,11 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
         }
     }
 
-    static void startActivity(@NonNull Activity activity, int requestCode, BigDecimal amount,
-                              ModalType type, @Nullable String modalId, @Nullable String pageType,
+    static void startActivity(@NonNull Activity originalActivity, @Nullable Fragment fragment,
+                              int requestCode, BigDecimal amount, ModalType type,
+                              @Nullable String modalId, @Nullable String pageType,
                               @Nullable String promoId) {
-        final Intent intent = new Intent(activity, ModalActivity.class);
+        final Intent intent = new Intent(originalActivity, ModalActivity.class);
         final String stringAmount =
                 String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
         final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseJsUrl() + JS_PATH;
@@ -74,7 +76,7 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
         intent.putExtra(TYPE_EXTRA, type);
         intent.putExtra(MAP_EXTRA, map);
 
-        activity.startActivityForResult(intent, requestCode);
+        startForResult(originalActivity, fragment, intent, requestCode);
     }
 
     @Override

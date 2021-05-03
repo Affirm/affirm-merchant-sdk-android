@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.Item;
@@ -35,10 +36,10 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     private String pageType;
     private List<Item> items;
 
-    static void startActivity(@NonNull Activity activity, int requestCode,
-                              BigDecimal amount, @Nullable String promoId,
+    static void startActivity(@NonNull Activity originalActivity, @Nullable Fragment fragment,
+                              int requestCode, BigDecimal amount, @Nullable String promoId,
                               @Nullable String pageType, @Nullable List<Item> items) {
-        final Intent intent = new Intent(activity, PrequalActivity.class);
+        final Intent intent = new Intent(originalActivity, PrequalActivity.class);
         final String stringAmount =
                 String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
         intent.putExtra(AMOUNT, stringAmount);
@@ -47,7 +48,7 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
         if (items != null) {
             intent.putParcelableArrayListExtra(ITEMS, new ArrayList<>(items));
         }
-        activity.startActivityForResult(intent, requestCode);
+        startForResult(originalActivity, fragment, intent, requestCode);
     }
 
     @Override

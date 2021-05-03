@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
@@ -44,16 +45,16 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
 
     private static String receiveReasonCodes;
 
-    static void startActivity(@NonNull Activity activity, int requestCode,
-                              @NonNull Checkout checkout, @Nullable String caas,
+    static void startActivity(@NonNull Activity originalActivity, @Nullable Fragment fragment,
+                              int requestCode, @NonNull Checkout checkout, @Nullable String caas,
                               int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
 
         receiveReasonCodes = configReceiveReasonCodes;
-        final Intent intent = new Intent(activity, VcnCheckoutActivity.class);
+        final Intent intent = new Intent(originalActivity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
-        activity.startActivityForResult(intent, requestCode);
+        startForResult(originalActivity, fragment, intent, requestCode);
     }
 
     @Override

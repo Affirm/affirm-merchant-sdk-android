@@ -10,6 +10,7 @@ import com.affirm.android.model.CheckoutResponse;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
@@ -25,14 +26,14 @@ import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 public class CheckoutActivity extends CheckoutBaseActivity
         implements CheckoutWebViewClient.Callbacks {
 
-    static void startActivity(@NonNull Activity activity, int requestCode,
-                              @NonNull Checkout checkout, @Nullable String caas,
+    static void startActivity(@NonNull Activity originalActivity, @Nullable Fragment fragment,
+                              int requestCode, @NonNull Checkout checkout, @Nullable String caas,
                               int cardAuthWindow) {
-        final Intent intent = new Intent(activity, CheckoutActivity.class);
+        final Intent intent = new Intent(originalActivity, CheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
-        activity.startActivityForResult(intent, requestCode);
+        startForResult(originalActivity, fragment, intent, requestCode);
     }
 
     @Override

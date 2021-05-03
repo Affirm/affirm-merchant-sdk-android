@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
@@ -499,6 +500,17 @@ public final class Affirm {
     }
 
     /**
+     * Start track order
+     *
+     * @param fragment    fragment {@link Fragment}
+     * @param affirmTrack AffirmTrack object that containers order & product info
+     */
+    public static void trackOrderConfirmed(@NonNull final Fragment fragment,
+                                           @NonNull AffirmTrack affirmTrack) {
+        trackOrderConfirmed(fragment.requireActivity(), affirmTrack);
+    }
+
+    /**
      * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
      * to get the processed result
      *
@@ -509,6 +521,19 @@ public final class Affirm {
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                      boolean useVCN) {
         startCheckout(activity, checkout, null, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param checkout checkout object that contains address & shipping info & others...
+     * @param useVCN   Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                     boolean useVCN) {
+        startCheckout(fragment, checkout, null, useVCN);
     }
 
     /**
@@ -529,6 +554,20 @@ public final class Affirm {
      * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
      * to get the processed result
      *
+     * @param fragment       fragment {@link Fragment}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     * @param useVCN         Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                     int cardAuthWindow, boolean useVCN) {
+        startCheckout(fragment, checkout, null, cardAuthWindow, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
      * @param activity activity {@link Activity}
      * @param checkout checkout object that contains address & shipping info & others...
      * @param caas     caas merchant-level attribute
@@ -537,6 +576,20 @@ public final class Affirm {
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                      @Nullable String caas, boolean useVCN) {
         startCheckout(activity, checkout, caas, -1, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param checkout checkout object that contains address & shipping info & others...
+     * @param caas     caas merchant-level attribute
+     * @param useVCN   Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                     @Nullable String caas, boolean useVCN) {
+        startCheckout(fragment, checkout, caas, -1, useVCN);
     }
 
     /**
@@ -554,11 +607,34 @@ public final class Affirm {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
-            VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas,
+            VcnCheckoutActivity.startActivity(activity, null, vcnCheckoutRequest, checkout, caas,
                     cardAuthWindow, receiveReasonCodes);
         } else {
-            CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,
+            CheckoutActivity.startActivity(activity, null, checkoutRequest, checkout, caas,
                     cardAuthWindow);
+        }
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param fragment       fragment {@link Fragment}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param caas           caas merchant-level attribute
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     * @param useVCN         Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                     @Nullable String caas, int cardAuthWindow, boolean useVCN) {
+        AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
+        AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
+        if (useVCN) {
+            VcnCheckoutActivity.startActivity(fragment.requireActivity(), fragment,
+                    vcnCheckoutRequest, checkout, caas, cardAuthWindow, receiveReasonCodes);
+        } else {
+            CheckoutActivity.startActivity(fragment.requireActivity(), fragment,
+                    checkoutRequest, checkout, caas, cardAuthWindow);
         }
     }
 
@@ -575,6 +651,16 @@ public final class Affirm {
     /**
      * Start site modal
      *
+     * @param fragment fragment {@link Fragment}
+     * @param modalId  the client's modal id
+     */
+    public static void showSiteModal(@NonNull Fragment fragment, @Nullable String modalId) {
+        showSiteModal(fragment, modalId, null, null);
+    }
+
+    /**
+     * Start site modal
+     *
      * @param activity activity {@link Activity}
      * @param modalId  the client's modal id
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
@@ -583,7 +669,23 @@ public final class Affirm {
     public static void showSiteModal(@NonNull Activity activity, @Nullable String modalId,
                                      @Nullable PromoPageType pageType, @Nullable String promoId) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
-        ModalActivity.startActivity(activity, 0, BigDecimal.valueOf(0.0), SITE, modalId,
+        ModalActivity.startActivity(activity, null, 0, BigDecimal.valueOf(0.0), SITE, modalId,
+                pageType != null ? pageType.getType() : null, promoId);
+    }
+
+    /**
+     * Start site modal
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param modalId  the client's modal id
+     * @param pageType need to use one of "banner, cart, category, homepage, landing,
+     *                 payment, product, search"
+     */
+    public static void showSiteModal(@NonNull Fragment fragment, @Nullable String modalId,
+                                     @Nullable PromoPageType pageType, @Nullable String promoId) {
+        AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
+        ModalActivity.startActivity(fragment.requireActivity(), fragment, 0,
+                BigDecimal.valueOf(0.0), SITE, modalId,
                 pageType != null ? pageType.getType() : null, promoId);
     }
 
@@ -602,9 +704,21 @@ public final class Affirm {
     /**
      * Start product modal
      *
-     * @param activity activity {@link Activity}
+     * @param fragment fragment {@link Fragment}
      * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
      * @param modalId  the client's modal id
+     */
+    public static void showProductModal(@NonNull Fragment fragment, BigDecimal amount,
+                                        @Nullable String modalId) {
+        showProductModal(fragment, amount, modalId, null, null);
+    }
+
+    /**
+     * Start product modal
+     *
+     * @param activity activity {@link Activity}
+     * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
+     * @param modalId  the client's modal i
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
      *                 payment, product, search"
      */
@@ -614,8 +728,27 @@ public final class Affirm {
                                         @Nullable PromoPageType pageType,
                                         @Nullable String promoId) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
-        ModalActivity.startActivity(activity, 0, amount, PRODUCT, modalId,
+        ModalActivity.startActivity(activity, null, 0, amount, PRODUCT, modalId,
                 pageType != null ? pageType.getType() : null, promoId);
+    }
+
+    /**
+     * Start product modal
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
+     * @param modalId  the client's modal id
+     * @param pageType need to use one of "banner, cart, category, homepage, landing,
+     *                 payment, product, search"
+     */
+    public static void showProductModal(@NonNull Fragment fragment,
+                                        BigDecimal amount,
+                                        @Nullable String modalId,
+                                        @Nullable PromoPageType pageType,
+                                        @Nullable String promoId) {
+        AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
+        ModalActivity.startActivity(fragment.requireActivity(), fragment, 0, amount, PRODUCT,
+                modalId, pageType != null ? pageType.getType() : null, promoId);
     }
 
     /**
@@ -825,12 +958,11 @@ public final class Affirm {
             boolean showPrequal = (boolean) v.getTag();
             String type = pageType != null ? pageType.getType() : null;
             if (showPrequal) {
-                PrequalActivity.startActivity(activity,
-                        prequalRequest, amount, promoId, type, items);
+                PrequalActivity.startActivity(activity, null, prequalRequest, amount,
+                        promoId, type, items);
             } else {
-                ModalActivity.startActivity(activity,
-                        prequalRequest, amount, PRODUCT, null,
-                        type, promoId);
+                ModalActivity.startActivity(activity, null, prequalRequest, amount,
+                        PRODUCT, null, type, promoId);
             }
         };
         promotionButton.setOnClickListener(onClickListener);
@@ -900,7 +1032,8 @@ public final class Affirm {
     }
 
     private static PromoRequest buildPromoRequest(@NonNull PromoRequestData requestData,
-                            SpannablePromoCallback promoCallback, Boolean isHtmlStyle) {
+                                                  SpannablePromoCallback promoCallback,
+                                                  Boolean isHtmlStyle) {
         return new PromoRequest(
                 requestData.getPromoId(),
                 requestData.getPageType(),
@@ -927,15 +1060,54 @@ public final class Affirm {
         PromoPageType pageType = promoRequestModal.getPageType();
         String type = pageType != null ? pageType.getType() : null;
         if (showPrequal) {
-            PrequalActivity.startActivity(activity, prequalRequest,
+            PrequalActivity.startActivity(activity,
+                    null,
+                    prequalRequest,
                     promoRequestModal.getAmount(),
                     promoRequestModal.getPromoId(),
                     type,
                     promoRequestModal.getItems());
         } else {
             ModalActivity.startActivity(activity,
-                    prequalRequest, promoRequestModal.getAmount(), PRODUCT, null,
-                    type, promoRequestModal.getPromoId());
+                    null,
+                    prequalRequest,
+                    promoRequestModal.getAmount(),
+                    PRODUCT,
+                    null,
+                    type,
+                    promoRequestModal.getPromoId());
+        }
+    }
+
+    /**
+     * Handling events that click on the promotion message
+     *
+     * @param fragment          fragment {@link Fragment}
+     * @param promoRequestModal a class contains the parameters required for the request
+     * @param showPrequal       This value comes from the callback of the method `fetchPromotion`
+     */
+    public static void onPromotionClick(@NonNull Fragment fragment,
+                                        @NonNull PromoRequestData promoRequestModal,
+                                        boolean showPrequal) {
+        PromoPageType pageType = promoRequestModal.getPageType();
+        String type = pageType != null ? pageType.getType() : null;
+        if (showPrequal) {
+            PrequalActivity.startActivity(fragment.requireActivity(),
+                    fragment,
+                    prequalRequest,
+                    promoRequestModal.getAmount(),
+                    promoRequestModal.getPromoId(),
+                    type,
+                    promoRequestModal.getItems());
+        } else {
+            ModalActivity.startActivity(fragment.requireActivity(),
+                    fragment,
+                    prequalRequest,
+                    promoRequestModal.getAmount(),
+                    PRODUCT,
+                    null,
+                    type,
+                    promoRequestModal.getPromoId());
         }
     }
 

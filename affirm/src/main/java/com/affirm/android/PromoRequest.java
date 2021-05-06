@@ -1,8 +1,6 @@
 package com.affirm.android;
 
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -13,26 +11,17 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.PromoResponse;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonObject;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
 import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 import static com.affirm.android.AffirmConstants.PROMO_PATH;
-import static com.affirm.android.AffirmConstants.TAG_GET_NEW_PROMO;
-import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
-import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
-import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 
 class PromoRequest implements AffirmRequest {
 
@@ -85,100 +74,22 @@ class PromoRequest implements AffirmRequest {
             return;
         }
 
-        int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
-        StringBuilder path = new StringBuilder(
-                String.format(
-                        Locale.getDefault(),
-                        PROMO_PATH,
-                        AffirmPlugins.get().publicKey(),
-                        centAmount,
-                        showCta
-                )
-        );
-
-        if (promoId != null) {
-            path.append("&promo_external_id=").append(promoId);
-        }
-
-        if (pageType != null) {
-            path.append("&page_type=").append(pageType.getType());
-        }
-
-        path.append("&logo_color=")
-                .append(affirmColor.getColor())
-                .append("&logo_type=")
-                .append(affirmLogoType.getType());
-
-        if (items != null) {
-            path.append("&items=").append(Uri.encode(AffirmPlugins.get().gson().toJson(items)));
-        }
-
         if (promoCall != null) {
             promoCall.cancel();
         }
 
-        promoCall = AffirmPlugins.get().restClient().getCallForRequest(
-                new AffirmHttpRequest.Builder()
-                        .setUrl(
-                                AffirmHttpClient.getProtocol()
-                                        + AffirmPlugins.get().basePromoUrl()
-                                        + path.toString()
-                        )
-                        .setMethod(AffirmHttpRequest.Method.GET)
-                        .setTag(TAG_GET_NEW_PROMO)
-                        .build()
-        );
-        promoCall.enqueue(new Callback() {
-            @Override
-            public void onResponse(
-                    @NotNull Call call,
-                    @NotNull Response response
-            ) {
-                ResponseBody responseBody = response.body();
-                Gson gson = AffirmPlugins.get().gson();
-
-                if (response.isSuccessful()) {
-                    if (responseBody != null) {
-                        try {
-                            handleSuccessResponse(
-                                    gson.fromJson(responseBody.string(), PromoResponse.class)
-                            );
-                        } catch (JsonSyntaxException | IOException e) {
-                            handleErrorResponse(
-                                    new APIException("Some error occurred while parsing the "
-                                            + "promo response", e)
-                            );
-                        }
-                    } else {
-                        handleErrorResponse(
-                                new APIException("Response was success, but body was null", null)
-                        );
+        promoCall = AffirmClient.send(new AffirmPromoRequest(),
+                new AffirmClient.AffirmListener<PromoResponse>() {
+                    @Override
+                    public void onSuccess(PromoResponse response) {
+                        handleSuccessResponse(response);
                     }
-                } else {
-                    AffirmException affirmException =
-                            AffirmHttpClient.createExceptionAndTrackFromResponse(
-                                    call.request(),
-                                    response,
-                                    responseBody
-                            );
 
-                    handleErrorResponse(affirmException);
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                AffirmTracker.track(
-                        NETWORK_ERROR,
-                        ERROR,
-                        createTrackingNetworkJsonObj(
-                                call.request(),
-                                null
-                        )
-                );
-                handleErrorResponse(e);
-            }
-        });
+                    @Override
+                    public void onFailure(AffirmException exception) {
+                        callback.onFailure(exception);
+                    }
+                });
     }
 
     @Override
@@ -202,15 +113,62 @@ class PromoRequest implements AffirmRequest {
         if (TextUtils.isEmpty(promoMessage)) {
             handleErrorResponse(new Exception("Promo message is null or empty!"));
         } else {
-            new Handler(Looper.getMainLooper()).post(
-                    () -> callback.onPromoWritten(promoMessage, showPrequal)
-            );
+            callback.onPromoWritten(promoMessage, showPrequal);
         }
     }
 
     private void handleErrorResponse(Exception e) {
-        new Handler(Looper.getMainLooper()).post(
-                () -> callback.onFailure(new APIException(e.getMessage(), e))
-        );
+        callback.onFailure(new APIException(e.getMessage(), e));
+    }
+
+    class AffirmPromoRequest implements AffirmClient.AffirmApiRequest {
+
+        @NotNull
+        @Override
+        public String url() {
+            int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
+            StringBuilder path = new StringBuilder(
+                    String.format(
+                            Locale.getDefault(),
+                            PROMO_PATH,
+                            AffirmPlugins.get().publicKey(),
+                            centAmount,
+                            showCta
+                    )
+            );
+
+            if (promoId != null) {
+                path.append("&promo_external_id=").append(promoId);
+            }
+
+            if (pageType != null) {
+                path.append("&page_type=").append(pageType.getType());
+            }
+
+            path.append("&logo_color=")
+                    .append(affirmColor.getColor())
+                    .append("&logo_type=")
+                    .append(affirmLogoType.getType());
+
+            if (items != null) {
+                path.append("&items=").append(Uri.encode(AffirmPlugins.get().gson().toJson(items)));
+            }
+
+            return AffirmHttpClient.getProtocol()
+                    + AffirmPlugins.get().basePromoUrl()
+                    + path.toString();
+        }
+
+        @NotNull
+        @Override
+        public AffirmHttpRequest.Method method() {
+            return AffirmHttpRequest.Method.GET;
+        }
+
+        @Nullable
+        @Override
+        public JsonObject body() {
+            return null;
+        }
     }
 }

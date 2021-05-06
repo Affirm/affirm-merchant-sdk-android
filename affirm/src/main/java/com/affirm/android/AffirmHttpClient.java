@@ -26,11 +26,8 @@ import okio.BufferedSink;
 import static com.affirm.android.AffirmConstants.HTTP;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
-import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
-import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
-import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 
-final class AffirmHttpClient {
+public final class AffirmHttpClient {
 
     private OkHttpClient okHttpClient;
 
@@ -85,22 +82,15 @@ final class AffirmHttpClient {
         }
     }
 
-    static String getProtocol() {
+    public static String getProtocol() {
         return AffirmPlugins.get().baseUrl().contains(HTTP) ? "" : HTTPS_PROTOCOL;
     }
 
     @NonNull
     static AffirmException createExceptionAndTrackFromResponse(
-            Request okHttpRequest,
             Response response,
             ResponseBody responseBody
     ) {
-        AffirmTracker.track(
-                NETWORK_ERROR,
-                ERROR,
-                createTrackingNetworkJsonObj(okHttpRequest, response)
-        );
-
         if (responseBody != null && responseBody.contentLength() > 0) {
             try {
                 final AffirmError affirmError = AffirmPlugins.get()

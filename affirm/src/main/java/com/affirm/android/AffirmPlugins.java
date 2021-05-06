@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-class AffirmPlugins {
+public class AffirmPlugins {
 
     private static final Object LOCK = new Object();
     private static AffirmPlugins instance;
@@ -53,7 +53,7 @@ class AffirmPlugins {
         }
     }
 
-    String publicKey() {
+    public String publicKey() {
         return configuration.publicKey;
     }
 
@@ -73,7 +73,7 @@ class AffirmPlugins {
         return configuration.environment.baseUrl();
     }
 
-    String basePromoUrl() {
+    public String basePromoUrl() {
         return configuration.environment.basePromoUrl();
     }
 

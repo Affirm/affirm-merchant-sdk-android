@@ -119,7 +119,6 @@ public final class AffirmConstants {
     private static final String PRODUCTION_JS_URL = "cdn1.affirm.com";
     private static final String PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL = "api.affirm.com/u/";
 
-    static final String GET_CHECKOUT_CARD_PATH = "/api/v2/cards/%s";
     static final String CHECKOUT_PATH = "/api/v2/checkout/";
     static final String TRACKER_PATH = "/collect";
     static final String PROMO_PATH = "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d"

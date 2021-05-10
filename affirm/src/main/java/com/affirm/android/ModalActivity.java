@@ -55,10 +55,29 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
         }
     }
 
-    static void startActivity(@NonNull Activity originalActivity, @Nullable Fragment fragment,
-                              int requestCode, BigDecimal amount, ModalType type,
-                              @Nullable String modalId, @Nullable String pageType,
+    static void startActivity(@NonNull Activity activity, int requestCode, BigDecimal amount,
+                              ModalType type, @Nullable String modalId, @Nullable String pageType,
                               @Nullable String promoId) {
+        Intent intent = buildIntent(activity, amount, type, modalId, pageType, promoId);
+        startForResult(activity, intent, requestCode);
+    }
+
+
+    static void startActivity(@NonNull Fragment fragment, int requestCode, BigDecimal amount,
+                              ModalType type, @Nullable String modalId, @Nullable String pageType,
+                              @Nullable String promoId) {
+        Intent intent = buildIntent(fragment.requireActivity(), amount, type, modalId,
+                pageType, promoId);
+        startForResult(fragment, intent, requestCode);
+    }
+
+    private static Intent buildIntent(
+            @NonNull Activity originalActivity,
+            BigDecimal amount,
+            ModalType type,
+            @Nullable String modalId,
+            @Nullable String pageType,
+            @Nullable String promoId) {
         final Intent intent = new Intent(originalActivity, ModalActivity.class);
         final String stringAmount =
                 String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
@@ -75,8 +94,7 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
 
         intent.putExtra(TYPE_EXTRA, type);
         intent.putExtra(MAP_EXTRA, map);
-
-        startForResult(originalActivity, fragment, intent, requestCode);
+        return intent;
     }
 
     @Override

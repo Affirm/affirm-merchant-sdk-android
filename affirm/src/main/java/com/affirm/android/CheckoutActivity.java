@@ -26,14 +26,30 @@ import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 public class CheckoutActivity extends CheckoutBaseActivity
         implements CheckoutWebViewClient.Callbacks {
 
-    static void startActivity(@NonNull Activity originalActivity, @Nullable Fragment fragment,
-                              int requestCode, @NonNull Checkout checkout, @Nullable String caas,
+    static void startActivity(@NonNull Activity activity, int requestCode,
+                              @NonNull Checkout checkout, @Nullable String caas,
                               int cardAuthWindow) {
+        Intent intent = buildIntent(activity, checkout, caas, cardAuthWindow);
+        startForResult(activity, intent, requestCode);
+    }
+
+    static void startActivity(@NonNull Fragment fragment, int requestCode,
+                              @NonNull Checkout checkout, @Nullable String caas,
+                              int cardAuthWindow) {
+        Intent intent = buildIntent(fragment.requireActivity(), checkout, caas, cardAuthWindow);
+        startForResult(fragment, intent, requestCode);
+    }
+
+    private static Intent buildIntent(
+            @NonNull Activity originalActivity,
+            @NonNull Checkout checkout,
+            @Nullable String caas,
+            int cardAuthWindow) {
         final Intent intent = new Intent(originalActivity, CheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
-        startForResult(originalActivity, fragment, intent, requestCode);
+        return intent;
     }
 
     @Override

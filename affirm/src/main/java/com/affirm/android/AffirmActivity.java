@@ -19,14 +19,16 @@ abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChro
     View progressIndicator;
 
     static void startForResult(@NonNull Activity originalActivity,
-                               @Nullable Fragment fragment,
                                @NonNull Intent intent,
                                int requestCode) {
-        if (fragment != null) {
-            fragment.startActivityForResult(intent, requestCode);
-        } else {
-            originalActivity.startActivityForResult(intent, requestCode);
-        }
+        originalActivity.startActivityForResult(intent, requestCode);
+    }
+
+
+    static void startForResult(@NonNull Fragment originalFragment,
+                               @NonNull Intent intent,
+                               int requestCode) {
+        originalFragment.startActivityForResult(intent, requestCode);
     }
 
     abstract void initViews();

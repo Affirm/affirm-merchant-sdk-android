@@ -607,10 +607,10 @@ public final class Affirm {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
-            VcnCheckoutActivity.startActivity(activity, null, vcnCheckoutRequest, checkout, caas,
+            VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas,
                     cardAuthWindow, receiveReasonCodes);
         } else {
-            CheckoutActivity.startActivity(activity, null, checkoutRequest, checkout, caas,
+            CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,
                     cardAuthWindow);
         }
     }
@@ -630,11 +630,11 @@ public final class Affirm {
         AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
-            VcnCheckoutActivity.startActivity(fragment.requireActivity(), fragment,
-                    vcnCheckoutRequest, checkout, caas, cardAuthWindow, receiveReasonCodes);
+            VcnCheckoutActivity.startActivity(fragment, vcnCheckoutRequest, checkout, caas,
+                    cardAuthWindow, receiveReasonCodes);
         } else {
-            CheckoutActivity.startActivity(fragment.requireActivity(), fragment,
-                    checkoutRequest, checkout, caas, cardAuthWindow);
+            CheckoutActivity.startActivity(fragment, checkoutRequest, checkout, caas,
+                    cardAuthWindow);
         }
     }
 
@@ -669,7 +669,7 @@ public final class Affirm {
     public static void showSiteModal(@NonNull Activity activity, @Nullable String modalId,
                                      @Nullable PromoPageType pageType, @Nullable String promoId) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
-        ModalActivity.startActivity(activity, null, 0, BigDecimal.valueOf(0.0), SITE, modalId,
+        ModalActivity.startActivity(activity, 0, BigDecimal.valueOf(0.0), SITE, modalId,
                 pageType != null ? pageType.getType() : null, promoId);
     }
 
@@ -684,8 +684,7 @@ public final class Affirm {
     public static void showSiteModal(@NonNull Fragment fragment, @Nullable String modalId,
                                      @Nullable PromoPageType pageType, @Nullable String promoId) {
         AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
-        ModalActivity.startActivity(fragment.requireActivity(), fragment, 0,
-                BigDecimal.valueOf(0.0), SITE, modalId,
+        ModalActivity.startActivity(fragment, 0, BigDecimal.valueOf(0.0), SITE, modalId,
                 pageType != null ? pageType.getType() : null, promoId);
     }
 
@@ -728,7 +727,7 @@ public final class Affirm {
                                         @Nullable PromoPageType pageType,
                                         @Nullable String promoId) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
-        ModalActivity.startActivity(activity, null, 0, amount, PRODUCT, modalId,
+        ModalActivity.startActivity(activity, 0, amount, PRODUCT, modalId,
                 pageType != null ? pageType.getType() : null, promoId);
     }
 
@@ -747,8 +746,8 @@ public final class Affirm {
                                         @Nullable PromoPageType pageType,
                                         @Nullable String promoId) {
         AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
-        ModalActivity.startActivity(fragment.requireActivity(), fragment, 0, amount, PRODUCT,
-                modalId, pageType != null ? pageType.getType() : null, promoId);
+        ModalActivity.startActivity(fragment, 0, amount, PRODUCT, modalId,
+                pageType != null ? pageType.getType() : null, promoId);
     }
 
     /**
@@ -958,10 +957,10 @@ public final class Affirm {
             boolean showPrequal = (boolean) v.getTag();
             String type = pageType != null ? pageType.getType() : null;
             if (showPrequal) {
-                PrequalActivity.startActivity(activity, null, prequalRequest, amount,
+                PrequalActivity.startActivity(activity, prequalRequest, amount,
                         promoId, type, items);
             } else {
-                ModalActivity.startActivity(activity, null, prequalRequest, amount,
+                ModalActivity.startActivity(activity, prequalRequest, amount,
                         PRODUCT, null, type, promoId);
             }
         };
@@ -1061,7 +1060,6 @@ public final class Affirm {
         String type = pageType != null ? pageType.getType() : null;
         if (showPrequal) {
             PrequalActivity.startActivity(activity,
-                    null,
                     prequalRequest,
                     promoRequestModal.getAmount(),
                     promoRequestModal.getPromoId(),
@@ -1069,7 +1067,6 @@ public final class Affirm {
                     promoRequestModal.getItems());
         } else {
             ModalActivity.startActivity(activity,
-                    null,
                     prequalRequest,
                     promoRequestModal.getAmount(),
                     PRODUCT,
@@ -1092,16 +1089,14 @@ public final class Affirm {
         PromoPageType pageType = promoRequestModal.getPageType();
         String type = pageType != null ? pageType.getType() : null;
         if (showPrequal) {
-            PrequalActivity.startActivity(fragment.requireActivity(),
-                    fragment,
+            PrequalActivity.startActivity(fragment,
                     prequalRequest,
                     promoRequestModal.getAmount(),
                     promoRequestModal.getPromoId(),
                     type,
                     promoRequestModal.getItems());
         } else {
-            ModalActivity.startActivity(fragment.requireActivity(),
-                    fragment,
+            ModalActivity.startActivity(fragment,
                     prequalRequest,
                     promoRequestModal.getAmount(),
                     PRODUCT,

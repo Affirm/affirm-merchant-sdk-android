@@ -45,16 +45,33 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
 
     private static String receiveReasonCodes;
 
-    static void startActivity(@NonNull Activity originalActivity, @Nullable Fragment fragment,
-                              int requestCode, @NonNull Checkout checkout, @Nullable String caas,
+    static void startActivity(@NonNull Activity activity, int requestCode,
+                              @NonNull Checkout checkout, @Nullable String caas,
                               int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
+        Intent intent = buildIntent(activity, checkout, caas, cardAuthWindow,
+                configReceiveReasonCodes);
+        startForResult(activity, intent, requestCode);
+    }
+
+    static void startActivity(@NonNull Fragment fragment, int requestCode,
+                              @NonNull Checkout checkout, @Nullable String caas,
+                              int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
+        Intent intent = buildIntent(fragment.requireActivity(), checkout, caas, cardAuthWindow,
+                configReceiveReasonCodes);
+        startForResult(fragment, intent, requestCode);
+    }
+
+    private static Intent buildIntent(
+            @NonNull Activity originalActivity,
+            @NonNull Checkout checkout, @Nullable String caas,
+            int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
 
         receiveReasonCodes = configReceiveReasonCodes;
         final Intent intent = new Intent(originalActivity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
-        startForResult(originalActivity, fragment, intent, requestCode);
+        return intent;
     }
 
     @Override

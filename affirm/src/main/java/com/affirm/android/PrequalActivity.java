@@ -36,9 +36,26 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     private String pageType;
     private List<Item> items;
 
-    static void startActivity(@NonNull Activity originalActivity, @Nullable Fragment fragment,
-                              int requestCode, BigDecimal amount, @Nullable String promoId,
+    static void startActivity(@NonNull Activity activity, int requestCode,
+                              BigDecimal amount, @Nullable String promoId,
                               @Nullable String pageType, @Nullable List<Item> items) {
+        Intent intent = buildIntent(activity, amount, promoId, pageType, items);
+        startForResult(activity, intent, requestCode);
+    }
+
+    static void startActivity(@NonNull Fragment fragment, int requestCode,
+                              BigDecimal amount, @Nullable String promoId,
+                              @Nullable String pageType, @Nullable List<Item> items) {
+        Intent intent = buildIntent(fragment.requireActivity(), amount, promoId, pageType, items);
+        startForResult(fragment, intent, requestCode);
+    }
+
+    private static Intent buildIntent(
+            @NonNull Activity originalActivity,
+            BigDecimal amount,
+            @Nullable String promoId,
+            @Nullable String pageType,
+            @Nullable List<Item> items) {
         final Intent intent = new Intent(originalActivity, PrequalActivity.class);
         final String stringAmount =
                 String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
@@ -48,7 +65,7 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
         if (items != null) {
             intent.putParcelableArrayListExtra(ITEMS, new ArrayList<>(items));
         }
-        startForResult(originalActivity, fragment, intent, requestCode);
+        return intent;
     }
 
     @Override

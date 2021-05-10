@@ -1,4 +1,8 @@
 <resources>
     <dimen name="affirm_progressbar_dimen">80dp</dimen>
     <dimen name="affirm_promotion_size">16sp</dimen>
+    <dimen name="affirm_screen_horizontal_margin">16dp</dimen>
+    <dimen name="affirm_screen_vertical_margin">16dp</dimen>
+    <dimen name="affirm_corner_radius">8dp</dimen>
+    <dimen name="affirm_outlined_button_border">2dp</dimen>
 </resources>

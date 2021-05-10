@@ -2,19 +2,25 @@
 <resources>
     <declare-styleable name="AffirmPromotionButton">
         <attr name="affirmLogoType" format="enum">
-            <enum name="AffirmDisplayTypeLogo" value="0"/>
-            <enum name="AffirmDisplayTypeText" value="1"/>
-            <enum name="AffirmDisplayTypeSymbol" value="2"/>
-            <enum name="AffirmDisplayTypeSymbolHollow" value="3"/>
+            <enum name="AffirmDisplayTypeLogo" value="0" />
+            <enum name="AffirmDisplayTypeText" value="1" />
+            <enum name="AffirmDisplayTypeSymbol" value="2" />
+            <enum name="AffirmDisplayTypeSymbolHollow" value="3" />
         </attr>
         <attr name="affirmColor" format="enum">
-            <enum name="AffirmColorTypeBlue" value="0"/>
-            <enum name="AffirmColorTypeBlack" value="1"/>
-            <enum name="AffirmColorTypeWhite" value="2"/>
+            <enum name="AffirmColorTypeBlue" value="0" />
+            <enum name="AffirmColorTypeBlack" value="1" />
+            <enum name="AffirmColorTypeWhite" value="2" />
         </attr>
-        <attr name="htmlStyling" format="boolean"/>
-        <attr name="affirmTextSize" format="dimension"/>
-        <attr name="affirmTextColor" format="color"/>
-        <attr name="affirmTextFont" format="reference"/>
+        <attr name="htmlStyling" format="boolean" />
+        <attr name="affirmTextSize" format="dimension" />
+        <attr name="affirmTextColor" format="color" />
+        <attr name="affirmTextFont" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="FixedAspectRatioFrameLayout">
+        <attr name="aspectRatioWidth" format="integer" />
+        <attr name="aspectRatioHeight" format="integer" />
+        <attr name="aspectRatioFixedWidth" format="boolean" />
     </declare-styleable>
 </resources>

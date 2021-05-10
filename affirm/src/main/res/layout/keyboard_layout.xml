@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:grid="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText">
+
+    <Button
+        android:id="@+id/button1"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="1"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <Button
+        android:id="@+id/button2"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="2"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <Button
+        android:id="@+id/button3"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="3"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <Button
+        android:id="@+id/button4"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="4"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <Button
+        android:id="@+id/button5"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="5"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <Button
+        android:id="@+id/button6"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="6"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <Button
+        android:id="@+id/button7"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="7"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <Button
+        android:id="@+id/button8"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="8"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <Button
+        android:id="@+id/button9"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="9"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <Button
+        android:id="@+id/button0"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="0"
+        grid:layout_column="1"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1" />
+
+    <ImageButton
+        android:id="@+id/backspace"
+        style="?affirm_key_style"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        grid:layout_columnWeight="1"
+        grid:layout_rowWeight="1"
+        grid:srcCompat="?attr/affirm_backspace_drawable" />
+</merge>

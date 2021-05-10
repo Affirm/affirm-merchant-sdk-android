@@ -1,8 +1,8 @@
 import com.github.spotbugs.snom.SpotBugsTask
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'pmd'
 apply plugin: 'com.github.spotbugs'
 apply plugin: 'checkstyle'
@@ -104,6 +104,10 @@ check.dependsOn "spotbugsDebug", "spotbugsRelease", "pmd", "checkstyle"
 
 dependencies {
     implementation "androidx.appcompat:appcompat:${androidxAppCompatVersion}"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.1"
+    implementation "androidx.gridlayout:gridlayout:1.0.0"
+    implementation "org.joda:joda-money:0.12"
+    implementation "com.google.android.material:material:1.2.1"
     testImplementation "junit:junit:${junitVersion}"
 
     api "com.squareup.okhttp3:okhttp:${okhttpVersion}"

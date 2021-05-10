@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="affirm_card_corner_radius">4dp</dimen>
+    <dimen name="affirm_card_corner_radius_items">8dp</dimen>
+    <dimen name="affirm_card_corner_radius_promo">16dp</dimen>
+    <dimen name="affirm_card_elevation">2dp</dimen>
+    <dimen name="affirm_card_elevation_large">8dp</dimen>
+
+    <style name="AffirmCard">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginLeft">@dimen/affirm_screen_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/affirm_screen_horizontal_margin</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:background">@color/affirm_white</item>
+        <item name="cardElevation">@dimen/affirm_card_elevation</item>
+        <item name="cardCornerRadius">@dimen/affirm_card_corner_radius</item>
+    </style>
+
+    <style name="AffirmCard.VCN">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+    </style>
+
+    <style name="AffirmCard.SavingsPromo">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginLeft">@dimen/affirm_screen_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/affirm_screen_horizontal_margin</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardCornerRadius">@dimen/affirm_card_corner_radius_promo</item>
+    </style>
+
+</resources>

@@ -52,7 +52,6 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
 
     @Override
     void beforeOnCreate() {
-        AffirmUtils.showCloseActionBar(this);
     }
 
     @Override

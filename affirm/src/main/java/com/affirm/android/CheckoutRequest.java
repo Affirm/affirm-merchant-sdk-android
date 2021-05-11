@@ -5,6 +5,7 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
@@ -23,6 +24,7 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -50,6 +52,8 @@ import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 class CheckoutRequest implements AffirmRequest {
 
     @NonNull
+    private final OkHttpClient okHttpClient;
+    @NonNull
     private final Checkout checkout;
     private final boolean useVCN;
     @Nullable
@@ -63,8 +67,17 @@ class CheckoutRequest implements AffirmRequest {
     private final JsonParser jsonParser = new JsonParser();
     private final Gson gson = AffirmPlugins.get().gson();
 
-    CheckoutRequest(@NonNull Checkout checkout, @Nullable InnerCheckoutCallback callback,
-                    @Nullable String caas, boolean useVCN, int cardAuthWindow) {
+    CheckoutRequest(@NonNull Checkout checkout,
+                    @Nullable InnerCheckoutCallback callback, @Nullable String caas, boolean useVCN,
+                    int cardAuthWindow) {
+        this(null, checkout, callback, caas, useVCN, cardAuthWindow);
+    }
+
+    @VisibleForTesting
+    CheckoutRequest(@NonNull OkHttpClient okHttpClient, @NonNull Checkout checkout,
+                    @Nullable InnerCheckoutCallback callback, @Nullable String caas, boolean useVCN,
+                    int cardAuthWindow) {
+        this.okHttpClient = okHttpClient;
         this.checkout = checkout;
         this.checkoutCallback = callback;
         this.caas = caas;
@@ -119,6 +132,7 @@ class CheckoutRequest implements AffirmRequest {
         }
 
         checkoutCall = AffirmPlugins.get().restClient().getCallForRequest(
+                okHttpClient,
                 new AffirmHttpRequest.Builder()
                         .setUrl(
                                 AffirmHttpClient.getProtocol()

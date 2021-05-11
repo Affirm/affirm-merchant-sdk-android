@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
@@ -25,6 +26,7 @@ import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -36,6 +38,8 @@ import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 
 class PromoRequest implements AffirmRequest {
 
+    @NonNull
+    private final OkHttpClient okHttpClient;
     @Nullable
     private final String promoId;
     private final BigDecimal dollarAmount;
@@ -49,9 +53,9 @@ class PromoRequest implements AffirmRequest {
     @Nullable
     private final List<Item> items;
     @NonNull
-    private SpannablePromoCallback callback;
+    private final SpannablePromoCallback callback;
 
-    private boolean isHtmlStyle;
+    private final boolean isHtmlStyle;
 
     private Call promoCall;
 
@@ -66,6 +70,24 @@ class PromoRequest implements AffirmRequest {
             @Nullable List<Item> items,
             @NonNull SpannablePromoCallback callback
     ) {
+        this(null, promoId, pageType, dollarAmount, showCta,
+                affirmColor, affirmLogoType, isHtmlStyle, items, callback);
+    }
+
+    @VisibleForTesting
+    PromoRequest(
+            @Nullable OkHttpClient okHttpClient,
+            @Nullable final String promoId,
+            @Nullable final PromoPageType pageType,
+            final BigDecimal dollarAmount,
+            final boolean showCta,
+            @NonNull final AffirmColor affirmColor,
+            @NonNull final AffirmLogoType affirmLogoType,
+            boolean isHtmlStyle,
+            @Nullable List<Item> items,
+            @NonNull SpannablePromoCallback callback
+    ) {
+        this.okHttpClient = okHttpClient;
         this.promoId = promoId;
         this.pageType = pageType;
         this.dollarAmount = dollarAmount;
@@ -118,6 +140,7 @@ class PromoRequest implements AffirmRequest {
         }
 
         promoCall = AffirmPlugins.get().restClient().getCallForRequest(
+                okHttpClient,
                 new AffirmHttpRequest.Builder()
                         .setUrl(
                                 AffirmHttpClient.getProtocol()

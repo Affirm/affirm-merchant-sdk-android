@@ -18,12 +18,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class AffirmTrackerTest {
-    private static AtomicInteger localLogCounter = new AtomicInteger();
+    private static final AtomicInteger localLogCounter = new AtomicInteger();
 
     @Before
     public void init() {
         if (AffirmPlugins.get() == null) {
-            Affirm.initialize(new Affirm.Configuration.Builder("sdf", Affirm.Environment.SANDBOX)
+            Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
                     .build()
             );
         }
@@ -53,7 +53,6 @@ public class AffirmTrackerTest {
     private static JsonObject addTrackingData(@NonNull String eventName,
                                               @Nullable JsonObject eventData,
                                               @NonNull AffirmTracker.TrackingLevel level) {
-
         final Gson gson = new Gson();
         final JsonObject data = eventData == null ? new JsonObject()
                 : gson.fromJson(gson.toJson(eventData, JsonObject.class), JsonObject.class);

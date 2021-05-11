@@ -12,7 +12,7 @@ public class AffirmTest {
     @Before
     public void setup() {
         if (AffirmPlugins.get() == null) {
-            Affirm.initialize(new Affirm.Configuration.Builder("sdf", Affirm.Environment.SANDBOX)
+            Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
                     .build()
             );
         }

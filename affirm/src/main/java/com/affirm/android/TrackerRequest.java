@@ -1,40 +1,28 @@
 package com.affirm.android;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
-import com.affirm.android.exception.ConnectionException;
-import com.affirm.android.model.AffirmError;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
-import static com.affirm.android.AffirmConstants.CONTENT_TYPE;
 import static com.affirm.android.AffirmConstants.HTTP;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
-import static com.affirm.android.AffirmConstants.TAG_TRACKER;
 import static com.affirm.android.AffirmConstants.TRACKER_PATH;
-import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 
 class TrackerRequest implements AffirmRequest {
 
     @NonNull
     private final JsonObject trackingData;
 
-    @NonNull
+    @Nullable
     OkHttpClient okHttpClient;
 
     private Call trackingCall;
@@ -51,49 +39,24 @@ class TrackerRequest implements AffirmRequest {
 
     @Override
     public void create() {
-        AffirmPlugins plugins = AffirmPlugins.get();
 
         if (trackingCall != null) {
             trackingCall.cancel();
         }
 
-        trackingCall = plugins.restClient().getCallForRequest(okHttpClient,
-                new AffirmHttpRequest.Builder()
-                        .setUrl(getTrackerProtocol() + plugins.trackerBaseUrl() + TRACKER_PATH)
-                        .setMethod(AffirmHttpRequest.Method.POST)
-                        .setBody(new AffirmHttpBody(CONTENT_TYPE, trackingData.toString()))
-                        .setTag(TAG_TRACKER)
-                        .build()
-        );
-        trackingCall.enqueue(new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) {
-                if (!response.isSuccessful()) {
-                    ResponseBody responseBody = response.body();
-                    if (responseBody != null && responseBody.contentLength() > 0) {
-                        try {
-                            final AffirmError affirmError = AffirmPlugins.get()
-                                    .gson()
-                                    .fromJson(responseBody.string(), AffirmError.class);
-                            AffirmException affirmException = AffirmHttpClient.handleAPIError(
-                                    affirmError,
-                                    response.code(),
-                                    response.headers().get(X_AFFIRM_REQUEST_ID)
-                            );
-                            handleException(affirmException);
-                        } catch (JsonSyntaxException | JsonIOException | IOException e) {
-                            handleException(new APIException("Some error occurred while parsing "
-                                    + "the error response", e));
-                        }
-                    }
-                }
-            }
+        trackingCall = AffirmClient.send(okHttpClient, new AffirmTrackerRequest(),
+                new AffirmClient.AffirmListener<Void>() {
 
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                handleException(new ConnectionException("i/o failure", e));
-            }
-        });
+                    @Override
+                    public void onSuccess(Void response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(AffirmException exception) {
+                        handleException(exception);
+                    }
+                });
     }
 
     @Override
@@ -110,5 +73,29 @@ class TrackerRequest implements AffirmRequest {
 
     private void handleException(AffirmException e) {
         AffirmLog.w(e.toString());
+    }
+
+
+    class AffirmTrackerRequest implements AffirmClient.AffirmApiRequest {
+
+        @NotNull
+        @Override
+        public String url() {
+            return getTrackerProtocol()
+                    +  AffirmPlugins.get().trackerBaseUrl()
+                    + TRACKER_PATH;
+        }
+
+        @NotNull
+        @Override
+        public AffirmHttpRequest.Method method() {
+            return AffirmHttpRequest.Method.POST;
+        }
+
+        @Nullable
+        @Override
+        public JsonObject body() {
+            return trackingData;
+        }
     }
 }

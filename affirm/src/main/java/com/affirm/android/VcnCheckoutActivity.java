@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
@@ -47,13 +48,30 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout, @Nullable String caas,
                               int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
+        Intent intent = buildIntent(activity, checkout, caas, cardAuthWindow,
+                configReceiveReasonCodes);
+        startForResult(activity, intent, requestCode);
+    }
+
+    static void startActivity(@NonNull Fragment fragment, int requestCode,
+                              @NonNull Checkout checkout, @Nullable String caas,
+                              int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
+        Intent intent = buildIntent(fragment.requireActivity(), checkout, caas, cardAuthWindow,
+                configReceiveReasonCodes);
+        startForResult(fragment, intent, requestCode);
+    }
+
+    private static Intent buildIntent(
+            @NonNull Activity originalActivity,
+            @NonNull Checkout checkout, @Nullable String caas,
+            int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
 
         receiveReasonCodes = configReceiveReasonCodes;
-        final Intent intent = new Intent(activity, VcnCheckoutActivity.class);
+        final Intent intent = new Intent(originalActivity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
-        activity.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     @Override

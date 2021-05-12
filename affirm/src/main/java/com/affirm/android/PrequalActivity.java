@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.affirm.android.exception.ConnectionException;
 import com.affirm.android.model.Item;
@@ -38,7 +39,24 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     static void startActivity(@NonNull Activity activity, int requestCode,
                               BigDecimal amount, @Nullable String promoId,
                               @Nullable String pageType, @Nullable List<Item> items) {
-        final Intent intent = new Intent(activity, PrequalActivity.class);
+        Intent intent = buildIntent(activity, amount, promoId, pageType, items);
+        startForResult(activity, intent, requestCode);
+    }
+
+    static void startActivity(@NonNull Fragment fragment, int requestCode,
+                              BigDecimal amount, @Nullable String promoId,
+                              @Nullable String pageType, @Nullable List<Item> items) {
+        Intent intent = buildIntent(fragment.requireActivity(), amount, promoId, pageType, items);
+        startForResult(fragment, intent, requestCode);
+    }
+
+    private static Intent buildIntent(
+            @NonNull Activity originalActivity,
+            BigDecimal amount,
+            @Nullable String promoId,
+            @Nullable String pageType,
+            @Nullable List<Item> items) {
+        final Intent intent = new Intent(originalActivity, PrequalActivity.class);
         final String stringAmount =
                 String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
         intent.putExtra(AMOUNT, stringAmount);
@@ -47,7 +65,7 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
         if (items != null) {
             intent.putParcelableArrayListExtra(ITEMS, new ArrayList<>(items));
         }
-        activity.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Checkout;
@@ -14,6 +15,7 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.NotNull;
 
 import okhttp3.Call;
+import okhttp3.OkHttpClient;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
@@ -32,6 +34,8 @@ import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_VA
 
 class CheckoutRequest implements AffirmRequest {
 
+    @Nullable
+    private final OkHttpClient okHttpClient;
     @NonNull
     private final Checkout checkout;
     private final boolean useVCN;
@@ -46,8 +50,17 @@ class CheckoutRequest implements AffirmRequest {
     private final JsonParser jsonParser = new JsonParser();
     private final Gson gson = AffirmPlugins.get().gson();
 
-    CheckoutRequest(@NonNull Checkout checkout, @Nullable InnerCheckoutCallback callback,
-                    @Nullable String caas, boolean useVCN, int cardAuthWindow) {
+    CheckoutRequest(@NonNull Checkout checkout,
+                    @Nullable InnerCheckoutCallback callback, @Nullable String caas, boolean useVCN,
+                    int cardAuthWindow) {
+        this(null, checkout, callback, caas, useVCN, cardAuthWindow);
+    }
+
+    @VisibleForTesting
+    CheckoutRequest(@Nullable OkHttpClient okHttpClient, @NonNull Checkout checkout,
+                    @Nullable InnerCheckoutCallback callback, @Nullable String caas, boolean useVCN,
+                    int cardAuthWindow) {
+        this.okHttpClient = okHttpClient;
         this.checkout = checkout;
         this.checkoutCallback = callback;
         this.caas = caas;
@@ -60,20 +73,20 @@ class CheckoutRequest implements AffirmRequest {
         if (checkoutCall != null) {
             checkoutCall.cancel();
         }
-        checkoutCall = AffirmClient.send(new AffirmCheckoutRequest(),
+        checkoutCall = AffirmClient.send(okHttpClient, new AffirmCheckoutRequest(),
                 new AffirmClient.AffirmListener<CheckoutResponse>() {
-            @Override
-            public void onSuccess(CheckoutResponse response) {
-                if (checkoutCallback != null) {
-                    checkoutCallback.onSuccess(response);
-                }
-            }
+                    @Override
+                    public void onSuccess(CheckoutResponse response) {
+                        if (checkoutCallback != null) {
+                            checkoutCallback.onSuccess(response);
+                        }
+                    }
 
-            @Override
-            public void onFailure(AffirmException exception) {
-                handleErrorResponse(exception);
-            }
-        });
+                    @Override
+                    public void onFailure(AffirmException exception) {
+                        handleErrorResponse(exception);
+                    }
+                });
     }
 
     @Override

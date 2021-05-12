@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
@@ -29,9 +30,10 @@ import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 
 public final class AffirmHttpClient {
 
-    private OkHttpClient okHttpClient;
+    private final OkHttpClient okHttpClient;
 
-    private AffirmHttpClient(@Nullable OkHttpClient.Builder builder) {
+    @VisibleForTesting
+    AffirmHttpClient(@Nullable OkHttpClient.Builder builder) {
         if (builder == null) {
             builder = new OkHttpClient.Builder();
         }
@@ -110,7 +112,10 @@ public final class AffirmHttpClient {
         return new APIException("Error getting exception from response", null);
     }
 
-    Call getCallForRequest(AffirmHttpRequest request) {
+    Call getCallForRequest(@Nullable OkHttpClient client, @NonNull AffirmHttpRequest request) {
+        if (client != null) {
+            return client.newCall(getRequest(request));
+        }
         return okHttpClient.newCall(getRequest(request));
     }
 

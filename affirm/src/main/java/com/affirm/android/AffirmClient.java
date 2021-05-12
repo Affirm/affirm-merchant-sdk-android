@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -54,15 +55,24 @@ public final class AffirmClient {
         void onFailure(AffirmException exception);
     }
 
-    public static <T> Call send(AffirmApiRequest request, AffirmListener<T> listener) {
+    public static <T> Call send(@NonNull AffirmApiRequest request,
+                                @NonNull AffirmListener<T> listener) {
+        return send(null, request, listener);
+    }
+
+    public static <T> Call send(@Nullable OkHttpClient okHttpClient,
+                                @NonNull AffirmApiRequest request,
+                                @NonNull AffirmListener<T> listener) {
         AffirmHttpRequest.Builder builder = new AffirmHttpRequest.Builder()
                 .setUrl(request.url())
                 .setMethod(request.method());
-        if (request.body() != null) {
-            builder.setBody(new AffirmHttpBody(CONTENT_TYPE, request.body().toString()));
+        JsonObject requestBody = request.body();
+        if (requestBody != null) {
+            builder.setBody(new AffirmHttpBody(CONTENT_TYPE, requestBody.toString()));
         }
         AffirmHttpRequest affirmHttpRequest = builder.build();
-        Call call = AffirmPlugins.get().restClient().getCallForRequest(affirmHttpRequest);
+        Call call = AffirmPlugins.get().restClient()
+                .getCallForRequest(okHttpClient, affirmHttpRequest);
         call.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {

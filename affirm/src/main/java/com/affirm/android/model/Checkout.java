@@ -73,6 +73,11 @@ public abstract class Checkout implements Parcelable {
     @SerializedName("metadata")
     public abstract Map<String, String> metadata();
 
+    // A financing program applied on this checkout.
+    @Nullable
+    @SerializedName("financing_program")
+    public abstract String financingProgram();
+
     @AutoValue.Builder
     public abstract static class Builder {
         /**
@@ -103,6 +108,8 @@ public abstract class Checkout implements Parcelable {
         public abstract Builder setMetadata(Map<String, String> value);
 
         public abstract Builder setCurrency(Currency value);
+
+        public abstract Builder setFinancingProgram(String value);
 
         abstract Checkout autoBuild();
 

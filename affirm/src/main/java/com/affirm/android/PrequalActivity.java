@@ -2,7 +2,6 @@ package com.affirm.android;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -11,16 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.affirm.android.exception.ConnectionException;
-import com.affirm.android.model.Item;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmConstants.AMOUNT;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
-import static com.affirm.android.AffirmConstants.ITEMS;
 import static com.affirm.android.AffirmConstants.PAGE_TYPE;
 import static com.affirm.android.AffirmConstants.PREQUAL_ERROR;
 import static com.affirm.android.AffirmConstants.PREQUAL_PATH;
@@ -34,19 +29,18 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     private String amount;
     private String promoId;
     private String pageType;
-    private List<Item> items;
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               BigDecimal amount, @Nullable String promoId,
-                              @Nullable String pageType, @Nullable List<Item> items) {
-        Intent intent = buildIntent(activity, amount, promoId, pageType, items);
+                              @Nullable String pageType) {
+        Intent intent = buildIntent(activity, amount, promoId, pageType);
         startForResult(activity, intent, requestCode);
     }
 
     static void startActivity(@NonNull Fragment fragment, int requestCode,
                               BigDecimal amount, @Nullable String promoId,
-                              @Nullable String pageType, @Nullable List<Item> items) {
-        Intent intent = buildIntent(fragment.requireActivity(), amount, promoId, pageType, items);
+                              @Nullable String pageType) {
+        Intent intent = buildIntent(fragment.requireActivity(), amount, promoId, pageType);
         startForResult(fragment, intent, requestCode);
     }
 
@@ -54,17 +48,13 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
             @NonNull Activity originalActivity,
             BigDecimal amount,
             @Nullable String promoId,
-            @Nullable String pageType,
-            @Nullable List<Item> items) {
+            @Nullable String pageType) {
         final Intent intent = new Intent(originalActivity, PrequalActivity.class);
         final String stringAmount =
                 String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
         intent.putExtra(AMOUNT, stringAmount);
         intent.putExtra(PROMO_ID, promoId);
         intent.putExtra(PAGE_TYPE, pageType);
-        if (items != null) {
-            intent.putParcelableArrayListExtra(ITEMS, new ArrayList<>(items));
-        }
         return intent;
     }
 
@@ -86,12 +76,10 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
             amount = savedInstanceState.getString(AMOUNT);
             promoId = savedInstanceState.getString(PROMO_ID);
             pageType = savedInstanceState.getString(PAGE_TYPE);
-            items = savedInstanceState.getParcelableArrayList(ITEMS);
         } else {
             amount = getIntent().getStringExtra(AMOUNT);
             promoId = getIntent().getStringExtra(PROMO_ID);
             pageType = getIntent().getStringExtra(PAGE_TYPE);
-            items = getIntent().getParcelableArrayListExtra(ITEMS);
         }
     }
 
@@ -103,9 +91,6 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
         );
         if (pageType != null) {
             path.append("&page_type=").append(pageType);
-        }
-        if (items != null) {
-            path.append("&items=").append(Uri.encode(AffirmPlugins.get().gson().toJson(items)));
         }
         webView.loadUrl(HTTPS_PROTOCOL + AffirmPlugins.get().basePromoUrl() + path.toString());
     }

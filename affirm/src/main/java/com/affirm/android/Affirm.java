@@ -958,7 +958,7 @@ public final class Affirm {
             String type = pageType != null ? pageType.getType() : null;
             if (showPrequal) {
                 PrequalActivity.startActivity(activity, prequalRequest, amount,
-                        promoId, type, items);
+                        promoId, type);
             } else {
                 ModalActivity.startActivity(activity, prequalRequest, amount,
                         PRODUCT, null, type, promoId);
@@ -1063,8 +1063,7 @@ public final class Affirm {
                     prequalRequest,
                     promoRequestModal.getAmount(),
                     promoRequestModal.getPromoId(),
-                    type,
-                    promoRequestModal.getItems());
+                    type);
         } else {
             ModalActivity.startActivity(activity,
                     prequalRequest,
@@ -1093,8 +1092,7 @@ public final class Affirm {
                     prequalRequest,
                     promoRequestModal.getAmount(),
                     promoRequestModal.getPromoId(),
-                    type,
-                    promoRequestModal.getItems());
+                    type);
         } else {
             ModalActivity.startActivity(fragment,
                     prequalRequest,

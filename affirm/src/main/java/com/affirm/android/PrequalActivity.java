@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -18,7 +19,14 @@ import static com.affirm.android.AffirmConstants.AMOUNT;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.PAGE_TYPE;
 import static com.affirm.android.AffirmConstants.PREQUAL_ERROR;
+import static com.affirm.android.AffirmConstants.PREQUAL_IS_SDK;
+import static com.affirm.android.AffirmConstants.PREQUAL_PAGE_TYPE;
 import static com.affirm.android.AffirmConstants.PREQUAL_PATH;
+import static com.affirm.android.AffirmConstants.PREQUAL_PROMO_EXTERNAL_ID;
+import static com.affirm.android.AffirmConstants.PREQUAL_PUBLIC_API_KEY;
+import static com.affirm.android.AffirmConstants.PREQUAL_REFERRING_URL;
+import static com.affirm.android.AffirmConstants.PREQUAL_UNIT_PRICE;
+import static com.affirm.android.AffirmConstants.PREQUAL_USE_PROMO;
 import static com.affirm.android.AffirmConstants.PROMO_ID;
 import static com.affirm.android.AffirmConstants.REFERRING_URL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.PREQUAL_WEBVIEW_FAIL;
@@ -86,13 +94,20 @@ public class PrequalActivity extends AffirmActivity implements PrequalWebViewCli
     @Override
     void onAttached() {
         String publicKey = AffirmPlugins.get().publicKey();
-        StringBuilder path = new StringBuilder(
-                String.format(PREQUAL_PATH, publicKey, amount, promoId, REFERRING_URL)
-        );
-        if (pageType != null) {
-            path.append("&page_type=").append(pageType);
+        String prequalUri = HTTPS_PROTOCOL + AffirmPlugins.get().basePromoUrl() + PREQUAL_PATH;
+        Uri.Builder builder = Uri.parse(prequalUri).buildUpon();
+        builder.appendQueryParameter(PREQUAL_PUBLIC_API_KEY, publicKey);
+        builder.appendQueryParameter(PREQUAL_UNIT_PRICE, amount);
+        builder.appendQueryParameter(PREQUAL_USE_PROMO, "true");
+        builder.appendQueryParameter(PREQUAL_IS_SDK, "true");
+        builder.appendQueryParameter(PREQUAL_REFERRING_URL, REFERRING_URL);
+        if (promoId != null) {
+            builder.appendQueryParameter(PREQUAL_PROMO_EXTERNAL_ID, promoId);
         }
-        webView.loadUrl(HTTPS_PROTOCOL + AffirmPlugins.get().basePromoUrl() + path.toString());
+        if (pageType != null) {
+            builder.appendQueryParameter(PREQUAL_PAGE_TYPE, pageType);
+        }
+        webView.loadUrl(builder.build().toString());
     }
 
     @Override

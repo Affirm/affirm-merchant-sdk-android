@@ -123,8 +123,15 @@ public final class AffirmConstants {
     static final String TRACKER_PATH = "/collect";
     static final String PROMO_PATH = "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d"
             + "&show_cta=%s";
-    static final String PREQUAL_PATH = "/apps/prequal?public_api_key=%s&unit_price=%s"
-            + "&promo_external_id=%s&isSDK=true&use_promo=true&referring_url=%s";
+    static final String PREQUAL_PATH = "/apps/prequal";
+    static final String PREQUAL_PUBLIC_API_KEY = "public_api_key";
+    static final String PREQUAL_UNIT_PRICE = "unit_price";
+    static final String PREQUAL_USE_PROMO = "use_promo";
+    static final String PREQUAL_IS_SDK = "isSDK";
+    static final String PREQUAL_REFERRING_URL = "referring_url";
+    static final String PREQUAL_PROMO_EXTERNAL_ID = "promo_external_id";
+    static final String PREQUAL_PAGE_TYPE = "page_type";
+
     static final String AFFIRM_CHECKOUT_CONFIRMATION_URL = "affirm://checkout/confirmed";
     static final String AFFIRM_CHECKOUT_CANCELLATION_URL = "affirm://checkout/cancelled";
     static final String REFERRING_URL = "https://androidsdk/";

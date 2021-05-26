@@ -111,6 +111,8 @@ dependencies {
 
     implementation "com.google.android.gms:play-services-auth:${playServiceAuthVersion}"
 
+    annotationProcessor "javax.annotation:javax.annotation-api:1.3.2"
+
     annotationProcessor "com.ryanharter.auto.value:auto-value-gson:${autoValueGsonVersion}"
     compileOnly "com.ryanharter.auto.value:auto-value-gson:${autoValueGsonVersion}"
     annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:${autoValueParcelVersion}"

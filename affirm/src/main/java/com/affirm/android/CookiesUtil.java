@@ -1,55 +1,45 @@
 package com.affirm.android;
 
 import android.content.Context;
-import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 
 import java.util.Vector;
 
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
-import static com.affirm.android.AffirmConstants.HTTP_PROTOCOL;
 
 public final class CookiesUtil {
+    static final String MAIN_DOMAIN = "https://.affirm.com/";
 
     private CookiesUtil() {
     }
 
     public static void clearCookies(Context context) {
         final CookieManager cookieManager = CookieManager.getInstance();
-        final CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(context);
-        CookiesUtil.clearCookieByUrl(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(),
-                cookieManager, cookieSyncManager);
+        clearCookieByUrlInternal(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl() + "/", cookieManager);
     }
 
-    private static void clearCookieByUrl(String url, CookieManager cookieManager,
-                                 CookieSyncManager cookieSyncManager) {
-        Uri uri = Uri.parse(url);
-        String host = uri.getHost();
-        clearCookieByUrlInternal(url, cookieManager, cookieSyncManager);
-        clearCookieByUrlInternal(HTTP_PROTOCOL + "." + host, cookieManager, cookieSyncManager);
-        clearCookieByUrlInternal(HTTPS_PROTOCOL + "." + host, cookieManager, cookieSyncManager);
+
+    private static void clearCookieByUrlInternal(String url, CookieManager cookieManager) {
+
+        String urlCookieString = cookieManager.getCookie(url);
+        String baseDomainCookieString = cookieManager.getCookie(MAIN_DOMAIN);
+        Vector<String> urlCookies = getCookieNamesByUrl(urlCookieString);
+        Vector<String> baseDomainCookies = getCookieNamesByUrl(baseDomainCookieString);
+
+        urlCookies.removeAll(baseDomainCookies); //remove duplicates or we will be double writing cookies
+
+        unsetCookies(MAIN_DOMAIN, baseDomainCookies, cookieManager);
+        unsetCookies(url, urlCookies, cookieManager);
+
+        cookieManager.flush();
     }
 
-    private static void clearCookieByUrlInternal(String url, CookieManager cookieManager,
-                                                 CookieSyncManager cookieSyncManager) {
+    private static void unsetCookies(String url, Vector<String> urlCookies, CookieManager cookieManager) {
+        if (urlCookies == null) return;
 
-        String cookieString = cookieManager.getCookie(url);
-        Vector<String> cookie = getCookieNamesByUrl(cookieString);
-        if (cookie == null || cookie.isEmpty()) {
-            return;
-        }
-        int len = cookie.size();
-        for (int i = 0; i < len; i++) {
-            cookieManager.setCookie(url, cookie.get(i) + "=-1");
-        }
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            cookieSyncManager.sync();
-        } else {
-            cookieManager.flush();
+        for (int i = 0; i < urlCookies.size(); i++) {
+            cookieManager.setCookie(url, urlCookies.get(i) + "=");
         }
     }
 

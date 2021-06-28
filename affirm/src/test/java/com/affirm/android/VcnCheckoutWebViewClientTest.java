@@ -1,5 +1,6 @@
 package com.affirm.android;
 
+import android.net.Uri;
 import android.os.Build;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -15,13 +16,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Uri.class)
 public class VcnCheckoutWebViewClientTest {
 
     @Mock
@@ -33,11 +40,24 @@ public class VcnCheckoutWebViewClientTest {
 
     @Before
     public void setup() {
+        mockUriParse();
         Affirm.Configuration configuration = new Affirm.Configuration.Builder("111", Affirm.Environment.SANDBOX)
                 .build();
         AffirmPlugins plugins = new AffirmPlugins(configuration);
         Gson gson = plugins.gson();
         affirmWebViewClient = new VcnCheckoutWebViewClient(gson, "true", callbacks);
+    }
+
+    private void mockUriParse() {
+        PowerMockito.mockStatic(Uri.class);
+        PowerMockito.when(Uri.parse(anyString())).then((Answer<Uri>) invocation -> mockUri((String) invocation.getArguments()[0]));
+    }
+
+    private Uri mockUri(final String url) {
+        Uri mockUri = mock(Uri.class);
+        when(mockUri.toString()).thenReturn(url);
+        when(mockUri.getQueryParameter("data")).then((Answer<String>) invocation -> url.substring(url.indexOf("data=") + "data=".length()));
+        return mockUri;
     }
 
     @Test

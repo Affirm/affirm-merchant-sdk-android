@@ -1,5 +1,6 @@
 package com.affirm.android;
 
+import android.net.Uri;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +20,7 @@ final class CheckoutWebViewClient extends AffirmWebViewClient {
     @Override
     boolean hasCallbackUrl(WebView view, String url) {
         if (url.contains(AFFIRM_CHECKOUT_CONFIRMATION_URL)) {
-            final String token = url.split(CHECKOUT_TOKEN + "=")[1];
+            final String token = Uri.parse(url).getQueryParameter(CHECKOUT_TOKEN);
             callbacks.onWebViewConfirmation(token);
             return true;
         } else if (url.contains(AFFIRM_CHECKOUT_CANCELLATION_URL)) {

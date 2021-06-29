@@ -1,6 +1,11 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.17 (June 29, 2021)
+- Start checkout in a Fragment
+- Add Client Middleware
+- Bug-fixes
+
 ## Version 2.0.16 (April 27, 2021)
 - Chromium bug fix
 

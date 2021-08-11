@@ -52,6 +52,8 @@ public final class AffirmUtils {
             total.append(line).append('\n');
         }
 
+        inputStream.close();
+        r.close();
         return total.toString();
     }
 

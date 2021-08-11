@@ -917,6 +917,7 @@ public final class Affirm {
             @Override
             public void onDestroy() {
                 affirmPromoRequest.cancel();
+                promotionButton.destroy();
             }
         };
 

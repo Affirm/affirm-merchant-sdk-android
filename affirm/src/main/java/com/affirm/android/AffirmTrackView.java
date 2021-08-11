@@ -1,12 +1,10 @@
 package com.affirm.android;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.widget.FrameLayout;
 
@@ -128,17 +126,7 @@ public class AffirmTrackView extends FrameLayout
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         AffirmLog.v("AffirmTrackView detached from window");
-        Context context = getContext();
-        if (context != null) {
-            ViewGroup container =
-                    ((Activity) context).getWindow()
-                            .getDecorView().findViewById(android.R.id.content);
-            container.removeView(webView);
-        }
-        webView.removeAllViews();
-        webView.destroyDrawingCache();
-        webView.clearHistory();
-        webView.destroy();
+        webView.destroyWebView();
         webView = null;
         handler.removeCallbacksAndMessages(null);
     }

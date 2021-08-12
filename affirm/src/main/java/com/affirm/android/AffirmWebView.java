@@ -3,6 +3,7 @@ package com.affirm.android;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -26,5 +27,17 @@ class AffirmWebView extends WebView {
         getSettings().setSupportMultipleWindows(true);
         getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         setVerticalScrollBarEnabled(false);
+    }
+
+    protected void destroyWebView() {
+        if (getParent() != null) {
+            ViewGroup viewGroup = (ViewGroup) getParent();
+            viewGroup.removeAllViews();
+        }
+        removeAllViews();
+        clearCache(true);
+        destroyDrawingCache();
+        clearHistory();
+        destroy();
     }
 }

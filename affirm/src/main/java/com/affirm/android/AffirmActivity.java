@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,8 +12,7 @@ import androidx.fragment.app.Fragment;
 
 abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChromeClient.Callbacks {
 
-    ViewGroup container;
-    WebView webView;
+    AffirmWebView webView;
     View progressIndicator;
 
     static void startForResult(@NonNull Activity originalActivity,
@@ -45,7 +42,6 @@ abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChro
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.affirm_activity_webview);
-        container = getWindow().getDecorView().findViewById(android.R.id.content);
         webView = findViewById(R.id.webview);
         progressIndicator = findViewById(R.id.progressIndicator);
 
@@ -58,12 +54,7 @@ abstract class AffirmActivity extends AppCompatActivity implements AffirmWebChro
 
     @Override
     protected void onDestroy() {
-        container.removeView(webView);
-        webView.removeAllViews();
-        webView.clearCache(true);
-        webView.destroyDrawingCache();
-        webView.clearHistory();
-        webView.destroy();
+        webView.destroyWebView();
         webView = null;
         super.onDestroy();
     }

@@ -101,7 +101,7 @@ public class AffirmPromotionButton extends FrameLayout {
             promotionButton.setAffirmTextSize(affirmTextSize);
             promotionButton.setAffirmTextColor(affirmTextColor);
             promotionButton.setTypeface(affirmTextFont > 0
-                    ? ResourcesCompat.getFont(getContext(), affirmTextFont) : Typeface.DEFAULT);
+                    ? ResourcesCompat.getFont(getContext(), affirmTextFont) : Typeface.SERIF);
             promotionButton.setAffirmColor(affirmColor);
             promotionButton.setAffirmLogoType(affirmLogoType);
         }

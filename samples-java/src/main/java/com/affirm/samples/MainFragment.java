@@ -1,6 +1,7 @@
 package com.affirm.samples;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.view.LayoutInflater;
@@ -103,7 +104,7 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
         affirmPromotionButton1.configWithLocalStyling(
                 AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
-                ResourcesCompat.getFont(getContext(), R.font.apercu_bold),
+                Typeface.SERIF,
                 android.R.color.darker_gray,
                 R.dimen.affirm_promotion_size);
 

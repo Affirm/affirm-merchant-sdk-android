@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK;
 import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_END;
@@ -184,8 +185,8 @@ public final class AffirmUtils {
         float logoHeight = textSize * 1.f;
         float ratio = (float) logoDrawable.getIntrinsicWidth() / logoDrawable.getIntrinsicHeight();
 
-        // Should not setColorFilter for blue_black logo
-        if (affirmColor != AFFIRM_COLOR_TYPE_BLUE_BLACK) {
+        // Should not setColorFilter for blue_black & blue logo
+        if (affirmColor != AFFIRM_COLOR_TYPE_BLUE_BLACK && affirmColor != AFFIRM_COLOR_TYPE_BLUE) {
             logoDrawable.setColorFilter(
                     resources.getColor(affirmColor.getColorRes()), PorterDuff.Mode.SRC_ATOP);
         }

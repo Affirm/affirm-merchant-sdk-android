@@ -37,26 +37,28 @@ public enum AffirmLogoType {
 
     protected @DrawableRes
     int getDrawableRes(AffirmColor affirmColor) {
-        if (affirmColor == AFFIRM_COLOR_TYPE_BLUE_BLACK) {
-            switch (this) {
-                case AFFIRM_DISPLAY_TYPE_LOGO:
-                    return R.drawable.affirm_blue_black_logo_transparent_bg;
-                case AFFIRM_DISPLAY_TYPE_SYMBOL:
-                case AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW:
-                    return R.drawable.affirm_blue_black_hollow_circle_transparent_bg;
-                default:
-                    return R.drawable.affirm_blue_black_logo_transparent_bg;
-            }
-        } else {
-            switch (this) {
-                case AFFIRM_DISPLAY_TYPE_LOGO:
-                    return R.drawable.affirm_black_logo_transparent_bg;
-                case AFFIRM_DISPLAY_TYPE_SYMBOL:
-                case AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW:
-                    return R.drawable.affirm_black_hollow_circle_transparent_bg;
-                default:
-                    return R.drawable.affirm_black_logo_transparent_bg;
-            }
+        switch (affirmColor) {
+            case AFFIRM_COLOR_TYPE_BLUE:
+            case AFFIRM_COLOR_TYPE_BLUE_BLACK:
+                switch (this) {
+                    case AFFIRM_DISPLAY_TYPE_LOGO:
+                        return R.drawable.affirm_blue_black_logo_transparent_bg;
+                    case AFFIRM_DISPLAY_TYPE_SYMBOL:
+                    case AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW:
+                        return R.drawable.affirm_blue_black_hollow_circle_transparent_bg;
+                    default:
+                        return R.drawable.affirm_blue_black_logo_transparent_bg;
+                }
+            default:
+                switch (this) {
+                    case AFFIRM_DISPLAY_TYPE_LOGO:
+                        return R.drawable.affirm_black_logo_transparent_bg;
+                    case AFFIRM_DISPLAY_TYPE_SYMBOL:
+                    case AFFIRM_DISPLAY_TYPE_SYMBOL_HOLLOW:
+                        return R.drawable.affirm_black_hollow_circle_transparent_bg;
+                    default:
+                        return R.drawable.affirm_black_logo_transparent_bg;
+                }
         }
     }
 

@@ -7,11 +7,11 @@
 .affirm-modal-trigger {
     color: #2984EE;
     font-style:italic;
-    font-family:'Lacquer-Regular';
+    font-family:'apercu-bold';
     !important;
 }
 body {
-    font-family: 'Lacquer-Regular';
+    font-family: 'apercu-bold';
     font-weight: normal;
     text-align: center;
     !important;

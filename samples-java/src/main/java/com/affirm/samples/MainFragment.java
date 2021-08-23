@@ -102,7 +102,7 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
         AffirmPromotionButton affirmPromotionButton1 = view.findViewById(R.id.promo);
         // Default use Button to show the promo message with configWithLocalStyling. If you want to use WebView to show the promo message. You should use configWithHtmlStyling
         affirmPromotionButton1.configWithLocalStyling(
-                AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK,
+                AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
                 Typeface.SERIF,
                 android.R.color.darker_gray,

@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.junit.Assert.assertEquals;
+
 public class AffirmTest {
 
     @Before
@@ -16,6 +18,12 @@ public class AffirmTest {
                     .build()
             );
         }
+    }
+
+    @Test
+    public void testSwitchPublicKey() {
+        Affirm.switchPublicKey("Y8CQXFF044903JC1");
+        assertEquals("Y8CQXFF044903JC1", AffirmPlugins.get().publicKey());
     }
 
     @Test

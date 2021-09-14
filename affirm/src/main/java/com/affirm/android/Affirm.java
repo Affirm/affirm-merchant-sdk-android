@@ -168,13 +168,22 @@ public final class Affirm {
         }
 
         public static final class Builder {
-            private final String publicKey;
+            private String publicKey;
             private Environment environment;
             private String merchantName;
             private int checkoutRequestCode;
             private int vcnCheckoutRequestCode;
             private int prequalRequestCode;
             private String receiveReasonCodes;
+
+            /**
+             * @param configuration Set the configuration to be used by Affirm.
+             */
+            public Builder(@NonNull Configuration configuration) {
+                this.publicKey = configuration.publicKey;
+                this.environment = configuration.environment;
+                this.merchantName = configuration.merchantName;
+            }
 
             /**
              * @param publicKey Set the public key to be used by Affirm.
@@ -190,6 +199,15 @@ public final class Affirm {
             public Builder(@NonNull String publicKey, @Nullable Environment environment) {
                 this.publicKey = publicKey;
                 this.environment = environment;
+            }
+
+            /**
+             * @param publicKey Set the public key to be used by Affirm.
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setPublicKey(@NonNull String publicKey) {
+                this.publicKey = publicKey;
+                return this;
             }
 
             /**
@@ -464,6 +482,22 @@ public final class Affirm {
             return;
         }
         AffirmPlugins.initialize(configuration);
+    }
+
+    /**
+     * You can switch the public key after calling the initialize method
+     * @param publicKey Set the public key to be used by Affirm.
+     */
+    public static void switchPublicKey(String publicKey) {
+        if (!isInitialized()) {
+            AffirmLog.w("Affirm has not been initialized");
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setPublicKey(publicKey)
+                        .build());
     }
 
     private static boolean isInitialized() {

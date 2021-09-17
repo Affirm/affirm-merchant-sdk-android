@@ -21,9 +21,22 @@ public class AffirmTest {
     }
 
     @Test
-    public void testSwitchPublicKey() {
-        Affirm.switchPublicKey("Y8CQXFF044903JC1");
+    public void testSetPublicKey() {
+        Affirm.setPublicKey("Y8CQXFF044903JC1");
         assertEquals("Y8CQXFF044903JC1", AffirmPlugins.get().publicKey());
+    }
+
+    @Test
+    public void testSetPublicKeyAndMerchantName() {
+        Affirm.setPublicKeyAndMerchantName("Y8CQXFF044903JC1", "aaa");
+        assertEquals("Y8CQXFF044903JC1", AffirmPlugins.get().publicKey());
+        assertEquals("aaa", AffirmPlugins.get().merchantName());
+    }
+
+    @Test
+    public void testSetMerchantName() {
+        Affirm.setMerchantName("aaa");
+        assertEquals("aaa", AffirmPlugins.get().merchantName());
     }
 
     @Test

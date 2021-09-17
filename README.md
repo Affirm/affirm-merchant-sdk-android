@@ -38,6 +38,15 @@ Affirm.initialize(new Affirm.Configuration.Builder("public key")
 - `environment` can be set to `Affirm.Environment.SANDBOX` for test.
 - To prevent conflicts, you can set a custom affirm's request code.
 
+You can also set `public key` and `merchant name` after the `initialize` method
+```java
+    Affirm.setMerchantName("merchant name")
+
+    Affirm.setPublicKey("public key")
+
+    Affirm.setPublicKeyAndMerchantName("public key", "merchant name")
+```
+
 ## Checkout
 
 Checkout creation is the process in which a customer uses Affirm to pay for a purchase in your app. You can create a checkout object and launch the affirm checkout using the Checkout function

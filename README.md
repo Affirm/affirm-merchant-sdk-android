@@ -7,7 +7,7 @@ Affirm Android SDK allows you to offer Affirm in your own app.
 
 Download via Gradle:
 ```groovy
-implementation "com.affirm:affirm-android-sdk:2.0.18"
+implementation "com.affirm:affirm-android-sdk:2.0.19"
 ```
 or Maven:
 ```xml

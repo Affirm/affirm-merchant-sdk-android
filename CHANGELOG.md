@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.19 (September 23, 2021)
+- Added support for changing public key and merchant name
+
 ## Version 2.0.18 (August 23, 2021)
 - Updated the Affirm Branding
 - Bug-fixes

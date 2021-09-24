@@ -46,15 +46,44 @@ public final class Affirm {
     public static final int LOG_LEVEL_ERROR = Log.ERROR;
     public static final int LOG_LEVEL_NONE = Integer.MAX_VALUE;
 
+    private static final int DEFAULT_CHECKOUT_REQUEST = 8076;
+    private static final int DEFAULT_VCN_CHECKOUT_REQUEST = 8077;
+    private static final int DEFAULT_PREQUAL_REQUEST = 8078;
+    private static final String DEFAULT_RECEIVE_REASON_CODES = "false";
+
     // these values are set by the builder
-    private static int checkoutRequest;
-    private static int vcnCheckoutRequest;
-    private static int prequalRequest;
-    private static String receiveReasonCodes;
+    private static int checkoutRequest = DEFAULT_CHECKOUT_REQUEST;
+    private static int vcnCheckoutRequest = DEFAULT_VCN_CHECKOUT_REQUEST;
+    private static int prequalRequest = DEFAULT_PREQUAL_REQUEST;
+    private static String receiveReasonCodes = DEFAULT_RECEIVE_REASON_CODES;
 
     static final int RESULT_ERROR = -8575;
 
     private static final String LIFE_FRAGMENT_TAG = "LifeFragmentTag";
+
+    private static void setCheckoutRequest(int checkoutRequest) {
+        Affirm.checkoutRequest = checkoutRequest != 0
+                ? checkoutRequest
+                : DEFAULT_CHECKOUT_REQUEST;
+    }
+
+    private static void setVcnCheckoutRequest(int vcnCheckoutRequest) {
+        Affirm.vcnCheckoutRequest = vcnCheckoutRequest != 0
+                ? vcnCheckoutRequest
+                : DEFAULT_VCN_CHECKOUT_REQUEST;
+    }
+
+    private static void setPrequalRequest(int prequalRequest) {
+        Affirm.prequalRequest = prequalRequest != 0
+                ? prequalRequest
+                : DEFAULT_PREQUAL_REQUEST;
+    }
+
+    private static void setReceiveReasonCodes(@Nullable String receiveReasonCodes) {
+        Affirm.receiveReasonCodes = receiveReasonCodes != null
+                ? receiveReasonCodes
+                : DEFAULT_RECEIVE_REASON_CODES;
+    }
 
     public interface PrequalCallbacks {
         void onAffirmPrequalError(@Nullable String message);
@@ -141,40 +170,21 @@ public final class Affirm {
             } else {
                 this.environment = Environment.PRODUCTION;
             }
-
-            if (builder.receiveReasonCodes != null) {
-                receiveReasonCodes = builder.receiveReasonCodes;
-            } else {
-                receiveReasonCodes = "false";
-            }
-
-            if (builder.checkoutRequestCode != 0) {
-                checkoutRequest = builder.checkoutRequestCode;
-            } else {
-                checkoutRequest = 8076;
-            }
-
-            if (builder.vcnCheckoutRequestCode != 0) {
-                vcnCheckoutRequest = builder.vcnCheckoutRequestCode;
-            } else {
-                vcnCheckoutRequest = 8077;
-            }
-
-            if (builder.prequalRequestCode != 0) {
-                prequalRequest = builder.prequalRequestCode;
-            } else {
-                prequalRequest = 8078;
-            }
         }
 
         public static final class Builder {
-            private final String publicKey;
+            private String publicKey;
             private Environment environment;
             private String merchantName;
-            private int checkoutRequestCode;
-            private int vcnCheckoutRequestCode;
-            private int prequalRequestCode;
-            private String receiveReasonCodes;
+
+            /**
+             * @param configuration Set the configuration to be used by Affirm.
+             */
+            public Builder(@NonNull Configuration configuration) {
+                this.publicKey = configuration.publicKey;
+                this.environment = configuration.environment;
+                this.merchantName = configuration.merchantName;
+            }
 
             /**
              * @param publicKey Set the public key to be used by Affirm.
@@ -190,6 +200,15 @@ public final class Affirm {
             public Builder(@NonNull String publicKey, @Nullable Environment environment) {
                 this.publicKey = publicKey;
                 this.environment = environment;
+            }
+
+            /**
+             * @param publicKey Set the public key to be used by Affirm.
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setPublicKey(@NonNull String publicKey) {
+                this.publicKey = publicKey;
+                return this;
             }
 
             /**
@@ -245,7 +264,7 @@ public final class Affirm {
              * @return The same builder, for easy chaining.
              */
             public Builder setReceiveReasonCodes(@Nullable String receiveReasonCodes) {
-                this.receiveReasonCodes = receiveReasonCodes;
+                Affirm.setReceiveReasonCodes(receiveReasonCodes);
                 return this;
             }
 
@@ -256,7 +275,7 @@ public final class Affirm {
              * @return The same builder, for easy chaining.
              */
             public Builder setCheckoutRequestCode(int checkoutRequestCode) {
-                this.checkoutRequestCode = checkoutRequestCode;
+                Affirm.setCheckoutRequest(checkoutRequestCode);
                 return this;
             }
 
@@ -267,7 +286,7 @@ public final class Affirm {
              * @return The same builder, for easy chaining.
              */
             public Builder setVcnCheckoutRequestCode(int vcnCheckoutRequestCode) {
-                this.vcnCheckoutRequestCode = vcnCheckoutRequestCode;
+                Affirm.setVcnCheckoutRequest(vcnCheckoutRequestCode);
                 return this;
             }
 
@@ -278,7 +297,7 @@ public final class Affirm {
              * @return The same builder, for easy chaining.
              */
             public Builder setPrequalRequestCode(int prequalRequestCode) {
-                this.prequalRequestCode = prequalRequestCode;
+                Affirm.setPrequalRequest(prequalRequestCode);
                 return this;
             }
 
@@ -464,6 +483,60 @@ public final class Affirm {
             return;
         }
         AffirmPlugins.initialize(configuration);
+    }
+
+    /**
+     * You can switch the public key & merchant name after calling the initialize method
+     *
+     * @param publicKey    Set the public key to be used by Affirm.
+     * @param merchantName Set the merchant name to be used by Affirm.
+     */
+    public static void setPublicKeyAndMerchantName(@NonNull String publicKey,
+                                                      @Nullable String merchantName) {
+        if (!isInitialized()) {
+            AffirmLog.w("Affirm has not been initialized");
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setPublicKey(publicKey)
+                        .setMerchantName(merchantName)
+                        .build());
+    }
+
+    /**
+     * You can switch the public key after calling the initialize method
+     *
+     * @param publicKey Set the public key to be used by Affirm.
+     */
+    public static void setPublicKey(@NonNull String publicKey) {
+        if (!isInitialized()) {
+            AffirmLog.w("Affirm has not been initialized");
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setPublicKey(publicKey)
+                        .build());
+    }
+
+    /**
+     * You can switch the merchant name after calling the initialize method
+     *
+     * @param merchantName Set the merchant name to be used by Affirm.
+     */
+    public static void setMerchantName(@Nullable String merchantName) {
+        if (!isInitialized()) {
+            AffirmLog.w("Affirm has not been initialized");
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setMerchantName(merchantName)
+                        .build());
     }
 
     private static boolean isInitialized() {

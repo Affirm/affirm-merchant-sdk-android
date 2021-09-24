@@ -19,12 +19,20 @@ public class AffirmPlugins {
 
     private static final Object LOCK = new Object();
     private static AffirmPlugins instance;
-    private final Affirm.Configuration configuration;
+    private Affirm.Configuration configuration;
 
     private AffirmHttpClient restClient;
     private Gson gson;
 
     AffirmPlugins(@NonNull Affirm.Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    Affirm.Configuration getConfiguration() {
+        return configuration;
+    }
+
+    void setConfiguration(Affirm.Configuration configuration) {
         this.configuration = configuration;
     }
 

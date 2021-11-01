@@ -58,6 +58,16 @@ public final class AffirmUtils {
         return total.toString();
     }
 
+    static void closeInputStream(@Nullable InputStream inputStream) {
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                AffirmLog.e("Failed to close InputStream!", e);
+            }
+        }
+    }
+
     static String replacePlaceholders(@NonNull String text, @NonNull Map<String, String> map) {
         for (Object o : map.entrySet()) {
             Map.Entry pair = (Map.Entry) o;

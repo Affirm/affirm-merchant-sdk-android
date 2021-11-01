@@ -8,8 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.affirm.android.exception.AffirmException;
@@ -31,8 +33,8 @@ import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO;
-import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
-import static com.affirm.android.ModalActivity.ModalType.SITE;
+import static com.affirm.android.ModalFragment.ModalType.PRODUCT;
+import static com.affirm.android.ModalFragment.ModalType.SITE;
 
 public final class Affirm {
 
@@ -681,7 +683,7 @@ public final class Affirm {
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
             VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas,
-                    cardAuthWindow, receiveReasonCodes);
+                    cardAuthWindow);
         } else {
             CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,
                     cardAuthWindow);
@@ -704,10 +706,64 @@ public final class Affirm {
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         if (useVCN) {
             VcnCheckoutActivity.startActivity(fragment, vcnCheckoutRequest, checkout, caas,
-                    cardAuthWindow, receiveReasonCodes);
+                    cardAuthWindow);
         } else {
             CheckoutActivity.startActivity(fragment, checkoutRequest, checkout, caas,
                     cardAuthWindow);
+        }
+    }
+
+    /**
+     * Use a `AffirmFragment` to start checkout flow/ vcn checkout flow. And in you host activity,
+     * you need implements CheckoutCallbacks / VcnCheckoutCallbacks
+     *
+     * @param activity        activity {@link AppCompatActivity}
+     * @param containerViewId The specified view will contain the fragment
+     * @param checkout        checkout object that contains address & shipping info & others...
+     * @param caas            caas merchant-level attribute
+     * @param cardAuthWindow  the value is a positive integer, 0 being a valid value
+     * @param useVCN          Start VCN checkout or not
+     * @return a `AffirmFragment`
+     */
+    public static AffirmFragment startCheckout(@NonNull AppCompatActivity activity,
+                                               @IdRes int containerViewId,
+                                               @NonNull Checkout checkout,
+                                               @Nullable String caas,
+                                               int cardAuthWindow,
+                                               boolean useVCN) {
+        if (useVCN) {
+            return VcnCheckoutFragment.newInstance(activity,
+                    containerViewId, checkout, receiveReasonCodes, caas, cardAuthWindow);
+        } else {
+            return CheckoutFragment.newInstance(activity,
+                    containerViewId, checkout, caas, cardAuthWindow);
+        }
+    }
+
+    /**
+     * Use a `AffirmFragment` to start checkout flow/ vcn checkout flow. And in you host activity,
+     * you need implements CheckoutCallbacks / VcnCheckoutCallbacks
+     *
+     * @param fragment        fragment {@link Fragment}
+     * @param containerViewId The specified view will contain the fragment
+     * @param checkout        checkout object that contains address & shipping info & others...
+     * @param caas            caas merchant-level attribute
+     * @param cardAuthWindow  the value is a positive integer, 0 being a valid value
+     * @param useVCN          Start VCN checkout or not
+     * @return a `AffirmFragment`
+     */
+    public static AffirmFragment startCheckout(@NonNull Fragment fragment,
+                                               @IdRes int containerViewId,
+                                               @NonNull Checkout checkout,
+                                               @Nullable String caas,
+                                               int cardAuthWindow,
+                                               boolean useVCN) {
+        if (useVCN) {
+            return VcnCheckoutFragment.newInstance(fragment,
+                    containerViewId, checkout, receiveReasonCodes, caas, cardAuthWindow);
+        } else {
+            return CheckoutFragment.newInstance(fragment,
+                    containerViewId, checkout, caas, cardAuthWindow);
         }
     }
 
@@ -738,6 +794,7 @@ public final class Affirm {
      * @param modalId  the client's modal id
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
      *                 payment, product, search"
+     * @param promoId  the client's promo id
      */
     public static void showSiteModal(@NonNull Activity activity, @Nullable String modalId,
                                      @Nullable PromoPageType pageType, @Nullable String promoId) {
@@ -753,6 +810,7 @@ public final class Affirm {
      * @param modalId  the client's modal id
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
      *                 payment, product, search"
+     * @param promoId  the client's promo id
      */
     public static void showSiteModal(@NonNull Fragment fragment, @Nullable String modalId,
                                      @Nullable PromoPageType pageType, @Nullable String promoId) {
@@ -760,6 +818,43 @@ public final class Affirm {
         ModalActivity.startActivity(fragment, 0, BigDecimal.valueOf(0.0), SITE, modalId,
                 pageType != null ? pageType.getType() : null, promoId);
     }
+
+    /**
+     * Use a `AffirmFragment` to start site modal.
+     *
+     * @param activity        activity {@link AppCompatActivity}
+     * @param containerViewId The specified view will contain the fragment
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param modalId         the client's modal id
+     * @return a `ModalFragment`
+     */
+    public static AffirmFragment showSiteModal(@NonNull AppCompatActivity activity,
+                                               @IdRes int containerViewId,
+                                               @Nullable PromoPageType pageType,
+                                               @Nullable String modalId) {
+        return ModalFragment.newInstance(activity, containerViewId, BigDecimal.valueOf(0.0), SITE,
+                modalId, pageType != null ? pageType.getType() : null, null);
+    }
+
+    /**
+     * Use a `AffirmFragment` to start site modal.
+     *
+     * @param fragment        activity {@link Fragment}
+     * @param containerViewId The specified view will contain the fragment
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param modalId         the client's modal id
+     * @return a `ModalFragment`
+     */
+    public static AffirmFragment showSiteModal(@NonNull Fragment fragment,
+                                               @IdRes int containerViewId,
+                                               @Nullable PromoPageType pageType,
+                                               @Nullable String modalId) {
+        return ModalFragment.newInstance(fragment, containerViewId, BigDecimal.valueOf(0.0), SITE,
+                modalId, pageType != null ? pageType.getType() : null, null);
+    }
+
 
     /**
      * Start product modal
@@ -790,9 +885,10 @@ public final class Affirm {
      *
      * @param activity activity {@link Activity}
      * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
-     * @param modalId  the client's modal i
+     * @param modalId  the client's modal id
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
      *                 payment, product, search"
+     * @param promoId  the client's promo id
      */
     public static void showProductModal(@NonNull Activity activity,
                                         BigDecimal amount,
@@ -812,6 +908,7 @@ public final class Affirm {
      * @param modalId  the client's modal id
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
      *                 payment, product, search"
+     * @param promoId  the client's promo id
      */
     public static void showProductModal(@NonNull Fragment fragment,
                                         BigDecimal amount,
@@ -820,6 +917,50 @@ public final class Affirm {
                                         @Nullable String promoId) {
         AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
         ModalActivity.startActivity(fragment, 0, amount, PRODUCT, modalId,
+                pageType != null ? pageType.getType() : null, promoId);
+    }
+
+    /**
+     * Use a `AffirmFragment` to start product modal.
+     *
+     * @param activity        activity {@link AppCompatActivity}
+     * @param containerViewId The specified view will contain the fragment
+     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param modalId         the client's modal id
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param promoId         the client's promo id
+     * @return a `ModalFragment`
+     */
+    public static AffirmFragment showProductModal(@NonNull AppCompatActivity activity,
+                                                  @IdRes int containerViewId,
+                                                  BigDecimal amount,
+                                                  @Nullable String modalId,
+                                                  @Nullable PromoPageType pageType,
+                                                  @Nullable String promoId) {
+        return ModalFragment.newInstance(activity, containerViewId, amount, PRODUCT, modalId,
+                pageType != null ? pageType.getType() : null, promoId);
+    }
+
+    /**
+     * Use a `AffirmFragment` to start product modal.
+     *
+     * @param fragment        activity {@link Fragment}
+     * @param containerViewId The specified view will contain the fragment
+     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param modalId         the client's modal id
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param promoId         the client's promo id
+     * @return a `ModalFragment`
+     */
+    public static AffirmFragment showProductModal(@NonNull Fragment fragment,
+                                                  @IdRes int containerViewId,
+                                                  BigDecimal amount,
+                                                  @Nullable String modalId,
+                                                  @Nullable PromoPageType pageType,
+                                                  @Nullable String promoId) {
+        return ModalFragment.newInstance(fragment, containerViewId, amount, PRODUCT, modalId,
                 pageType != null ? pageType.getType() : null, promoId);
     }
 
@@ -855,7 +996,7 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
-     * @param promoId         the client's modal id
+     * @param promoId         the client's promo id
      * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
@@ -870,7 +1011,7 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
-     * @param promoId         the client's modal id
+     * @param promoId         the client's promo id
      * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
@@ -921,7 +1062,7 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
-     * @param promoId         the client's modal id
+     * @param promoId         the client's promo id
      * @param pageType        need to use one of "banner, cart, category, homepage, landing,
      *                        payment, product, search"
      * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
@@ -939,7 +1080,7 @@ public final class Affirm {
      * Write the as low as span (text and logo) on a AffirmPromoLabel
      *
      * @param promotionButton AffirmPromotionButton to show the promo message
-     * @param promoId         the client's modal id
+     * @param promoId         the client's promo id
      * @param pageType        need to use one of "banner, cart, category, homepage, landing,
      *                        payment, product, search"
      * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
@@ -953,6 +1094,118 @@ public final class Affirm {
                                            final boolean showCta,
                                            @Nullable final List<Item> items) {
         AffirmUtils.requireNonNull(promotionButton, "AffirmPromotionButton cannot be null");
+        final View.OnClickListener onClickListener = promotionView -> {
+            Activity activity = AffirmUtils.getActivityFromView(promotionView);
+            if (activity == null || promotionButton.isEmpty()) {
+                return;
+            }
+            boolean showPrequal = (boolean) promotionView.getTag();
+            String type = pageType != null ? pageType.getType() : null;
+            if (showPrequal) {
+                PrequalActivity.startActivity(activity,
+                        prequalRequest, amount, promoId, type);
+            } else {
+                ModalActivity.startActivity(activity,
+                        prequalRequest, amount, PRODUCT, null,
+                        type, promoId);
+            }
+        };
+        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, items,
+                onClickListener);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param activity        activity {@link AppCompatActivity}
+     * @param containerViewId The specified view will contain the fragment
+     * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param promoId         the client's promo id
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     * @param items           A list of item objects.
+     */
+    public static void configureWithAmount(
+            @NonNull AppCompatActivity activity,
+            @IdRes int containerViewId,
+            @NonNull final AffirmPromotionButton promotionButton,
+            @Nullable final String promoId,
+            @Nullable final PromoPageType pageType,
+            final BigDecimal amount,
+            final boolean showCta,
+            @Nullable final List<Item> items) {
+
+        final View.OnClickListener onClickListener = promotionView -> {
+            if (promotionButton.isEmpty()) {
+                return;
+            }
+            boolean showPrequal = (boolean) promotionView.getTag();
+            String type = pageType != null ? pageType.getType() : null;
+            if (showPrequal) {
+                PrequalFragment.newInstance(activity, containerViewId, amount,
+                        promoId, type);
+            } else {
+                ModalFragment.newInstance(activity, containerViewId, amount,
+                        PRODUCT, null, type, promoId);
+            }
+        };
+        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, items,
+                onClickListener);
+    }
+
+    /**
+     * Write the as low as span (text and logo) on a AffirmPromoLabel
+     *
+     * @param fragment        activity {@link Fragment}
+     * @param containerViewId The specified view will contain the fragment
+     * @param promotionButton AffirmPromotionButton to show the promo message
+     * @param promoId         the client's promo id
+     * @param pageType        need to use one of "banner, cart, category, homepage, landing,
+     *                        payment, product, search"
+     * @param amount          (Float) eg 112.02 as $112 and ¢2
+     * @param showCta         whether need to show cta
+     * @param items           A list of item objects.
+     */
+    public static void configureWithAmount(
+            @NonNull Fragment fragment,
+            @IdRes int containerViewId,
+            @NonNull final AffirmPromotionButton promotionButton,
+            @Nullable final String promoId,
+            @Nullable final PromoPageType pageType,
+            final BigDecimal amount,
+            final boolean showCta,
+            @Nullable final List<Item> items) {
+
+        final View.OnClickListener onClickListener = promotionView -> {
+            if (promotionButton.isEmpty()) {
+                return;
+            }
+            boolean showPrequal = (boolean) promotionView.getTag();
+            String type = pageType != null ? pageType.getType() : null;
+            if (showPrequal) {
+                PrequalFragment.newInstance(fragment, containerViewId, amount,
+                        promoId, type);
+            } else {
+                ModalFragment.newInstance(fragment, containerViewId, amount,
+                        PRODUCT, null, type, promoId);
+            }
+        };
+        configureWithAmount(promotionButton, promoId, pageType, amount, showCta, items,
+                onClickListener);
+    }
+
+    private static void configureWithAmount(
+            @NonNull final AffirmPromotionButton promotionButton,
+            @Nullable final String promoId,
+            @Nullable final PromoPageType pageType,
+            final BigDecimal amount,
+            final boolean showCta,
+            @Nullable final List<Item> items,
+            View.OnClickListener onClickListener) {
+        AffirmUtils.requireNonNull(promotionButton,
+                "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
             public void onPromoWritten(@NonNull final String promoMessage,
@@ -990,7 +1243,6 @@ public final class Affirm {
             @Override
             public void onDestroy() {
                 affirmPromoRequest.cancel();
-                promotionButton.destroy();
             }
         };
 
@@ -1022,24 +1274,9 @@ public final class Affirm {
         });
 
         affirmPromoRequest.create();
-
-        final View.OnClickListener onClickListener = v -> {
-            Activity activity = AffirmUtils.getActivityFromView(v);
-            if (activity == null || promotionButton.isEmpty()) {
-                return;
-            }
-            boolean showPrequal = (boolean) v.getTag();
-            String type = pageType != null ? pageType.getType() : null;
-            if (showPrequal) {
-                PrequalActivity.startActivity(activity, prequalRequest, amount,
-                        promoId, type);
-            } else {
-                ModalActivity.startActivity(activity, prequalRequest, amount,
-                        PRODUCT, null, type, promoId);
-            }
-        };
         promotionButton.setOnClickListener(onClickListener);
     }
+
 
     /**
      * Fetch promotional message, you can display it yourself

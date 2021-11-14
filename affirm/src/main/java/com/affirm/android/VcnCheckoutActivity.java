@@ -6,6 +6,7 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.ConnectionException;
@@ -52,18 +53,35 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout, @Nullable String caas,
-                              @Nullable Money money, int cardAuthWindow,
-                              @NonNull String configReceiveReasonCodes,
+        @Nullable Money money, int cardAuthWindow, @NonNull String configReceiveReasonCodes,
                               boolean newFlow) {
+        Intent intent = buildIntent(activity, checkout, caas, money, cardAuthWindow,
+                configReceiveReasonCodes, newFlow);
+        startForResult(activity, intent, requestCode);
+    }
+
+    static void startActivity(@NonNull Fragment fragment, int requestCode,
+                              @NonNull Checkout checkout, @Nullable String caas,
+                              @Nullable Money money, int cardAuthWindow,
+                              @NonNull String configReceiveReasonCodes, boolean newFlow) {
+        Intent intent = buildIntent(fragment.requireActivity(), checkout, caas, money,
+                cardAuthWindow, configReceiveReasonCodes, newFlow);
+        startForResult(fragment, intent, requestCode);
+    }
+
+    private static Intent buildIntent(
+            @NonNull Activity originalActivity,
+            @NonNull Checkout checkout, @Nullable String caas, @Nullable Money money,
+            int cardAuthWindow, @NonNull String configReceiveReasonCodes, boolean newFlow) {
 
         receiveReasonCodes = configReceiveReasonCodes;
-        final Intent intent = new Intent(activity, VcnCheckoutActivity.class);
+        final Intent intent = new Intent(originalActivity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         intent.putExtra(CHECKOUT_MONEY, money);
         intent.putExtra(NEW_FLOW, newFlow);
         intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
-        activity.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
@@ -65,10 +66,11 @@ final class AffirmTracker {
         new TrackerRequest(trackingData).create();
     }
 
+    @VisibleForTesting
     @NonNull
-    private static JsonObject addTrackingData(@NonNull String eventName,
-                                              @Nullable JsonObject eventData,
-                                              @NonNull TrackingLevel level) {
+    static JsonObject addTrackingData(@NonNull String eventName,
+                                      @Nullable JsonObject eventData,
+                                      @NonNull TrackingLevel level) {
         final Gson gson = new Gson();
         try {
             final JsonObject data = eventData == null ? new JsonObject()
@@ -81,9 +83,10 @@ final class AffirmTracker {
         }
     }
 
-    private static void fillTrackingData(@NonNull String eventName,
-                                         @NonNull JsonObject data,
-                                         @NonNull AffirmTracker.TrackingLevel level) {
+    @VisibleForTesting
+    static void fillTrackingData(@NonNull String eventName,
+                                 @NonNull JsonObject data,
+                                 @NonNull AffirmTracker.TrackingLevel level) {
         final long timeStamp = System.currentTimeMillis();
         // Set the log counter and then increment the logCounter
         int localLogCounter = AffirmTracker.localLogCounter.getAndIncrement();

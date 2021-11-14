@@ -1,6 +1,6 @@
 package com.affirm.android;
 
-final class AffirmHttpRequest {
+public final class AffirmHttpRequest {
     private final String url;
     private final Method method;
     private final AffirmHttpBody body;
@@ -29,7 +29,7 @@ final class AffirmHttpRequest {
         return tag;
     }
 
-    enum Method {
+    public enum Method {
         GET, POST, PUT, DELETE
     }
 

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
@@ -48,16 +49,45 @@ public final class Affirm {
     public static final int LOG_LEVEL_ERROR = Log.ERROR;
     public static final int LOG_LEVEL_NONE = Integer.MAX_VALUE;
 
+    private static final int DEFAULT_CHECKOUT_REQUEST = 8076;
+    private static final int DEFAULT_VCN_CHECKOUT_REQUEST = 8077;
+    private static final int DEFAULT_PREQUAL_REQUEST = 8078;
+    private static final String DEFAULT_RECEIVE_REASON_CODES = "false";
+
     // these values are set by the builder
-    private static int checkoutRequest;
-    private static int vcnCheckoutRequest;
-    private static int prequalRequest;
-    private static String receiveReasonCodes;
+    private static int checkoutRequest = DEFAULT_CHECKOUT_REQUEST;
+    private static int vcnCheckoutRequest = DEFAULT_VCN_CHECKOUT_REQUEST;
+    private static int prequalRequest = DEFAULT_PREQUAL_REQUEST;
+    private static String receiveReasonCodes = DEFAULT_RECEIVE_REASON_CODES;
 
     static final int RESULT_ERROR = -8575;
     static final int RESULT_CHECKOUT_CANCEL = -8576;
 
     private static final String LIFE_FRAGMENT_TAG = "LifeFragmentTag";
+
+    private static void setCheckoutRequest(int checkoutRequest) {
+        Affirm.checkoutRequest = checkoutRequest != 0
+                ? checkoutRequest
+                : DEFAULT_CHECKOUT_REQUEST;
+    }
+
+    private static void setVcnCheckoutRequest(int vcnCheckoutRequest) {
+        Affirm.vcnCheckoutRequest = vcnCheckoutRequest != 0
+                ? vcnCheckoutRequest
+                : DEFAULT_VCN_CHECKOUT_REQUEST;
+    }
+
+    private static void setPrequalRequest(int prequalRequest) {
+        Affirm.prequalRequest = prequalRequest != 0
+                ? prequalRequest
+                : DEFAULT_PREQUAL_REQUEST;
+    }
+
+    private static void setReceiveReasonCodes(@Nullable String receiveReasonCodes) {
+        Affirm.receiveReasonCodes = receiveReasonCodes != null
+                ? receiveReasonCodes
+                : DEFAULT_RECEIVE_REASON_CODES;
+    }
 
     public interface PrequalCallbacks {
         void onAffirmPrequalError(@Nullable String message);
@@ -146,41 +176,22 @@ public final class Affirm {
             } else {
                 this.environment = Environment.PRODUCTION;
             }
-
-            if (builder.receiveReasonCodes != null) {
-                receiveReasonCodes = builder.receiveReasonCodes;
-            } else {
-                receiveReasonCodes = "false";
-            }
-
-            if (builder.checkoutRequestCode != 0) {
-                checkoutRequest = builder.checkoutRequestCode;
-            } else {
-                checkoutRequest = 8076;
-            }
-
-            if (builder.vcnCheckoutRequestCode != 0) {
-                vcnCheckoutRequest = builder.vcnCheckoutRequestCode;
-            } else {
-                vcnCheckoutRequest = 8077;
-            }
-
-            if (builder.prequalRequestCode != 0) {
-                prequalRequest = builder.prequalRequestCode;
-            } else {
-                prequalRequest = 8078;
-            }
         }
 
         public static final class Builder {
-            private final String publicKey;
+            private String publicKey;
             private Environment environment;
             private String merchantName;
-            private int checkoutRequestCode;
-            private int vcnCheckoutRequestCode;
-            private int prequalRequestCode;
-            private String receiveReasonCodes;
             private String cardTip;
+
+            /**
+             * @param configuration Set the configuration to be used by Affirm.
+             */
+            public Builder(@NonNull Configuration configuration) {
+                this.publicKey = configuration.publicKey;
+                this.environment = configuration.environment;
+                this.merchantName = configuration.merchantName;
+            }
 
             /**
              * @param publicKey Set the public key to be used by Affirm.
@@ -196,6 +207,15 @@ public final class Affirm {
             public Builder(@NonNull String publicKey, @Nullable Environment environment) {
                 this.publicKey = publicKey;
                 this.environment = environment;
+            }
+
+            /**
+             * @param publicKey Set the public key to be used by Affirm.
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setPublicKey(@NonNull String publicKey) {
+                this.publicKey = publicKey;
+                return this;
             }
 
             /**
@@ -251,7 +271,7 @@ public final class Affirm {
              * @return The same builder, for easy chaining.
              */
             public Builder setReceiveReasonCodes(@Nullable String receiveReasonCodes) {
-                this.receiveReasonCodes = receiveReasonCodes;
+                Affirm.setReceiveReasonCodes(receiveReasonCodes);
                 return this;
             }
 
@@ -262,7 +282,7 @@ public final class Affirm {
              * @return The same builder, for easy chaining.
              */
             public Builder setCheckoutRequestCode(int checkoutRequestCode) {
-                this.checkoutRequestCode = checkoutRequestCode;
+                Affirm.setCheckoutRequest(checkoutRequestCode);
                 return this;
             }
 
@@ -273,7 +293,7 @@ public final class Affirm {
              * @return The same builder, for easy chaining.
              */
             public Builder setVcnCheckoutRequestCode(int vcnCheckoutRequestCode) {
-                this.vcnCheckoutRequestCode = vcnCheckoutRequestCode;
+                Affirm.setVcnCheckoutRequest(vcnCheckoutRequestCode);
                 return this;
             }
 
@@ -284,7 +304,7 @@ public final class Affirm {
              * @return The same builder, for easy chaining.
              */
             public Builder setPrequalRequestCode(int prequalRequestCode) {
-                this.prequalRequestCode = prequalRequestCode;
+                Affirm.setPrequalRequest(prequalRequestCode);
                 return this;
             }
 
@@ -484,6 +504,60 @@ public final class Affirm {
         AffirmPlugins.initialize(configuration);
     }
 
+    /**
+     * You can switch the public key & merchant name after calling the initialize method
+     *
+     * @param publicKey    Set the public key to be used by Affirm.
+     * @param merchantName Set the merchant name to be used by Affirm.
+     */
+    public static void setPublicKeyAndMerchantName(@NonNull String publicKey,
+                                                      @Nullable String merchantName) {
+        if (!isInitialized()) {
+            AffirmLog.w("Affirm has not been initialized");
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setPublicKey(publicKey)
+                        .setMerchantName(merchantName)
+                        .build());
+    }
+
+    /**
+     * You can switch the public key after calling the initialize method
+     *
+     * @param publicKey Set the public key to be used by Affirm.
+     */
+    public static void setPublicKey(@NonNull String publicKey) {
+        if (!isInitialized()) {
+            AffirmLog.w("Affirm has not been initialized");
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setPublicKey(publicKey)
+                        .build());
+    }
+
+    /**
+     * You can switch the merchant name after calling the initialize method
+     *
+     * @param merchantName Set the merchant name to be used by Affirm.
+     */
+    public static void setMerchantName(@Nullable String merchantName) {
+        if (!isInitialized()) {
+            AffirmLog.w("Affirm has not been initialized");
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setMerchantName(merchantName)
+                        .build());
+    }
+
     private static boolean isInitialized() {
         return AffirmPlugins.get() != null;
     }
@@ -518,6 +592,17 @@ public final class Affirm {
     }
 
     /**
+     * Start track order
+     *
+     * @param fragment    fragment {@link Fragment}
+     * @param affirmTrack AffirmTrack object that containers order & product info
+     */
+    public static void trackOrderConfirmed(@NonNull final Fragment fragment,
+                                           @NonNull AffirmTrack affirmTrack) {
+        trackOrderConfirmed(fragment.requireActivity(), affirmTrack);
+    }
+
+    /**
      * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
      * to get the processed result
      *
@@ -528,6 +613,19 @@ public final class Affirm {
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                      boolean useVCN) {
         startCheckout(activity, checkout, null, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param checkout checkout object that contains address & shipping info & others...
+     * @param useVCN   Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                     boolean useVCN) {
+        startCheckout(fragment, checkout, null, useVCN);
     }
 
     /**
@@ -548,6 +646,20 @@ public final class Affirm {
      * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
      * to get the processed result
      *
+     * @param fragment       fragment {@link Fragment}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     * @param useVCN         Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                     int cardAuthWindow, boolean useVCN) {
+        startCheckout(fragment, checkout, null, cardAuthWindow, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
      * @param activity activity {@link Activity}
      * @param checkout checkout object that contains address & shipping info & others...
      * @param caas     caas merchant-level attribute
@@ -556,6 +668,20 @@ public final class Affirm {
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                      @Nullable String caas, boolean useVCN) {
         startCheckout(activity, checkout, caas, -1, useVCN);
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param checkout checkout object that contains address & shipping info & others...
+     * @param caas     caas merchant-level attribute
+     * @param useVCN   Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                     @Nullable String caas, boolean useVCN) {
+        startCheckout(fragment, checkout, caas, -1, useVCN);
     }
 
     /**
@@ -577,6 +703,29 @@ public final class Affirm {
                     cardAuthWindow);
         } else {
             CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,
+                    cardAuthWindow);
+        }
+    }
+
+    /**
+     * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
+     * to get the processed result
+     *
+     * @param fragment       fragment {@link Fragment}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param caas           caas merchant-level attribute
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     * @param useVCN         Start VCN checkout or not
+     */
+    public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                     @Nullable String caas, int cardAuthWindow, boolean useVCN) {
+        AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
+        AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
+        if (useVCN) {
+            VcnCheckoutActivity.startActivity(fragment, vcnCheckoutRequest, checkout, caas,
+                    null, cardAuthWindow, receiveReasonCodes, false);
+        } else {
+            CheckoutActivity.startActivity(fragment, checkoutRequest, checkout, caas,
                     cardAuthWindow);
         }
     }
@@ -615,6 +764,19 @@ public final class Affirm {
     /**
      * Start new VCN checkout flow - Contains loan amount page & vcn display page
      *
+     * @param fragment fragment {@link Fragment}
+     * @param checkout checkout object that contains address & shipping info & others...
+     * @param caas     caas merchant-level attribute
+     */
+    public static void startNewVcnCheckoutFlow(@NonNull Fragment fragment,
+                                               @NonNull Checkout checkout,
+                                               @Nullable String caas) {
+        startNewVcnCheckoutFlow(fragment, checkout, caas, -1);
+    }
+
+    /**
+     * Start new VCN checkout flow - Contains loan amount page & vcn display page
+     *
      * @param activity       activity {@link Activity}
      * @param checkout       checkout object that contains address & shipping info & others...
      * @param caas           caas merchant-level attribute
@@ -627,6 +789,23 @@ public final class Affirm {
         AffirmUtils.requireNonNull(activity);
         AffirmUtils.requireNonNull(checkout);
         startLoanAmount(activity, checkout, caas, cardAuthWindow);
+    }
+
+    /**
+     * Start new VCN checkout flow - Contains loan amount page & vcn display page
+     *
+     * @param fragment       fragment {@link Fragment}
+     * @param checkout       checkout object that contains address & shipping info & others...
+     * @param caas           caas merchant-level attribute
+     * @param cardAuthWindow the value is a positive integer, 0 being a valid value
+     */
+    public static void startNewVcnCheckoutFlow(@NonNull Fragment fragment,
+                                               @NonNull Checkout checkout,
+                                               @Nullable String caas,
+                                               int cardAuthWindow) {
+        AffirmUtils.requireNonNull(fragment);
+        AffirmUtils.requireNonNull(checkout);
+        startLoanAmount(fragment, checkout, caas, cardAuthWindow);
     }
 
     /**
@@ -658,6 +837,23 @@ public final class Affirm {
     }
 
     /**
+     * Start vcn display page from merchant
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param checkout checkout object that contains address & shipping info & others...
+     * @param caas     caas merchant-level attribute
+     */
+    public static void startVcnDisplay(@NonNull Fragment fragment,
+                                       @NonNull Checkout checkout,
+                                       @Nullable String caas) {
+        CardDetailsInner cardDetailsInner = AffirmPlugins.get().getCachedCardDetails();
+        if (cardDetailsInner == null) {
+            throw new IllegalStateException("No cached checkout or checkout have expired");
+        }
+        VcnDisplayActivity.startActivity(fragment, vcnCheckoutRequest, checkout, caas);
+    }
+
+    /**
      * Start loan amount page
      *
      * @param activity activity {@link Activity}
@@ -666,6 +862,18 @@ public final class Affirm {
     protected static void startLoanAmount(@NonNull Activity activity, @NonNull Checkout checkout,
                                           @Nullable String caas, int cardAuthWindow) {
         LoanAmountActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas,
+                cardAuthWindow);
+    }
+
+    /**
+     * Start loan amount page
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param checkout checkout object that contains address & shipping info & others...
+     */
+    protected static void startLoanAmount(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                          @Nullable String caas, int cardAuthWindow) {
+        LoanAmountActivity.startActivity(fragment, vcnCheckoutRequest, checkout, caas,
                 cardAuthWindow);
     }
 
@@ -692,6 +900,16 @@ public final class Affirm {
     /**
      * Start site modal
      *
+     * @param fragment fragment {@link Fragment}
+     * @param modalId  the client's modal id
+     */
+    public static void showSiteModal(@NonNull Fragment fragment, @Nullable String modalId) {
+        showSiteModal(fragment, modalId, null, null);
+    }
+
+    /**
+     * Start site modal
+     *
      * @param activity activity {@link Activity}
      * @param modalId  the client's modal id
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
@@ -702,6 +920,21 @@ public final class Affirm {
         AffirmUtils.requireNonNull(activity);
         ModalActivity.startActivity(activity, 0, BigDecimal.valueOf(0.0), SITE,
                 modalId, pageType != null ? pageType.getType() : null, promoId);
+    }
+
+    /**
+     * Start site modal
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param modalId  the client's modal id
+     * @param pageType need to use one of "banner, cart, category, homepage, landing,
+     *                 payment, product, search"
+     */
+    public static void showSiteModal(@NonNull Fragment fragment, @Nullable String modalId,
+                                     @Nullable PromoPageType pageType, @Nullable String promoId) {
+        AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
+        ModalActivity.startActivity(fragment, 0, BigDecimal.valueOf(0.0), SITE, modalId,
+                pageType != null ? pageType.getType() : null, promoId);
     }
 
     /**
@@ -719,9 +952,21 @@ public final class Affirm {
     /**
      * Start product modal
      *
-     * @param activity activity {@link Activity}
+     * @param fragment fragment {@link Fragment}
      * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
      * @param modalId  the client's modal id
+     */
+    public static void showProductModal(@NonNull Fragment fragment, BigDecimal amount,
+                                        @Nullable String modalId) {
+        showProductModal(fragment, amount, modalId, null, null);
+    }
+
+    /**
+     * Start product modal
+     *
+     * @param activity activity {@link Activity}
+     * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
+     * @param modalId  the client's modal i
      * @param pageType need to use one of "banner, cart, category, homepage, landing,
      *                 payment, product, search"
      */
@@ -732,6 +977,25 @@ public final class Affirm {
                                         @Nullable String promoId) {
         AffirmUtils.requireNonNull(activity);
         ModalActivity.startActivity(activity, 0, amount, PRODUCT, modalId,
+                pageType != null ? pageType.getType() : null, promoId);
+    }
+
+    /**
+     * Start product modal
+     *
+     * @param fragment fragment {@link Fragment}
+     * @param amount   (BigDecimal) eg 112.02 as $112 and ¢2
+     * @param modalId  the client's modal id
+     * @param pageType need to use one of "banner, cart, category, homepage, landing,
+     *                 payment, product, search"
+     */
+    public static void showProductModal(@NonNull Fragment fragment,
+                                        BigDecimal amount,
+                                        @Nullable String modalId,
+                                        @Nullable PromoPageType pageType,
+                                        @Nullable String promoId) {
+        AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
+        ModalActivity.startActivity(fragment, 0, amount, PRODUCT, modalId,
                 pageType != null ? pageType.getType() : null, promoId);
     }
 
@@ -902,6 +1166,7 @@ public final class Affirm {
             @Override
             public void onDestroy() {
                 affirmPromoRequest.cancel();
+                promotionButton.destroy();
             }
         };
 
@@ -942,12 +1207,11 @@ public final class Affirm {
             boolean showPrequal = (boolean) v.getTag();
             String type = pageType != null ? pageType.getType() : null;
             if (showPrequal) {
-                PrequalActivity.startActivity(activity,
-                        prequalRequest, amount, promoId, type, items);
+                PrequalActivity.startActivity(activity, prequalRequest, amount,
+                        promoId, type);
             } else {
-                ModalActivity.startActivity(activity,
-                        prequalRequest, amount, PRODUCT, null,
-                        type, promoId);
+                ModalActivity.startActivity(activity, prequalRequest, amount,
+                        PRODUCT, null, type, promoId);
             }
         };
         promotionButton.setOnClickListener(onClickListener);
@@ -1045,15 +1309,48 @@ public final class Affirm {
         PromoPageType pageType = promoRequestModal.getPageType();
         String type = pageType != null ? pageType.getType() : null;
         if (showPrequal) {
-            PrequalActivity.startActivity(activity, prequalRequest,
+            PrequalActivity.startActivity(activity,
+                    prequalRequest,
                     promoRequestModal.getAmount(),
                     promoRequestModal.getPromoId(),
-                    type,
-                    promoRequestModal.getItems());
+                    type);
         } else {
             ModalActivity.startActivity(activity,
-                    prequalRequest, promoRequestModal.getAmount(), PRODUCT, null,
-                    type, promoRequestModal.getPromoId());
+                    prequalRequest,
+                    promoRequestModal.getAmount(),
+                    PRODUCT,
+                    null,
+                    type,
+                    promoRequestModal.getPromoId());
+        }
+    }
+
+    /**
+     * Handling events that click on the promotion message
+     *
+     * @param fragment          fragment {@link Fragment}
+     * @param promoRequestModal a class contains the parameters required for the request
+     * @param showPrequal       This value comes from the callback of the method `fetchPromotion`
+     */
+    public static void onPromotionClick(@NonNull Fragment fragment,
+                                        @NonNull PromoRequestData promoRequestModal,
+                                        boolean showPrequal) {
+        PromoPageType pageType = promoRequestModal.getPageType();
+        String type = pageType != null ? pageType.getType() : null;
+        if (showPrequal) {
+            PrequalActivity.startActivity(fragment,
+                    prequalRequest,
+                    promoRequestModal.getAmount(),
+                    promoRequestModal.getPromoId(),
+                    type);
+        } else {
+            ModalActivity.startActivity(fragment,
+                    prequalRequest,
+                    promoRequestModal.getAmount(),
+                    PRODUCT,
+                    null,
+                    type,
+                    promoRequestModal.getPromoId());
         }
     }
 

@@ -2,10 +2,9 @@
     <color name="affirm_color_primary">#0F9CED</color>
     <color name="affirm_color_primary_dark">#0083C7</color>
     <color name="affirm_color_accent">#23292F</color>
-
-    <color name="affirm_indigo">#0FA0EA</color>
+    <color name="affirm_indigo">#4a4af4</color>
     <color name="affirm_black">#23292F</color>
-    <color name="affirm_blue">#2984EE</color>
+    <color name="affirm_blue">#4a4af4</color>
     <color name="affirm_white">@android:color/white</color>
     <color name="affirm_ic_close_color">@android:color/white</color>
 

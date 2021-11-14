@@ -2,12 +2,15 @@ package com.affirm.android;
 
 import android.annotation.TargetApi;
 import android.os.Build;
+import android.webkit.RenderProcessGoneDetail;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.affirm.android.exception.ConnectionException;
 
@@ -55,6 +58,18 @@ abstract class AffirmWebViewClient extends WebViewClient {
             callbacks.onWebViewError(new ConnectionException(
                     error.getErrorCode() + ", " + error.getDescription().toString()));
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @Override
+    public boolean onRenderProcessGone(@Nullable final WebView view,
+                                       @Nullable final RenderProcessGoneDetail detail) {
+        final String errorMessage = detail != null && detail.didCrash()
+                ? "Render process for this WebView has crashed."
+                : "Render process is gone for this WebView. Unspecified cause.";
+        AffirmLog.e(errorMessage);
+        callbacks.onWebViewError(new ConnectionException(errorMessage));
+        return true;
     }
 
     public interface WebViewClientCallbacks {

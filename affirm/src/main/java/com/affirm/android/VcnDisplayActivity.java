@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import com.affirm.android.model.CardDetailsInner;
 import com.affirm.android.model.Checkout;
@@ -37,10 +38,24 @@ public class VcnDisplayActivity extends AppCompatActivity {
 
     public static void startActivity(@NonNull Activity activity, int requestCode,
                                      @NonNull Checkout checkout, @Nullable String caas) {
-        Intent intent = new Intent(activity, VcnDisplayActivity.class);
+        Intent intent = buildIntent(activity, checkout, caas);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    public static void startActivity(@NonNull Fragment fragment, int requestCode,
+                                     @NonNull Checkout checkout, @Nullable String caas) {
+        Intent intent = buildIntent(fragment.requireActivity(), checkout, caas);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
+    private static Intent buildIntent(
+            @NonNull Activity originalActivity,
+            @NonNull Checkout checkout,
+            @Nullable String caas) {
+        Intent intent = new Intent(originalActivity, VcnDisplayActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
-        activity.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     @Override

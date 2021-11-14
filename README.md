@@ -7,14 +7,14 @@ Affirm Android SDK allows you to offer Affirm in your own app.
 
 Download via Gradle:
 ```groovy
-implementation "com.affirm:affirm-android-sdk:2.0.15"
+implementation "com.affirm:affirm-android-sdk:2.0.19"
 ```
 or Maven:
 ```xml
 <dependency>
   <groupId>com.affirm</groupId>
   <artifactId>affirm-android-sdk</artifactId>
-  <version>2.0.15</version>
+  <version>2.0.17</version>
 </dependency>
 ```
 Snapshots of the development version are available in [Sonatype's `snapshots` repository](https://oss.sonatype.org/content/repositories/snapshots/).
@@ -37,6 +37,15 @@ Affirm.initialize(new Affirm.Configuration.Builder("public key")
 ```
 - `environment` can be set to `Affirm.Environment.SANDBOX` for test.
 - To prevent conflicts, you can set a custom affirm's request code.
+
+You can also set `public key` and `merchant name` after the `initialize` method
+```java
+    Affirm.setMerchantName("merchant name")
+
+    Affirm.setPublicKey("public key")
+
+    Affirm.setPublicKeyAndMerchantName("public key", "merchant name")
+```
 
 ## Checkout
 

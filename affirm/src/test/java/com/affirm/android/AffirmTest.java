@@ -7,15 +7,36 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.junit.Assert.assertEquals;
+
 public class AffirmTest {
 
     @Before
     public void setup() {
         if (AffirmPlugins.get() == null) {
-            Affirm.initialize(new Affirm.Configuration.Builder("sdf", Affirm.Environment.SANDBOX)
+            Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
                     .build()
             );
         }
+    }
+
+    @Test
+    public void testSetPublicKey() {
+        Affirm.setPublicKey("Y8CQXFF044903JC1");
+        assertEquals("Y8CQXFF044903JC1", AffirmPlugins.get().publicKey());
+    }
+
+    @Test
+    public void testSetPublicKeyAndMerchantName() {
+        Affirm.setPublicKeyAndMerchantName("Y8CQXFF044903JC1", "aaa");
+        assertEquals("Y8CQXFF044903JC1", AffirmPlugins.get().publicKey());
+        assertEquals("aaa", AffirmPlugins.get().merchantName());
+    }
+
+    @Test
+    public void testSetMerchantName() {
+        Affirm.setMerchantName("aaa");
+        assertEquals("aaa", AffirmPlugins.get().merchantName());
     }
 
     @Test

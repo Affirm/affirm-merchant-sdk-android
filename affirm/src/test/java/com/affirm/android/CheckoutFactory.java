@@ -1,4 +1,4 @@
-package com.affirm.android.utils;
+package com.affirm.android;
 
 import com.affirm.android.model.Address;
 import com.affirm.android.model.Billing;

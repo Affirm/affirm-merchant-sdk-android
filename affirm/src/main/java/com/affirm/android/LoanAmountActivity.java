@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import com.affirm.android.model.Checkout;
 import com.affirm.android.widget.MoneyFormattedEditText;
@@ -31,11 +32,27 @@ public class LoanAmountActivity extends AppCompatActivity {
     public static void startActivity(@NonNull Activity activity, int requestCode,
                                      @NonNull Checkout checkout, @Nullable String caas,
                                      int cardAuthWindow) {
-        Intent intent = new Intent(activity, LoanAmountActivity.class);
+        Intent intent = buildIntent(activity, checkout, caas, cardAuthWindow);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    public static void startActivity(@NonNull Fragment fragment, int requestCode,
+                                     @NonNull Checkout checkout, @Nullable String caas,
+                                     int cardAuthWindow) {
+        Intent intent = buildIntent(fragment.requireActivity(), checkout, caas, cardAuthWindow);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
+    private static Intent buildIntent(
+            @NonNull Activity originalActivity,
+            @NonNull Checkout checkout,
+            @Nullable String caas,
+            int cardAuthWindow) {
+        Intent intent = new Intent(originalActivity, LoanAmountActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
         intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
-        activity.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     @Override

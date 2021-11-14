@@ -16,11 +16,11 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-class AffirmPlugins {
+public class AffirmPlugins {
 
     private static final Object LOCK = new Object();
     private static AffirmPlugins instance;
-    private final Affirm.Configuration configuration;
+    private Affirm.Configuration configuration;
 
     private AffirmHttpClient restClient;
     private Gson gson;
@@ -28,6 +28,14 @@ class AffirmPlugins {
     private CardDetailsInner cardDetailsInner;
 
     AffirmPlugins(@NonNull Affirm.Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    Affirm.Configuration getConfiguration() {
+        return configuration;
+    }
+
+    void setConfiguration(Affirm.Configuration configuration) {
         this.configuration = configuration;
     }
 
@@ -64,7 +72,7 @@ class AffirmPlugins {
         this.cardDetailsInner = cardDetailsInner;
     }
 
-    String publicKey() {
+    public String publicKey() {
         return configuration.publicKey;
     }
 
@@ -88,7 +96,7 @@ class AffirmPlugins {
         return configuration.environment.baseUrl();
     }
 
-    String basePromoUrl() {
+    public String basePromoUrl() {
         return configuration.environment.basePromoUrl();
     }
 

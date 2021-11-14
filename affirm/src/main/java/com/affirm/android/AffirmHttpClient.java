@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
@@ -26,15 +27,13 @@ import okio.BufferedSink;
 import static com.affirm.android.AffirmConstants.HTTP;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
-import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
-import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
-import static com.affirm.android.AffirmTracker.createTrackingNetworkJsonObj;
 
-final class AffirmHttpClient {
+public final class AffirmHttpClient {
 
-    private OkHttpClient okHttpClient;
+    private final OkHttpClient okHttpClient;
 
-    private AffirmHttpClient(@Nullable OkHttpClient.Builder builder) {
+    @VisibleForTesting
+    AffirmHttpClient(@Nullable OkHttpClient.Builder builder) {
         if (builder == null) {
             builder = new OkHttpClient.Builder();
         }
@@ -85,22 +84,15 @@ final class AffirmHttpClient {
         }
     }
 
-    static String getProtocol() {
+    public static String getProtocol() {
         return AffirmPlugins.get().baseUrl().contains(HTTP) ? "" : HTTPS_PROTOCOL;
     }
 
     @NonNull
     static AffirmException createExceptionAndTrackFromResponse(
-            Request okHttpRequest,
             Response response,
             ResponseBody responseBody
     ) {
-        AffirmTracker.track(
-                NETWORK_ERROR,
-                ERROR,
-                createTrackingNetworkJsonObj(okHttpRequest, response)
-        );
-
         if (responseBody != null && responseBody.contentLength() > 0) {
             try {
                 final AffirmError affirmError = AffirmPlugins.get()
@@ -120,7 +112,10 @@ final class AffirmHttpClient {
         return new APIException("Error getting exception from response", null);
     }
 
-    Call getCallForRequest(AffirmHttpRequest request) {
+    Call getCallForRequest(@Nullable OkHttpClient client, @NonNull AffirmHttpRequest request) {
+        if (client != null) {
+            return client.newCall(getRequest(request));
+        }
         return okHttpClient.newCall(getRequest(request));
     }
 

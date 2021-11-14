@@ -28,6 +28,10 @@ public class AffirmPromotionButton extends FrameLayout {
     private String remoteCssUrl;
     private String typefaceDeclaration;
 
+    private float affirmTextSize;
+    private int affirmTextColor;
+    private int affirmTextFont;
+
     public AffirmPromotionButton(@NonNull Context context) {
         this(context, null);
     }
@@ -57,15 +61,15 @@ public class AffirmPromotionButton extends FrameLayout {
                 typedArray.getInt(R.styleable.AffirmPromotionButton_affirmColor,
                         AFFIRM_COLOR_TYPE_BLUE.getOrdinal());
 
-        float affirmTextSize =
+        affirmTextSize =
                 typedArray.getDimensionPixelSize(R.styleable.AffirmPromotionButton_affirmTextSize,
                         getResources().getDimensionPixelSize(R.dimen.affirm_promotion_size));
 
-        int affirmTextColor =
+        affirmTextColor =
                 typedArray.getResourceId(R.styleable.AffirmPromotionButton_affirmTextColor,
                         android.R.color.black);
 
-        int affirmTextFont =
+        affirmTextFont =
                 typedArray.getResourceId(R.styleable.AffirmPromotionButton_affirmTextFont,
                         0);
 
@@ -76,16 +80,6 @@ public class AffirmPromotionButton extends FrameLayout {
         affirmColor = AffirmColor.getAffirmColor(affirmColorOrdinal);
 
         typedArray.recycle();
-
-        promotionButton = new PromotionButton(context);
-        promotionButton.setAffirmTextSize(affirmTextSize);
-        promotionButton.setAffirmTextColor(affirmTextColor);
-        promotionButton.setTypeface(affirmTextFont > 0
-                ? ResourcesCompat.getFont(getContext(), affirmTextFont) : Typeface.DEFAULT);
-        promotionButton.setAffirmColor(affirmColor);
-        promotionButton.setAffirmLogoType(affirmLogoType);
-
-        promotionWebView = new PromotionWebView(context);
     }
 
     protected void setLabel(@NonNull String text) {
@@ -95,8 +89,21 @@ public class AffirmPromotionButton extends FrameLayout {
             addView(promotionWebView);
             promotionWebView.loadWebData(text, remoteCssUrl, typefaceDeclaration);
         } else {
+            buildPromotionButtonIfNeeded();
             addView(promotionButton);
             promotionButton.setText(promotionButton.updateSpan(text));
+        }
+    }
+
+    private void buildPromotionButtonIfNeeded() {
+        if (promotionButton == null) {
+            promotionButton = new PromotionButton(getContext());
+            promotionButton.setAffirmTextSize(affirmTextSize);
+            promotionButton.setAffirmTextColor(affirmTextColor);
+            promotionButton.setTypeface(affirmTextFont > 0
+                    ? ResourcesCompat.getFont(getContext(), affirmTextFont) : Typeface.SERIF);
+            promotionButton.setAffirmColor(affirmColor);
+            promotionButton.setAffirmLogoType(affirmLogoType);
         }
     }
 
@@ -107,12 +114,14 @@ public class AffirmPromotionButton extends FrameLayout {
     @Deprecated
     public void setAffirmLogoType(@NonNull AffirmLogoType affirmLogoType) {
         this.affirmLogoType = affirmLogoType;
+        buildPromotionButtonIfNeeded();
         promotionButton.setAffirmLogoType(affirmLogoType);
     }
 
     @Deprecated
     public void setAffirmColor(@NonNull AffirmColor affirmColor) {
         this.affirmColor = affirmColor;
+        buildPromotionButtonIfNeeded();
         promotionButton.setAffirmColor(affirmColor);
     }
 
@@ -137,6 +146,7 @@ public class AffirmPromotionButton extends FrameLayout {
         this.htmlStyling = true;
         this.remoteCssUrl = remoteCssUrl;
         this.typefaceDeclaration = typefaceDeclaration;
+        promotionWebView = new PromotionWebView(getContext());
     }
 
     public void configWithLocalStyling(@NonNull AffirmColor affirmColor,
@@ -177,6 +187,7 @@ public class AffirmPromotionButton extends FrameLayout {
         this.htmlStyling = false;
         this.affirmColor = affirmColor;
         this.affirmLogoType = affirmLogoType;
+        promotionButton = new PromotionButton(getContext());
         promotionButton.setAffirmColor(affirmColor);
         promotionButton.setAffirmLogoType(affirmLogoType);
         promotionButton.setTypeface(typeface);
@@ -200,8 +211,15 @@ public class AffirmPromotionButton extends FrameLayout {
     public void setOnClickListener(@Nullable OnClickListener l) {
         super.setOnClickListener(l);
 
-        if (htmlStyling) {
+        if (promotionWebView != null) {
             promotionWebView.setWebViewClickListener(l);
+        }
+    }
+
+    public void destroy() {
+        if (promotionWebView != null) {
+            promotionWebView.destroyWebView();
+            promotionWebView = null;
         }
     }
 }

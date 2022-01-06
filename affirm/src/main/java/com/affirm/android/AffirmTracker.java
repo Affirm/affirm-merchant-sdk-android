@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.affirm.android.exception.AffirmException;
+import com.affirm.android.model.Checkout;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
@@ -28,8 +30,12 @@ final class AffirmTracker {
     enum TrackingEvent {
         CHECKOUT_CREATION_FAIL("Checkout creation failed"),
         CHECKOUT_CREATION_SUCCESS("Checkout creation success"),
+        CHECKOUT_WEBVIEW_CLICK("Checkout webView click"),
+        CHECKOUT_WEBVIEW_START("Checkout webView start"),
         CHECKOUT_WEBVIEW_SUCCESS("Checkout webView success"),
         CHECKOUT_WEBVIEW_FAIL("Checkout WebView failed"),
+        VCN_CHECKOUT_CREATION_CLICK("Vcn Checkout creation click"),
+        VCN_CHECKOUT_CREATION_START("Vcn Checkout creation start"),
         VCN_CHECKOUT_CREATION_FAIL("Vcn Checkout creation failed"),
         VCN_CHECKOUT_CREATION_SUCCESS("Vcn Checkout creation success"),
         VCN_CHECKOUT_WEBVIEW_SUCCESS("Vcn Checkout webView success"),
@@ -123,4 +129,21 @@ final class AffirmTracker {
         }
         return jsonObject;
     }
+
+    static JsonObject createTrackingException(@NonNull AffirmException exception) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("error", exception.toString());
+        return jsonObject;
+    }
+
+    static JsonObject createTrackingCheckout(@NonNull Checkout checkout,
+                                             @Nullable String caas,
+                                             int cardAuthWindow) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("checkout", checkout.toString());
+        jsonObject.addProperty("caas", caas);
+        jsonObject.addProperty("cardAuthWindow", cardAuthWindow);
+        return jsonObject;
+    }
+
 }

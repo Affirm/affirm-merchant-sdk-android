@@ -31,6 +31,9 @@ import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_KEY;
 import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_VALUE;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_KEY;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_VALUE;
+import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_START;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_START;
+import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
 class CheckoutRequest implements AffirmRequest {
 
@@ -73,7 +76,15 @@ class CheckoutRequest implements AffirmRequest {
         if (checkoutCall != null) {
             checkoutCall.cancel();
         }
-        checkoutCall = AffirmClient.send(okHttpClient, new AffirmCheckoutRequest(),
+
+        AffirmCheckoutRequest request = new AffirmCheckoutRequest();
+        JsonObject trackInfo = request.body();
+        if (useVCN) {
+            AffirmTracker.track(VCN_CHECKOUT_CREATION_START, INFO, trackInfo);
+        } else {
+            AffirmTracker.track(CHECKOUT_WEBVIEW_START, INFO, trackInfo);
+        }
+        checkoutCall = AffirmClient.send(okHttpClient, request,
                 new AffirmClient.AffirmListener<CheckoutResponse>() {
                     @Override
                     public void onSuccess(CheckoutResponse response) {

@@ -11,6 +11,7 @@ import com.affirm.android.model.Checkout;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.util.Locale;
@@ -138,12 +139,15 @@ final class AffirmTracker {
 
     static JsonObject createTrackingCheckout(@NonNull Checkout checkout,
                                              @Nullable String caas,
-                                             int cardAuthWindow) {
+                                             int cardAuthWindow,
+                                             boolean useVCN) {
+        final JsonObject checkoutJson = new JsonParser().parse(
+                AffirmPlugins.get().gson().toJson(checkout)).getAsJsonObject();
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("checkout", checkout.toString());
+        jsonObject.add("checkout", checkoutJson);
         jsonObject.addProperty("caas", caas);
         jsonObject.addProperty("cardAuthWindow", cardAuthWindow);
+        jsonObject.addProperty("useVCN", useVCN);
         return jsonObject;
     }
-
 }

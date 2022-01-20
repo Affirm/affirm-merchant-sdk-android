@@ -78,12 +78,10 @@ class CheckoutRequest implements AffirmRequest {
         }
 
         AffirmCheckoutRequest request = new AffirmCheckoutRequest();
-        JsonObject trackInfo = request.body();
-        if (useVCN) {
-            AffirmTracker.track(VCN_CHECKOUT_CREATION_START, INFO, trackInfo);
-        } else {
-            AffirmTracker.track(CHECKOUT_WEBVIEW_START, INFO, trackInfo);
-        }
+
+        // Track checkout info
+        trackCheckout(request);
+
         checkoutCall = AffirmClient.send(okHttpClient, request,
                 new AffirmClient.AffirmListener<CheckoutResponse>() {
                     @Override
@@ -120,6 +118,18 @@ class CheckoutRequest implements AffirmRequest {
         return jsonParser.parse(gson.toJson(object)).getAsJsonObject();
     }
 
+    private void trackCheckout(AffirmCheckoutRequest request) {
+        JsonObject trackInfo = request.body();
+        if (trackInfo == null) {
+            trackInfo = new JsonObject();
+        }
+        trackInfo.addProperty("useVCN", useVCN);
+        if (useVCN) {
+            AffirmTracker.track(VCN_CHECKOUT_CREATION_START, INFO, trackInfo);
+        } else {
+            AffirmTracker.track(CHECKOUT_WEBVIEW_START, INFO, trackInfo);
+        }
+    }
 
     class AffirmCheckoutRequest implements AffirmClient.AffirmApiRequest {
 

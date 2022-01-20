@@ -684,7 +684,7 @@ public final class Affirm {
                                      @Nullable String caas, int cardAuthWindow, boolean useVCN) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
-        JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow);
+        JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow, useVCN);
         if (useVCN) {
             AffirmTracker.track(VCN_CHECKOUT_CREATION_CLICK, INFO, trackInfo);
             VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas,
@@ -710,10 +710,13 @@ public final class Affirm {
                                      @Nullable String caas, int cardAuthWindow, boolean useVCN) {
         AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
+        JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow, useVCN);
         if (useVCN) {
+            AffirmTracker.track(VCN_CHECKOUT_CREATION_CLICK, INFO, trackInfo);
             VcnCheckoutActivity.startActivity(fragment, vcnCheckoutRequest, checkout, caas,
                     cardAuthWindow, receiveReasonCodes);
         } else {
+            AffirmTracker.track(CHECKOUT_WEBVIEW_CLICK, INFO, trackInfo);
             CheckoutActivity.startActivity(fragment, checkoutRequest, checkout, caas,
                     cardAuthWindow);
         }

@@ -19,6 +19,7 @@ import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.VcnReason;
+import com.google.gson.JsonObject;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,6 +32,10 @@ import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO;
+import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_CLICK;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_CLICK;
+import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
+import static com.affirm.android.AffirmTracker.createTrackingCheckout;
 import static com.affirm.android.ModalActivity.ModalType.PRODUCT;
 import static com.affirm.android.ModalActivity.ModalType.SITE;
 
@@ -679,10 +684,13 @@ public final class Affirm {
                                      @Nullable String caas, int cardAuthWindow, boolean useVCN) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
+        JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow, useVCN);
         if (useVCN) {
+            AffirmTracker.track(VCN_CHECKOUT_CREATION_CLICK, INFO, trackInfo);
             VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas,
                     cardAuthWindow, receiveReasonCodes);
         } else {
+            AffirmTracker.track(CHECKOUT_WEBVIEW_CLICK, INFO, trackInfo);
             CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,
                     cardAuthWindow);
         }
@@ -702,10 +710,13 @@ public final class Affirm {
                                      @Nullable String caas, int cardAuthWindow, boolean useVCN) {
         AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
+        JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow, useVCN);
         if (useVCN) {
+            AffirmTracker.track(VCN_CHECKOUT_CREATION_CLICK, INFO, trackInfo);
             VcnCheckoutActivity.startActivity(fragment, vcnCheckoutRequest, checkout, caas,
                     cardAuthWindow, receiveReasonCodes);
         } else {
+            AffirmTracker.track(CHECKOUT_WEBVIEW_CLICK, INFO, trackInfo);
             CheckoutActivity.startActivity(fragment, checkoutRequest, checkout, caas,
                     cardAuthWindow);
         }

@@ -31,6 +31,9 @@ import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_KEY;
 import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_VALUE;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_KEY;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_VALUE;
+import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_START;
+import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_START;
+import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
 class CheckoutRequest implements AffirmRequest {
 
@@ -73,7 +76,13 @@ class CheckoutRequest implements AffirmRequest {
         if (checkoutCall != null) {
             checkoutCall.cancel();
         }
-        checkoutCall = AffirmClient.send(okHttpClient, new AffirmCheckoutRequest(),
+
+        AffirmCheckoutRequest request = new AffirmCheckoutRequest();
+
+        // Track checkout info
+        trackCheckout(request);
+
+        checkoutCall = AffirmClient.send(okHttpClient, request,
                 new AffirmClient.AffirmListener<CheckoutResponse>() {
                     @Override
                     public void onSuccess(CheckoutResponse response) {
@@ -109,6 +118,18 @@ class CheckoutRequest implements AffirmRequest {
         return jsonParser.parse(gson.toJson(object)).getAsJsonObject();
     }
 
+    private void trackCheckout(AffirmCheckoutRequest request) {
+        JsonObject trackInfo = request.body();
+        if (trackInfo == null) {
+            trackInfo = new JsonObject();
+        }
+        trackInfo.addProperty("useVCN", useVCN);
+        if (useVCN) {
+            AffirmTracker.track(VCN_CHECKOUT_CREATION_START, INFO, trackInfo);
+        } else {
+            AffirmTracker.track(CHECKOUT_WEBVIEW_START, INFO, trackInfo);
+        }
+    }
 
     class AffirmCheckoutRequest implements AffirmClient.AffirmApiRequest {
 

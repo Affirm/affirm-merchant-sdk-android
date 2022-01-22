@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.jetbrains.annotations.NotNull;
+import org.joda.money.Money;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -29,6 +30,7 @@ import static com.affirm.android.AffirmConstants.PLATFORM_AFFIRM_KEY;
 import static com.affirm.android.AffirmConstants.PLATFORM_AFFIRM_VALUE;
 import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_KEY;
 import static com.affirm.android.AffirmConstants.PLATFORM_TYPE_VALUE;
+import static com.affirm.android.AffirmConstants.TOTAL;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_KEY;
 import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_VALUE;
 
@@ -38,6 +40,8 @@ class CheckoutRequest implements AffirmRequest {
     private final OkHttpClient okHttpClient;
     @NonNull
     private final Checkout checkout;
+    @Nullable
+    private final Money money;
     private final boolean useVCN;
     @Nullable
     private final InnerCheckoutCallback checkoutCallback;
@@ -50,18 +54,19 @@ class CheckoutRequest implements AffirmRequest {
     private final JsonParser jsonParser = new JsonParser();
     private final Gson gson = AffirmPlugins.get().gson();
 
-    CheckoutRequest(@NonNull Checkout checkout,
-                    @Nullable InnerCheckoutCallback callback, @Nullable String caas, boolean useVCN,
+    CheckoutRequest(@NonNull Checkout checkout, @Nullable InnerCheckoutCallback callback,
+                    @Nullable String caas, @Nullable Money money, boolean useVCN,
                     int cardAuthWindow) {
-        this(null, checkout, callback, caas, useVCN, cardAuthWindow);
+        this(null, checkout, callback, caas, money, useVCN, cardAuthWindow);
     }
 
     @VisibleForTesting
     CheckoutRequest(@Nullable OkHttpClient okHttpClient, @NonNull Checkout checkout,
-                    @Nullable InnerCheckoutCallback callback, @Nullable String caas, boolean useVCN,
-                    int cardAuthWindow) {
+                    @Nullable InnerCheckoutCallback callback, @Nullable String caas,
+                    @Nullable Money money, boolean useVCN, int cardAuthWindow) {
         this.okHttpClient = okHttpClient;
         this.checkout = checkout;
+        this.money = money;
         this.checkoutCallback = callback;
         this.caas = caas;
         this.useVCN = useVCN;
@@ -155,6 +160,10 @@ class CheckoutRequest implements AffirmRequest {
                     USER_CONFIRMATION_URL_ACTION_VALUE);
 
             final JsonObject checkoutJson = parseToJsonObject(checkout);
+            if (money != null) {
+                checkoutJson.addProperty(TOTAL,
+                        AffirmUtils.decimalDollarsToIntegerCents(money.getAmount()));
+            }
             checkoutJson.add(MERCHANT, merchantJson);
             checkoutJson.addProperty(API_VERSION_KEY, API_VERSION_VALUE);
 

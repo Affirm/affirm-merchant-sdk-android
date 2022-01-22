@@ -59,7 +59,7 @@ public class CheckoutRequestTest {
         Mockito.when(client.newCall(any(Request.class))).thenReturn(call);
 
         Checkout checkout = CheckoutFactory.create();
-        CheckoutRequest checkoutRequest = new CheckoutRequest(client, checkout, null, null, false, -1);
+        CheckoutRequest checkoutRequest = new CheckoutRequest(client, checkout, null, null, null, false, -1);
         checkoutRequest.create();
 
         Mockito.verify(client).newCall(requestCaptor.capture());
@@ -76,7 +76,7 @@ public class CheckoutRequestTest {
         Mockito.when(client.newCall(any(Request.class))).thenReturn(call);
 
         Checkout checkout = CheckoutFactory.create();
-        CheckoutRequest checkoutRequest = new CheckoutRequest(client, checkout, null, "4626b631-c5bc-4c4e-800b-dd5fa27ef8b8", false, -1);
+        CheckoutRequest checkoutRequest = new CheckoutRequest(client, checkout, null, "4626b631-c5bc-4c4e-800b-dd5fa27ef8b8", null, false, -1);
         checkoutRequest.create();
 
         Mockito.verify(client).newCall(requestCaptor.capture());
@@ -93,7 +93,7 @@ public class CheckoutRequestTest {
         Mockito.when(client.newCall(any(Request.class))).thenReturn(call);
 
         Checkout checkout = CheckoutFactory.create();
-        CheckoutRequest checkoutRequest = new CheckoutRequest(client, checkout, null, null, false, 10);
+        CheckoutRequest checkoutRequest = new CheckoutRequest(client, checkout, null, null, null, false, 10);
         checkoutRequest.create();
 
         Mockito.verify(client).newCall(requestCaptor.capture());

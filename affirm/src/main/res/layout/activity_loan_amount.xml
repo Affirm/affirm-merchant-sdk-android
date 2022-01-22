@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
+
+    <TextView
+        style="@style/AffirmSectionHeader.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|left|start"
+        android:layout_marginLeft="@dimen/affirm_screen_horizontal_margin"
+        android:layout_marginTop="@dimen/affirm_screen_vertical_margin"
+        android:layout_marginRight="@dimen/affirm_screen_horizontal_margin"
+        android:text="@string/vcn_amount_title"
+        android:textColor="@color/affirm_black100"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/loanInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/affirm_screen_horizontal_margin"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="@dimen/affirm_screen_horizontal_margin"
+        android:text="@string/vcn_amount_help"
+        android:textAppearance="@style/AffirmBody"
+        android:textColor="@color/affirm_black60" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/affirm_screen_horizontal_margin"
+            android:layout_marginRight="@dimen/affirm_screen_horizontal_margin"
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
+
+            <com.affirm.android.widget.MoneyFormattedEditText
+                android:id="@+id/loanAmountEditText"
+                style="@style/AffirmInputEditText.Money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="$0" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <com.affirm.android.widget.NumericKeyboardView
+        android:id="@+id/keyboard"
+        style="@style/AffirmNumericKeyboardStyle"
+        android:background="@drawable/affirm_keyboard_top_border"
+        android:theme="@style/AffirmNumericKeyboardTheme" />
+
+</LinearLayout>

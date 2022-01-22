@@ -3,7 +3,6 @@ package com.affirm.android.model;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -33,18 +32,5 @@ public class ItemTest {
                 .setUrl("http://merchant.com/great_deal_wheel")
                 .build();
         assertEquals(gson.toJson(item), itemJson);
-    }
-
-    @Test
-    public void testItemParseFromJson() {
-        Item item = gson.fromJson(itemJson, Item.class);
-        System.out.println(item);
-        Assert.assertNotNull(item);
-        Assert.assertEquals(item.displayName(), "Great Deal Wheel");
-        Assert.assertEquals(item.imageUrl(), "http://www.image.com/111");
-        Assert.assertEquals(item.qty(), (Integer)1);
-        Assert.assertEquals(item.sku(), "wheel");
-        Assert.assertEquals(item.unitPrice(), (Integer)100000);
-        Assert.assertEquals(item.url(), "http://merchant.com/great_deal_wheel");
     }
 }

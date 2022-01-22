@@ -170,9 +170,11 @@ public final class AffirmConstants {
     static final String CHECKOUT_ERROR = "checkout_error";
     static final String CHECKOUT_EXTRA = "checkout_extra";
     static final String CHECKOUT_CAAS_EXTRA = "checkout_caas_extra";
+    static final String CHECKOUT_MONEY = "checkout_money";
     static final String CHECKOUT_CARD_AUTH_WINDOW = "checkout_card_auth_window";
     static final String CREDIT_DETAILS = "credit_details";
     static final String VCN_REASON = "vcn_reason";
+    static final String NEW_FLOW = "new_flow";
 
     static final String PREQUAL_ERROR = "prequal_error";
 
@@ -202,6 +204,7 @@ public final class AffirmConstants {
     static final String MERCHANT = "merchant";
     static final String METADATA = "metadata";
     static final String CHECKOUT = "checkout";
+    static final String TOTAL = "total";
 
     static final String INVALID_CHECKOUT_MESSAGE = "Checkout status is in an invalid state.";
 }

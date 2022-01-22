@@ -63,17 +63,19 @@ public class VcnCheckoutWebViewClientTest {
     @Test
     public void shouldOverrideUrlLoading_Confirmation() {
         final String encodedData =
-                "%7B%22billing_address%22%3A%7B%22city%22%3A%22San%20Francisco%22%2C%22state%22%3A%22CA%22%2C%22zipcode%22%3A%2294104%22%2C%22line1%22%3A%22225%20Bush%20St%22%2C%22line2%22%3A%22Suite%201600%22%7D%2C%22checkout_token%22%3A%22YP99FF9TAMU2Q4CJ%22%2C%22created%22%3A%222017-07-12T15%3A55%3A49.809271Z%22%2C%22cvv%22%3A%22123%22%2C%22number%22%3A%224012888888881881%22%2C%22callback_id%22%3A%226054fe9a-53aa-48eb-a3fe-ad6290848431%22%2C%22cardholder_name%22%3A%22AffirmInc%20Hector%20Montserrate%22%2C%22expiration%22%3A%220719%22%2C%22id%22%3A%22YP99FF9TAMU2Q4CJ%22%7D";
+                "%7B%22checkout_token%22%3A%22S4FIKFJHE0HQBGRL%22%2C%22cvv%22%3A%22123%22%2C%22number%22%3A%224111111111111111%22%2C%22cardholder_name%22%3A%22AffirmInc%20sudhir%20yyyyy%22%2C%22expiration%22%3A%220921%22%2C%22callback_id%22%3A%22031efdda-b6ed-4593-8da4-8889306d60bb%22%2C%22id%22%3A%22S4FIKFJHE0HQBGRL%22%7D";
 
         affirmWebViewClient.shouldOverrideUrlLoading(webview,
                 "affirm://checkout/confirmed?data=" + encodedData);
 
         final CardDetails expected = CardDetails.builder()
-                .setCardholderName("AffirmInc Hector Montserrate")
-                .setCheckoutToken("YP99FF9TAMU2Q4CJ")
+                .setCheckoutToken("S4FIKFJHE0HQBGRL")
                 .setCvv("123")
-                .setNumber("4012888888881881")
-                .setExpiration("0719")
+                .setNumber("4111111111111111")
+                .setCardholderName("AffirmInc sudhir yyyyy")
+                .setExpiration("0921")
+                .setCallbackId("031efdda-b6ed-4593-8da4-8889306d60bb")
+                .setId("S4FIKFJHE0HQBGRL")
                 .build();
         Mockito.verify(callbacks).onWebViewConfirmation(expected);
     }

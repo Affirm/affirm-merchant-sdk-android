@@ -35,6 +35,7 @@ import static com.affirm.android.AffirmConstants.UTF_8;
 import static com.affirm.android.AffirmTracker.TrackingEvent.PRODUCT_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.SITE_WEBVIEW_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
+import static com.affirm.android.AffirmTracker.createTrackingException;
 
 public class ModalActivity extends AffirmActivity implements ModalWebViewClient.Callbacks {
 
@@ -155,7 +156,7 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
 
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
-        AffirmTracker.track(type.failureEvent, ERROR, null);
+        AffirmTracker.track(type.failureEvent, ERROR, createTrackingException(error));
         finish();
 
         final Intent intent = new Intent();

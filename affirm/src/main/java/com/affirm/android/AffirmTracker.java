@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.affirm.android.exception.AffirmException;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
@@ -122,13 +121,6 @@ final class AffirmTracker {
             jsonObject.add("status_code", null);
             jsonObject.add(affirmRequestIDHeader, null);
         }
-        return jsonObject;
-    }
-
-    @NonNull
-    static JsonObject createTrackingExceptionJsonObj(@NonNull AffirmException exception) {
-        final JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("message", exception.toString());
         return jsonObject;
     }
 }

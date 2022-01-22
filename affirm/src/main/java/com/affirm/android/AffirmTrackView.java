@@ -92,14 +92,12 @@ public class AffirmTrackView extends FrameLayout
 
     private String initialHtml() {
         String html;
-        InputStream ins = null;
         try {
-            ins = getResources().openRawResource(R.raw.affirm_track_order_confirmed);
+            final InputStream ins =
+                    getResources().openRawResource(R.raw.affirm_track_order_confirmed);
             html = AffirmUtils.readInputStream(ins);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            AffirmUtils.closeInputStream(ins);
         }
         final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseJsUrl() + JS_PATH;
 

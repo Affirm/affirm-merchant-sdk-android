@@ -45,10 +45,10 @@ class TrackerRequest implements AffirmRequest {
         }
 
         trackingCall = AffirmClient.send(okHttpClient, new AffirmTrackerRequest(),
-                new AffirmClient.AffirmListener<String>() {
+                new AffirmClient.AffirmListener<Void>() {
 
                     @Override
-                    public void onSuccess(String response) {
+                    public void onSuccess(Void response) {
 
                     }
 

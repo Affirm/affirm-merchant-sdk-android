@@ -1,5 +1,6 @@
 package com.affirm.samples;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -85,6 +86,45 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
             } catch (Exception e) {
                 Toast.makeText(getContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
             }
+        });
+
+        view.findViewById(R.id.vcnCheckout).setOnLongClickListener(v -> {
+            if (Affirm.existCachedCard()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                String[] items = getResources().getStringArray(R.array.vcn_checkout_new_flow_array);
+                builder.setItems(items, (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            try {
+                                String cass = ((EditText) view.findViewById(R.id.cass)).getText().toString();
+                                Affirm.startNewVcnCheckoutFlow(this, checkoutModel(), cass);
+                            } catch (Exception e) {
+                                Toast.makeText(getContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        case 1:
+                            try {
+                                String cass = ((EditText) view.findViewById(R.id.cass)).getText().toString();
+                                Affirm.startVcnDisplay(this, checkoutModel(), cass);
+                            } catch (Exception e) {
+                                Toast.makeText(getContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                builder.setPositiveButton(com.affirm.android.R.string.never_mind, (dialog, which) -> dialog.dismiss());
+                builder.show();
+            } else {
+                try {
+                    String cass = ((EditText) view.findViewById(R.id.cass)).getText().toString();
+                    Affirm.startNewVcnCheckoutFlow(this, checkoutModel(), cass);
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "VCN Checkout failed, reason: " + e.toString(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            return false;
         });
 
         view.findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(MainFragment.this, "5LNMQ33SEUYHLNUC"));

@@ -2,15 +2,16 @@ package com.affirm.android;
 
 import android.webkit.CookieManager;
 
+import androidx.annotation.NonNull;
+
 import com.affirm.android.model.AbstractAddress;
-import com.affirm.android.model.AffirmAdapterFactory;
 import com.affirm.android.model.AddressSerializer;
+import com.affirm.android.model.AffirmAdapterFactory;
+import com.affirm.android.model.CardDetailsInner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.concurrent.TimeUnit;
-
-import androidx.annotation.NonNull;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,6 +24,8 @@ public class AffirmPlugins {
 
     private AffirmHttpClient restClient;
     private Gson gson;
+
+    private CardDetailsInner cardDetailsInner;
 
     AffirmPlugins(@NonNull Affirm.Configuration configuration) {
         this.configuration = configuration;
@@ -61,12 +64,24 @@ public class AffirmPlugins {
         }
     }
 
+    public CardDetailsInner getCachedCardDetails() {
+        return cardDetailsInner;
+    }
+
+    public void setCacheCardDetails(CardDetailsInner cardDetailsInner) {
+        this.cardDetailsInner = cardDetailsInner;
+    }
+
     public String publicKey() {
         return configuration.publicKey;
     }
 
     String merchantName() {
         return configuration.merchantName;
+    }
+
+    String cardTip() {
+        return configuration.cardTip;
     }
 
     Affirm.Environment environment() {
@@ -117,7 +132,6 @@ public class AffirmPlugins {
                 builder.addHeader("Content-Type", "application/json");
                 builder.addHeader("Affirm-User-Agent", "Affirm-Android-SDK");
                 builder.addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME);
-
                 CookieManager cookieManager = CookieManager.getInstance();
                 String cookie = cookieManager
                         .getCookie(AffirmConstants.HTTPS_PROTOCOL + baseUrl());

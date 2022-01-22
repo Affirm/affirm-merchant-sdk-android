@@ -1,0 +1,51 @@
+<com.affirm.android.widget.VCNCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vcnCardView"
+    style="@style/AffirmCard.VCN"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="@dimen/affirm_screen_horizontal_margin"
+    android:layout_marginRight="@dimen/affirm_screen_horizontal_margin"
+    android:background="@color/affirm_transparent"
+    app:aspectRatioFixedWidth="true"
+    app:aspectRatioHeight="214"
+    app:aspectRatioWidth="337"
+    tools:ignore="SpUsage">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewInVCNCardView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/affirm_transparent"
+        android:backgroundTint="@color/affirm_transparent"
+        app:cardCornerRadius="@dimen/affirm_corner_radius"
+        app:cardUseCompatPadding="true">
+
+        <ImageView
+            android:id="@+id/cardExpiredMask"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@color/affirm_white50"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/cardStatusLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:alpha="0.8"
+            android:background="@drawable/affirm_bordered_outline_white"
+            android:paddingLeft="18dp"
+            android:paddingTop="6dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="6dp"
+            android:textAllCaps="true"
+            android:textColor="@color/affirm_white"
+            android:visibility="gone"
+            tools:text="USED" />
+
+    </androidx.cardview.widget.CardView>
+
+</com.affirm.android.widget.VCNCardView>

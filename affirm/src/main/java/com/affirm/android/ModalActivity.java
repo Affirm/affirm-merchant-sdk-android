@@ -100,7 +100,6 @@ public class ModalActivity extends AffirmActivity implements ModalWebViewClient.
 
     @Override
     void beforeOnCreate() {
-        AffirmUtils.hideActionBar(this);
     }
 
     @Override

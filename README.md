@@ -33,7 +33,7 @@ Affirm.initialize(new Affirm.Configuration.Builder("public key")
         .setVcnCheckoutRequestCode(8002)
         .setPrequalRequestCode(8003)
         .setLocation(Affirm.Location.US)  // "CA" for Canadian, "US" for American (If not set, default use US)
-        .build()
+        .build())
 ```
 - `environment` can be set to `Affirm.Environment.SANDBOX` for test.
 - To prevent conflicts, you can set a custom affirm's request code.

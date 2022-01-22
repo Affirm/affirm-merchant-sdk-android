@@ -1,0 +1,9 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="@dimen/affirm_corner_radius" />
+    <gradient
+        android:angle="135"
+        android:endColor="@color/affirm_white11"
+        android:startColor="@color/affirm_transparent30"
+        android:type="linear" />
+</shape>

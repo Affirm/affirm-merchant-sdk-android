@@ -4,20 +4,24 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.affirm.android.exception.AffirmException;
-import com.affirm.android.exception.ConnectionException;
-import com.affirm.android.model.CardDetails;
-import com.affirm.android.model.VcnReason;
-import com.affirm.android.model.Checkout;
-import com.affirm.android.model.CheckoutResponse;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.affirm.android.exception.AffirmException;
+import com.affirm.android.exception.ConnectionException;
+import com.affirm.android.model.CardDetails;
+import com.affirm.android.model.CardDetailsInner;
+import com.affirm.android.model.Checkout;
+import com.affirm.android.model.CheckoutResponse;
+import com.affirm.android.model.VcnReason;
+
+import org.joda.money.Money;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Calendar;
+import java.util.HashMap;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_URL;
 import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_URL;
@@ -25,14 +29,16 @@ import static com.affirm.android.AffirmConstants.CANCELLED_CB_URL;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_MONEY;
 import static com.affirm.android.AffirmConstants.CONFIRM_CB_URL;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
-import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
+import static com.affirm.android.AffirmConstants.NEW_FLOW;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
 import static com.affirm.android.AffirmConstants.URL;
 import static com.affirm.android.AffirmConstants.URL2;
 import static com.affirm.android.AffirmConstants.UTF_8;
+import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_SUCCESS;
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_WEBVIEW_FAIL;
@@ -48,29 +54,33 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
 
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout, @Nullable String caas,
-                              int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
-        Intent intent = buildIntent(activity, checkout, caas, cardAuthWindow,
-                configReceiveReasonCodes);
+        @Nullable Money money, int cardAuthWindow, @NonNull String configReceiveReasonCodes,
+                              boolean newFlow) {
+        Intent intent = buildIntent(activity, checkout, caas, money, cardAuthWindow,
+                configReceiveReasonCodes, newFlow);
         startForResult(activity, intent, requestCode);
     }
 
     static void startActivity(@NonNull Fragment fragment, int requestCode,
                               @NonNull Checkout checkout, @Nullable String caas,
-                              int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
-        Intent intent = buildIntent(fragment.requireActivity(), checkout, caas, cardAuthWindow,
-                configReceiveReasonCodes);
+                              @Nullable Money money, int cardAuthWindow,
+                              @NonNull String configReceiveReasonCodes, boolean newFlow) {
+        Intent intent = buildIntent(fragment.requireActivity(), checkout, caas, money,
+                cardAuthWindow, configReceiveReasonCodes, newFlow);
         startForResult(fragment, intent, requestCode);
     }
 
     private static Intent buildIntent(
             @NonNull Activity originalActivity,
-            @NonNull Checkout checkout, @Nullable String caas,
-            int cardAuthWindow, @NonNull String configReceiveReasonCodes) {
+            @NonNull Checkout checkout, @Nullable String caas, @Nullable Money money,
+            int cardAuthWindow, @NonNull String configReceiveReasonCodes, boolean newFlow) {
 
         receiveReasonCodes = configReceiveReasonCodes;
         final Intent intent = new Intent(originalActivity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
         intent.putExtra(CHECKOUT_CAAS_EXTRA, caas);
+        intent.putExtra(CHECKOUT_MONEY, money);
+        intent.putExtra(NEW_FLOW, newFlow);
         intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
         return intent;
     }
@@ -130,11 +140,18 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     @Override
     public void onWebViewConfirmation(@NonNull CardDetails cardDetails) {
         AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_SUCCESS, INFO, null);
-
-        final Intent intent = new Intent();
-        intent.putExtra(CREDIT_DETAILS, cardDetails);
-        setResult(RESULT_OK, intent);
-        finish();
+        if (newFlow) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.HOUR, 24);
+            AffirmPlugins.get().setCacheCardDetails(
+                    new CardDetailsInner(cardDetails, calendar.getTime()));
+            Affirm.startVcnDisplay(this, checkout, caas);
+        } else {
+            final Intent intent = new Intent();
+            intent.putExtra(CREDIT_DETAILS, cardDetails);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 
     @Override
@@ -154,6 +171,13 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
         final Intent intent = new Intent();
         intent.putExtra(VCN_REASON, vcnReason);
         setResult(RESULT_CANCELED, intent);
+        finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        setResult(resultCode, data);
         finish();
     }
 }

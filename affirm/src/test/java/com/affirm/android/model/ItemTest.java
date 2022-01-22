@@ -3,7 +3,6 @@ package com.affirm.android.model;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;

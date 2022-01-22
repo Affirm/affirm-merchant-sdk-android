@@ -706,8 +706,7 @@ public final class Affirm {
         JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow, useVCN);
         if (useVCN) {
             AffirmTracker.track(VCN_CHECKOUT_CREATION_CLICK, INFO, trackInfo);
-            VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas,
-                    cardAuthWindow, receiveReasonCodes);
+            startVcnCheckout(activity, checkout, caas, null, false, cardAuthWindow);
         } else {
             AffirmTracker.track(CHECKOUT_WEBVIEW_CLICK, INFO, trackInfo);
             CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,

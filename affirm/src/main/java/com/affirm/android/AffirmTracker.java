@@ -6,12 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.affirm.android.exception.AffirmException;
-import com.affirm.android.model.Checkout;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.util.Locale;
@@ -31,12 +28,8 @@ final class AffirmTracker {
     enum TrackingEvent {
         CHECKOUT_CREATION_FAIL("Checkout creation failed"),
         CHECKOUT_CREATION_SUCCESS("Checkout creation success"),
-        CHECKOUT_WEBVIEW_CLICK("Checkout webView click"),
-        CHECKOUT_WEBVIEW_START("Checkout webView start"),
         CHECKOUT_WEBVIEW_SUCCESS("Checkout webView success"),
         CHECKOUT_WEBVIEW_FAIL("Checkout WebView failed"),
-        VCN_CHECKOUT_CREATION_CLICK("Vcn Checkout creation click"),
-        VCN_CHECKOUT_CREATION_START("Vcn Checkout creation start"),
         VCN_CHECKOUT_CREATION_FAIL("Vcn Checkout creation failed"),
         VCN_CHECKOUT_CREATION_SUCCESS("Vcn Checkout creation success"),
         VCN_CHECKOUT_WEBVIEW_SUCCESS("Vcn Checkout webView success"),
@@ -128,26 +121,6 @@ final class AffirmTracker {
             jsonObject.add("status_code", null);
             jsonObject.add(affirmRequestIDHeader, null);
         }
-        return jsonObject;
-    }
-
-    static JsonObject createTrackingException(@NonNull AffirmException exception) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("error", exception.toString());
-        return jsonObject;
-    }
-
-    static JsonObject createTrackingCheckout(@NonNull Checkout checkout,
-                                             @Nullable String caas,
-                                             int cardAuthWindow,
-                                             boolean useVCN) {
-        final JsonObject checkoutJson = new JsonParser().parse(
-                AffirmPlugins.get().gson().toJson(checkout)).getAsJsonObject();
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.add("checkout", checkoutJson);
-        jsonObject.addProperty("caas", caas);
-        jsonObject.addProperty("cardAuthWindow", cardAuthWindow);
-        jsonObject.addProperty("useVCN", useVCN);
         return jsonObject;
     }
 }

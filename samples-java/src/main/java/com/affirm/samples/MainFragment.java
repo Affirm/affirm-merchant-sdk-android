@@ -87,7 +87,7 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
             }
         });
 
-        view.findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(MainFragment.this, Config.MODAL_ID));
+        view.findViewById(R.id.siteModalButton).setOnClickListener(v -> Affirm.showSiteModal(MainFragment.this, "5LNMQ33SEUYHLNUC"));
 
         view.findViewById(R.id.productModalButton).setOnClickListener(v -> Affirm.showProductModal(MainFragment.this, PRICE, null, PromoPageType.PRODUCT, null));
 
@@ -97,8 +97,6 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
         });
 
         view.findViewById(R.id.clearCookies).setOnClickListener(v -> CookiesUtil.clearCookies(getContext()));
-
-        view.findViewById(R.id.fragmentUsages).setOnClickListener(v -> startActivity(new Intent(getActivity(), FragmentUsagesActivity.class)));
 
         // Option1 - Load via findViewById
         AffirmPromotionButton affirmPromotionButton1 = view.findViewById(R.id.promo);

@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -9,15 +10,31 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.affirm.android.exception.ConnectionException;
+
 import java.math.BigDecimal;
 
+import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmConstants.AMOUNT;
+import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.PAGE_TYPE;
+import static com.affirm.android.AffirmConstants.PREQUAL_ERROR;
+import static com.affirm.android.AffirmConstants.PREQUAL_IS_SDK;
+import static com.affirm.android.AffirmConstants.PREQUAL_PAGE_TYPE;
+import static com.affirm.android.AffirmConstants.PREQUAL_PATH;
+import static com.affirm.android.AffirmConstants.PREQUAL_PROMO_EXTERNAL_ID;
+import static com.affirm.android.AffirmConstants.PREQUAL_PUBLIC_API_KEY;
+import static com.affirm.android.AffirmConstants.PREQUAL_REFERRING_URL;
+import static com.affirm.android.AffirmConstants.PREQUAL_UNIT_PRICE;
+import static com.affirm.android.AffirmConstants.PREQUAL_USE_PROMO;
 import static com.affirm.android.AffirmConstants.PROMO_ID;
+import static com.affirm.android.AffirmConstants.REFERRING_URL;
+import static com.affirm.android.AffirmTracker.TrackingEvent.PREQUAL_WEBVIEW_FAIL;
+import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
 
-public class PrequalActivity extends AffirmActivity implements Affirm.PrequalCallbacks {
+public class PrequalActivity extends AffirmActivity implements PrequalWebViewClient.Callbacks {
 
-    private BigDecimal amount;
+    private String amount;
     private String promoId;
     private String pageType;
 
@@ -41,35 +58,74 @@ public class PrequalActivity extends AffirmActivity implements Affirm.PrequalCal
             @Nullable String promoId,
             @Nullable String pageType) {
         final Intent intent = new Intent(originalActivity, PrequalActivity.class);
-        intent.putExtra(AMOUNT, amount);
+        final String stringAmount =
+                String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
+        intent.putExtra(AMOUNT, stringAmount);
         intent.putExtra(PROMO_ID, promoId);
         intent.putExtra(PAGE_TYPE, pageType);
         return intent;
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    void beforeOnCreate() {
         AffirmUtils.showCloseActionBar(this);
-        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    void initViews() {
+        AffirmUtils.debuggableWebView(this);
+        webView.setWebViewClient(new PrequalWebViewClient(this));
+        webView.setWebChromeClient(new AffirmWebChromeClient(this));
+    }
+
+    @Override
+    void initData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            amount = (BigDecimal) savedInstanceState.getSerializable(AMOUNT);
+            amount = savedInstanceState.getString(AMOUNT);
             promoId = savedInstanceState.getString(PROMO_ID);
             pageType = savedInstanceState.getString(PAGE_TYPE);
         } else {
-            amount = (BigDecimal) getIntent().getSerializableExtra(AMOUNT);
+            amount = getIntent().getStringExtra(AMOUNT);
             promoId = getIntent().getStringExtra(PROMO_ID);
             pageType = getIntent().getStringExtra(PAGE_TYPE);
         }
-        PrequalFragment.newInstance(this, android.R.id.content, amount, promoId, pageType);
+    }
+
+    @Override
+    void onAttached() {
+        String publicKey = AffirmPlugins.get().publicKey();
+        String prequalUri = HTTPS_PROTOCOL + AffirmPlugins.get().basePromoUrl() + PREQUAL_PATH;
+        Uri.Builder builder = Uri.parse(prequalUri).buildUpon();
+        builder.appendQueryParameter(PREQUAL_PUBLIC_API_KEY, publicKey);
+        builder.appendQueryParameter(PREQUAL_UNIT_PRICE, amount);
+        builder.appendQueryParameter(PREQUAL_USE_PROMO, "true");
+        builder.appendQueryParameter(PREQUAL_IS_SDK, "true");
+        builder.appendQueryParameter(PREQUAL_REFERRING_URL, REFERRING_URL);
+        if (promoId != null) {
+            builder.appendQueryParameter(PREQUAL_PROMO_EXTERNAL_ID, promoId);
+        }
+        if (pageType != null) {
+            builder.appendQueryParameter(PREQUAL_PAGE_TYPE, pageType);
+        }
+        webView.loadUrl(builder.build().toString());
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putSerializable(AMOUNT, amount);
+        outState.putString(AMOUNT, amount);
         outState.putString(PROMO_ID, promoId);
         outState.putString(PAGE_TYPE, pageType);
+    }
+
+    @Override
+    public void onWebViewError(@NonNull ConnectionException error) {
+        AffirmTracker.track(PREQUAL_WEBVIEW_FAIL, ERROR, null);
+        final Intent intent = new Intent();
+        intent.putExtra(PREQUAL_ERROR, error.toString());
+        setResult(RESULT_ERROR, intent);
+        finish();
     }
 
     @Override
@@ -82,7 +138,7 @@ public class PrequalActivity extends AffirmActivity implements Affirm.PrequalCal
     }
 
     @Override
-    public void onAffirmPrequalError(@Nullable String message) {
-        finishWithPrequalError(message);
+    public void onWebViewConfirmation() {
+        finish();
     }
 }

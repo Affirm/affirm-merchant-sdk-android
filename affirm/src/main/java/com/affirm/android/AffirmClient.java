@@ -91,8 +91,9 @@ public final class AffirmClient {
                             );
                         } catch (JsonSyntaxException | IOException e) {
                             handleErrorResponse(
-                                    new APIException("Some error occurred while parsing the "
-                                            + "promo response", e), listener
+                                    new APIException("Some error occurred while parsing response",
+                                            e),
+                                    listener
                             );
                         }
                     } else {

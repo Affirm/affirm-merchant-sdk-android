@@ -27,11 +27,6 @@ public class AffirmPluginsTest {
     }
 
     @Test
-    public void testPublicKey() {
-        Truth.assertThat(AffirmPlugins.get().publicKey()).isEqualTo("Y8CQXFF044903JC0");
-    }
-
-    @Test
     public void testEnvironment() {
         Truth.assertThat(AffirmPlugins.get().environment()).isEqualTo(Affirm.Environment.SANDBOX);
     }
@@ -54,10 +49,5 @@ public class AffirmPluginsTest {
     @Test
     public void testBaseInvalidCheckoutRedirectUrl() {
         Truth.assertThat(AffirmPlugins.get().baseInvalidCheckoutRedirectUrl()).isEqualTo("sandbox.affirm.com/u/");
-    }
-
-    @Test
-    public void testMerchantName() {
-        Truth.assertThat(AffirmPlugins.get().merchantName()).isEqualTo(null);
     }
 }

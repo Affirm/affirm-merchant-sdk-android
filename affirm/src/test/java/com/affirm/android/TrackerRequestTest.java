@@ -97,7 +97,7 @@ public class TrackerRequestTest {
 
         Mockito.verify(client, times(1)).newCall(requestCaptor.capture());
         final Request request = requestCaptor.getValue();
-        final String body = RequestUtils.bodyToString(request);
+        final String body = RequestUtilsTest.bodyToString(request);
 
         JsonObject jsonObject = new JsonParser().parse(body).getAsJsonObject();
 

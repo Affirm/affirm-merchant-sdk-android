@@ -10,7 +10,7 @@ public class SampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Affirm.initialize(new Affirm.Configuration.Builder("6YN1HYTDBEMFF8CK") // In Canadian, should use Canada public API key
+        Affirm.initialize(new Affirm.Configuration.Builder(Config.PUBLIC_KEY) // In Canadian, should use Canada public API key
                 .setEnvironment(Affirm.Environment.SANDBOX)
                 .setMerchantName(null)
                 .setReceiveReasonCodes("true")

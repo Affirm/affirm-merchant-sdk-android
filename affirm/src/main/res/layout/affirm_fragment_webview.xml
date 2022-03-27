@@ -1,12 +1,11 @@
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.affirm.android.AffirmWebView
         android:id="@+id/webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <FrameLayout
         android:id="@+id/progressIndicator"
@@ -20,7 +19,7 @@
             android:layout_width="@dimen/affirm_progressbar_dimen"
             android:layout_height="@dimen/affirm_progressbar_dimen"
             android:layout_gravity="center"
-            android:indeterminate="true"/>
+            android:indeterminate="true" />
     </FrameLayout>
 
-</merge>
+</FrameLayout>

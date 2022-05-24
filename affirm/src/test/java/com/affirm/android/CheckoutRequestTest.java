@@ -64,7 +64,7 @@ public class CheckoutRequestTest {
 
         Mockito.verify(client).newCall(requestCaptor.capture());
         Request request = requestCaptor.getValue();
-        Truth.assertThat(RequestUtils.bodyToString(request)).isEqualTo(generateExpectedCheckoutBody());
+        Truth.assertThat(RequestUtilsTest.bodyToString(request)).isEqualTo(generateExpectedCheckoutBody());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class CheckoutRequestTest {
 
         Mockito.verify(client).newCall(requestCaptor.capture());
         Request request = requestCaptor.getValue();
-        Truth.assertThat(RequestUtils.bodyToString(request)).isEqualTo(generateExpectedCheckoutWithCaasBody());
+        Truth.assertThat(RequestUtilsTest.bodyToString(request)).isEqualTo(generateExpectedCheckoutWithCaasBody());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class CheckoutRequestTest {
 
         Mockito.verify(client).newCall(requestCaptor.capture());
         Request request = requestCaptor.getValue();
-        Truth.assertThat(RequestUtils.bodyToString(request)).isEqualTo(generateExpectedCheckoutWithCardAuthWindowBody());
+        Truth.assertThat(RequestUtilsTest.bodyToString(request)).isEqualTo(generateExpectedCheckoutWithCardAuthWindowBody());
     }
 }
 

@@ -452,4 +452,212 @@ public class MainActivityEspressoTest {
 
         pressBack();
     }
+
+    @Test
+    public void testFragmentCheckout() throws Exception {
+        final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+
+        onView(withId(R.id.clearCookies)).perform(click());
+
+        SystemClock.sleep(4000);
+
+        // Review plan
+        new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(1);
+
+        SystemClock.sleep(4000);
+
+        onView(withId(R.id.fragmentUsages)).perform(click());
+
+        SystemClock.sleep(4000);
+
+        final int timeOut = 1000 * 60;
+
+        onView(withId(R.id.checkout)).perform(click());
+        device.wait(Until.findObject(By.clazz(WebView.class)), timeOut);
+
+        // Input number
+        UiObject emailInput = device.findObject(new UiSelector()
+                .instance(0)
+                .className(EditText.class));
+
+        emailInput.waitForExists(timeOut);
+        emailInput.setText("8888888888");
+
+        new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(1);
+
+        SystemClock.sleep(4000);
+
+        UiObject buttonContinue = device.findObject(new UiSelector()
+                .instance(5)
+                .className(Button.class));
+
+        buttonContinue.waitForExists(timeOut);
+        buttonContinue.clickAndWaitForNewWindow();
+
+        // Input code
+        UiObject inputValidate = device.findObject(new UiSelector()
+                .instance(0)
+                .className(EditText.class));
+
+        inputValidate.waitForExists(timeOut);
+        inputValidate.setText("1234");
+
+        SystemClock.sleep(2000);
+
+        // Select payment plan
+        UiObject appItem = device.findObject(new UiSelector().className("android.widget.ListView").instance(0)
+                .childSelector(new UiSelector().className(View.class).instance(0))
+        );
+
+        appItem.waitForExists(timeOut);
+        appItem.clickAndWaitForNewWindow();
+
+        SystemClock.sleep(2000);
+
+        // Review plan
+        UiScrollable appView = new UiScrollable(new UiSelector().scrollable(true));
+
+        appView.scrollToEnd(1);
+
+        device.findObject(new UiSelector().text("Continue").className(Button.class)).clickAndWaitForNewWindow();
+
+        SystemClock.sleep(2000);
+
+        // Confirm
+        appView.scrollIntoView(new UiSelector().className(Button.class).instance(7));
+
+        SystemClock.sleep(2000);
+
+        appView.scrollToEnd(1);
+
+        UiObject checkbox = device.findObject(new UiSelector().className(CheckBox.class).instance(0));
+
+        int w = device.getDisplayWidth();
+        device.click(w / 2, checkbox.getVisibleBounds().centerY() + 30);
+
+//        checkbox.waitForExists(timeOut);
+//        checkbox.clickAndWaitForNewWindow();
+
+        SystemClock.sleep(2000);
+
+        device.findObject(new UiSelector().resourceId("confirm-submit").className(Button.class)).clickAndWaitForNewWindow();
+
+        SystemClock.sleep(10000);
+    }
+
+    @Test
+    public void testFragmentVCNCheckout() throws Exception {
+        final UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+
+        onView(withId(R.id.clearCookies)).perform(click());
+
+        SystemClock.sleep(4000);
+
+        // Review plan
+        new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(1);
+
+        SystemClock.sleep(4000);
+
+        onView(withId(R.id.fragmentUsages)).perform(click());
+
+        SystemClock.sleep(4000);
+
+        final int timeOut = 1000 * 60;
+        onView(withId(R.id.vcnCheckout)).perform(click());
+
+        device.wait(Until.findObject(By.clazz(WebView.class)), timeOut);
+
+        // Input number
+        UiObject emailInput = device.findObject(new UiSelector()
+                .instance(0)
+                .className(EditText.class));
+
+        emailInput.waitForExists(timeOut);
+        emailInput.setText("8888888888");
+
+        new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(1);
+
+        SystemClock.sleep(4000);
+
+        UiObject buttonContinue = device.findObject(new UiSelector()
+                .instance(5)
+                .className(Button.class));
+
+        buttonContinue.waitForExists(timeOut);
+        buttonContinue.clickAndWaitForNewWindow();
+
+        new UiScrollable(new UiSelector().scrollable(true)).scrollToEnd(1);
+
+        // Input code
+        UiObject inputValidate = device.findObject(new UiSelector()
+                .instance(0)
+                .className(EditText.class));
+
+        inputValidate.waitForExists(timeOut);
+        inputValidate.setText("1234");
+
+        SystemClock.sleep(2000);
+
+        // Select payment plan
+        UiObject appItem = device.findObject(new UiSelector().className("android.widget.ListView").instance(0)
+                .childSelector(new UiSelector().className(View.class).instance(0))
+        );
+
+        appItem.waitForExists(timeOut);
+        appItem.clickAndWaitForNewWindow();
+
+        SystemClock.sleep(2000);
+
+        // Review plan
+        UiScrollable appView = new UiScrollable(new UiSelector().scrollable(true));
+//
+//        appView.scrollToEnd(1);
+//
+//        SystemClock.sleep(2000);
+
+        int w = device.getDisplayWidth();
+        int h = device.getDisplayHeight();
+        device.click(w / 2, h - 200);
+
+        // The uiautomator map doesn't have the right coordinates after scroll to bottom
+//        UiObject continueButton = device.findObject(new UiSelector().text("Continue").className(Button.class));
+//
+//        continueButton.waitForExists(timeOut);
+//        continueButton.clickAndWaitForNewWindow();
+
+        SystemClock.sleep(2000);
+
+        appView.scrollToEnd(1);
+
+        device.findObject(new UiSelector().text("Continue").className(Button.class)).clickAndWaitForNewWindow();
+
+        SystemClock.sleep(2000);
+
+        appView.scrollIntoView(new UiSelector().className(Button.class).instance(10));
+
+        SystemClock.sleep(2000);
+
+        appView.scrollToEnd(1);
+
+        // Confirm
+        UiObject checkbox = device.findObject(new UiSelector().className(CheckBox.class).instance(0));
+
+        device.click(device.getDisplayWidth() / 2, checkbox.getVisibleBounds().centerY() + 30);
+
+//        checkbox.waitForExists(timeOut);
+//        checkbox.clickAndWaitForNewWindow();
+
+        SystemClock.sleep(2000);
+
+        device.findObject(new UiSelector().resourceId("confirm-submit").className(Button.class)).clickAndWaitForNewWindow();
+
+//        new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().className(Button.class).instance(9));
+
+        // The uiautomator map doesn't have the right coordinates after scroll to bottom
+//        device.findObject(new UiSelector().resourceId("confirm-submit").className(Button.class)).clickAndWaitForNewWindow();
+
+//        device.click(w / 2, h - 200);
+
+        SystemClock.sleep(10000);
+    }
 }

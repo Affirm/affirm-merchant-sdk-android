@@ -10,4 +10,5 @@
         <item>New Credit Card</item>
         <item>Show Credit Card</item>
     </string-array>
+    <string name="fragment_usages">Fragments Usages</string>
 </resources>

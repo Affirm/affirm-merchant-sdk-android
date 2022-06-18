@@ -4,8 +4,6 @@ import android.webkit.CookieManager;
 
 import androidx.annotation.NonNull;
 
-import com.affirm.android.model.AbstractAddress;
-import com.affirm.android.model.AddressSerializer;
 import com.affirm.android.model.AffirmAdapterFactory;
 import com.affirm.android.model.CardDetailsInner;
 import com.google.gson.Gson;
@@ -88,35 +86,42 @@ public class AffirmPlugins {
         return configuration.environment;
     }
 
+    String locale() {
+        return configuration.locale;
+    }
+
+    String countryCode() {
+        return configuration.countryCode;
+    }
+
     String environmentName() {
         return configuration.environment.name();
     }
 
-    String baseUrl() {
-        return configuration.environment.baseUrl();
+    String checkoutUrl() {
+        return configuration.environment.checkoutUrl();
     }
 
-    public String basePromoUrl() {
-        return configuration.environment.basePromoUrl();
+    String promoUrl() {
+        return configuration.environment.promoUrl(countryCode());
     }
 
-    String baseJsUrl() {
-        return configuration.environment.baseJsUrl();
+    String jsUrl() {
+        return configuration.environment.jsUrl();
     }
 
-    String trackerBaseUrl() {
-        return configuration.environment.trackerBaseUrl();
+    String trackerUrl() {
+        return configuration.environment.trackerUrl();
     }
 
-    String baseInvalidCheckoutRedirectUrl() {
-        return configuration.environment.baseInvalidCheckoutRedirectUrl();
+    String invalidCheckoutRedirectUrl() {
+        return configuration.environment.invalidCheckoutRedirectUrl();
     }
 
     synchronized Gson gson() {
         if (gson == null) {
             gson = new GsonBuilder()
                     .registerTypeAdapterFactory(AffirmAdapterFactory.create())
-                    .registerTypeAdapter(AbstractAddress.class, new AddressSerializer())
                     .create();
         }
         return gson;
@@ -133,8 +138,9 @@ public class AffirmPlugins {
                 builder.addHeader("Affirm-User-Agent", "Affirm-Android-SDK");
                 builder.addHeader("Affirm-User-Agent-Version", BuildConfig.VERSION_NAME);
                 CookieManager cookieManager = CookieManager.getInstance();
-                String cookie = cookieManager
-                        .getCookie(AffirmConstants.HTTPS_PROTOCOL + baseUrl());
+                String cookie = cookieManager.getCookie(
+                        AffirmConstants.HTTPS_PROTOCOL + promoUrl()
+                );
                 if (cookie != null) {
                     builder.addHeader("Cookie", cookie);
                 }

@@ -18,12 +18,23 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 
+import static com.affirm.android.AffirmConstants.PROMO_AMOUNT;
+import static com.affirm.android.AffirmConstants.PROMO_EXTERNAL_ID;
+import static com.affirm.android.AffirmConstants.PROMO_FIELD;
+import static com.affirm.android.AffirmConstants.PROMO_FIELD_VALUE;
+import static com.affirm.android.AffirmConstants.PROMO_IS_SDK;
+import static com.affirm.android.AffirmConstants.PROMO_ITEMS;
+import static com.affirm.android.AffirmConstants.PROMO_LOCALE;
+import static com.affirm.android.AffirmConstants.PROMO_LOGO_COLOR;
+import static com.affirm.android.AffirmConstants.PROMO_LOGO_TYPE;
+import static com.affirm.android.AffirmConstants.PROMO_PAGE_TYPE;
 import static com.affirm.android.AffirmConstants.PROMO_PATH;
+import static com.affirm.android.AffirmConstants.PROMO_SHOW_CTA;
 
 class PromoRequest implements AffirmRequest {
 
@@ -149,36 +160,32 @@ class PromoRequest implements AffirmRequest {
         @Override
         public String url() {
             int centAmount = AffirmUtils.decimalDollarsToIntegerCents(dollarAmount);
-            StringBuilder path = new StringBuilder(
-                    String.format(
-                            Locale.getDefault(),
-                            PROMO_PATH,
-                            AffirmPlugins.get().publicKey(),
-                            centAmount,
-                            showCta
-                    )
-            );
-
+            Uri uri = Uri.parse(String.format(
+                    AffirmHttpClient.getProtocol()
+                            + AffirmPlugins.get().promoUrl()
+                            + PROMO_PATH,
+                    AffirmPlugins.get().publicKey()
+            ));
+            Uri.Builder builder = uri.buildUpon();
+            builder.appendQueryParameter(PROMO_IS_SDK, String.valueOf(true));
+            builder.appendQueryParameter(PROMO_FIELD, PROMO_FIELD_VALUE);
+            builder.appendQueryParameter(PROMO_AMOUNT, String.valueOf(centAmount));
+            builder.appendQueryParameter(PROMO_SHOW_CTA, String.valueOf(showCta));
             if (promoId != null) {
-                path.append("&promo_external_id=").append(promoId);
+                builder.appendQueryParameter(PROMO_EXTERNAL_ID, promoId);
             }
-
             if (pageType != null) {
-                path.append("&page_type=").append(pageType.getType());
+                builder.appendQueryParameter(PROMO_PAGE_TYPE, pageType.getType());
             }
-
-            path.append("&logo_color=")
-                    .append(affirmColor.getColor())
-                    .append("&logo_type=")
-                    .append(affirmLogoType.getType());
-
+            builder.appendQueryParameter(PROMO_LOGO_COLOR, affirmColor.getColor());
+            builder.appendQueryParameter(PROMO_LOGO_TYPE, affirmLogoType.getType());
             if (items != null) {
-                path.append("&items=").append(Uri.encode(AffirmPlugins.get().gson().toJson(items)));
+                builder.appendQueryParameter(PROMO_ITEMS,
+                        Uri.encode(AffirmPlugins.get().gson().toJson(items))
+                );
             }
-
-            return AffirmHttpClient.getProtocol()
-                    + AffirmPlugins.get().basePromoUrl()
-                    + path.toString();
+            builder.appendQueryParameter(PROMO_LOCALE, AffirmPlugins.get().locale());
+            return builder.build().toString();
         }
 
         @NotNull
@@ -190,6 +197,12 @@ class PromoRequest implements AffirmRequest {
         @Nullable
         @Override
         public JsonObject body() {
+            return null;
+        }
+
+        @Nullable
+        @Override
+        public Map<String, String> headers() {
             return null;
         }
     }

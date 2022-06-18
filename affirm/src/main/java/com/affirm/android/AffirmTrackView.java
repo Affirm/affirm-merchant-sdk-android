@@ -21,9 +21,11 @@ import java.util.HashMap;
 import androidx.annotation.NonNull;
 
 import static com.affirm.android.AffirmConstants.API_KEY;
+import static com.affirm.android.AffirmConstants.COUNTRY_CODE;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.JAVASCRIPT;
 import static com.affirm.android.AffirmConstants.JS_PATH;
+import static com.affirm.android.AffirmConstants.LOCALE;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
 import static com.affirm.android.AffirmConstants.TRACK_ORDER_OBJECT;
 import static com.affirm.android.AffirmConstants.TRACK_PRODUCT_OBJECT;
@@ -79,7 +81,7 @@ public class AffirmTrackView extends FrameLayout
         webView.setWebChromeClient(new AffirmWebChromeClient(this));
 
         final String html = initialHtml();
-        webView.loadDataWithBaseURL(HTTPS_PROTOCOL + AffirmPlugins.get().baseUrl(), html,
+        webView.loadDataWithBaseURL(HTTPS_PROTOCOL + AffirmPlugins.get().promoUrl(), html,
                 TEXT_HTML, UTF_8, null);
         // Since there is no callback, the track view will be removed after 10 seconds timeout.
         handler.postDelayed(new Runnable() {
@@ -101,12 +103,14 @@ public class AffirmTrackView extends FrameLayout
         } finally {
             AffirmUtils.closeInputStream(ins);
         }
-        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseJsUrl() + JS_PATH;
+        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().jsUrl() + JS_PATH;
 
         final HashMap<String, String> map = new HashMap<>();
 
         map.put(API_KEY, AffirmPlugins.get().publicKey());
         map.put(JAVASCRIPT, fullPath);
+        map.put(LOCALE, AffirmPlugins.get().locale());
+        map.put(COUNTRY_CODE, AffirmPlugins.get().countryCode());
         map.put(TRACK_ORDER_OBJECT, buildOrderObject().toString());
         map.put(TRACK_PRODUCT_OBJECT, buildProductObject().toString());
         return AffirmUtils.replacePlaceholders(html, map);

@@ -101,7 +101,7 @@ public final class PrequalFragment extends AffirmFragment
     @Override
     void onAttached() {
         String publicKey = AffirmPlugins.get().publicKey();
-        String prequalUri = HTTPS_PROTOCOL + AffirmPlugins.get().basePromoUrl() + PREQUAL_PATH;
+        String prequalUri = HTTPS_PROTOCOL + AffirmPlugins.get().promoUrl() + PREQUAL_PATH;
         Uri.Builder builder = Uri.parse(prequalUri).buildUpon();
         builder.appendQueryParameter(PREQUAL_PUBLIC_API_KEY, publicKey);
         builder.appendQueryParameter(PREQUAL_UNIT_PRICE, amount);

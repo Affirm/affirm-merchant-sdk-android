@@ -11,7 +11,7 @@ class SampleApplication : Application() {
 
         Affirm.initialize(Affirm.Configuration.Builder("Y8CQXFF044903JC0")
                 .setEnvironment(Affirm.Environment.SANDBOX)
-                .setCountryCode("USA")  // Default USA
+                .setCountryCode(Locale.US.isO3Country)  // Default USA
                 .setLocale(Locale.US.toString())    // Default en_US
                 .setMerchantName(null)
                 .setLogLevel(Affirm.LOG_LEVEL_DEBUG)

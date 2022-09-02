@@ -45,7 +45,6 @@ public final class AffirmConstants {
     static final String PREQUAL_PUBLIC_API_KEY = "public_api_key";
     static final String PREQUAL_UNIT_PRICE = "unit_price";
     static final String PREQUAL_USE_PROMO = "use_promo";
-    static final String PREQUAL_IS_SDK = "isSDK";
     static final String PREQUAL_REFERRING_URL = "referring_url";
     static final String PREQUAL_PROMO_EXTERNAL_ID = "promo_external_id";
     static final String PREQUAL_PAGE_TYPE = "page_type";

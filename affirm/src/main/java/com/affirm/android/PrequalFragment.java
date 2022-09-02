@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import static com.affirm.android.AffirmConstants.AMOUNT;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.PAGE_TYPE;
-import static com.affirm.android.AffirmConstants.PREQUAL_IS_SDK;
 import static com.affirm.android.AffirmConstants.PREQUAL_LOCALE;
 import static com.affirm.android.AffirmConstants.PREQUAL_PAGE_TYPE;
 import static com.affirm.android.AffirmConstants.PREQUAL_PATH;
@@ -107,7 +106,6 @@ public final class PrequalFragment extends AffirmFragment
         builder.appendQueryParameter(PREQUAL_PUBLIC_API_KEY, publicKey);
         builder.appendQueryParameter(PREQUAL_UNIT_PRICE, amount);
         builder.appendQueryParameter(PREQUAL_USE_PROMO, "true");
-        builder.appendQueryParameter(PREQUAL_IS_SDK, "true");
         builder.appendQueryParameter(PREQUAL_REFERRING_URL, REFERRING_URL);
         if (promoId != null) {
             builder.appendQueryParameter(PREQUAL_PROMO_EXTERNAL_ID, promoId);

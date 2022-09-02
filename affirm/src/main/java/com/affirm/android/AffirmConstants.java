@@ -49,6 +49,7 @@ public final class AffirmConstants {
     static final String PREQUAL_REFERRING_URL = "referring_url";
     static final String PREQUAL_PROMO_EXTERNAL_ID = "promo_external_id";
     static final String PREQUAL_PAGE_TYPE = "page_type";
+    static final String PREQUAL_LOCALE = "locale";
 
     static final String AFFIRM_CHECKOUT_CONFIRMATION_URL = "affirm://checkout/confirmed";
     static final String AFFIRM_CHECKOUT_CANCELLATION_URL = "affirm://checkout/cancelled";

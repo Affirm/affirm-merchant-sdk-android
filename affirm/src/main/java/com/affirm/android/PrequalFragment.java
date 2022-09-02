@@ -19,6 +19,7 @@ import static com.affirm.android.AffirmConstants.AMOUNT;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.PAGE_TYPE;
 import static com.affirm.android.AffirmConstants.PREQUAL_IS_SDK;
+import static com.affirm.android.AffirmConstants.PREQUAL_LOCALE;
 import static com.affirm.android.AffirmConstants.PREQUAL_PAGE_TYPE;
 import static com.affirm.android.AffirmConstants.PREQUAL_PATH;
 import static com.affirm.android.AffirmConstants.PREQUAL_PROMO_EXTERNAL_ID;
@@ -114,6 +115,7 @@ public final class PrequalFragment extends AffirmFragment
         if (pageType != null) {
             builder.appendQueryParameter(PREQUAL_PAGE_TYPE, pageType);
         }
+        builder.appendQueryParameter(PREQUAL_LOCALE, AffirmPlugins.get().locale());
         webView.loadUrl(builder.build().toString());
     }
 

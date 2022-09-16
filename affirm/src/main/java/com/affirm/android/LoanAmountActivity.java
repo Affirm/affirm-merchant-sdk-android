@@ -86,6 +86,7 @@ public class LoanAmountActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelable(CHECKOUT_EXTRA, checkout);
         outState.putString(CHECKOUT_CAAS_EXTRA, caas);
+        outState.putInt(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
     }
 
     @Override

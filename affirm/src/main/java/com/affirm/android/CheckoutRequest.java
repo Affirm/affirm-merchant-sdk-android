@@ -25,6 +25,8 @@ import static com.affirm.android.AffirmConstants.API_VERSION_VALUE;
 import static com.affirm.android.AffirmConstants.CHECKOUT;
 import static com.affirm.android.AffirmConstants.CHECKOUT_HEADER_AFFIRM_LOCALE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_HEADER_COUNTRY_CODE;
+import static com.affirm.android.AffirmConstants.CHECKOUT_META;
+import static com.affirm.android.AffirmConstants.CHECKOUT_META_LOCALE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_PATH;
 import static com.affirm.android.AffirmConstants.MERCHANT;
 import static com.affirm.android.AffirmConstants.METADATA;
@@ -192,6 +194,10 @@ class CheckoutRequest implements AffirmRequest {
             }
             checkoutJson.add(MERCHANT, merchantJson);
             checkoutJson.addProperty(API_VERSION_KEY, API_VERSION_VALUE);
+
+            JsonObject metaJson = new JsonObject();
+            metaJson.addProperty(CHECKOUT_META_LOCALE, AffirmPlugins.get().locale());
+            checkoutJson.add(CHECKOUT_META, metaJson);
 
             // Need to set `platform_type` & `platform_affirm` by default
             JsonObject metadataJson = checkoutJson.getAsJsonObject(METADATA);

@@ -17,7 +17,6 @@ public class MerchantTest {
     private static final String nonVcnMerchantitemJson = "{\"public_api_key\":\"abc\",\"user_confirmation_url\":\"affirm://checkout/confirmed\",\"user_cancel_url\":\"affirm://checkout/cancelled\",\"name\":\"def\",\"caas\":\"caas\",\"card_auth_window\":1}";
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(AffirmAdapterFactory.create())
-            .registerTypeAdapter(AbstractAddress.class, new AddressSerializer())
             .create();
 
     @Test

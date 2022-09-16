@@ -34,7 +34,10 @@ import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
+import static com.affirm.android.AffirmConstants.COUNTY_CODE_CAN;
+import static com.affirm.android.AffirmConstants.COUNTY_CODE_USA;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
+import static com.affirm.android.AffirmConstants.LOCALE_USA;
 import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_CLICK;
@@ -118,51 +121,66 @@ public final class Affirm {
         void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails);
     }
 
-    public enum Location {
-        US, CA
-    }
-
     public enum Environment {
         SANDBOX,
         PRODUCTION;
 
-        String baseUrl() {
+        String checkoutUrl() {
             switch (this) {
                 case SANDBOX:
-                    return AffirmConstants.getSandboxUrl();
+                    return AffirmConstants.SANDBOX_CHECKOUT_URL;
                 default:
-                    return AffirmConstants.getProductionUrl();
+                    return AffirmConstants.PRODUCTION_CHECKOUT_URL;
             }
         }
 
-        String baseJsUrl() {
+        String jsUrl() {
             switch (this) {
                 case SANDBOX:
-                    return AffirmConstants.getSandboxJsUrl();
+                    return AffirmConstants.SANDBOX_JS_URL;
                 default:
-                    return AffirmConstants.getProductionJsUrl();
+                    return AffirmConstants.PRODUCTION_JS_URL;
             }
         }
 
-        String trackerBaseUrl() {
-            return AffirmConstants.getTrackerUrl();
+        String trackerUrl() {
+            return AffirmConstants.TRACKER_URL;
         }
 
-        String basePromoUrl() {
-            switch (this) {
-                case SANDBOX:
-                    return AffirmConstants.getStagingPromoUrl();
+        String promoUrl(String countryCode) {
+            switch (countryCode) {
+                case COUNTY_CODE_CAN:
+                    switch (this) {
+                        case SANDBOX:
+                            return AffirmConstants.SANDBOX_PROMO_CA_URL;
+                        default:
+                            return AffirmConstants.PRODUCTION_PROMO_CA_URL;
+                    }
                 default:
-                    return AffirmConstants.getProductionPromoUrl();
+                    switch (this) {
+                        case SANDBOX:
+                            return AffirmConstants.SANDBOX_PROMO_URL;
+                        default:
+                            return AffirmConstants.PRODUCTION_PROMO_URL;
+                    }
             }
         }
 
-        String baseInvalidCheckoutRedirectUrl() {
+        String promoCAUrl() {
             switch (this) {
                 case SANDBOX:
-                    return AffirmConstants.getStagingInvalidCheckoutRedirectUrl();
+                    return AffirmConstants.SANDBOX_PROMO_CA_URL;
                 default:
-                    return AffirmConstants.getProductionInvalidCheckoutRedirectUrl();
+                    return AffirmConstants.PRODUCTION_PROMO_CA_URL;
+            }
+        }
+
+        String invalidCheckoutRedirectUrl() {
+            switch (this) {
+                case SANDBOX:
+                    return AffirmConstants.SANDBOX_INVALID_CHECKOUT_REDIRECT_URL;
+                default:
+                    return AffirmConstants.PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL;
             }
         }
     }
@@ -172,11 +190,15 @@ public final class Affirm {
         final Environment environment;
         final String merchantName;
         final String cardTip;
+        final String locale;
+        final String countryCode;
 
         Configuration(Builder builder) {
             this.publicKey = builder.publicKey;
             this.merchantName = builder.merchantName;
             this.cardTip = builder.cardTip;
+            this.locale = builder.locale;
+            this.countryCode = builder.countryCode;
 
             if (builder.environment != null) {
                 this.environment = builder.environment;
@@ -190,6 +212,10 @@ public final class Affirm {
             private Environment environment;
             private String merchantName;
             private String cardTip;
+            // When a locale is not provided, the locale will default to en_US
+            private String locale = LOCALE_USA;
+            // When a country-code is not provided, the country-code will default to USA
+            private String countryCode = COUNTY_CODE_USA;
 
             /**
              * @param configuration Set the configuration to be used by Affirm.
@@ -198,6 +224,9 @@ public final class Affirm {
                 this.publicKey = configuration.publicKey;
                 this.environment = configuration.environment;
                 this.merchantName = configuration.merchantName;
+                this.cardTip = configuration.cardTip;
+                this.locale = configuration.locale;
+                this.countryCode = configuration.countryCode;
             }
 
             /**
@@ -315,8 +344,25 @@ public final class Affirm {
                 return this;
             }
 
-            public Builder setLocation(Location location) {
-                AffirmConstants.setLocation(location);
+            /**
+             * Set the locale to be used by Affirm, it's optional
+             *
+             * @param locale your locale info to be used by Affirm
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setLocale(String locale) {
+                this.locale = locale;
+                return this;
+            }
+
+            /**
+             * Set the country code to be used by Affirm, it's optional
+             *
+             * @param countryCode your country code to be used by Affirm
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setCountryCode(String countryCode) {
+                this.countryCode = countryCode;
                 return this;
             }
 
@@ -518,7 +564,7 @@ public final class Affirm {
      * @param merchantName Set the merchant name to be used by Affirm.
      */
     public static void setPublicKeyAndMerchantName(@NonNull String publicKey,
-                                                      @Nullable String merchantName) {
+                                                   @Nullable String merchantName) {
         if (!isInitialized()) {
             AffirmLog.w("Affirm has not been initialized");
             return;
@@ -970,13 +1016,13 @@ public final class Affirm {
      * @return a `AffirmFragment`
      */
     protected static AffirmFragment startCheckout(@NonNull AppCompatActivity activity,
-                                               @IdRes int containerViewId,
-                                               @NonNull Checkout checkout,
-                                               @Nullable String caas,
-                                               @Nullable Money money,
-                                               int cardAuthWindow,
-                                               boolean newFlow,
-                                               boolean useVCN) {
+                                                  @IdRes int containerViewId,
+                                                  @NonNull Checkout checkout,
+                                                  @Nullable String caas,
+                                                  @Nullable Money money,
+                                                  int cardAuthWindow,
+                                                  boolean newFlow,
+                                                  boolean useVCN) {
         if (useVCN) {
             return VcnCheckoutFragment.newInstance(activity,
                     containerViewId, checkout, receiveReasonCodes, caas, money, cardAuthWindow,
@@ -1002,16 +1048,16 @@ public final class Affirm {
      * @return a `AffirmFragment`
      */
     protected static AffirmFragment startCheckout(@NonNull Fragment fragment,
-                                               @IdRes int containerViewId,
-                                               @NonNull Checkout checkout,
-                                               @Nullable String caas,
-                                               @Nullable Money money,
-                                               int cardAuthWindow,
-                                               boolean newFlow,
-                                               boolean useVCN) {
+                                                  @IdRes int containerViewId,
+                                                  @NonNull Checkout checkout,
+                                                  @Nullable String caas,
+                                                  @Nullable Money money,
+                                                  int cardAuthWindow,
+                                                  boolean newFlow,
+                                                  boolean useVCN) {
         if (useVCN) {
             return VcnCheckoutFragment.newInstance(fragment,
-                    containerViewId, checkout, receiveReasonCodes, caas,  money, cardAuthWindow,
+                    containerViewId, checkout, receiveReasonCodes, caas, money, cardAuthWindow,
                     newFlow);
         } else {
             return CheckoutFragment.newInstance(fragment,

@@ -25,7 +25,7 @@ import static org.mockito.Mockito.mock;
 public class PromoRequestTest {
 
     private static final String expectedPromoUrl =
-            "https://sandbox.affirm.com/api/promos/v2/Y8CQXFF044903JC0?is_sdk=true&field=ala&amount=110000&show_cta=false&logo_color=blue&logo_type=logo&items=%5B%7B%22display_name%22%3A%22Great%20Deal%20Wheel%22%2C%22sku%22%3A%22wheel%22%2C%22unit_price%22%3A100000%2C%22qty%22%3A1%2C%22item_url%22%3A%22http%3A%2F%2Fmerchant.com%2Fgreat_deal_wheel%22%2C%22item_image_url%22%3A%22http%3A%2F%2Fwww.m2motorsportinc.com%2Fmedia%2Fcatalog%2Fproduct%2Fcache%2F1%2Fthumbnail%2F9df78eab33525d08d6e5fb8d27136e95%2Fv%2Fe%2Fvelocity-vw125-wheels-rims.jpg%22%7D%5D";
+            "https://sandbox.affirm.com/api/promos/v2/Y8CQXFF044903JC0?is_sdk=true&field=ala&amount=110000&show_cta=false&logo_color=blue&logo_type=logo&items=%255B%257B%2522display_name%2522%253A%2522Great%2520Deal%2520Wheel%2522%252C%2522sku%2522%253A%2522wheel%2522%252C%2522unit_price%2522%253A100000%252C%2522qty%2522%253A1%252C%2522item_url%2522%253A%2522http%253A%252F%252Fmerchant.com%252Fgreat_deal_wheel%2522%252C%2522item_image_url%2522%253A%2522http%253A%252F%252Fwww.m2motorsportinc.com%252Fmedia%252Fcatalog%252Fproduct%252Fcache%252F1%252Fthumbnail%252F9df78eab33525d08d6e5fb8d27136e95%252Fv%252Fe%252Fvelocity-vw125-wheels-rims.jpg%2522%257D%255D&locale=en_US";
 
     @Before
     public void setup() {

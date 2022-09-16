@@ -31,9 +31,9 @@ public class CheckoutFactory {
         final Address address = Address.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
-                .setLine1("333 Kansas st")
-                .setState("CA")
-                .setZipcode("94103")
+                .setStreet1("333 Kansas st")
+                .setRegion1Code("CA")
+                .setPostalCode("94103")
                 .build();
 
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();

@@ -11,136 +11,49 @@ public final class AffirmConstants {
 
     static final BigDecimal maxPrice = BigDecimal.valueOf(17500.00);
 
-    // Default location is US
-    private static Affirm.Location location = Affirm.Location.US;
+    static final String COUNTY_CODE_CAN = "CAN";
 
-    static void setLocation(Affirm.Location location) {
-        AffirmConstants.location = location;
-    }
+    static final String COUNTY_CODE_USA = "USA";
+    static final String LOCALE_USA = "en_US";
 
-    static String getSandboxUrl() {
-        switch (location) {
-            case CA:
-                return CA_SANDBOX_URL;
-            default:
-                return SANDBOX_URL;
-        }
-    }
+    // checkout url
+    static final String SANDBOX_CHECKOUT_URL = "api.global-sandbox.affirm.com";
+    static final String PRODUCTION_CHECKOUT_URL = "api.global.affirm.com";
 
-    static String getSandboxJsUrl() {
-        switch (location) {
-            case CA:
-                return CA_SANDBOX_JS_URL;
-            default:
-                return SANDBOX_JS_URL;
-        }
-    }
+    // js url
+    static final String SANDBOX_JS_URL = "cdn1-sandbox.affirm.com";
+    static final String PRODUCTION_JS_URL = "cdn1.affirm.com";
 
-    static String getTrackerUrl() {
-        switch (location) {
-            case CA:
-                return CA_TRACKER_URL;
-            default:
-                return TRACKER_URL;
-        }
-    }
+    // invalid checkout redirect url
+    static final String SANDBOX_INVALID_CHECKOUT_REDIRECT_URL = "sandbox.affirm.com/u/";
+    static final String PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL = "api.affirm.com/u/";
 
-    static String getProductionUrl() {
-        switch (location) {
-            case CA:
-                return CA_PRODUCTION_URL;
-            default:
-                return PRODUCTION_URL;
-        }
-    }
+    // promo url (Default)
+    static final String SANDBOX_PROMO_URL = "sandbox.affirm.com";
+    static final String PRODUCTION_PROMO_URL = "www.affirm.com";
 
-    static String getProductionJsUrl() {
-        switch (location) {
-            case CA:
-                return CA_PRODUCTION_JS_URL;
-            default:
-                return PRODUCTION_JS_URL;
-        }
-    }
+    // promo url (CA)
+    static final String SANDBOX_PROMO_CA_URL = "sandbox.affirm.ca";
+    static final String PRODUCTION_PROMO_CA_URL = "www.affirm.ca";
 
-    static String getStagingPromoUrl() {
-        switch (location) {
-            case CA:
-                return CA_SANDBOX_URL;
-            default:
-                return SANDBOX_URL;
-        }
-    }
-
-    static String getProductionPromoUrl() {
-        switch (location) {
-            case CA:
-                return CA_PRODUCTION_PROMO_URL;
-            default:
-                return PRODUCTION_PROMO_URL;
-        }
-    }
-
-    static String getStagingInvalidCheckoutRedirectUrl() {
-        switch (location) {
-            case CA:
-                return CA_SANDBOX_INVALID_CHECKOUT_REDIRECT_URL;
-            default:
-                return SANDBOX_INVALID_CHECKOUT_REDIRECT_URL;
-        }
-    }
-
-    static String getProductionInvalidCheckoutRedirectUrl() {
-        switch (location) {
-            case CA:
-                return CA_PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL;
-            default:
-                return PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL;
-        }
-    }
-
-    // CA URL
-    private static final String CA_SANDBOX_URL = "sandbox.affirm.ca";
-    private static final String CA_SANDBOX_JS_URL = "cdn1-sandbox.affirm.ca";
-    private static final String CA_SANDBOX_INVALID_CHECKOUT_REDIRECT_URL = "sandbox.affirm.ca/u/";
-    private static final String CA_TRACKER_URL = "tracker.affirm.ca";
-    private static final String CA_PRODUCTION_URL = "api.affirm.ca";
-    private static final String CA_PRODUCTION_PROMO_URL = "www.affirm.ca";
-    private static final String CA_PRODUCTION_JS_URL = "cdn1.affirm.ca";
-    private static final String CA_PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL = "api.affirm.ca/u/";
-
-    // US URL
-    private static final String SANDBOX_URL = "sandbox.affirm.com";
-    private static final String SANDBOX_JS_URL = "cdn1-sandbox.affirm.com";
-    private static final String SANDBOX_INVALID_CHECKOUT_REDIRECT_URL = "sandbox.affirm.com/u/";
-    private static final String TRACKER_URL = "tracker.affirm.com";
-    private static final String PRODUCTION_URL = "api.affirm.com";
-    private static final String PRODUCTION_PROMO_URL = "www.affirm.com";
-    private static final String PRODUCTION_JS_URL = "cdn1.affirm.com";
-    private static final String PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL = "api.affirm.com/u/";
+    // tracker url
+    static final String TRACKER_URL = "tracker.affirm.com";
 
     static final String CHECKOUT_PATH = "/api/v2/checkout/";
     static final String TRACKER_PATH = "/collect";
-    static final String PROMO_PATH = "/api/promos/v2/%s?is_sdk=true&field=ala&amount=%d"
-            + "&show_cta=%s";
     static final String PREQUAL_PATH = "/apps/prequal";
     static final String PREQUAL_PUBLIC_API_KEY = "public_api_key";
     static final String PREQUAL_UNIT_PRICE = "unit_price";
     static final String PREQUAL_USE_PROMO = "use_promo";
-    static final String PREQUAL_IS_SDK = "isSDK";
     static final String PREQUAL_REFERRING_URL = "referring_url";
     static final String PREQUAL_PROMO_EXTERNAL_ID = "promo_external_id";
     static final String PREQUAL_PAGE_TYPE = "page_type";
+    static final String PREQUAL_LOCALE = "locale";
 
     static final String AFFIRM_CHECKOUT_CONFIRMATION_URL = "affirm://checkout/confirmed";
     static final String AFFIRM_CHECKOUT_CANCELLATION_URL = "affirm://checkout/cancelled";
     static final String REFERRING_URL = "https://androidsdk/";
     static final String JS_PATH = "/js/v2/affirm.js";
-
-    static final String TAG_GET_NEW_PROMO = "GET_NEW_PROMO";
-    static final String TAG_CHECKOUT = "CHECKOUT";
-    static final String TAG_VCN_CHECKOUT = "VCN_CHECKOUT";
-    static final String TAG_TRACKER = "TAG_TRACKER";
 
     static final String HTTPS_PROTOCOL = "https://";
     static final String HTTP_PROTOCOL = "http://";
@@ -159,6 +72,8 @@ public final class AffirmConstants {
 
     static final String API_KEY = "API_KEY";
     static final String JAVASCRIPT = "JAVASCRIPT";
+    static final String LOCALE = "LOCALE";
+    static final String COUNTRY_CODE = "COUNTRY_CODE";
     static final String CANCEL_URL = "CANCEL_URL";
     static final String MODAL_ID = "MODAL_ID";
 
@@ -173,6 +88,8 @@ public final class AffirmConstants {
     static final String CHECKOUT_CAAS_EXTRA = "checkout_caas_extra";
     static final String CHECKOUT_MONEY = "checkout_money";
     static final String CHECKOUT_CARD_AUTH_WINDOW = "checkout_card_auth_window";
+    static final String CHECKOUT_META = "meta";
+    static final String CHECKOUT_META_LOCALE = "locale";
     static final String CREDIT_DETAILS = "credit_details";
     static final String VCN_REASON = "vcn_reason";
     static final String NEW_FLOW = "new_flow";
@@ -208,4 +125,22 @@ public final class AffirmConstants {
     static final String TOTAL = "total";
 
     static final String INVALID_CHECKOUT_MESSAGE = "Checkout status is in an invalid state.";
+
+    static final String PROMO_PATH = "/api/promos/v2/%s";
+    static final String PROMO_IS_SDK = "is_sdk";
+    static final String PROMO_FIELD = "field";
+    static final String PROMO_FIELD_VALUE = "ala";
+    static final String PROMO_AMOUNT = "amount";
+    static final String PROMO_SHOW_CTA = "show_cta";
+    static final String PROMO_EXTERNAL_ID = "promo_external_id";
+    static final String PROMO_PAGE_TYPE = "page_type";
+    static final String PROMO_LOGO_COLOR = "logo_color";
+    static final String PROMO_LOGO_TYPE = "logo_type";
+    static final String PROMO_ITEMS = "items";
+    static final String PROMO_LOCALE = "locale";
+
+    static final String CHECKOUT_HEADER_AFFIRM_LOCALE = "affirm-locale";
+    static final String CHECKOUT_HEADER_COUNTRY_CODE = "country-code";
+
+
 }

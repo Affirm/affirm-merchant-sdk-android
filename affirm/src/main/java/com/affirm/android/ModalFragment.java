@@ -22,9 +22,11 @@ import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CANCELLATION_UR
 import static com.affirm.android.AffirmConstants.AMOUNT;
 import static com.affirm.android.AffirmConstants.API_KEY;
 import static com.affirm.android.AffirmConstants.CANCEL_URL;
+import static com.affirm.android.AffirmConstants.COUNTRY_CODE;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.JAVASCRIPT;
 import static com.affirm.android.AffirmConstants.JS_PATH;
+import static com.affirm.android.AffirmConstants.LOCALE;
 import static com.affirm.android.AffirmConstants.MAP_EXTRA;
 import static com.affirm.android.AffirmConstants.MODAL_ID;
 import static com.affirm.android.AffirmConstants.PAGE_TYPE;
@@ -91,12 +93,14 @@ public final class ModalFragment extends AffirmFragment implements ModalWebViewC
 
         final String stringAmount =
                 String.valueOf(AffirmUtils.decimalDollarsToIntegerCents(amount));
-        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().baseJsUrl() + JS_PATH;
+        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().jsUrl() + JS_PATH;
 
         final HashMap<String, String> map = new HashMap<>();
         map.put(AMOUNT, stringAmount);
         map.put(API_KEY, AffirmPlugins.get().publicKey());
         map.put(JAVASCRIPT, fullPath);
+        map.put(LOCALE, AffirmPlugins.get().locale());
+        map.put(COUNTRY_CODE, AffirmPlugins.get().countryCode());
         map.put(CANCEL_URL, AFFIRM_CHECKOUT_CANCELLATION_URL);
         map.put(MODAL_ID, modalId == null ? "" : modalId);
         map.put(PAGE_TYPE, pageType == null ? "" : pageType);
@@ -146,7 +150,7 @@ public final class ModalFragment extends AffirmFragment implements ModalWebViewC
     void onAttached() {
         final String html = initialHtml();
         webView.loadDataWithBaseURL(
-                HTTPS_PROTOCOL + AffirmPlugins.get().basePromoUrl(),
+                HTTPS_PROTOCOL + AffirmPlugins.get().promoUrl(),
                 html, TEXT_HTML, UTF_8, null);
     }
 

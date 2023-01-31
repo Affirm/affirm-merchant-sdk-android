@@ -1,0 +1,92 @@
+steps:
+  - label: "Enforce Snyk Token"
+    key: "enforce-snyk-token"
+    commands: |
+        if [ -z $$SNYK_TOKEN ]
+        then
+            echo "Snyk token is not set"
+            exit -1
+        else
+            echo "Snyk token is set"
+        fi
+    plugins:
+      - seek-oss/aws-sm#v2.1.0:
+          env:
+            SNYK_TOKEN:
+              secret-id: SnykAuthToken
+              json-key: ".[\"snyk-android-cicd\"]"
+
+  - label: "Snyk Vulnerability Audit"
+    key: "snyk-audit"
+    depends_on: "enforce-snyk-token"
+    commands: |
+        curl https://static.snyk.io/cli/latest/snyk-linux -o snyk
+        chmod +x ./snyk
+        ls -l ./snyk
+
+        ./snyk auth $$SNYK_TOKEN -d
+
+        set -e
+        SNYK_STATUS=0
+
+        # 'test' will be run when this pipeline is changed to blocking PR on failure until then 'monitor' will send snapshots on weekly basis
+        # ./snyk test --org=$$SNYK_ORG --all-sub-projects --json || SNYK_STATUS=$$?
+
+        ./gradlew clean assembleDebug
+        # ./snyk monitor -d --org=$$SNYK_ORG --all-projects --json | tee > vuln.json || SNYK_STATUS=$$?
+
+        # echo "snyk monitor exit code = $$SNYK_STATUS"
+
+        # case $$SNYK_STATUS in
+          # 0) echo "snyk successful - no vulnerabilities" ;;
+          # *) echo "snyk reports some vulnerabilities" ;;
+        # esac
+
+        buildkite-agent meta-data set "snyk-exit-status" "$$SNYK_STATUS"
+    plugins:
+      - seek-oss/aws-sm#v2.1.0:
+          env:
+            SNYK_TOKEN:
+              secret-id: SnykAuthToken
+              json-key: ".[\"snyk-android-cicd\"]"
+      - docker#v3.3.0:
+          image: "998571911837.dkr.ecr.us-east-1.amazonaws.com/affirm-android:android-dev-v5-latest"
+          workdir: "/affirm-merchant-sdk-android"
+          environment:
+            - "ON_CI=true"
+            - "ENABLE_CACHE=true"
+            - "SNYK_TOKEN"
+            - "SNYK_ORG=TBD"
+    artifact_paths:
+      - vuln.json
+
+  - wait
+
+  # - label: "Notify Exit Code"
+  #   depends_on: "snyk-audit"
+  #   commands: |
+  #       status=$(buildkite-agent meta-data get "snyk-exit-status")
+  #       echo "snyk exit status = $$status"
+
+  #       title="✅ Snyk monitor success"
+  #       if [ $$status != "0" ]
+  #       then
+  #         title="🚨 Snyk monitor requires attention" 
+  #       fi
+
+  #       ./tools/scripts/notify_slack.py -c $$SNYK_CHANNEL -t "$$title" -m "exit code: $$status ($BUILDKITE_BUILD_URL)"
+  #   env:
+  #     SNYK_CHANNEL: "proj-snyk-android-int"
+
+    retry:
+      automatic:
+      - limit: 2
+        exit_status: 255
+      - limit: 2
+        exit_status: 139
+      - limit: 2
+        exit_status: 125
+
+notify:
+  - slack: "#proj-snyk-android-int"
+    if: build.state == "failed"

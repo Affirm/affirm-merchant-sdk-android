@@ -2,8 +2,6 @@ steps:
   - label: "Enforce Snyk Token"
     key: "enforce-snyk-token"
     commands: |
-      printenv
-      export SNYK_TOKEN=$$JSON_TO_ENV_0
         if [ -z $$SNYK_TOKEN ]
         then
             echo "Snyk token is not set"
@@ -15,50 +13,50 @@ steps:
     plugins:
       - seek-oss/aws-sm#v2.1.0:
           env:
-            json-to-env:
-              - secret-id: "snyk/merch_sdk_adr/token"
+            SNYK_TOKEN:
+              secret-id: "snyk/merch_sdk_adr/token"
+              json-key: ".[\"snyk-merch-adr-cicd\"]"
 
-            # SNYK_TOKEN:
-            #   secret-id: snyk/merch_sdk_adr/token
-            #   json-key: ".[\"snyk-android-cicd\"]"
+  - label: "Snyk Vulnerability Audit"
+    key: "snyk-audit"
+    depends_on: "enforce-snyk-token"
+    commands: |
+        curl https://static.snyk.io/cli/latest/snyk-linux -o snyk
+        chmod +x ./snyk
+        ls -l ./snyk
 
-  # - label: "Snyk Vulnerability Audit"
-  #   key: "snyk-audit"
-  #   depends_on: "enforce-snyk-token"
-  #   commands: |
-  #       curl https://static.snyk.io/cli/latest/snyk-linux -o snyk
-  #       chmod +x ./snyk
-  #       ls -l ./snyk
+        token=$(buildkite-agent meta-data get "snyk-auth-token")
+        ./snyk auth $$token -d
 
-  #       ./snyk auth $$SNYK_TOKEN -d
+        set -e
+        SNYK_STATUS=0
 
-  #       set -e
-  #       SNYK_STATUS=0
+        # 'test' will be run when this pipeline is changed to blocking PR on failure until then 'monitor' will send snapshots on weekly basis
+        # ./snyk test --org=$$SNYK_ORG --all-sub-projects --json || SNYK_STATUS=$$?
 
-  #       # 'test' will be run when this pipeline is changed to blocking PR on failure until then 'monitor' will send snapshots on weekly basis
-  #       # ./snyk test --org=$$SNYK_ORG --all-sub-projects --json || SNYK_STATUS=$$?
+        # ./gradlew clean assembleDebug
+        # ./snyk monitor -d --org=$$SNYK_ORG --all-projects --json | tee > vuln.json || SNYK_STATUS=$$?
 
-  #       ./gradlew clean assembleDebug
-  #       # ./snyk monitor -d --org=$$SNYK_ORG --all-projects --json | tee > vuln.json || SNYK_STATUS=$$?
+        # echo "snyk monitor exit code = $$SNYK_STATUS"
 
-  #       # echo "snyk monitor exit code = $$SNYK_STATUS"
+        # case $$SNYK_STATUS in
+          # 0) echo "snyk successful - no vulnerabilities" ;;
+          # *) echo "snyk reports some vulnerabilities" ;;
+        # esac
 
-  #       # case $$SNYK_STATUS in
-  #         # 0) echo "snyk successful - no vulnerabilities" ;;
-  #         # *) echo "snyk reports some vulnerabilities" ;;
-  #       # esac
-
-  #       buildkite-agent meta-data set "snyk-exit-status" "$$SNYK_STATUS"
-  #   plugins:
-  #     - docker#v3.3.0:
-  #         image: "998571911837.dkr.ecr.us-east-1.amazonaws.com/affirm-android:android-dev-v5-latest"
-  #         workdir: "/affirm-merchant-sdk-android"
-  #         environment:
-  #           - "ON_CI=true"
-  #           - "ENABLE_CACHE=true"
-  #           - "SNYK_ORG=android-merch-sdk-bk"
-  #   artifact_paths:
-  #     - vuln.json
+        buildkite-agent meta-data set "snyk-exit-status" "$$SNYK_STATUS"
+    agents:
+      queue: 'android'
+    plugins:
+      - docker#v3.3.0:
+          image: "998571911837.dkr.ecr.us-east-1.amazonaws.com/affirm-android:android-dev-v5-latest"
+          workdir: "/affirm-merchant-sdk-android"
+          environment:
+            - "ON_CI=true"
+            - "ENABLE_CACHE=true"
+            - "SNYK_ORG=android-merch-sdk-bk"
+    artifact_paths:
+      - vuln.json
 
   # - wait
 

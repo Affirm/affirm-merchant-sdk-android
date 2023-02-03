@@ -58,24 +58,6 @@ steps:
     artifact_paths:
       - vuln.json
 
-  # - wait
-
-  # - label: "Notify Exit Code"
-  #   depends_on: "snyk-audit"
-  #   commands: |
-  #       status=$(buildkite-agent meta-data get "snyk-exit-status")
-  #       echo "snyk exit status = $$status"
-
-  #       title="✅ Snyk monitor success"
-  #       if [ $$status != "0" ]
-  #       then
-  #         title="🚨 Snyk monitor requires attention" 
-  #       fi
-
-  #       ./tools/scripts/notify_slack.py -c $$SNYK_CHANNEL -t "$$title" -m "exit code: $$status ($BUILDKITE_BUILD_URL)"
-  #   env:
-  #     SNYK_CHANNEL: "proj-snyk-android-int"
-
     retry:
       automatic:
       - limit: 2

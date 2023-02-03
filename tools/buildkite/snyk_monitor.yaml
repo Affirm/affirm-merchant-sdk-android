@@ -34,15 +34,15 @@ steps:
         # 'test' will be run when this pipeline is changed to blocking PR on failure until then 'monitor' will send snapshots on weekly basis
         # ./snyk test --org=$$SNYK_ORG --all-sub-projects --json || SNYK_STATUS=$$?
 
-        # ./gradlew clean assembleDebug
-        # ./snyk monitor -d --org=$$SNYK_ORG --all-projects --json | tee > vuln.json || SNYK_STATUS=$$?
+        ./gradlew clean assembleDebug
+        ./snyk monitor -d --org=$$SNYK_ORG --all-projects --json | tee > vuln.json || SNYK_STATUS=$$?
 
-        # echo "snyk monitor exit code = $$SNYK_STATUS"
+        echo "snyk monitor exit code = $$SNYK_STATUS"
 
-        # case $$SNYK_STATUS in
-          # 0) echo "snyk successful - no vulnerabilities" ;;
-          # *) echo "snyk reports some vulnerabilities" ;;
-        # esac
+        case $$SNYK_STATUS in
+          0) echo "snyk successful - no vulnerabilities" ;;
+          *) echo "snyk reports some vulnerabilities" ;;
+        esac
 
         buildkite-agent meta-data set "snyk-exit-status" "$$SNYK_STATUS"
     agents:

@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Message;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
+import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
@@ -29,9 +30,14 @@ class AffirmWebChromeClient extends WebChromeClient {
                                   Message resultMsg) {
         final WebView.HitTestResult result = view.getHitTestResult();
         final String data = result.getExtra();
-        final Context context = view.getContext();
-        final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(data));
-        context.startActivity(browserIntent);
+        if (isUserGesture
+                && URLUtil.isNetworkUrl(data)
+                && result.getType() == WebView.HitTestResult.SRC_ANCHOR_TYPE) {
+            final Context context = view.getContext();
+            final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(data));
+            context.startActivity(browserIntent);
+            return true;
+        }
         return false;
     }
 

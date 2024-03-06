@@ -1,5 +1,7 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
+## Version 2.0.21 (March 06, 2024)
+- Bug-fixes
 
 ## Version 2.0.20 (January 22, 2022)
 - Added logging

@@ -8,7 +8,9 @@ import androidx.annotation.Nullable;
 import com.affirm.android.exception.AffirmException;
 
 public interface PromotionCallback {
-    void onSuccess(@Nullable SpannableString spannableString, boolean showPrequal);
+    void onSuccess(@Nullable SpannableString spannableString,
+                   @Nullable String promoDescription,
+                   boolean showPrequal);
 
     void onFailure(@NonNull AffirmException exception);
 }

@@ -52,7 +52,12 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .build()
 
         promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.textSize, this, object : PromotionCallback {
-            override fun onSuccess(spannableString: SpannableString?, showPrequal: Boolean) {
+            override fun onSuccess(
+                spannableString: SpannableString?,
+                promoDescription: String?,
+                showPrequal: Boolean
+            ) {
+                promotionTextView.contentDescription = promoDescription
                 promotionTextView.text = spannableString
                 promotionTextView.setOnClickListener { Affirm.onPromotionClick(this@MainActivity, requestData, showPrequal) }
             }

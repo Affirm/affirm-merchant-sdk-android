@@ -229,7 +229,8 @@ public void onAffirmPrequalError(String message) {
 
     promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.getTextSize(), this, new PromotionCallback() {
         @Override
-        public void onSuccess(@Nullable SpannableString spannableString, boolean showPrequal) {
+        public void onSuccess(@Nullable SpannableString spannableString, @Nullable String promoDescription, boolean showPrequal) {
+            promotionTextView.setContentDescription(promoDescription);
             promotionTextView.setText(spannableString);
             promotionTextView.setOnClickListener(v -> Affirm.onPromotionClick(MainActivity.this, requestData, showPrequal));
         }

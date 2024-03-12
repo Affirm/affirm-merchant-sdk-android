@@ -82,16 +82,18 @@ public class AffirmPromotionButton extends FrameLayout {
         typedArray.recycle();
     }
 
-    protected void setLabel(@NonNull String text) {
-        this.message = text;
+    protected void setLabel(@NonNull String promoMessage, @NonNull String promoDescription) {
+        this.message = promoMessage;
         removeAllViews();
         if (htmlStyling) {
             addView(promotionWebView);
-            promotionWebView.loadWebData(text, remoteCssUrl, typefaceDeclaration);
+            promotionWebView.loadWebData(promoMessage, remoteCssUrl, typefaceDeclaration);
+            promotionWebView.setContentDescription(promoDescription);
         } else {
             buildPromotionButtonIfNeeded();
             addView(promotionButton);
-            promotionButton.setText(promotionButton.updateSpan(text));
+            promotionButton.setText(promotionButton.updateSpan(promoMessage));
+            promotionButton.setContentDescription(promoDescription);
         }
     }
 

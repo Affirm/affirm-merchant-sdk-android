@@ -23,6 +23,7 @@ import java.util.Locale;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 
+import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
 import static com.affirm.android.AffirmConstants.PROMO_PATH;
 
 class PromoRequest implements AffirmRequest {
@@ -132,10 +133,11 @@ class PromoRequest implements AffirmRequest {
         final String htmlPromo = promoResponse.promo().htmlAla();
 
         final String promoMessage = isHtmlStyle ? htmlPromo : promo;
+        final String promoDescription = promo.replace(LOGO_PLACEHOLDER, "affirm");
         if (TextUtils.isEmpty(promoMessage)) {
             handleErrorResponse(new Exception("Promo message is null or empty!"));
         } else {
-            callback.onPromoWritten(promoMessage, showPrequal);
+            callback.onPromoWritten(promoMessage, promoDescription, showPrequal);
         }
     }
 

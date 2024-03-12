@@ -1457,10 +1457,11 @@ public final class Affirm {
                 "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull final String promoMessage,
-                                       final boolean showPrequal) {
+            public void onPromoWritten(@NonNull String promoMessage,
+                                       @NonNull String promoDescription,
+                                       boolean showPrequal) {
                 promotionButton.setTag(showPrequal);
-                promotionButton.setLabel(promoMessage);
+                promotionButton.setLabel(promoMessage, promoDescription);
             }
 
             @Override
@@ -1542,16 +1543,18 @@ public final class Affirm {
     ) {
         SpannablePromoCallback promoCallback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull String promo,
+            public void onPromoWritten(@NonNull String promoMessage,
+                                       @NonNull String promoDescription,
                                        boolean showPrequal) {
                 callback.onSuccess(
                         AffirmUtils.createSpannableForText(
-                                promo,
+                                promoMessage,
                                 textSize,
                                 requestData.getAffirmLogoType(),
                                 requestData.getAffirmColor(),
                                 context
                         ),
+                        promoDescription,
                         showPrequal
                 );
             }
@@ -1576,9 +1579,10 @@ public final class Affirm {
     ) {
         SpannablePromoCallback promoCallback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull String promo,
+            public void onPromoWritten(@NonNull String promoMessage,
+                                       @NonNull String promoDescription,
                                        boolean showPrequal) {
-                callback.onSuccess(promo, showPrequal);
+                callback.onSuccess(promoMessage, promoDescription, showPrequal);
             }
 
             @Override

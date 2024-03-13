@@ -48,6 +48,7 @@ class AffirmWebChromeClient extends WebChromeClient {
     public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
         new AlertDialog.Builder(view.getContext()).setTitle(R.string.affirm)
                 .setMessage(message)
+                .setCancelable(false)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> result.confirm())
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> result.cancel())
                 .create()

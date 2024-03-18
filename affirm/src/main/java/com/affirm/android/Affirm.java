@@ -1457,10 +1457,11 @@ public final class Affirm {
                 "AffirmPromotionButton cannot be null");
         final SpannablePromoCallback callback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull final String promoMessage,
-                                       final boolean showPrequal) {
+            public void onPromoWritten(@NonNull String promoMessage,
+                                       @NonNull String promoDescription,
+                                       boolean showPrequal) {
                 promotionButton.setTag(showPrequal);
-                promotionButton.setLabel(promoMessage);
+                promotionButton.setLabel(promoMessage, promoDescription);
             }
 
             @Override
@@ -1538,15 +1539,59 @@ public final class Affirm {
             @NonNull PromoRequestData requestData,
             float textSize,
             @NonNull Context context,
+            @NonNull final PromotionCallbackV2 callback
+    ) {
+        SpannablePromoCallback promoCallback = new SpannablePromoCallback() {
+            @Override
+            public void onPromoWritten(@NonNull String promoMessage,
+                                       @NonNull String promoDescription,
+                                       boolean showPrequal) {
+                callback.onSuccess(
+                        new Promotion(
+                                AffirmUtils.createSpannableForText(
+                                        promoMessage,
+                                        textSize,
+                                        requestData.getAffirmLogoType(),
+                                        requestData.getAffirmColor(),
+                                        context
+                                ),
+                                promoDescription,
+                                showPrequal
+                        )
+                );
+            }
+
+            @Override
+            public void onFailure(@NonNull AffirmException exception) {
+                callback.onFailure(exception);
+            }
+        };
+        return buildPromoRequest(requestData, promoCallback, false);
+    }
+
+    /**
+     * Fetch promotional message, you can display it yourself
+     *
+     * @param requestData a class containing data about the request to make
+     * @param textSize    the textSize for the span
+     * @param context     the context being used
+     * @param callback    a class that's called when the request completes
+     */
+    @Deprecated
+    public static AffirmRequest fetchPromotion(
+            @NonNull PromoRequestData requestData,
+            float textSize,
+            @NonNull Context context,
             @NonNull final PromotionCallback callback
     ) {
         SpannablePromoCallback promoCallback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull String promo,
+            public void onPromoWritten(@NonNull String promoMessage,
+                                       @NonNull String promoDescription,
                                        boolean showPrequal) {
                 callback.onSuccess(
                         AffirmUtils.createSpannableForText(
-                                promo,
+                                promoMessage,
                                 textSize,
                                 requestData.getAffirmLogoType(),
                                 requestData.getAffirmColor(),
@@ -1572,13 +1617,41 @@ public final class Affirm {
      */
     public static AffirmRequest fetchHtmlPromotion(
             @NonNull PromoRequestData requestData,
+            @NonNull final HtmlPromotionCallbackV2 callback
+    ) {
+        SpannablePromoCallback promoCallback = new SpannablePromoCallback() {
+            @Override
+            public void onPromoWritten(@NonNull String promoMessage,
+                                       @NonNull String promoDescription,
+                                       boolean showPrequal) {
+                callback.onSuccess(new HtmlPromotion(promoMessage, promoDescription, showPrequal));
+            }
+
+            @Override
+            public void onFailure(@NonNull AffirmException exception) {
+                callback.onFailure(exception);
+            }
+        };
+        return buildPromoRequest(requestData, promoCallback, true);
+    }
+
+    /**
+     * Fetch promotional html message, you can display it yourself
+     *
+     * @param requestData a class containing data about the request to make
+     * @param callback    a class that's called when the request completes
+     */
+    @Deprecated
+    public static AffirmRequest fetchHtmlPromotion(
+            @NonNull PromoRequestData requestData,
             @NonNull final HtmlPromotionCallback callback
     ) {
         SpannablePromoCallback promoCallback = new SpannablePromoCallback() {
             @Override
-            public void onPromoWritten(@NonNull String promo,
+            public void onPromoWritten(@NonNull String promoMessage,
+                                       @NonNull String promoDescription,
                                        boolean showPrequal) {
-                callback.onSuccess(promo, showPrequal);
+                callback.onSuccess(promoMessage, showPrequal);
             }
 
             @Override

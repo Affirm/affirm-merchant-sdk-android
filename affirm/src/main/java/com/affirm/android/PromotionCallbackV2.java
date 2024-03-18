@@ -1,13 +1,11 @@
 package com.affirm.android;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.affirm.android.exception.AffirmException;
 
-@Deprecated
-public interface HtmlPromotionCallback {
-    void onSuccess(@Nullable String htmlPromo, boolean showPrequal);
+public interface PromotionCallbackV2 {
+    void onSuccess(@NonNull Promotion promotion);
 
     void onFailure(@NonNull AffirmException exception);
 }

@@ -1,5 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
+
+## Version 2.0.23 (March 21, 2024)
+- Support description on Accessible mode
+
 ## Version 2.0.22 (March 18, 2024)
 - Bug-fixes
 

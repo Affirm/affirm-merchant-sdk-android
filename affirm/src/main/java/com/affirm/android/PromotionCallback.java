@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.affirm.android.exception.AffirmException;
 
+@Deprecated
 public interface PromotionCallback {
     void onSuccess(@Nullable SpannableString spannableString, boolean showPrequal);
 

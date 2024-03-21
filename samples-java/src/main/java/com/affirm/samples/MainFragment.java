@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.affirm.android.Affirm;
@@ -24,8 +22,10 @@ import com.affirm.android.AffirmLogoType;
 import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.AffirmRequest;
 import com.affirm.android.CookiesUtil;
-import com.affirm.android.HtmlPromotionCallback;
-import com.affirm.android.PromotionCallback;
+import com.affirm.android.HtmlPromotion;
+import com.affirm.android.HtmlPromotionCallbackV2;
+import com.affirm.android.Promotion;
+import com.affirm.android.PromotionCallbackV2;
 import com.affirm.android.PromotionWebView;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Address;
@@ -184,11 +184,12 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
                 .setItems(items)
                 .build();
 
-        promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.getTextSize(), getContext(), new PromotionCallback() {
+        promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.getTextSize(), getContext(), new PromotionCallbackV2() {
             @Override
-            public void onSuccess(@Nullable SpannableString spannableString, boolean showPrequal) {
-                promotionTextView.setText(spannableString);
-                promotionTextView.setOnClickListener(v -> Affirm.onPromotionClick(MainFragment.this, requestData, showPrequal));
+            public void onSuccess(@NonNull Promotion promotion) {
+                promotionTextView.setContentDescription(promotion.getDescription());
+                promotionTextView.setText(promotion.getSpannableString());
+                promotionTextView.setOnClickListener(v -> Affirm.onPromotionClick(MainFragment.this, requestData, promotion.isShowPrequal()));
             }
 
             @Override
@@ -198,12 +199,12 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
         });
 
         PromotionWebView htmlPromotionWebView = view.findViewById(R.id.htmlPromotionWebView);
-        htmlPromoRequest = Affirm.fetchHtmlPromotion(requestData, new HtmlPromotionCallback() {
-
+        htmlPromoRequest = Affirm.fetchHtmlPromotion(requestData, new HtmlPromotionCallbackV2() {
             @Override
-            public void onSuccess(@Nullable String htmlPromo, boolean showPrequal) {
-                htmlPromotionWebView.loadWebData(htmlPromo, "file:///android_asset/remote_promo.css", typefaceDeclaration);
-                htmlPromotionWebView.setWebViewClickListener(v -> Affirm.onPromotionClick(MainFragment.this, requestData, showPrequal));
+            public void onSuccess(HtmlPromotion promotion) {
+                htmlPromotionWebView.setContentDescription(promotion.getDescription());
+                htmlPromotionWebView.loadWebData(promotion.getHtmlPromo(), "file:///android_asset/remote_promo.css", typefaceDeclaration);
+                htmlPromotionWebView.setWebViewClickListener(v -> Affirm.onPromotionClick(MainFragment.this, requestData, promotion.isShowPrequal()));
             }
 
             @Override

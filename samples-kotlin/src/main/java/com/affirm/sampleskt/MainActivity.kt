@@ -2,13 +2,13 @@ package com.affirm.sampleskt
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.SpannableString
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.affirm.android.Affirm
 import com.affirm.android.AffirmRequest
 import com.affirm.android.CookiesUtil
-import com.affirm.android.PromotionCallback
+import com.affirm.android.Promotion
+import com.affirm.android.PromotionCallbackV2
 import com.affirm.android.exception.AffirmException
 import com.affirm.android.model.*
 import com.affirm.android.model.Currency
@@ -51,10 +51,11 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setPageType(null)
                 .build()
 
-        promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.textSize, this, object : PromotionCallback {
-            override fun onSuccess(spannableString: SpannableString?, showPrequal: Boolean) {
-                promotionTextView.text = spannableString
-                promotionTextView.setOnClickListener { Affirm.onPromotionClick(this@MainActivity, requestData, showPrequal) }
+        promoRequest = Affirm.fetchPromotion(requestData, promotionTextView.textSize, this, object : PromotionCallbackV2 {
+            override fun onSuccess(promotion: Promotion) {
+                promotionTextView.contentDescription = promotion.description
+                promotionTextView.text = promotion.spannableString
+                promotionTextView.setOnClickListener { Affirm.onPromotionClick(this@MainActivity, requestData, promotion.isShowPrequal) }
             }
 
             override fun onFailure(exception: AffirmException) {

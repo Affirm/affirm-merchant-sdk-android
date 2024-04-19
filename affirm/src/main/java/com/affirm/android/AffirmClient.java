@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -46,6 +47,9 @@ public final class AffirmClient {
 
         @Nullable
         JsonObject body();
+
+        @Nullable
+        Map<String, String> headers();
     }
 
     public interface AffirmListener<T> {
@@ -66,6 +70,10 @@ public final class AffirmClient {
         AffirmHttpRequest.Builder builder = new AffirmHttpRequest.Builder()
                 .setUrl(request.url())
                 .setMethod(request.method());
+        Map<String, String> headers = request.headers();
+        if (headers != null && !headers.isEmpty()) {
+            builder.setHeaders(headers);
+        }
         JsonObject requestBody = request.body();
         if (requestBody != null) {
             builder.setBody(new AffirmHttpBody(CONTENT_TYPE, requestBody.toString()));

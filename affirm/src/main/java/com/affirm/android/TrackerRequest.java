@@ -17,6 +17,8 @@ import static com.affirm.android.AffirmConstants.HTTP;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.TRACKER_PATH;
 
+import java.util.Map;
+
 class TrackerRequest implements AffirmRequest {
 
     @NonNull
@@ -68,7 +70,7 @@ class TrackerRequest implements AffirmRequest {
     }
 
     private String getTrackerProtocol() {
-        return AffirmPlugins.get().trackerBaseUrl().contains(HTTP) ? "" : HTTPS_PROTOCOL;
+        return AffirmPlugins.get().trackerUrl().contains(HTTP) ? "" : HTTPS_PROTOCOL;
     }
 
     private void handleException(AffirmException e) {
@@ -82,7 +84,7 @@ class TrackerRequest implements AffirmRequest {
         @Override
         public String url() {
             return getTrackerProtocol()
-                    +  AffirmPlugins.get().trackerBaseUrl()
+                    + AffirmPlugins.get().trackerUrl()
                     + TRACKER_PATH;
         }
 
@@ -96,6 +98,12 @@ class TrackerRequest implements AffirmRequest {
         @Override
         public JsonObject body() {
             return trackingData;
+        }
+
+        @Nullable
+        @Override
+        public Map<String, String> headers() {
+            return null;
         }
     }
 }

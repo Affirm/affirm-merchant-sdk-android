@@ -18,12 +18,12 @@ public class AffirmPluginsTest {
 
     @Test
     public void testBaseUrl() {
-        Truth.assertThat(AffirmPlugins.get().baseUrl()).isEqualTo("sandbox.affirm.com");
+        Truth.assertThat(AffirmPlugins.get().checkoutUrl()).isEqualTo("api.global-sandbox.affirm.com");
     }
 
     @Test
     public void testBaseJsUrl() {
-        Truth.assertThat(AffirmPlugins.get().baseJsUrl()).isEqualTo("cdn1-sandbox.affirm.com");
+        Truth.assertThat(AffirmPlugins.get().jsUrl()).isEqualTo("cdn1-sandbox.affirm.com");
     }
 
     @Test
@@ -38,16 +38,16 @@ public class AffirmPluginsTest {
 
     @Test
     public void testBasePromoUrl() {
-        Truth.assertThat(AffirmPlugins.get().basePromoUrl()).isEqualTo("sandbox.affirm.com");
+        Truth.assertThat(AffirmPlugins.get().promoUrl()).isEqualTo("sandbox.affirm.com");
     }
 
     @Test
     public void testTrackerBaseUrl() {
-        Truth.assertThat(AffirmPlugins.get().trackerBaseUrl()).isEqualTo("tracker.affirm.com");
+        Truth.assertThat(AffirmPlugins.get().trackerUrl()).isEqualTo("tracker.affirm.com");
     }
 
     @Test
     public void testBaseInvalidCheckoutRedirectUrl() {
-        Truth.assertThat(AffirmPlugins.get().baseInvalidCheckoutRedirectUrl()).isEqualTo("sandbox.affirm.com/u/");
+        Truth.assertThat(AffirmPlugins.get().invalidCheckoutRedirectUrl()).isEqualTo("sandbox.affirm.com/u/");
     }
 }

@@ -19,7 +19,6 @@ public class PromoConfigTest {
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(AffirmAdapterFactory.create())
-            .registerTypeAdapter(AbstractAddress.class, new AddressSerializer())
             .create();
 
     @Test

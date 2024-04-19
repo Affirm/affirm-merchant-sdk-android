@@ -12,11 +12,10 @@ import static org.junit.Assert.assertEquals;
 @RunWith(RobolectricTestRunner.class)
 public class ShippingTest {
 
-    private static final String shippingJson = "{\"address\":{\"line1\":\"333 Kansas st\",\"city\":\"San Francisco\",\"state\":\"CA\",\"zipcode\":\"94103\",\"country\":\"USA\"},\"name\":{\"full\":\"John Smith\"}}";
+    private static final String shippingJson = "{\"address\":{\"street1\":\"333 Kansas st\",\"city\":\"San Francisco\",\"region1_code\":\"CA\",\"postal_code\":\"94103\",\"country\":\"USA\"},\"name\":{\"full\":\"John Smith\"}}";
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(AffirmAdapterFactory.create())
-            .registerTypeAdapter(AbstractAddress.class, new AddressSerializer())
             .create();
 
     @Test
@@ -25,9 +24,9 @@ public class ShippingTest {
         final Address address = Address.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
-                .setLine1("333 Kansas st")
-                .setState("CA")
-                .setZipcode("94103")
+                .setStreet1("333 Kansas st")
+                .setRegion1Code("CA")
+                .setPostalCode("94103")
                 .build();
 
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();

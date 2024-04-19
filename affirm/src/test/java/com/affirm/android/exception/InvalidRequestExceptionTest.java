@@ -1,7 +1,5 @@
 package com.affirm.android.exception;
 
-import com.affirm.android.model.AbstractAddress;
-import com.affirm.android.model.AddressSerializer;
 import com.affirm.android.model.AffirmAdapterFactory;
 import com.affirm.android.model.AffirmError;
 import com.google.gson.Gson;
@@ -17,7 +15,6 @@ public class InvalidRequestExceptionTest {
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(AffirmAdapterFactory.create())
-            .registerTypeAdapter(AbstractAddress.class, new AddressSerializer())
             .create();
 
     @Test

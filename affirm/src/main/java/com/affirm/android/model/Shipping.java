@@ -19,7 +19,7 @@ public abstract class Shipping implements Parcelable {
         return new AutoValue_Shipping.GsonTypeAdapter(gson);
     }
 
-    public abstract AbstractAddress address();
+    public abstract Address address();
 
     public abstract Name name();
 
@@ -32,7 +32,7 @@ public abstract class Shipping implements Parcelable {
 
     @AutoValue.Builder
     public abstract static class Builder {
-        public abstract Builder setAddress(AbstractAddress value);
+        public abstract Builder setAddress(Address value);
 
         public abstract Builder setName(Name value);
 

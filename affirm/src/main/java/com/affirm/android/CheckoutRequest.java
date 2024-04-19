@@ -23,6 +23,10 @@ import static com.affirm.android.AffirmConstants.AFFIRM_CHECKOUT_CONFIRMATION_UR
 import static com.affirm.android.AffirmConstants.API_VERSION_KEY;
 import static com.affirm.android.AffirmConstants.API_VERSION_VALUE;
 import static com.affirm.android.AffirmConstants.CHECKOUT;
+import static com.affirm.android.AffirmConstants.CHECKOUT_HEADER_AFFIRM_LOCALE;
+import static com.affirm.android.AffirmConstants.CHECKOUT_HEADER_COUNTRY_CODE;
+import static com.affirm.android.AffirmConstants.CHECKOUT_META;
+import static com.affirm.android.AffirmConstants.CHECKOUT_META_LOCALE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_PATH;
 import static com.affirm.android.AffirmConstants.MERCHANT;
 import static com.affirm.android.AffirmConstants.METADATA;
@@ -36,6 +40,9 @@ import static com.affirm.android.AffirmConstants.USER_CONFIRMATION_URL_ACTION_VA
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_START;
 import static com.affirm.android.AffirmTracker.TrackingEvent.VCN_CHECKOUT_CREATION_START;
 import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
+
+import java.util.HashMap;
+import java.util.Map;
 
 class CheckoutRequest implements AffirmRequest {
 
@@ -142,7 +149,7 @@ class CheckoutRequest implements AffirmRequest {
         @Override
         public String url() {
             return AffirmHttpClient.getProtocol()
-                    + AffirmPlugins.get().baseUrl()
+                    + AffirmPlugins.get().checkoutUrl()
                     + CHECKOUT_PATH;
         }
 
@@ -188,6 +195,10 @@ class CheckoutRequest implements AffirmRequest {
             checkoutJson.add(MERCHANT, merchantJson);
             checkoutJson.addProperty(API_VERSION_KEY, API_VERSION_VALUE);
 
+            JsonObject metaJson = new JsonObject();
+            metaJson.addProperty(CHECKOUT_META_LOCALE, AffirmPlugins.get().locale());
+            checkoutJson.add(CHECKOUT_META, metaJson);
+
             // Need to set `platform_type` & `platform_affirm` by default
             JsonObject metadataJson = checkoutJson.getAsJsonObject(METADATA);
             if (metadataJson == null) {
@@ -199,6 +210,15 @@ class CheckoutRequest implements AffirmRequest {
             final JsonObject jsonRequest = new JsonObject();
             jsonRequest.add(CHECKOUT, checkoutJson);
             return jsonRequest;
+        }
+
+        @Nullable
+        @Override
+        public Map<String, String> headers() {
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put(CHECKOUT_HEADER_AFFIRM_LOCALE, AffirmPlugins.get().locale());
+            headers.put(CHECKOUT_HEADER_COUNTRY_CODE, AffirmPlugins.get().countryCode());
+            return headers;
         }
     }
 }

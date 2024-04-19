@@ -232,7 +232,7 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
         final AffirmTrackOrder affirmTrackOrder = AffirmTrackOrder.builder()
                 .setStoreName("Affirm Store")
                 .setCoupon("SUMMER2018")
-                .setCurrency(Currency.USD)  // "CAD" for canadian, "USD" for American
+                .setCurrency(Currency.USD)
                 .setDiscount(0)
                 .setPaymentMethod("Visa")
                 .setRevenue(2920)
@@ -280,24 +280,13 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
 
         final Name name = Name.builder().setFull("John Smith").build();
 
-        //  In US, use Address
         final Address address = Address.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
-                .setLine1("333 Kansas st")
-                .setState("CA")
-                .setZipcode("94107")
+                .setStreet1("333 Kansas st")
+                .setRegion1Code("CA")
+                .setPostalCode("94107")
                 .build();
-
-        //  In canadian, use CAAddress
-//        final AbstractAddress address = CAAddress.builder()
-//                .setStreet1("123 Alder Creek Dr.")
-//                .setStreet2("Floor 7")
-//                .setCity("Toronto")
-//                .setRegion1Code("ON")
-//                .setPostalCode("M4B 1B3")
-//                .setCountryCode("CA")
-//                .build();
 
         final Shipping shipping = Shipping.builder().setAddress(address).setName(name).build();
         final Billing billing = Billing.builder().setAddress(address).setName(name).build();
@@ -316,7 +305,7 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
-                .setCurrency(Currency.USD) // For Canadian, you must set "CAD"; For American, this is optional, you can set "USD" or not set.
+                .setCurrency(Currency.USD)
                 .setMetadata(metadata)
                 .build();
     }

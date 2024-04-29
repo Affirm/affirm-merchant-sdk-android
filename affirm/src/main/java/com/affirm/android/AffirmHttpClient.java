@@ -14,8 +14,10 @@ import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import okhttp3.Call;
+import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -24,7 +26,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 
-import static com.affirm.android.AffirmConstants.HTTP;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 
@@ -85,7 +86,7 @@ public final class AffirmHttpClient {
     }
 
     public static String getProtocol() {
-        return AffirmPlugins.get().baseUrl().contains(HTTP) ? "" : HTTPS_PROTOCOL;
+        return HTTPS_PROTOCOL;
     }
 
     @NonNull
@@ -137,6 +138,17 @@ public final class AffirmHttpClient {
         }
         // Set request url
         okHttpRequestBuilder.url(request.getUrl());
+
+        // Set Header
+        Map<String, String> headers = request.getAllHeaders();
+        if (headers != null && !headers.isEmpty()) {
+            Headers.Builder okHttpHeadersBuilder = new Headers.Builder();
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                okHttpHeadersBuilder.add(entry.getKey(), entry.getValue());
+            }
+            Headers okHttpHeaders = okHttpHeadersBuilder.build();
+            okHttpRequestBuilder.headers(okHttpHeaders);
+        }
 
         // Set request body
         AffirmHttpBody body = request.getBody();

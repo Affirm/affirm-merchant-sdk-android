@@ -13,11 +13,10 @@ import static org.junit.Assert.assertEquals;
 @RunWith(RobolectricTestRunner.class)
 public class AddressTest {
 
-    private static final String addressJson = "{\"line1\":\"333 Kansas st\",\"city\":\"San Francisco\",\"state\":\"CA\",\"zipcode\":\"94103\",\"country\":\"USA\"}";
+    private static final String addressJson = "{\"street1\":\"333 Kansas st\",\"city\":\"San Francisco\",\"region1_code\":\"CA\",\"postal_code\":\"94103\",\"country\":\"USA\"}";
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapterFactory(AffirmAdapterFactory.create())
-            .registerTypeAdapter(AbstractAddress.class, new AddressSerializer())
             .create();
 
     @Test
@@ -25,9 +24,9 @@ public class AddressTest {
         final Address address = Address.builder()
                 .setCity("San Francisco")
                 .setCountry("USA")
-                .setLine1("333 Kansas st")
-                .setState("CA")
-                .setZipcode("94103")
+                .setStreet1("333 Kansas st")
+                .setRegion1Code("CA")
+                .setPostalCode("94103")
                 .build();
         assertEquals(gson.toJson(address), addressJson);
     }
@@ -37,11 +36,11 @@ public class AddressTest {
         Address address = gson.fromJson(addressJson, Address.class);
         System.out.println(address);
         Assert.assertNotNull(address);
-        Assert.assertEquals(address.line1(), "333 Kansas st");
-        Assert.assertNull(address.line2());
+        Assert.assertEquals(address.street1(), "333 Kansas st");
+        Assert.assertNull(address.street2());
         Assert.assertEquals(address.city(), "San Francisco");
-        Assert.assertEquals(address.state(), "CA");
-        Assert.assertEquals(address.zipcode(), "94103");
+        Assert.assertEquals(address.region1Code(), "CA");
+        Assert.assertEquals(address.postalCode(), "94103");
         Assert.assertEquals(address.country(), "USA");
     }
 }

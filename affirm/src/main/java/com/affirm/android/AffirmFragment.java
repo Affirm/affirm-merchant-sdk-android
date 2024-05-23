@@ -39,7 +39,7 @@ abstract class AffirmFragment extends Fragment implements AffirmWebChromeClient.
         }
         Fragment fragment = fragmentManager.findFragmentByTag(tag);
         if (fragment != null) {
-            fragmentManager.beginTransaction().remove(fragment).commit();
+            fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
         }
     }
 

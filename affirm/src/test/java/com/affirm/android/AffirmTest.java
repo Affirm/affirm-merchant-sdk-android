@@ -9,6 +9,8 @@ import org.mockito.Mockito;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Locale;
+
 public class AffirmTest {
 
     @Before
@@ -37,6 +39,18 @@ public class AffirmTest {
     public void testSetMerchantName() {
         Affirm.setMerchantName("aaa");
         assertEquals("aaa", AffirmPlugins.get().merchantName());
+    }
+
+    @Test
+    public void testSetCountryCode() {
+        Affirm.setCountryCode(Locale.US.getISO3Country());
+        assertEquals(Locale.US.getISO3Country(), AffirmPlugins.get().countryCode());
+    }
+
+    @Test
+    public void testSetLocale() {
+        Affirm.setLocale(Locale.US.toString());
+        assertEquals(Locale.US.toString(), AffirmPlugins.get().locale());
     }
 
     @Test

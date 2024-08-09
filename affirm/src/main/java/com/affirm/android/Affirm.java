@@ -32,6 +32,7 @@ import java.util.List;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
+import static com.affirm.android.AffirmConstants.AFFIRM_NOT_INITIALIZED_MESSAGE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.COUNTY_CODE_CAN;
@@ -566,7 +567,7 @@ public final class Affirm {
     public static void setPublicKeyAndMerchantName(@NonNull String publicKey,
                                                    @Nullable String merchantName) {
         if (!isInitialized()) {
-            AffirmLog.w("Affirm has not been initialized");
+            AffirmLog.w(AFFIRM_NOT_INITIALIZED_MESSAGE);
             return;
         }
 
@@ -584,7 +585,7 @@ public final class Affirm {
      */
     public static void setPublicKey(@NonNull String publicKey) {
         if (!isInitialized()) {
-            AffirmLog.w("Affirm has not been initialized");
+            AffirmLog.w(AFFIRM_NOT_INITIALIZED_MESSAGE);
             return;
         }
 
@@ -601,13 +602,57 @@ public final class Affirm {
      */
     public static void setMerchantName(@Nullable String merchantName) {
         if (!isInitialized()) {
-            AffirmLog.w("Affirm has not been initialized");
+            AffirmLog.w(AFFIRM_NOT_INITIALIZED_MESSAGE);
             return;
         }
 
         AffirmPlugins.get().setConfiguration(
                 new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
                         .setMerchantName(merchantName)
+                        .build());
+    }
+
+    /**
+     * Updates the country code used by Affirm after initialization.
+     *
+     * @param countryCode Set the country code to be used by Affirm. Must not be null or empty.
+     */
+    public static void setCountryCode(@NonNull String countryCode) {
+        if (!isInitialized()) {
+            AffirmLog.w(AFFIRM_NOT_INITIALIZED_MESSAGE);
+            return;
+        }
+
+        if (countryCode.isEmpty()) {
+            AffirmLog.w("Country code is empty. Please provide a valid country code.");
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setCountryCode(countryCode)
+                        .build());
+    }
+
+    /**
+     * Updates the locale used by Affirm after initialization.
+     *
+     * @param locale Set the locale to be used by Affirm. Must not be null or empty.
+     */
+    public static void setLocale(@NonNull String locale) {
+        if (!isInitialized()) {
+            AffirmLog.w(AFFIRM_NOT_INITIALIZED_MESSAGE);
+            return;
+        }
+
+        if (locale.isEmpty()) {
+            AffirmLog.w("Locale is empty. Please provide a valid locale string.");
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setLocale(locale)
                         .build());
     }
 

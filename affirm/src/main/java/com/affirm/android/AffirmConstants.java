@@ -125,6 +125,7 @@ public final class AffirmConstants {
     static final String TOTAL = "total";
 
     static final String INVALID_CHECKOUT_MESSAGE = "Checkout status is in an invalid state.";
+    static final String AFFIRM_NOT_INITIALIZED_MESSAGE = "Affirm has not been initialized";
 
     static final String PROMO_PATH = "/api/promos/v2/%s";
     static final String PROMO_IS_SDK = "is_sdk";

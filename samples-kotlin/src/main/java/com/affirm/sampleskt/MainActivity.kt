@@ -119,6 +119,7 @@ class MainActivity : AppCompatActivity(), Affirm.CheckoutCallbacks, Affirm.VcnCh
                 .setSku("wheel")
                 .setUnitPrice(BigDecimal.valueOf(1000.0))
                 .setUrl("http://merchant.com/great_deal_wheel")
+                .setCategories(listOf(listOf("Apparel", "Pants"), listOf("Mens", "Apparel", "Pants")))
                 .build()
         val items: MutableMap<String, Item> = HashMap()
         items["wheel"] = item

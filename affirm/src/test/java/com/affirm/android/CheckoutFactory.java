@@ -9,6 +9,7 @@ import com.affirm.android.model.Name;
 import com.affirm.android.model.Shipping;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,10 @@ public class CheckoutFactory {
                 .setSku("wheel")
                 .setUnitPrice(BigDecimal.valueOf(1000.0))
                 .setUrl("http://merchant.com/great_deal_wheel")
+                .setCategories(Arrays.asList(
+                        Arrays.asList("Apparel", "Pants"),
+                        Arrays.asList("Mens", "Apparel", "Pants")
+                ))
                 .build();
 
         final Map<String, Item> items = new HashMap<>();

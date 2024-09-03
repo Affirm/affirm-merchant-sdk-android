@@ -183,7 +183,7 @@ class PromoRequest implements AffirmRequest {
             builder.appendQueryParameter(PROMO_LOGO_TYPE, affirmLogoType.getType());
             if (items != null) {
                 builder.appendQueryParameter(PROMO_ITEMS,
-                        Uri.encode(AffirmPlugins.get().gson().toJson(items))
+                        AffirmPlugins.get().gson().toJson(items)
                 );
             }
             builder.appendQueryParameter(PROMO_LOCALE, AffirmPlugins.get().locale());

@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -273,6 +274,10 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
                 .setSku("wheel")
                 .setUnitPrice(BigDecimal.valueOf(1000.0))
                 .setUrl("http://merchant.com/great_deal_wheel")
+                .setCategories(Arrays.asList(
+                        Arrays.asList("Apparel", "Pants"),
+                        Arrays.asList("Mens", "Apparel", "Pants")
+                ))
                 .build();
 
         final Map<String, Item> items = new HashMap<>();

@@ -9,8 +9,10 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AutoValue
 public abstract class Item implements Parcelable {
@@ -44,6 +46,13 @@ public abstract class Item implements Parcelable {
     @SerializedName("item_image_url")
     public abstract String imageUrl();
 
+    // An array of lists that indicate the various categories that apply to this product, and
+    // the hierarchy of those category definitions. Each list in the array contains one or more
+    // comma-separated strings, with the first string being the highest-level (widest) category.
+    @Nullable
+    @SerializedName("categories")
+    public abstract List<List<String>> categories();
+
     @AutoValue.Builder
     public abstract static class Builder {
         private BigDecimal mUnitPrice;
@@ -59,6 +68,8 @@ public abstract class Item implements Parcelable {
         public abstract Builder setUrl(String value);
 
         public abstract Builder setImageUrl(String value);
+
+        public abstract Builder setCategories(@Nullable List<List<String>> categories);
 
         abstract Item autoBuild();
 

@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.27 (September 03, 2024)
+- Added categories field to item in checkout request
+
 ## Version 2.0.26 (August 14, 2024)
 - Bug-fixes
 

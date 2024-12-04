@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## Version 2.0.29 (December 04, 2024)
+- Update proguard rules
+
 ## Version 2.0.28 (November 25, 2024)
 - Remove maximum amount limit
 

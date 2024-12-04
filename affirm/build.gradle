@@ -33,7 +33,7 @@ android {
         targetSdkVersion rootProject.ext.compileSdkVersion
         versionCode VERSION_CODE.toInteger()
         versionName project.VERSION_NAME
-
+        consumerProguardFiles 'consumer-rules.pro'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

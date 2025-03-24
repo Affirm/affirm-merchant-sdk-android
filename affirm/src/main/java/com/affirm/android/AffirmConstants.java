@@ -10,6 +10,9 @@ public final class AffirmConstants {
     static final String COUNTY_CODE_CAN = "CAN";
 
     static final String COUNTY_CODE_USA = "USA";
+
+    static final String COUNTY_CODE_UK = "GBR";
+
     static final String LOCALE_USA = "en_US";
 
     // checkout url
@@ -31,6 +34,10 @@ public final class AffirmConstants {
     // promo url (CA)
     static final String SANDBOX_PROMO_CA_URL = "sandbox.affirm.ca";
     static final String PRODUCTION_PROMO_CA_URL = "www.affirm.ca";
+
+    // promo url (UK)
+    static final String SANDBOX_PROMO_UK_URL = "sandbox.uk.affirm.com";
+    static final String PRODUCTION_PROMO_UK_URL = "www.uk.affirm.com";
 
     // tracker url
     static final String TRACKER_URL = "tracker.affirm.com";

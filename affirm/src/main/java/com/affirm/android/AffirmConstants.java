@@ -37,7 +37,7 @@ public final class AffirmConstants {
 
     // promo url (UK)
     static final String SANDBOX_PROMO_UK_URL = "sandbox.uk.affirm.com";
-    static final String PRODUCTION_PROMO_UK_URL = "www.uk.affirm.com";
+    static final String PRODUCTION_PROMO_UK_URL = "api.uk.affirm.com";
 
     // tracker url
     static final String TRACKER_URL = "tracker.affirm.com";

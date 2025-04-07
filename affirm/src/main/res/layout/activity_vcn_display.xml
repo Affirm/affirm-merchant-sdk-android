@@ -57,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:textAppearance="@style/AffirmSmall.Medium"
+        android:textAppearance="@style/AffirmBody.Medium"
         android:textColor="@color/affirm_black100"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -65,7 +65,7 @@
 
     <TextView
         android:id="@+id/vcnEditOrCancel"
-        style="@style/AffirmTitle2.Medium"
+        style="@style/AffirmBody.Medium"
         android:layout_width="match_parent"
         android:layout_height="@dimen/affirm_flat_button_height"
         android:layout_gravity="center_horizontal"

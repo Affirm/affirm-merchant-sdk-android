@@ -27,7 +27,7 @@ public final class AffirmConstants {
     static final String SANDBOX_INVALID_CHECKOUT_REDIRECT_URL = "sandbox.affirm.com/u/";
     static final String PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL = "api.affirm.com/u/";
 
-    // promo url (Default)
+    // promo url (US)
     static final String SANDBOX_PROMO_URL = "sandbox.affirm.com";
     static final String PRODUCTION_PROMO_URL = "www.affirm.com";
 

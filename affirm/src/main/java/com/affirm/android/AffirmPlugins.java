@@ -111,7 +111,7 @@ public class AffirmPlugins {
     }
 
     String trackerUrl() {
-        return configuration.environment.trackerUrl();
+        return configuration.environment.trackerUrl(countryCode());
     }
 
     String invalidCheckoutRedirectUrl() {

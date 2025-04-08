@@ -145,8 +145,15 @@ public final class Affirm {
             }
         }
 
-        String trackerUrl() {
-            return AffirmConstants.TRACKER_URL;
+        String trackerUrl(String countryCode) {
+            switch (countryCode) {
+                case COUNTY_CODE_CAN:
+                    return AffirmConstants.TRACKER_CA_URL;
+                case COUNTY_CODE_UK:
+                    return AffirmConstants.TRACKER_UK_URL;
+                default:
+                    return AffirmConstants.TRACKER_US_URL;
+            }
         }
 
         String promoUrl(String countryCode) {
@@ -168,9 +175,9 @@ public final class Affirm {
                 default:
                     switch (this) {
                         case SANDBOX:
-                            return AffirmConstants.SANDBOX_PROMO_URL;
+                            return AffirmConstants.SANDBOX_PROMO_US_URL;
                         default:
-                            return AffirmConstants.PRODUCTION_PROMO_URL;
+                            return AffirmConstants.PRODUCTION_PROMO_US_URL;
                     }
             }
         }

@@ -4,7 +4,7 @@
     <dimen name="header_section_large_line_height">32dp</dimen>
 
     <style name="AffirmBody">
-        <item name="android:fontFamily">@font/calibre_regular</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:lineHeight">@dimen/body_line_height</item>
         <item name="android:textSize">@dimen/affirm_body_font_size</item>
     </style>
@@ -12,6 +12,6 @@
     <style name="AffirmSectionHeader.Large">
         <item name="android:textSize">@dimen/affirm_header_section_font_size</item>
         <item name="android:lineHeight">@dimen/header_section_large_line_height</item>
-        <item name="android:fontFamily">@font/calibre_semibold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 </resources>

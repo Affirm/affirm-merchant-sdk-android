@@ -20,7 +20,7 @@
 
     <style name="AffirmButton" parent="Widget.AppCompat.Button.Borderless">
         <item name="backgroundTintMode">multiply</item>
-        <item name="android:textAppearance">@style/AffirmTitle2.SemiBold</item>
+        <item name="android:textAppearance">@style/AffirmBody.Medium</item>
         <item name="android:minWidth">0dp</item>
     </style>
 

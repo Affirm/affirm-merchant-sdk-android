@@ -39,7 +39,7 @@
             android:alpha=".64"
             android:text="@string/card_number"
             android:textAllCaps="true"
-            android:textAppearance="@style/AffirmSmall.SemiBold"
+            android:textAppearance="@style/AffirmBody.Medium"
             android:textColor="@color/affirm_white"
             android:textSize="12dp"
             tools:ignore="SpUsage" />
@@ -48,7 +48,7 @@
             android:id="@+id/vcnDisplayCardNumberVisa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/AffirmMono"
+            android:textAppearance="@style/AffirmBody.Medium"
             android:textColor="@color/affirm_white"
             android:textSize="20sp"
             tools:text="0123 4567 8901 2345" />
@@ -82,7 +82,7 @@
                     android:alpha=".64"
                     android:text="@string/expires"
                     android:textAllCaps="true"
-                    android:textAppearance="@style/AffirmSmall.SemiBold"
+                    android:textAppearance="@style/AffirmBody.Medium"
                     android:textColor="@color/affirm_white"
                     android:textSize="12dp"
                     tools:ignore="SpUsage" />
@@ -92,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/vcn_empty_expiration"
-                    android:textAppearance="@style/AffirmMono"
+                    android:textAppearance="@style/AffirmBody.Medium"
                     android:textColor="@color/affirm_white"
                     android:textSize="16dp"
                     tools:ignore="SpUsage"
@@ -112,7 +112,7 @@
                     android:alpha=".64"
                     android:text="@string/cvv"
                     android:textAllCaps="true"
-                    android:textAppearance="@style/AffirmSmall.SemiBold"
+                    android:textAppearance="@style/AffirmBody.Medium"
                     android:textColor="@color/affirm_white"
                     android:textSize="12dp"
                     tools:ignore="SpUsage" />
@@ -121,7 +121,7 @@
                     android:id="@+id/vcnDisplayCardCvvVisa"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/AffirmMono"
+                    android:textAppearance="@style/AffirmBody.Medium"
                     android:textColor="@color/affirm_white"
                     android:textIsSelectable="true"
                     android:textSize="16dp"

@@ -287,7 +287,7 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
 
         final Address address = Address.builder()
                 .setCity("San Francisco")
-                .setCountry("USA")
+                .setCountry("GBR")
                 .setStreet1("333 Kansas st")
                 .setRegion1Code("CA")
                 .setPostalCode("94107")
@@ -310,7 +310,7 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
                 .setShippingAmount(BigDecimal.valueOf(0.0))
                 .setTaxAmount(BigDecimal.valueOf(100.0))
                 .setTotal(PRICE)
-                .setCurrency(Currency.USD)
+                .setCurrency(Currency.GBP)
                 .setMetadata(metadata)
                 .build();
     }

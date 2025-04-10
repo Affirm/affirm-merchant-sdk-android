@@ -14,8 +14,8 @@ public class SampleApplication extends Application {
 
         Affirm.initialize(new Affirm.Configuration.Builder(Config.PUBLIC_KEY)
                 .setEnvironment(Affirm.Environment.SANDBOX)
-                .setCountryCode(Locale.US.getISO3Country())  // Default USA
-                .setLocale(Locale.US.toString())    // Default en_US
+                .setCountryCode("GBR")  // Default USA
+                .setLocale("en_GB")    // Default en_US
                 .setMerchantName(null)
                 .setReceiveReasonCodes("true")
                 .setLogLevel(Affirm.LOG_LEVEL_DEBUG)

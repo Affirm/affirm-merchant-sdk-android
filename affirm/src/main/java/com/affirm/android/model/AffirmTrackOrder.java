@@ -45,7 +45,7 @@ public abstract class AffirmTrackOrder implements Parcelable {
     // USD Optional
     @Nullable
     @SerializedName("currency")
-    public abstract Currency currency();
+    public abstract String currency();
 
     // The total discount applied to the order, stated in USD cents (e.g., $100 = 10000). Optional
     @Nullable
@@ -93,7 +93,11 @@ public abstract class AffirmTrackOrder implements Parcelable {
 
         public abstract Builder setCoupon(String value);
 
-        public abstract Builder setCurrency(Currency value);
+        public abstract Builder setCurrency(String value);
+
+        public Builder setCurrency(Currency value) {
+            return setCurrency(value != null ? value.name() : null);
+        }
 
         public abstract Builder setDiscount(Integer value);
 

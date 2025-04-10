@@ -10,6 +10,9 @@ public final class AffirmConstants {
     static final String COUNTY_CODE_CAN = "CAN";
 
     static final String COUNTY_CODE_USA = "USA";
+
+    static final String COUNTY_CODE_UK = "GBR";
+
     static final String LOCALE_USA = "en_US";
 
     // checkout url
@@ -24,16 +27,26 @@ public final class AffirmConstants {
     static final String SANDBOX_INVALID_CHECKOUT_REDIRECT_URL = "sandbox.affirm.com/u/";
     static final String PRODUCTION_INVALID_CHECKOUT_REDIRECT_URL = "api.affirm.com/u/";
 
-    // promo url (Default)
-    static final String SANDBOX_PROMO_URL = "sandbox.affirm.com";
-    static final String PRODUCTION_PROMO_URL = "www.affirm.com";
+    // promo url (US)
+    static final String SANDBOX_PROMO_US_URL = "sandbox.affirm.com";
+    static final String PRODUCTION_PROMO_US_URL = "www.affirm.com";
 
     // promo url (CA)
     static final String SANDBOX_PROMO_CA_URL = "sandbox.affirm.ca";
     static final String PRODUCTION_PROMO_CA_URL = "www.affirm.ca";
 
-    // tracker url
-    static final String TRACKER_URL = "tracker.affirm.com";
+    // promo url (UK)
+    static final String SANDBOX_PROMO_UK_URL = "sandbox.uk.affirm.com";
+    static final String PRODUCTION_PROMO_UK_URL = "api.uk.affirm.com";
+
+    // tracker url (US)
+    static final String TRACKER_US_URL = "tracker.affirm.com";
+
+    // tracker url (CA)
+    static final String TRACKER_CA_URL = "tracker.affirm.ca";
+
+    // tracker url (UK)
+    static final String TRACKER_UK_URL = "tracker.uk.affirm.com";
 
     static final String CHECKOUT_PATH = "/api/v2/checkout/";
     static final String TRACKER_PATH = "/collect";

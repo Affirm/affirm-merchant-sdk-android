@@ -36,6 +36,7 @@ import static com.affirm.android.AffirmConstants.AFFIRM_NOT_INITIALIZED_MESSAGE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.COUNTY_CODE_CAN;
+import static com.affirm.android.AffirmConstants.COUNTY_CODE_UK;
 import static com.affirm.android.AffirmConstants.COUNTY_CODE_USA;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.LOCALE_USA;
@@ -144,8 +145,15 @@ public final class Affirm {
             }
         }
 
-        String trackerUrl() {
-            return AffirmConstants.TRACKER_URL;
+        String trackerUrl(String countryCode) {
+            switch (countryCode) {
+                case COUNTY_CODE_CAN:
+                    return AffirmConstants.TRACKER_CA_URL;
+                case COUNTY_CODE_UK:
+                    return AffirmConstants.TRACKER_UK_URL;
+                default:
+                    return AffirmConstants.TRACKER_US_URL;
+            }
         }
 
         String promoUrl(String countryCode) {
@@ -157,22 +165,20 @@ public final class Affirm {
                         default:
                             return AffirmConstants.PRODUCTION_PROMO_CA_URL;
                     }
+                case COUNTY_CODE_UK:
+                    switch (this) {
+                        case SANDBOX:
+                            return AffirmConstants.SANDBOX_PROMO_UK_URL;
+                        default:
+                            return AffirmConstants.PRODUCTION_PROMO_UK_URL;
+                    }
                 default:
                     switch (this) {
                         case SANDBOX:
-                            return AffirmConstants.SANDBOX_PROMO_URL;
+                            return AffirmConstants.SANDBOX_PROMO_US_URL;
                         default:
-                            return AffirmConstants.PRODUCTION_PROMO_URL;
+                            return AffirmConstants.PRODUCTION_PROMO_US_URL;
                     }
-            }
-        }
-
-        String promoCAUrl() {
-            switch (this) {
-                case SANDBOX:
-                    return AffirmConstants.SANDBOX_PROMO_CA_URL;
-                default:
-                    return AffirmConstants.PRODUCTION_PROMO_CA_URL;
             }
         }
 

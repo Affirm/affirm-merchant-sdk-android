@@ -46,7 +46,7 @@ public class AffirmTrackOrderTest {
         Assert.assertNotNull(affirmTrackOrder);
         Assert.assertEquals(affirmTrackOrder.storeName(), "Affirm Store");
         Assert.assertEquals(affirmTrackOrder.coupon(), "SUMMER2018");
-        Assert.assertEquals(affirmTrackOrder.currency(), Currency.USD);
+        Assert.assertEquals(affirmTrackOrder.currency(), "USD");
         Assert.assertEquals(affirmTrackOrder.discount(), (Integer) 0);
         Assert.assertEquals(affirmTrackOrder.paymentMethod(), "Visa");
         Assert.assertEquals(affirmTrackOrder.revenue(), (Integer) 2920);

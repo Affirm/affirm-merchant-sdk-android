@@ -20,18 +20,22 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK;
-import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_END;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_START;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
 
 public final class AffirmUtils {
+
+    private static final Pattern LOGO_PATTERN =
+            Pattern.compile("\\baffirm\\b", Pattern.CASE_INSENSITIVE);
 
     private AffirmUtils() {
     }
@@ -130,24 +134,20 @@ public final class AffirmUtils {
             @NonNull AffirmColor affirmColor,
             @NonNull Resources resources
     ) {
-        SpannableString spannableString;
+        SpannableString spannable = new SpannableString(template);
+        if (logoDrawable == null) {
+            return spannable;
+        }
+        Matcher matcher = LOGO_PATTERN.matcher(template);
+        while (matcher.find()) {
+            int start = matcher.start();
+            int end = matcher.end();
 
-        int index = template.indexOf(LOGO_PLACEHOLDER);
-        if (logoDrawable != null && index != -1) {
-            spannableString = new SpannableString(template);
             ImageSpan imageSpan = getLogoSpan(textSize, logoDrawable, affirmColor, resources);
-            spannableString.setSpan(
-                    imageSpan,
-                    index,
-                    index + LOGO_PLACEHOLDER.length(),
-                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-            );
-        } else {
-            String onlyText = template.replace(LOGO_PLACEHOLDER, "");
-            spannableString = new SpannableString(onlyText);
+            spannable.setSpan(imageSpan, start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
 
-        return spannableString;
+        return spannable;
     }
 
     private static ImageSpan getLogoSpan(

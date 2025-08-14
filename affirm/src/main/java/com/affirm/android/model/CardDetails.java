@@ -46,6 +46,10 @@ public abstract class CardDetails implements Parcelable {
     @SerializedName("id")
     public abstract String id();
 
+    @Nullable
+    @SerializedName("billing_address")
+    public abstract CardBillingAddress billingAddress();
+
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract CardDetails.Builder setCardholderName(String value);
@@ -61,6 +65,8 @@ public abstract class CardDetails implements Parcelable {
         public abstract CardDetails.Builder setCallbackId(String value);
 
         public abstract CardDetails.Builder setId(String value);
+
+        public abstract CardDetails.Builder setBillingAddress(CardBillingAddress value);
 
         public abstract CardDetails build();
     }

@@ -1,7 +1,10 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
-## Version 2.0.30 (March 15, 2024)
+## Version 2.0.31 (August 20, 2024)
+- Fix CardDetails for correct JSON deserialization
+
+## Version 2.0.30 (March 15, 2025)
 - Support UK
 
 ## Version 2.0.29 (December 04, 2024)

@@ -7,6 +7,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 
 import com.affirm.android.exception.ConnectionException;
+import com.affirm.android.model.CardBillingAddress;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.VcnReason;
 import com.google.gson.Gson;
@@ -77,6 +78,36 @@ public class VcnCheckoutWebViewClientTest {
                 .setCallbackId("031efdda-b6ed-4593-8da4-8889306d60bb")
                 .setId("S4FIKFJHE0HQBGRL")
                 .build();
+        Mockito.verify(callbacks).onWebViewConfirmation(expected);
+    }
+
+    @Test
+    public void shouldOverrideUrlLoading_ConfirmationWithBilling() {
+        final String encodedData =
+                "%7B%22checkout_token%22%3A%22TVY2I3JVYCW0FWYF%22%2C%22cvv%22%3A%22123%22%2C%22number%22%3A%224111111111111111%22%2C%22cardholder_name%22%3A%22AffirmInc%20John%20R%20Andrew%22%2C%22expiration%22%3A%220423%22%2C%22callback_id%22%3A%22cd5d5440-3d63-4e4c-9aa2-fbf16ea689e6%22%2C%22id%22%3A%22TVY2I3JVYCW0FWYF%22%2C%22billing_address%22%3A%7B%22line1%22%3A%22650%20California%20St.%22%2C%22line2%22%3A%2212th%20Floor%22%2C%22city%22%3A%22San%20Francisco%22%2C%22state%22%3A%22CA%22%2C%22zipcode%22%3A%2294108%22%7D%7D";
+
+        affirmWebViewClient.shouldOverrideUrlLoading(webview,
+                "affirm://checkout/confirmed?data=" + encodedData);
+
+        final CardBillingAddress billingAddress = CardBillingAddress.builder()
+                .setLine1("650 California St.")
+                .setLine2("12th Floor")
+                .setCity("San Francisco")
+                .setState("CA")
+                .setZipcode("94108")
+                .build();
+
+        final CardDetails expected = CardDetails.builder()
+                .setCheckoutToken("TVY2I3JVYCW0FWYF")
+                .setCvv("123")
+                .setNumber("4111111111111111")
+                .setCardholderName("AffirmInc John R Andrew")
+                .setExpiration("0423")
+                .setCallbackId("cd5d5440-3d63-4e4c-9aa2-fbf16ea689e6")
+                .setId("TVY2I3JVYCW0FWYF")
+                .setBillingAddress(billingAddress)
+                .build();
+
         Mockito.verify(callbacks).onWebViewConfirmation(expected);
     }
 

@@ -94,4 +94,36 @@ afterEvaluate { project ->
     artifacts {
         archives androidSourcesJar
     }
+
+    task uploadToPortal {
+        doLast {
+            if (!isReleaseBuild()) {
+                println "SNAPSHOT version detected (${VERSION_NAME}). SNAPSHOTs are published directly and don't need Portal upload."
+                return
+            }
+            
+            def publishingType = project.hasProperty('publishing_type') ? project.property('publishing_type') : 'user_managed'
+            
+            println "RELEASE version detected (${VERSION_NAME}). Uploading to Central Portal with publishing_type: ${publishingType}"
+            
+            def command = [
+                'curl', '-X', 'POST',
+                "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/${GROUP}?publishing_type=${publishingType}",
+                '-H', 'Content-Type: application/json',
+                '-H', "Authorization: Bearer ${java.util.Base64.encoder.encodeToString("${getRepositoryUsername()}:${getRepositoryPassword()}".bytes)}",
+                '-d', '{}'
+            ]
+            
+            def process = command.execute()
+            process.waitFor()
+            
+            if (process.exitValue() == 0) {
+                println "Successfully uploaded to Central Portal"
+                println process.text
+            } else {
+                println "Error uploading to Central Portal:"
+                println process.err.text
+            }
+        }
+    }
 }

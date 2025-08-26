@@ -3,6 +3,7 @@ package com.affirm.android;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -51,58 +52,30 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         AffirmUtils.debuggableWebView(getContext());
         setWebViewClient(new PromoWebViewClient(this));
         setWebChromeClient(new AffirmWebChromeClient(this));
-
-
-        setOnTouchListener(new View.OnTouchListener() {
-
-            private static final int FINGER_RELEASED = 0;
-            private static final int FINGER_TOUCHED = 1;
-            private static final int FINGER_DRAGGING = 2;
-            private static final int FINGER_UNDEFINED = 3;
-
-            private int fingerState = FINGER_RELEASED;
-
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                switch (motionEvent.getAction()) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        if (fingerState == FINGER_RELEASED) {
-                            fingerState = FINGER_TOUCHED;
-                        } else {
-                            fingerState = FINGER_UNDEFINED;
-                        }
-                        break;
-
-                    case MotionEvent.ACTION_UP:
-                        if (fingerState != FINGER_DRAGGING) {
-                            fingerState = FINGER_RELEASED;
-                            if (webViewClickListener != null) {
-                                webViewClickListener.onClick((View) view.getParent());
-                            }
-                        } else {
-                            fingerState = FINGER_RELEASED;
-                        }
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-                        if (fingerState == FINGER_TOUCHED || fingerState == FINGER_DRAGGING) {
-                            fingerState = FINGER_DRAGGING;
-                        } else {
-                            fingerState = FINGER_UNDEFINED;
-                        }
-                        break;
-
-                    default:
-                        fingerState = FINGER_UNDEFINED;
-
-                }
-
-                return false;
+        GestureDetector gestureDetector = new GestureDetector(context,
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapConfirmed(MotionEvent e) {
+                        performClick();
+                        return true;
+                    }
+                });
+        setOnTouchListener((view, event) -> {
+            if (gestureDetector.onTouchEvent(event)) {
+                return true;
             }
+            return false;
         });
         setBackgroundColor(getResources().getColor(android.R.color.transparent));
+    }
+
+    @Override
+    public boolean performClick() {
+        super.performClick();
+        if (webViewClickListener != null) {
+            webViewClickListener.onClick((View) getParent());
+        }
+        return true;
     }
 
     public void loadWebData(String promoHtml, String remoteCssUrl, String typeface) {

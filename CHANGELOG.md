@@ -1,7 +1,10 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
-## Version 2.0.31 (August 20, 2024)
+## Version 2.0.32 (August 26, 2025)
+- Fix: safely replace 'affirm' (case-insensitive) with logo span
+
+## Version 2.0.31 (August 20, 2025)
 - Fix CardDetails for correct JSON deserialization
 
 ## Version 2.0.30 (March 15, 2025)

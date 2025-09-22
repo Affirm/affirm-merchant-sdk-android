@@ -39,10 +39,12 @@ public abstract class Item implements Parcelable {
     public abstract Integer qty();
 
     // The item's product description page URL.
+    @Nullable
     @SerializedName("item_url")
     public abstract String url();
 
     // The item's product image URL.
+    @Nullable
     @SerializedName("item_image_url")
     public abstract String imageUrl();
 

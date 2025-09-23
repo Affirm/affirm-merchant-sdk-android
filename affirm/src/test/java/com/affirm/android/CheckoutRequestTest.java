@@ -29,6 +29,9 @@ public class CheckoutRequestTest {
     private static final String expectedCheckoutWithCardAuthWindowBody =
             "{\"checkout\":{\"items\":{\"wheel\":{\"display_name\":\"Great Deal Wheel\",\"sku\":\"wheel\",\"unit_price\":100000,\"qty\":1,\"item_url\":\"http://merchant.com/great_deal_wheel\",\"item_image_url\":\"http://www.image.com/111\",\"categories\":[[\"Apparel\",\"Pants\"],[\"Mens\",\"Apparel\",\"Pants\"]]}},\"currency\":\"USD\",\"shipping\":{\"address\":{\"street1\":\"333 Kansas st\",\"city\":\"San Francisco\",\"region1_code\":\"CA\",\"postal_code\":\"94103\",\"country\":\"USA\"},\"name\":{\"full\":\"John Smith\"}},\"billing\":{\"address\":{\"street1\":\"333 Kansas st\",\"city\":\"San Francisco\",\"region1_code\":\"CA\",\"postal_code\":\"94103\",\"country\":\"USA\"},\"name\":{\"full\":\"John Smith\"}},\"shipping_amount\":100000,\"tax_amount\":10000,\"total\":110000,\"metadata\":{\"entity_name\":\"internal-sub_brand-name\",\"shipping_type\":\"UPS Ground\",\"webhook_session_id\":\"ABC123\",\"platform_type\":\"Affirm Android SDK\",\"platform_affirm\":\"\"},\"merchant\":{\"public_api_key\":\"Y8CQXFF044903JC0\",\"user_confirmation_url\":\"affirm://checkout/confirmed\",\"user_cancel_url\":\"affirm://checkout/cancelled\",\"card_auth_window\":10,\"user_confirmation_url_action\":\"GET\"},\"api_version\":\"v2\",\"meta\":{\"locale\":\"en_US\"}}}";
 
+    private static final String expectedCheckoutWithOutMetadata =
+            "{\"checkout\":{\"items\":{\"wheel\":{\"display_name\":\"Great Deal Wheel\",\"sku\":\"wheel\",\"unit_price\":100000,\"qty\":1,\"item_url\":\"http://merchant.com/great_deal_wheel\",\"item_image_url\":\"http://www.image.com/111\",\"categories\":[[\"Apparel\",\"Pants\"],[\"Mens\",\"Apparel\",\"Pants\"]]}},\"currency\":\"USD\",\"shipping\":{\"address\":{\"street1\":\"333 Kansas st\",\"city\":\"San Francisco\",\"region1_code\":\"CA\",\"postal_code\":\"94103\",\"country\":\"USA\"},\"name\":{\"full\":\"John Smith\"}},\"billing\":{\"address\":{\"street1\":\"333 Kansas st\",\"city\":\"San Francisco\",\"region1_code\":\"CA\",\"postal_code\":\"94103\",\"country\":\"USA\"},\"name\":{\"full\":\"John Smith\"}},\"shipping_amount\":100000,\"tax_amount\":10000,\"total\":110000,\"merchant\":{\"public_api_key\":\"Y8CQXFF044903JC0\",\"user_confirmation_url\":\"affirm://checkout/confirmed\",\"user_cancel_url\":\"affirm://checkout/cancelled\",\"user_confirmation_url_action\":\"GET\"},\"api_version\":\"v2\",\"meta\":{\"locale\":\"en_US\"},\"metadata\":{\"platform_type\":\"Affirm Android SDK\",\"platform_affirm\":\"\"}}}";
+
     private static String generateExpectedCheckoutBody() {
         return String.format(expectedCheckoutBody, BuildConfig.VERSION_NAME);
     }
@@ -41,12 +44,14 @@ public class CheckoutRequestTest {
         return String.format(expectedCheckoutWithCardAuthWindowBody, BuildConfig.VERSION_NAME);
     }
 
+    private static String generateExpectedCheckoutWithOutMetadata() {
+        return String.format(expectedCheckoutWithOutMetadata, BuildConfig.VERSION_NAME);
+    }
+
     @Before
     public void setup() {
         if (AffirmPlugins.get() == null) {
-            Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
-                    .build()
-            );
+            Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX).build());
         }
     }
 
@@ -100,5 +105,21 @@ public class CheckoutRequestTest {
         Request request = requestCaptor.getValue();
         Truth.assertThat(RequestUtilsTest.bodyToString(request)).isEqualTo(generateExpectedCheckoutWithCardAuthWindowBody());
     }
-}
 
+    @Test
+    public void testCheckoutWithOutMetadata() throws Exception {
+        OkHttpClient client = mock(OkHttpClient.class);
+        Call call = mock(Call.class);
+        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
+
+        Mockito.when(client.newCall(any(Request.class))).thenReturn(call);
+
+        Checkout checkout = CheckoutFactory.createWithoutMetadata();
+        CheckoutRequest checkoutRequest = new CheckoutRequest(client, checkout, null, null, null, false, -1);
+        checkoutRequest.create();
+
+        Mockito.verify(client).newCall(requestCaptor.capture());
+        Request request = requestCaptor.getValue();
+        Truth.assertThat(RequestUtilsTest.bodyToString(request)).isEqualTo(generateExpectedCheckoutWithOutMetadata());
+    }
+}

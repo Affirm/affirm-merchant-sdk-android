@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Item;
+import com.affirm.android.model.PromoConfig;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.PromoResponse;
 import com.google.gson.JsonObject;
@@ -129,10 +130,7 @@ class PromoRequest implements AffirmRequest {
     }
 
     private void handleSuccessResponse(PromoResponse promoResponse) {
-        final boolean showPrequal = !promoResponse.promo()
-                .promoConfig()
-                .promoStyle()
-                .equals("fast");
+        final boolean showPrequal = shouldShowPrequal(promoResponse);
 
         final String promo = promoResponse.promo().ala();
         final String htmlPromo = promoResponse.promo().htmlAla();
@@ -203,5 +201,23 @@ class PromoRequest implements AffirmRequest {
         public Map<String, String> headers() {
             return null;
         }
+    }
+
+    private static boolean shouldShowPrequal(PromoResponse promoResponse) {
+        if (promoResponse == null || promoResponse.promo() == null) {
+            return false;
+        }
+
+        PromoConfig config = promoResponse.promo().promoConfig();
+        if (config == null) {
+            return false;
+        }
+
+        String style = config.promoStyle();
+        if (style == null) {
+            return false;
+        }
+
+        return !"fast".equalsIgnoreCase(style.trim());
     }
 }

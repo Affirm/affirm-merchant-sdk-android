@@ -5,12 +5,15 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
+import androidx.annotation.Nullable;
+
 @AutoValue
 public abstract class PromoConfig {
 
     @SerializedName("promo_prequal_enabled")
     public abstract boolean promoPrequalEnabled();
 
+    @Nullable
     @SerializedName("promo_style")
     public abstract String promoStyle();
 

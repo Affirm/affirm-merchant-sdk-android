@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## VERSION 2.0.33 (October 2, 2025)
+- Fix: promo_style field now nullable 
+
 ## Version 2.0.32 (August 26, 2025)
 - Fix: safely replace 'affirm' (case-insensitive) with logo span
 

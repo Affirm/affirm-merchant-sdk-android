@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## VERSION 2.0.34 (October 15, 2025)
+- Fix: ensure METADATA is added when missing
+
 ## VERSION 2.0.33 (October 2, 2025)
 - Fix: promo_style field now nullable 
 

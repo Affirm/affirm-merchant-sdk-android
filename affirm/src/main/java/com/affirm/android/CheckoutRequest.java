@@ -203,6 +203,7 @@ class CheckoutRequest implements AffirmRequest {
             JsonObject metadataJson = checkoutJson.getAsJsonObject(METADATA);
             if (metadataJson == null) {
                 metadataJson = new JsonObject();
+                checkoutJson.add(METADATA, metadataJson);
             }
             metadataJson.addProperty(PLATFORM_TYPE_KEY, PLATFORM_TYPE_VALUE);
             metadataJson.addProperty(PLATFORM_AFFIRM_KEY, PLATFORM_AFFIRM_VALUE);

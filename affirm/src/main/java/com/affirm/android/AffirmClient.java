@@ -95,20 +95,22 @@ public final class AffirmClient {
                             Type resolvedType = type.getActualTypeArguments()[0];
                             T model = gson.fromJson(responseBody.string(), resolvedType);
                             new Handler(Looper.getMainLooper()).post(
-                                    () -> listener.onSuccess(model)
-                            );
-                        } catch (JsonSyntaxException | IOException e) {
-                            handleErrorResponse(
-                                    new APIException("Some error occurred while parsing response",
-                                            e),
-                                    listener
-
-                            );
+                                    () -> {
+                                        try {
+                                            listener.onSuccess(model);
+                                        } catch (Exception e) {
+                                            listener.onFailure(new APIException("Error in success callback: " + e.getMessage(), e));
+                                        }
+                                    });
+                        } catch (JsonSyntaxException e) {
+                            handleErrorResponse(new APIException("Failed to parse JSON response: " + e.getMessage(), e), listener);
+                        } catch (IOException e) {
+                            handleErrorResponse(new APIException("Failed to read response body: " + e.getMessage(), e), listener);
+                        } catch (Exception e) {
+                            handleErrorResponse(new APIException("Unexpected error occurred: " + e.getMessage(), e), listener);
                         }
                     } else {
-                        handleErrorResponse(
-                                new APIException("Response was success, but body was null", null),
-                                listener);
+                        handleErrorResponse(new APIException("Response was success, but body was null", null), listener);
                     }
                 } else {
                     trackNetworkError(call.request());

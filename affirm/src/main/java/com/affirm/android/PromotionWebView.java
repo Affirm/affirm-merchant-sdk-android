@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import static com.affirm.android.AffirmConstants.AFFIRM_FONT;
 import static com.affirm.android.AffirmConstants.API_KEY;
+import static com.affirm.android.AffirmConstants.BUNDLED_CSS;
 import static com.affirm.android.AffirmConstants.COUNTRY_CODE;
 import static com.affirm.android.AffirmConstants.HTML_FRAGMENT;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
@@ -125,6 +126,19 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         final HashMap<String, String> map = new HashMap<>();
         final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().jsUrl() + JS_PATH;
 
+        // Always load bundled badge CSS to ensure badge support
+        // Custom CSS (if provided) will be loaded after and can override these styles
+        String bundledCss = "";
+        InputStream cssIns = null;
+        try {
+            cssIns = getResources().openRawResource(R.raw.badge_styles);
+            bundledCss = AffirmUtils.readInputStream(cssIns);
+        } catch (Exception e) {
+            AffirmLog.e("Failed to load bundled badge CSS: " + e.toString());
+        } finally {
+            AffirmUtils.closeInputStream(cssIns);
+        }
+
         map.put(AFFIRM_FONT, typeface != null ? typeface : "");
         map.put(API_KEY, AffirmPlugins.get().publicKey());
         map.put(JAVASCRIPT, fullPath);
@@ -132,6 +146,7 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         map.put(COUNTRY_CODE, AffirmPlugins.get().countryCode());
         map.put(HTML_FRAGMENT, promoHtml);
         map.put(REMOTE_CSS_URL, remoteCssUrl != null ? remoteCssUrl : "");
+        map.put(BUNDLED_CSS, bundledCss);
         return AffirmUtils.replacePlaceholders(html, map);
     }
 

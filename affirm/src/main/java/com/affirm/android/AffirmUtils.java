@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK;
@@ -38,6 +39,22 @@ public final class AffirmUtils {
             Pattern.compile("\\baffirm\\b", Pattern.CASE_INSENSITIVE);
 
     private AffirmUtils() {
+    }
+
+    static void applyWindowInsets(@NonNull View root) {
+        final int left = root.getPaddingLeft();
+        final int top = root.getPaddingTop();
+        final int right = root.getPaddingRight();
+        final int bottom = root.getPaddingBottom();
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            v.setPadding(
+                    left + insets.getSystemWindowInsetLeft(),
+                    top + insets.getSystemWindowInsetTop(),
+                    right + insets.getSystemWindowInsetRight(),
+                    bottom + insets.getSystemWindowInsetBottom());
+            return insets.consumeSystemWindowInsets();
+        });
+        ViewCompat.requestApplyInsets(root);
     }
 
     public static int decimalDollarsToIntegerCents(BigDecimal amount) {

@@ -70,6 +70,7 @@ public class VcnDisplayActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vcn_display);
+        AffirmUtils.applyWindowInsets(findViewById(android.R.id.content));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.affirm_color_primary));

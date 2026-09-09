@@ -9,6 +9,7 @@ import static com.affirm.android.AffirmConstants.VCN_REASON;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,12 @@ import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.VcnReason;
 
 abstract class AffirmActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        AffirmUtils.applyWindowInsets(findViewById(android.R.id.content));
+    }
 
     static void startForResult(@NonNull Activity originalActivity,
                                @NonNull Intent intent,

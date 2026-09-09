@@ -68,6 +68,7 @@ public class LoanAmountActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loan_amount);
+        AffirmUtils.applyWindowInsets(findViewById(android.R.id.content));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

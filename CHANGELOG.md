@@ -1,6 +1,9 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
+## VERSION 2.0.36 (September 9, 2026)
+- Fix: apply system window insets on SDK-owned activities
+
 ## VERSION 2.0.35 (July 14, 2026)
 - Fix: add badge css to webview mode
 

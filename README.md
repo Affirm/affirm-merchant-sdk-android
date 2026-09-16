@@ -121,11 +121,26 @@ Affirm.startCheckout(this, checkout, false);
         Toast.makeText(this, "Checkout Cancelled", Toast.LENGTH_LONG).show();
     }
     
+    // Required. Not called if you also override the overload below.
     @Override
-    public void onAffirmCheckoutError(String message) {
+    public void onAffirmCheckoutError(@Nullable String message) {
+        Toast.makeText(this, "Checkout Error: " + message, Toast.LENGTH_LONG).show();
+    }
+
+    // Optional.
+    @Override
+    public void onAffirmCheckoutError(@Nullable String message,
+                                      @Nullable AffirmError error) {
+        if (error != null && error.ui() != null) {
+            showDialog(error.ui().main(), error.ui().sub(), error.ui().subExtra());
+            return;
+        }
         Toast.makeText(this, "Checkout Error: " + message, Toast.LENGTH_LONG).show();
     }
     ```
+
+    `error.ui()` holds copy that is safe to show the customer, and is only present for the errors
+    Affirm provides it for, such as an invalid shipping address, so keep the `message()` fallback.
 ### Charge authorization
 
 Once the checkout has been successfully confirmed by the user, the AffirmCheckoutDelegate object will receive a checkout token. This token should be forwarded to your server, which should then use the token to authorize a charge on the user's account. For more details about the server integration, see our [API documentation](https://docs.affirm.com/Integrate_Affirm/Direct_API#3._Authorize_the_charge).
@@ -289,8 +304,16 @@ We also support using fragment directly, only need to pass a ViewGroup id, we wi
         Toast.makeText(this, "Checkout Cancelled", Toast.LENGTH_LONG).show();
     }
 
+    // Required. Not called if you also override the overload below.
     @Override
     public void onAffirmCheckoutError(@Nullable String message) {
+        Toast.makeText(this, "Checkout Error: " + message, Toast.LENGTH_LONG).show();
+    }
+
+    // Optional.
+    @Override
+    public void onAffirmCheckoutError(@Nullable String message,
+                                      @Nullable AffirmError error) {
         Toast.makeText(this, "Checkout Error: " + message, Toast.LENGTH_LONG).show();
     }
 ```

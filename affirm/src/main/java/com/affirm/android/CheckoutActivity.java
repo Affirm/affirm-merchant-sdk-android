@@ -3,6 +3,7 @@ package com.affirm.android;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.affirm.android.model.AffirmError;
 import com.affirm.android.model.Checkout;
 
 import androidx.annotation.NonNull;
@@ -49,6 +50,11 @@ public class CheckoutActivity extends CheckoutBaseActivity implements Affirm.Che
     @Override
     public void onAffirmCheckoutError(@Nullable String message) {
         finishWithError(message);
+    }
+
+    @Override
+    public void onAffirmCheckoutError(@Nullable String message, @Nullable AffirmError error) {
+        finishWithError(message, error);
     }
 
     @Override

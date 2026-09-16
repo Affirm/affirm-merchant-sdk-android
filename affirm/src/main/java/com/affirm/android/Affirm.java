@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.affirm.android.exception.AffirmException;
+import com.affirm.android.model.AffirmError;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.CardDetailsInner;
@@ -34,6 +35,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
 import static com.affirm.android.AffirmConstants.AFFIRM_NOT_INITIALIZED_MESSAGE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
+import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR_DETAIL;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.COUNTY_CODE_CAN;
 import static com.affirm.android.AffirmConstants.COUNTY_CODE_UK;
@@ -107,6 +109,11 @@ public final class Affirm {
 
     public interface CheckoutCallbacks {
         void onAffirmCheckoutError(@Nullable String message);
+
+        default void onAffirmCheckoutError(@Nullable String message,
+                                           @Nullable AffirmError error) {
+            onAffirmCheckoutError(message);
+        }
 
         void onAffirmCheckoutCancelled();
 
@@ -1894,7 +1901,8 @@ public final class Affirm {
                     break;
                 case RESULT_ERROR:
                     AffirmUtils.requireNonNull(data);
-                    callbacks.onAffirmCheckoutError(data.getStringExtra(CHECKOUT_ERROR));
+                    callbacks.onAffirmCheckoutError(data.getStringExtra(CHECKOUT_ERROR),
+                            data.getParcelableExtra(CHECKOUT_ERROR_DETAIL));
                     break;
                 default:
                     break;

@@ -137,8 +137,8 @@ class PromoRequest implements AffirmRequest {
 
         final String promoMessage = isHtmlStyle
                 ? htmlPromo
-                : promo.replace(LOGO_PLACEHOLDER, "affirm");
-        final String promoDescription = promo.replace(LOGO_PLACEHOLDER, "affirm");
+                : promo;
+        final String promoDescription = promo.replace(LOGO_PLACEHOLDER, "Affirm");
         if (TextUtils.isEmpty(promoMessage)) {
             handleErrorResponse(new Exception("Promo message is null or empty!"));
         } else {

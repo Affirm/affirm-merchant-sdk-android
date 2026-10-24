@@ -16,10 +16,6 @@ import com.affirm.android.CardBrand
 import com.affirm.android.CardBrand.Companion.fromCardNumber
 import com.affirm.android.R
 import com.affirm.android.model.CardDetails
-import kotlinx.android.synthetic.main.vcn_card_mastercard.view.*
-import kotlinx.android.synthetic.main.vcn_card_visa.view.*
-import kotlinx.android.synthetic.main.vcn_card_visa_back.view.*
-import kotlinx.android.synthetic.main.view_vcn_card.view.*
 import kotlin.properties.Delegates
 
 class VCNCardView(context: Context, attrs: AttributeSet) :
@@ -27,6 +23,8 @@ class VCNCardView(context: Context, attrs: AttributeSet) :
 
     private var scaled = false
     private var oldElevation: Float = 0.0f
+    private val cardViewInVCNCardView: CardView
+        get() = findViewById(R.id.cardViewInVCNCardView)
 
     var vcn by Delegates.observable<CardDetails?>(null) { _, _, new ->
         new?.let { afterSetVcn(it) }
@@ -42,12 +40,12 @@ class VCNCardView(context: Context, attrs: AttributeSet) :
 
                 cardViewInVCNCardView.addView(visaBackView, 0)
                 cardViewInVCNCardView.addView(visaFrontView, 1)
-                visaFrontView.vcnDisplayCardCvvVisa.text = card.cvv()
+                visaFrontView.findViewById<TextView>(R.id.vcnDisplayCardCvvVisa).text = card.cvv()
                 card.expiration()?.let {
-                    visaFrontView.vcnDisplayCardExpirationVisa.text = String.format("%s/%s", it.substring(0, 2), it.substring(2, it.length))
+                    visaFrontView.findViewById<TextView>(R.id.vcnDisplayCardExpirationVisa).text = String.format("%s/%s", it.substring(0, 2), it.substring(2, it.length))
                 }
-                visaFrontView.vcnDisplayCardNumberVisa.text = cardNumber.replace(Regex(".{4}(?!\$)"), "\$0 ")
-                visaBackView.authorizedCardholderVisaBack.text = context.getString(R.string.authorized_cardholder, card.cardholderName())
+                visaFrontView.findViewById<TextView>(R.id.vcnDisplayCardNumberVisa).text = cardNumber.replace(Regex(".{4}(?!\$)"), "\$0 ")
+                visaBackView.findViewById<TextView>(R.id.authorizedCardholderVisaBack).text = context.getString(R.string.authorized_cardholder, card.cardholderName())
                 setUpFlipAnimation(visaFrontView, visaBackView)
             }
             CardBrand.MasterCard -> {
@@ -55,9 +53,9 @@ class VCNCardView(context: Context, attrs: AttributeSet) :
                 val mastercardView = inflate(context, R.layout.vcn_card_mastercard, null)
                 cardViewInVCNCardView.addView(mastercardView, 0)
 
-                vcnDisplayCardNumberMastercard.text = cardNumber.replace(Regex(".{4}(?!\$)"), "\$0 ")
-                vcnDisplayCardCvvMastercard.text = card.cvv()
-                vcnDisplayCardExpirationMastercard.text = card.expiration()
+                findViewById<TextView>(R.id.vcnDisplayCardNumberMastercard).text = cardNumber.replace(Regex(".{4}(?!\$)"), "\$0 ")
+                findViewById<TextView>(R.id.vcnDisplayCardCvvMastercard).text = card.cvv()
+                findViewById<TextView>(R.id.vcnDisplayCardExpirationMastercard).text = card.expiration()
             }
         }
     }
@@ -113,12 +111,12 @@ class VCNCardView(context: Context, attrs: AttributeSet) :
         val outAnimatorBack = createFlipOutAnimator(visaBackView)
         outAnimatorBack.addListener(clearShadowOnStartListener)
 
-        visaFrontView.informationButton.setOnClickListener {
+        visaFrontView.findViewById<View>(R.id.informationButton).setOnClickListener {
             outAnimatorFront.start()
             inAnimatorBack.start()
         }
 
-        visaBackView.backButton.setOnClickListener {
+        visaBackView.findViewById<View>(R.id.backButton).setOnClickListener {
             outAnimatorBack.start()
             inAnimatorFront.start()
         }

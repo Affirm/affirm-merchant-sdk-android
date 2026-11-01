@@ -30,9 +30,8 @@ class AffirmWebView extends WebView {
     }
 
     protected void destroyWebView() {
-        if (getParent() != null) {
-            ViewGroup viewGroup = (ViewGroup) getParent();
-            viewGroup.removeAllViews();
+        if (getParent() instanceof ViewGroup) {
+            ((ViewGroup) getParent()).removeView(this);
         }
         removeAllViews();
         clearCache(true);

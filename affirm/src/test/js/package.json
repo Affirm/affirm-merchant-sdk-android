@@ -1,0 +1,14 @@
+{
+  "name": "affirm-promo-page-test",
+  "private": true,
+  "description": "Headless Chrome checks for res/raw/affirm_promo.html and the bundled sanitizer",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "puppeteer-core": "22.15.0"
+  }
+}

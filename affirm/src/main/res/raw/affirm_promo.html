@@ -2,9 +2,7 @@
     <head>
         <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
         <style>{{BUNDLED_CSS}}</style>
-        <link rel="stylesheet" type="text/css" href="{{REMOTE_CSS_URL}}">
-
-        {{AFFIRM_FONT}}
+        <script>{{SANITIZER_JS}}</script>
     </head>
     <body>
         <script>
@@ -16,6 +14,168 @@
             };
             (function(l,g,m,e,a,f,b){var d,c=l[m]||{},h=document.createElement(f),n=document.getElementsByTagName(f)[0],k=function(a,b,c){return function(){a[b]._.push([c,arguments])}};c[e]=k(c,e,"set");d=c[e];c[a]={};c[a]._=[];d._=[];c[a][b]=k(c,a,b);a=0;for(b="set add save post open empty reset on off trigger ready setProduct".split(" ");a<b.length;a++)d[b[a]]=k(c,e,b[a]);a=0;for(b=["get","token","url","items"];a<b.length;a++)d[b[a]]=function(){};h.async=!0;h.src=g[f];n.parentNode.insertBefore(h,n);delete g[f];d(g);l[m]=c})(window,_affirm_config,"affirm","checkout","ui","script","ready");
         </script>
-        <p>{{HTML_FRAGMENT}}</p>
+        <!-- Sanitized promo HTML is inserted here; never string-replace it into the template. -->
+        <p id="affirm-promo-root"></p>
+        <script>
+            (function () {
+                // Injected by PromotionWebView. Ready and failure each run at most once.
+                var host = window.AffirmPromoHost;
+                var settled = false;
+                function fail(reason) {
+                    if (!settled) {
+                        settled = true;
+                        if (host) {
+                            host.onFailure(reason);
+                        }
+                    }
+                }
+                // Spec default until a native render owner owns the timeout.
+                setTimeout(function () { fail('html_timeout'); }, 5000);
+                // Android sends HTML/CSS/font as Base64 so markup never touches the template.
+                function decode(encoded) {
+                    return decodeURIComponent(escape(window.atob(encoded)));
+                }
+                function isHttps(url) {
+                    return /^https:\/\//i.test(url);
+                }
+                function isAllowedStylesheet(url) {
+                    return isHttps(url) || /^file:\/\/\/android_asset\//i.test(url);
+                }
+                function contentHeight() {
+                    var root = document.getElementById('affirm-promo-root');
+                    var height = root ? root.getBoundingClientRect().height : 0;
+                    var bodyStyle = window.getComputedStyle(document.body);
+                    height += parseFloat(bodyStyle.marginTop) || 0;
+                    height += parseFloat(bodyStyle.marginBottom) || 0;
+                    return Math.ceil(height);
+                }
+                // Stylesheets: load or error. Images: complete + naturalWidth 0 already failed.
+                function whenLoaded(element, isLoaded, reason) {
+                    return new Promise(function (resolve) {
+                        if (isLoaded) {
+                            if (isLoaded(element)) {
+                                resolve();
+                                return;
+                            }
+                            if (element.complete) {
+                                fail(reason);
+                                return;
+                            }
+                        }
+                        element.addEventListener('load', function () {
+                            if (isLoaded && !isLoaded(element)) {
+                                fail(reason);
+                            } else {
+                                resolve();
+                            }
+                        });
+                        element.addEventListener('error', function () { fail(reason); });
+                    });
+                }
+
+                var purify = window.DOMPurify;
+                if (!purify || !purify.isSupported) {
+                    fail('sanitizer_unavailable');
+                    return;
+                }
+                purify.addHook('uponSanitizeAttribute', function (node, data) {
+                    if ((data.attrName === 'href' || data.attrName === 'src')
+                            && !isHttps(data.attrValue)) {
+                        data.keepAttr = false;
+                    }
+                });
+                var root = document.getElementById('affirm-promo-root');
+                try {
+                    // Spec allowlist. Decode first so the fragment is never parsed as the page.
+                    root.innerHTML = purify.sanitize(decode('{{HTML_FRAGMENT}}'), {
+                        ALLOWED_TAGS: ['a', 'b', 'strong', 'em', 'i', 'u', 'small', 'sup', 'sub',
+                            'br', 'span', 'p', 'div', 'img', 'svg', 'g', 'path', 'circle', 'rect',
+                            'ellipse', 'line', 'polygon', 'polyline', 'title'],
+                        ALLOWED_ATTR: ['class', 'href', 'src', 'alt', 'title', 'width', 'height',
+                            'viewBox', 'd', 'fill', 'fill-rule', 'clip-rule', 'stroke',
+                            'stroke-width', 'transform', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry',
+                            'x1', 'y1', 'x2', 'y2', 'points', 'xmlns'],
+                        ALLOW_ARIA_ATTR: false,
+                        ALLOW_DATA_ATTR: false
+                    });
+                } catch (e) {
+                    fail('sanitizer_unavailable');
+                    return;
+                }
+                // Text, https <img>, or svg. A leftover <img> with src stripped is empty.
+                var usable = !!(root.textContent.trim()
+                    || root.querySelector('img[src], svg'));
+                if (host) {
+                    host.onSanitized(usable);
+                }
+                if (!usable) {
+                    fail('html_empty');
+                    return;
+                }
+
+                // Merchant CSS, fonts and message images gate ready; Affirm.js is optional.
+                var waits = [];
+                var remoteCssUrl = decode('{{REMOTE_CSS_URL}}');
+                if (remoteCssUrl) {
+                    if (!isAllowedStylesheet(remoteCssUrl)) {
+                        fail('resource_failed');
+                        return;
+                    }
+                    var remoteCss = document.createElement('link');
+                    remoteCss.rel = 'stylesheet';
+                    waits.push(whenLoaded(remoteCss, null, 'resource_failed'));
+                    remoteCss.href = remoteCssUrl;
+                    document.head.appendChild(remoteCss);
+                }
+
+                // Font declaration may only contribute style and stylesheet link elements.
+                var fontDoc = document.implementation.createHTMLDocument('');
+                fontDoc.body.innerHTML = decode('{{AFFIRM_FONT}}');
+                var fontNodes = fontDoc.querySelectorAll('style, link');
+                for (var f = 0; f < fontNodes.length; f++) {
+                    var node = fontNodes[f];
+                    if (node.tagName === 'STYLE') {
+                        var style = document.createElement('style');
+                        style.textContent = node.textContent;
+                        document.head.appendChild(style);
+                    } else if (/(^|\s)stylesheet(\s|$)/i.test(node.getAttribute('rel') || '')
+                            && isAllowedStylesheet(node.getAttribute('href') || '')) {
+                        var link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        waits.push(whenLoaded(link, null, 'resource_failed'));
+                        link.href = node.getAttribute('href');
+                        document.head.appendChild(link);
+                    }
+                }
+
+                var images = root.querySelectorAll('img');
+                for (var i = 0; i < images.length; i++) {
+                    if (!images[i].getAttribute('src')) {
+                        continue;
+                    }
+                    waits.push(whenLoaded(images[i],
+                        function (el) { return el.complete && el.naturalWidth > 0; },
+                        'image_failed'));
+                }
+                if (document.fonts) {
+                    waits.push(document.fonts.ready);
+                }
+
+                Promise.all(waits).then(function () {
+                    requestAnimationFrame(function () {
+                        if (settled || !host) {
+                            return;
+                        }
+                        settled = true;
+                        host.onReady(contentHeight());
+                        if (window.ResizeObserver) {
+                            new ResizeObserver(function () {
+                                host.onHeightChanged(contentHeight());
+                            }).observe(document.body);
+                        }
+                    });
+                });
+            })();
+        </script>
     </body>
 </html>

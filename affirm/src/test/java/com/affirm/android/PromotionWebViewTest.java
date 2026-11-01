@@ -12,7 +12,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowWebView;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -36,6 +39,20 @@ public class PromotionWebViewTest {
         listener = mock(View.OnClickListener.class);
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         dragDistance = touchSlop * 4;
+    }
+
+    @Test
+    public void loadWebDataUsesFileBaseUrl() {
+        if (AffirmPlugins.get() == null) {
+            Affirm.initialize(new Affirm.Configuration.Builder("Y8CQXFF044903JC0",
+                    Affirm.Environment.SANDBOX).build());
+        }
+
+        webView.loadWebData("Pay with <span class='__affirm-logo'>Affirm</span>", null, null);
+
+        ShadowWebView shadow = Shadow.extract(webView);
+        assertEquals(PromotionWebView.PROMO_BASE_URL,
+                shadow.getLastLoadDataWithBaseURL().baseUrl);
     }
 
     @Test

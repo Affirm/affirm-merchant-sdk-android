@@ -29,6 +29,7 @@ import androidx.core.view.ViewCompat;
 
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE_BLACK;
+import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_END;
 import static com.affirm.android.AffirmConstants.PLACEHOLDER_START;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
@@ -36,7 +37,7 @@ import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT;
 public final class AffirmUtils {
 
     private static final Pattern LOGO_PATTERN =
-            Pattern.compile("\\baffirm\\b", Pattern.CASE_INSENSITIVE);
+            Pattern.compile(Pattern.quote(LOGO_PLACEHOLDER));
 
     private AffirmUtils() {
     }
@@ -151,10 +152,11 @@ public final class AffirmUtils {
             @NonNull AffirmColor affirmColor,
             @NonNull Resources resources
     ) {
-        SpannableString spannable = new SpannableString(template);
         if (logoDrawable == null) {
-            return spannable;
+            String text = LOGO_PATTERN.matcher(template).replaceAll("Affirm");
+            return new SpannableString(text);
         }
+        SpannableString spannable = new SpannableString(template);
         Matcher matcher = LOGO_PATTERN.matcher(template);
         while (matcher.find()) {
             int start = matcher.start();

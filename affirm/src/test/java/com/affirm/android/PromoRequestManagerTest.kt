@@ -76,6 +76,19 @@ class PromoRequestManagerTest {
     }
 
     @Test
+    fun untrackCancelsAndForgetsViewRequest() {
+        val view = View(activity)
+        val request = mock(PromoRequest::class.java)
+        PromoRequestManager.track(view, request)
+
+        PromoRequestManager.untrack(view)
+
+        verify(request).cancel()
+        assertThat(view.getTag(R.id.affirm_promo_request)).isNull()
+        assertThat(PromoRequestManager.trackedRequestCount(activity.registry)).isEqualTo(0)
+    }
+
+    @Test
     fun cancelsRequestsAndUnregistersOnDestroy() {
         val request = mock(PromoRequest::class.java)
         PromoRequestManager.track(attachedView(), request)

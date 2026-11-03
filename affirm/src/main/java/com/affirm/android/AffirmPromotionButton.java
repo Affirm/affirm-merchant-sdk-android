@@ -209,6 +209,10 @@ public class AffirmPromotionButton extends FrameLayout {
         return TextUtils.isEmpty(message);
     }
 
+    boolean hasLabel(@NonNull String promoMessage) {
+        return promoMessage.equals(message);
+    }
+
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {
         super.setOnClickListener(l);
@@ -219,9 +223,20 @@ public class AffirmPromotionButton extends FrameLayout {
     }
 
     public void destroy() {
+        PromoRequestManager.untrack(this);
         if (promotionWebView != null) {
             promotionWebView.destroyWebView();
             promotionWebView = null;
         }
+    }
+
+    void clearPromoContent() {
+        message = null;
+        removeAllViews();
+        setContentDescription(null);
+    }
+
+    boolean isCurrentPromoRequest(@Nullable PromoRequest request) {
+        return request != null && request == getTag(R.id.affirm_promo_request);
     }
 }

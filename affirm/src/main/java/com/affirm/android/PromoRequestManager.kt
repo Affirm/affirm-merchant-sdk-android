@@ -84,6 +84,17 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
             request.create()
         }
 
+        /** Cancels and forgets the request started for [view], if any. */
+        @JvmStatic
+        @MainThread
+        fun untrack(view: View) {
+            val request = view.getTag(R.id.affirm_promo_request)
+            if (request is PromoRequest) {
+                untrack(request)
+            }
+            view.setTag(R.id.affirm_promo_request, null)
+        }
+
         private fun managerFor(lifecycle: Lifecycle): PromoRequestManager {
             return lifecycleToManager.getOrPut(lifecycle) {
                 PromoRequestManager().also { lifecycle.addObserver(it) }

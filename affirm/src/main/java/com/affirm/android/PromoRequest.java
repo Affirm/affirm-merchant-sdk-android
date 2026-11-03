@@ -107,11 +107,12 @@ class PromoRequest implements AffirmRequest {
             promoCall.cancel();
         }
 
+        final int cacheGeneration = PromoMessageCache.generation();
         promoCall = AffirmClient.send(okHttpClient, new AffirmPromoRequest(),
                 new AffirmClient.AffirmListener<PromoResponse>() {
                     @Override
                     public void onSuccess(PromoResponse response) {
-                        handleSuccessResponse(response);
+                        handleSuccessResponse(response, cacheGeneration);
                     }
 
                     @Override
@@ -129,16 +130,18 @@ class PromoRequest implements AffirmRequest {
         }
     }
 
-    private void handleSuccessResponse(PromoResponse promoResponse) {
+    private void handleSuccessResponse(PromoResponse promoResponse, int cacheGeneration) {
         final boolean showPrequal = shouldShowPrequal(promoResponse);
 
         final String promo = promoResponse.promo().ala();
         final String htmlPromo = promoResponse.promo().htmlAla();
 
-        final String promoMessage = isHtmlStyle
-                ? htmlPromo
-                : promo.replace(LOGO_PLACEHOLDER, "affirm");
-        final String promoDescription = promo.replace(LOGO_PLACEHOLDER, "affirm");
+        final String ala = promo.replace(LOGO_PLACEHOLDER, "affirm");
+        final String htmlAla = htmlPromo == null ? "" : htmlPromo;
+        PromoMessageCache.put(dollarAmount, cacheGeneration,
+                new PromoMessageCache.CachedMessage(ala, htmlAla, showPrequal));
+        final String promoMessage = isHtmlStyle ? htmlAla : ala;
+        final String promoDescription = ala;
         if (TextUtils.isEmpty(promoMessage)) {
             handleErrorResponse(new Exception("Promo message is null or empty!"));
         } else {

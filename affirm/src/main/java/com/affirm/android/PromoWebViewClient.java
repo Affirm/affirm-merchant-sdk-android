@@ -14,4 +14,9 @@ final class PromoWebViewClient extends AffirmWebViewClient {
     boolean hasCallbackUrl(WebView view, String url) {
         return false;
     }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        return true;
+    }
 }

@@ -1,10 +1,13 @@
 package com.affirm.android;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 import android.webkit.CookieManager;
 
 import androidx.annotation.NonNull;
@@ -31,16 +34,18 @@ import static com.affirm.android.AffirmConstants.UTF_8;
 public class PromotionWebView extends AffirmWebView implements AffirmWebChromeClient.Callbacks,
         AffirmWebViewClient.WebViewClientCallbacks {
 
-    private OnClickListener webViewClickListener;
-
-    public void setWebViewClickListener(OnClickListener webViewClickListener) {
-        this.webViewClickListener = webViewClickListener;
+    public void setWebViewClickListener(OnClickListener listener) {
+        setOnClickListener(listener == null ? null : v -> {
+            ViewParent parent = getParent();
+            listener.onClick(parent instanceof View ? (View) parent : v);
+        });
     }
 
     public PromotionWebView(Context context) {
         this(context, null);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public PromotionWebView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -53,55 +58,18 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         setWebViewClient(new PromoWebViewClient(this));
         setWebChromeClient(new AffirmWebChromeClient(this));
 
-
-        setOnTouchListener(new View.OnTouchListener() {
-
-            private static final int FINGER_RELEASED = 0;
-            private static final int FINGER_TOUCHED = 1;
-            private static final int FINGER_DRAGGING = 2;
-            private static final int FINGER_UNDEFINED = 3;
-
-            private int fingerState = FINGER_RELEASED;
-
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-
-                switch (motionEvent.getAction()) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        if (fingerState == FINGER_RELEASED) {
-                            fingerState = FINGER_TOUCHED;
-                        } else {
-                            fingerState = FINGER_UNDEFINED;
-                        }
-                        break;
-
-                    case MotionEvent.ACTION_UP:
-                        if (fingerState != FINGER_DRAGGING) {
-                            fingerState = FINGER_RELEASED;
-                            if (webViewClickListener != null) {
-                                webViewClickListener.onClick((View) view.getParent());
-                            }
-                        } else {
-                            fingerState = FINGER_RELEASED;
-                        }
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-                        if (fingerState == FINGER_TOUCHED || fingerState == FINGER_DRAGGING) {
-                            fingerState = FINGER_DRAGGING;
-                        } else {
-                            fingerState = FINGER_UNDEFINED;
-                        }
-                        break;
-
-                    default:
-                        fingerState = FINGER_UNDEFINED;
-
-                }
-
-                return false;
-            }
+        final GestureDetector tapDetector = new GestureDetector(context,
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapUp(MotionEvent e) {
+                        return performClick();
+                    }
+                });
+        tapDetector.setIsLongpressEnabled(false);
+        // Consume every touch so the WebView never handles taps itself.
+        setOnTouchListener((v, event) -> {
+            tapDetector.onTouchEvent(event);
+            return true;
         });
         setBackgroundColor(getResources().getColor(android.R.color.transparent));
     }

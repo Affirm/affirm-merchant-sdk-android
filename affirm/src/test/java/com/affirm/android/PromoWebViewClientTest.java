@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +43,14 @@ public class PromoWebViewClientTest {
                     resourceRequest.getUrl() != null ? resourceRequest.getUrl().toString() : "");
         }
         Mockito.verify(callbacks, never()).onWebViewError(new ConnectionException("error msg"));
+    }
+
+    @Test
+    public void shouldOverrideUrlLoadingDoesNotNavigate() {
+        boolean override = promoWebViewClient.shouldOverrideUrlLoading(
+                webview, "https://www.affirm.com/apps/prequal");
+
+        assertTrue(override);
     }
 
 }

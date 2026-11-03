@@ -1,0 +1,62 @@
+package com.affirm.android;
+
+import android.view.View;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+@RunWith(RobolectricTestRunner.class)
+public class AffirmPromotionButtonTest {
+
+    private AffirmPromotionButton button;
+    private View.OnClickListener listener;
+
+    @Before
+    public void setup() {
+        button = new AffirmPromotionButton(RuntimeEnvironment.getApplication());
+        listener = mock(View.OnClickListener.class);
+    }
+
+    @Test
+    public void listenerSetBeforeHtmlStylingReachesWebView() {
+        button.setOnClickListener(listener);
+        button.configWithHtmlStyling();
+
+        PromotionWebView webView = button.getPromotionWebView();
+        assertNotNull(webView);
+        webView.performClick();
+
+        verify(listener, times(1)).onClick(any(View.class));
+    }
+
+    @Test
+    public void listenerSetAfterHtmlStylingReachesWebView() {
+        button.configWithHtmlStyling();
+        button.setOnClickListener(listener);
+
+        button.getPromotionWebView().performClick();
+
+        verify(listener, times(1)).onClick(any(View.class));
+    }
+
+    @Test
+    public void clearedListenerIsNotInvoked() {
+        button.configWithHtmlStyling();
+        button.setOnClickListener(listener);
+        button.setOnClickListener(null);
+
+        button.getPromotionWebView().performClick();
+
+        verify(listener, never()).onClick(any(View.class));
+    }
+}

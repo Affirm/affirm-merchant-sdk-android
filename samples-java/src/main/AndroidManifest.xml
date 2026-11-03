@@ -31,6 +31,11 @@
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name=".PromoListActivity"
+            android:label="@string/promo_list"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

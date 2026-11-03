@@ -11,4 +11,5 @@
         <item>Show Credit Card</item>
     </string-array>
     <string name="fragment_usages">Fragments Usages</string>
+    <string name="promo_list">Promo RecyclerView</string>
 </resources>

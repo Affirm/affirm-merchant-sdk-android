@@ -1,7 +1,6 @@
 package com.affirm.android;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -11,8 +10,12 @@ import android.view.ViewGroup;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
@@ -74,8 +77,6 @@ public final class Affirm {
 
     static final int RESULT_ERROR = -8575;
     static final int RESULT_CHECKOUT_CANCEL = -8576;
-
-    private static final String LIFE_FRAGMENT_TAG = "LifeFragmentTag";
 
     private static void setCheckoutRequest(int checkoutRequest) {
         Affirm.checkoutRequest = checkoutRequest != 0
@@ -1576,51 +1577,8 @@ public final class Affirm {
                         items,
                         callback);
 
-        final LifecycleListener lifecycleListener = new LifecycleListener() {
-            @Override
-            public void onStart() {
-
-            }
-
-            @Override
-            public void onStop() {
-
-            }
-
-            @Override
-            public void onDestroy() {
-                affirmPromoRequest.cancel();
-            }
-        };
-
-        promotionButton.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(final View v) {
-                Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
-                    return;
-                }
-
-                LifeListenerFragment fragment =
-                        getLifeListenerFragment(activity);
-                fragment.addLifeListener(lifecycleListener);
-            }
-
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                promotionButton.removeOnAttachStateChangeListener(this);
-                Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
-                    return;
-                }
-
-                LifeListenerFragment fragment =
-                        getLifeListenerFragment(activity);
-                fragment.removeLifeListener(lifecycleListener);
-            }
-        });
-
         affirmPromoRequest.create();
+        bindPromoRequestToLifecycle(promotionButton, affirmPromoRequest);
         promotionButton.setOnClickListener(onClickListener);
     }
 
@@ -1833,20 +1791,28 @@ public final class Affirm {
         }
     }
 
-    // Add a blank fragment to handle the lifecycle of the activity
-    private static LifeListenerFragment getLifeListenerFragment(Activity activity) {
-        final FragmentManager manager = activity.getFragmentManager();
-        LifeListenerFragment fragment =
-                (LifeListenerFragment) manager.findFragmentByTag(LIFE_FRAGMENT_TAG);
-        if (fragment == null) {
-            fragment = new LifeListenerFragment();
-            manager
-                    .beginTransaction()
-                    .add(fragment, LIFE_FRAGMENT_TAG)
-                    .commitAllowingStateLoss();
-            manager.executePendingTransactions();
+    @VisibleForTesting
+    static void bindPromoRequestToLifecycle(@NonNull View view,
+                                            @NonNull final PromoRequest request) {
+        Activity activity = AffirmUtils.getActivityFromView(view);
+        if (!(activity instanceof LifecycleOwner)) {
+            AffirmLog.w("Host is not a LifecycleOwner. Promo request will not be cancelled.");
+            return;
         }
-        return fragment;
+        if (activity.isFinishing() || activity.isDestroyed()) {
+            request.cancel();
+            return;
+        }
+        ((LifecycleOwner) activity).getLifecycle().addObserver(new LifecycleEventObserver() {
+            @Override
+            public void onStateChanged(@NonNull LifecycleOwner owner,
+                                       @NonNull Lifecycle.Event event) {
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    request.cancel();
+                    owner.getLifecycle().removeObserver(this);
+                }
+            }
+        });
     }
 
     /**

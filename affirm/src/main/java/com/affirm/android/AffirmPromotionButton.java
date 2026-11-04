@@ -83,6 +83,10 @@ public class AffirmPromotionButton extends FrameLayout {
     }
 
     protected void setLabel(@NonNull String promoMessage, @NonNull String promoDescription) {
+        if (htmlStyling && promotionWebView == null) {
+            // Released by destroy(); configWithHtmlStyling creates a new one.
+            return;
+        }
         this.message = promoMessage;
         removeAllViews();
         if (htmlStyling) {
@@ -222,6 +226,11 @@ public class AffirmPromotionButton extends FrameLayout {
         }
     }
 
+    /**
+     * Cancels the promo request and releases the WebView used by HTML styling. Called
+     * automatically when the view of the host AndroidX Fragment, or the host LifecycleOwner
+     * Activity, is destroyed.
+     */
     public void destroy() {
         PromoRequestManager.untrack(this);
         if (promotionWebView != null) {

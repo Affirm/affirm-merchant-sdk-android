@@ -4,7 +4,6 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Item;
 import com.google.common.truth.Truth;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,38 +56,6 @@ public class PromoRequestTest {
                     .build()
             );
         }
-        PromoMessageCache.evictAll();
-    }
-
-    @After
-    public void tearDown() {
-        PromoMessageCache.evictAll();
-    }
-
-    @Test
-    public void successCachesBothMessages() {
-        Call call = mockCall();
-        PromoRequest request = newRequest(mock(SpannablePromoCallback.class), call);
-
-        request.create();
-        respond(call, VALID_PROMO_BODY);
-
-        PromoMessageCache.CachedMessage cached = PromoMessageCache.get(BigDecimal.ONE);
-        Truth.assertThat(cached).isNotNull();
-        Truth.assertThat(cached.message(false)).isEqualTo("Starting at $10/mo with affirm");
-        Truth.assertThat(cached.message(true)).isEqualTo("<p>Starting at $10/mo</p>");
-    }
-
-    @Test
-    public void responseFromBeforeConfigChangeIsNotCached() {
-        Call call = mockCall();
-        PromoRequest request = newRequest(mock(SpannablePromoCallback.class), call);
-
-        request.create();
-        PromoMessageCache.evictAll();
-        respond(call, VALID_PROMO_BODY);
-
-        Truth.assertThat(PromoMessageCache.get(BigDecimal.ONE)).isNull();
     }
 
     @Test

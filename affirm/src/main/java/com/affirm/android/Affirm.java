@@ -10,12 +10,8 @@ import android.view.ViewGroup;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
 
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
@@ -1577,8 +1573,7 @@ public final class Affirm {
                         items,
                         callback);
 
-        affirmPromoRequest.create();
-        bindPromoRequestToLifecycle(promotionButton, affirmPromoRequest);
+        PromoRequestManager.track(promotionButton, affirmPromoRequest);
         promotionButton.setOnClickListener(onClickListener);
     }
 
@@ -1789,30 +1784,6 @@ public final class Affirm {
                     type,
                     promoRequestModal.getPromoId());
         }
-    }
-
-    @VisibleForTesting
-    static void bindPromoRequestToLifecycle(@NonNull View view,
-                                            @NonNull final PromoRequest request) {
-        Activity activity = AffirmUtils.getActivityFromView(view);
-        if (!(activity instanceof LifecycleOwner)) {
-            AffirmLog.w("Host is not a LifecycleOwner. Promo request will not be cancelled.");
-            return;
-        }
-        if (activity.isFinishing() || activity.isDestroyed()) {
-            request.cancel();
-            return;
-        }
-        ((LifecycleOwner) activity).getLifecycle().addObserver(new LifecycleEventObserver() {
-            @Override
-            public void onStateChanged(@NonNull LifecycleOwner owner,
-                                       @NonNull Lifecycle.Event event) {
-                if (event == Lifecycle.Event.ON_DESTROY) {
-                    request.cancel();
-                    owner.getLifecycle().removeObserver(this);
-                }
-            }
-        });
     }
 
     /**

@@ -230,7 +230,24 @@ public class AffirmPromotionButton extends FrameLayout {
         }
     }
 
-    void clearPromoContent() {
+    /**
+     * Shows {@code cached} until the response arrives, or clears the label left by a previous
+     * configuration when there is nothing to show.
+     */
+    void showPlaceholder(@Nullable PromoMessageCache.CachedMessage cached) {
+        final String cachedMessage = cached == null ? null : cached.message(htmlStyling);
+        if (cached != null && !TextUtils.isEmpty(cachedMessage)) {
+            setTag(cached.showPrequal);
+            if (!hasLabel(cachedMessage)) {
+                setLabel(cachedMessage, cached.ala);
+            }
+        } else {
+            clearPromoContent();
+        }
+        setVisibility(VISIBLE);
+    }
+
+    private void clearPromoContent() {
         message = null;
         removeAllViews();
         setContentDescription(null);

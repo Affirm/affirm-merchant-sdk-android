@@ -1,17 +1,16 @@
 package com.affirm.android
 
 import androidx.collection.LruCache
-import java.math.BigDecimal
-import java.util.concurrent.atomic.AtomicInteger
 
+/**
+ * Last promo messages keyed by [PromoRequest.cacheKey], shown while a reconfigured button
+ * waits for its response.
+ */
 internal object PromoMessageCache {
 
     private const val MAX_ENTRIES = 128
 
-    private val cache = LruCache<Int, CachedMessage>(MAX_ENTRIES)
-
-    // Bumped by evictAll so responses to requests sent before a config change are not cached.
-    private val generation = AtomicInteger()
+    private val cache = LruCache<String, CachedMessage>(MAX_ENTRIES)
 
     class CachedMessage(
         @JvmField val ala: String,
@@ -21,34 +20,18 @@ internal object PromoMessageCache {
         fun message(htmlStyle: Boolean): String = if (htmlStyle) htmlAla else ala
     }
 
-    private fun key(amount: BigDecimal): Int {
-        return AffirmUtils.decimalDollarsToIntegerCents(amount)
+    @JvmStatic
+    fun get(key: String): CachedMessage? {
+        return cache[key]
     }
 
     @JvmStatic
-    fun generation(): Int {
-        return generation.get()
+    fun put(key: String, message: CachedMessage) {
+        cache.put(key, message)
     }
 
     @JvmStatic
-    @Synchronized
-    fun get(amount: BigDecimal): CachedMessage? {
-        return cache[key(amount)]
-    }
-
-    @JvmStatic
-    @Synchronized
-    fun put(amount: BigDecimal, generation: Int, message: CachedMessage) {
-        if (generation != this.generation.get()) {
-            return
-        }
-        cache.put(key(amount), message)
-    }
-
-    @JvmStatic
-    @Synchronized
     fun evictAll() {
         cache.evictAll()
-        generation.incrementAndGet()
     }
 }

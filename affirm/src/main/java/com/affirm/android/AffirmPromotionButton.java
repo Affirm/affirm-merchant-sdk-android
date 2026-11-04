@@ -235,8 +235,4 @@ public class AffirmPromotionButton extends FrameLayout {
         removeAllViews();
         setContentDescription(null);
     }
-
-    boolean isCurrentPromoRequest(@Nullable PromoRequest request) {
-        return request != null && request == getTag(R.id.affirm_promo_request);
-    }
 }

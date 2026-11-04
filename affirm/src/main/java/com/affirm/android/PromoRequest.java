@@ -107,12 +107,13 @@ class PromoRequest implements AffirmRequest {
             promoCall.cancel();
         }
 
-        final int cacheGeneration = PromoMessageCache.generation();
-        promoCall = AffirmClient.send(okHttpClient, new AffirmPromoRequest(),
+        final AffirmPromoRequest request = new AffirmPromoRequest();
+        final String cacheKey = request.url();
+        promoCall = AffirmClient.send(okHttpClient, request,
                 new AffirmClient.AffirmListener<PromoResponse>() {
                     @Override
                     public void onSuccess(PromoResponse response) {
-                        handleSuccessResponse(response, cacheGeneration);
+                        handleSuccessResponse(response, cacheKey);
                     }
 
                     @Override
@@ -130,7 +131,16 @@ class PromoRequest implements AffirmRequest {
         }
     }
 
-    private void handleSuccessResponse(PromoResponse promoResponse, int cacheGeneration) {
+    /**
+     * Identifies the promo this request asks for: every parameter and the configuration it
+     * depends on are part of the request URL.
+     */
+    @NonNull
+    String cacheKey() {
+        return new AffirmPromoRequest().url();
+    }
+
+    private void handleSuccessResponse(PromoResponse promoResponse, String cacheKey) {
         final boolean showPrequal = shouldShowPrequal(promoResponse);
 
         final String promo = promoResponse.promo().ala();
@@ -138,7 +148,7 @@ class PromoRequest implements AffirmRequest {
 
         final String ala = promo.replace(LOGO_PLACEHOLDER, "affirm");
         final String htmlAla = htmlPromo == null ? "" : htmlPromo;
-        PromoMessageCache.put(dollarAmount, cacheGeneration,
+        PromoMessageCache.put(cacheKey,
                 new PromoMessageCache.CachedMessage(ala, htmlAla, showPrequal));
         final String promoMessage = isHtmlStyle ? htmlAla : ala;
         final String promoDescription = ala;

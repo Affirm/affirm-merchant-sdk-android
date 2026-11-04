@@ -1551,29 +1551,26 @@ public final class Affirm {
         AffirmUtils.requireNonNull(promotionButton,
                 "AffirmPromotionButton cannot be null");
         final boolean htmlStyle = promotionButton.isHtmlStyle();
-        final PromoMessageCache.CachedMessage cached = PromoMessageCache.get(amount);
-        final String cachedMessage = cached == null ? null : cached.message(htmlStyle);
-        final PromoButtonCallback callback;
-        if (cached != null && !TextUtils.isEmpty(cachedMessage)) {
-            promotionButton.setTag(cached.showPrequal);
-            if (!promotionButton.hasLabel(cachedMessage)) {
-                promotionButton.setLabel(cachedMessage, cached.ala);
-            }
-            callback = new PromoButtonCallback(promotionButton, cachedMessage, cached.ala);
-        } else {
-            promotionButton.clearPromoContent();
-            callback = new PromoButtonCallback(promotionButton, null, null);
-        }
-        promotionButton.setVisibility(View.VISIBLE);
-
         final PromoRequest affirmPromoRequest =
                 new PromoRequest(promoId, pageType, amount, showCta,
                         promotionButton.getAffirmColor(),
                         promotionButton.getAffirmLogoType(),
                         htmlStyle,
                         items,
-                        callback);
-        callback.request = affirmPromoRequest;
+                        new PromoButtonCallback(promotionButton));
+
+        final PromoMessageCache.CachedMessage cached =
+                PromoMessageCache.get(affirmPromoRequest.cacheKey());
+        final String cachedMessage = cached == null ? null : cached.message(htmlStyle);
+        if (cached != null && !TextUtils.isEmpty(cachedMessage)) {
+            promotionButton.setTag(cached.showPrequal);
+            if (!promotionButton.hasLabel(cachedMessage)) {
+                promotionButton.setLabel(cachedMessage, cached.ala);
+            }
+        } else {
+            promotionButton.clearPromoContent();
+        }
+        promotionButton.setVisibility(View.VISIBLE);
 
         PromoRequestManager.track(promotionButton, affirmPromoRequest);
         promotionButton.setOnClickListener(onClickListener);

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.RETURNS_DEFAULTS
 import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLooper
 import java.math.BigDecimal
@@ -75,6 +76,40 @@ class PromoRequestCacheTest {
     }
 
     @Test
+    fun samePriceWithDifferentPromoDoesNotShowOtherOfferOnButton() {
+        val callA = CapturingCall()
+        val promoA = newRequest(callA, promoId = "promo-a")
+        val promoB = newRequest(promoId = "promo-b")
+        promoA.create()
+        respond(callA, promoBody(prequal = true))
+
+        val buttonA = AffirmPromotionButton(RuntimeEnvironment.application)
+        val buttonB = AffirmPromotionButton(RuntimeEnvironment.application)
+        buttonA.showPlaceholder(PromoMessageCache.get(promoA.cacheKey()))
+        buttonB.showPlaceholder(PromoMessageCache.get(promoB.cacheKey()))
+
+        assertThat(buttonA.hasLabel("Starting at \$10/mo with affirm")).isTrue()
+        assertThat(buttonB.isEmpty).isTrue()
+    }
+
+    @Test
+    fun failedResponseIsNotCached() {
+        val call = CapturingCall()
+        val request = newRequest(call)
+
+        request.create()
+        respond(call, "not json")
+
+        assertThat(PromoMessageCache.get(request.cacheKey())).isNull()
+    }
+
+    @Test
+    fun htmlAndPlainButtonsShareCacheKey() {
+        assertThat(newRequest(htmlStyle = true).cacheKey())
+            .isEqualTo(newRequest(htmlStyle = false).cacheKey())
+    }
+
+    @Test
     fun cacheKeyCoversEveryRequestParameter() {
         val base = newRequest()
         val variants = listOf(
@@ -118,7 +153,8 @@ class PromoRequestCacheTest {
         showCta: Boolean = false,
         color: AffirmColor = AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
         logoType: AffirmLogoType = AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
-        items: List<Item>? = null
+        items: List<Item>? = null,
+        htmlStyle: Boolean = false
     ): PromoRequest {
         // Mockito's any() and captors return null, which Kotlin rejects for OkHttp's non-null
         // parameters, so the fakes answer by method name instead.
@@ -126,7 +162,7 @@ class PromoRequestCacheTest {
             if (invocation.method.name == "newCall") call.call else RETURNS_DEFAULTS.answer(invocation)
         }
         return PromoRequest(
-            client, promoId, pageType, amount, showCta, color, logoType, false, items,
+            client, promoId, pageType, amount, showCta, color, logoType, htmlStyle, items,
             mock(SpannablePromoCallback::class.java)
         )
     }

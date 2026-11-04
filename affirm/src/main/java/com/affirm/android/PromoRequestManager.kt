@@ -12,40 +12,43 @@ import java.util.Collections
 import java.util.WeakHashMap
 
 /**
- * Tracks promo requests for a host [Lifecycle] and cancels them on `ON_DESTROY`.
+ * Tracks the views showing promo messages for a host [Lifecycle]. On `ON_DESTROY` it cancels
+ * their requests and destroys [AffirmPromotionButton]s, so merchants do not have to call
+ * [AffirmPromotionButton.destroy] for every button, e.g. in a list.
  *
  * The host is resolved from the view: the view lifecycle of an AndroidX Fragment first, then a
- * [LifecycleOwner] Activity. Otherwise the request is not bound to any lifecycle.
+ * [LifecycleOwner] Activity. Otherwise the view is not bound to any lifecycle.
  */
 @MainThread
 internal class PromoRequestManager private constructor() : LifecycleEventObserver {
 
-    // In-flight requests are held strongly by their OkHttp callback and finished ones by the
-    // view tag, so a weak set lets discarded views and their requests be collected.
-    private val requests: MutableSet<PromoRequest> = Collections.newSetFromMap(WeakHashMap())
+    // A view's current request is kept in its tag. Views are held by their window, or by the
+    // callback of an in-flight request, so a weak set lets discarded views be collected.
+    private val views: MutableSet<View> = Collections.newSetFromMap(WeakHashMap())
 
-    private fun add(request: PromoRequest) {
-        requests.add(request)
+    private fun add(view: View) {
+        views.add(view)
     }
 
-    private fun remove(request: PromoRequest) {
-        requests.remove(request)
+    private fun remove(view: View) {
+        views.remove(view)
     }
 
-    private fun size(): Int = requests.size
+    private fun size(): Int = views.size
 
-    private fun cancelAll() {
+    private fun releaseAll() {
         // Not toList(): for a single element it calls first(), which throws if GC clears the
         // entry after size() is read. toArray() tolerates entries cleared mid-iteration.
-        requests.toTypedArray().forEach { it.cancel() }
-        requests.clear()
+        views.toTypedArray().forEach { view ->
+            if (view is AffirmPromotionButton) view.destroy() else untrack(view)
+        }
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         if (event != Lifecycle.Event.ON_DESTROY) {
             return
         }
-        cancelAll()
+        releaseAll()
         source.lifecycle.removeObserver(this)
         lifecycleToManager.remove(source.lifecycle)
     }
@@ -60,10 +63,7 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
         @JvmStatic
         @MainThread
         fun track(view: View, request: PromoRequest) {
-            val previous = view.getTag(R.id.affirm_promo_request)
-            if (previous is PromoRequest) {
-                untrack(previous)
-            }
+            untrack(view)
             view.setTag(R.id.affirm_promo_request, request)
 
             val activity = AffirmUtils.getActivityFromView(view)
@@ -79,20 +79,18 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
                 if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
                     return
                 }
-                managerFor(owner.lifecycle).add(request)
+                managerFor(owner.lifecycle).add(view)
             }
             request.create()
         }
 
-        /** Cancels and forgets the request started for [view], if any. */
+        /** Cancels the request started for [view], if any, and forgets [view]. */
         @JvmStatic
         @MainThread
         fun untrack(view: View) {
-            val request = view.getTag(R.id.affirm_promo_request)
-            if (request is PromoRequest) {
-                untrack(request)
-            }
+            (view.getTag(R.id.affirm_promo_request) as? PromoRequest)?.cancel()
             view.setTag(R.id.affirm_promo_request, null)
+            lifecycleToManager.values.forEach { it.remove(view) }
         }
 
         private fun managerFor(lifecycle: Lifecycle): PromoRequestManager {
@@ -151,13 +149,8 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
             }
         }
 
-        private fun untrack(request: PromoRequest) {
-            request.cancel()
-            lifecycleToManager.values.forEach { it.remove(request) }
-        }
-
         @VisibleForTesting
-        fun trackedRequestCount(lifecycle: Lifecycle): Int {
+        fun trackedViewCount(lifecycle: Lifecycle): Int {
             return lifecycleToManager[lifecycle]?.size() ?: 0
         }
 
@@ -170,7 +163,7 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
         fun reset() {
             lifecycleToManager.entries.toList().forEach { (lifecycle, manager) ->
                 lifecycle.removeObserver(manager)
-                manager.cancelAll()
+                manager.releaseAll()
             }
             lifecycleToManager.clear()
         }

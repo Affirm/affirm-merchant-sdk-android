@@ -55,6 +55,20 @@ class PromoButtonStateTest {
     }
 
     @Test
+    fun destroyedHtmlButtonIgnoresLabelUntilStyledAgain() {
+        val button = htmlButton()
+        button.destroy()
+
+        button.setLabel("ala", "ala")
+        assertThat(button.isEmpty).isTrue()
+        assertThat(button.childCount).isEqualTo(0)
+
+        button.configWithHtmlStyling(null, null)
+        button.setLabel("ala", "ala")
+        assertThat(button.hasLabel("ala")).isTrue()
+    }
+
+    @Test
     fun showPlaceholderShowsPlainMessageOnPlainButton() {
         val button = plainButton()
 

@@ -3,7 +3,6 @@ package com.affirm.android;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -1550,27 +1549,14 @@ public final class Affirm {
             View.OnClickListener onClickListener) {
         AffirmUtils.requireNonNull(promotionButton,
                 "AffirmPromotionButton cannot be null");
-        final boolean htmlStyle = promotionButton.isHtmlStyle();
         final PromoRequest affirmPromoRequest =
                 new PromoRequest(promoId, pageType, amount, showCta,
                         promotionButton.getAffirmColor(),
                         promotionButton.getAffirmLogoType(),
-                        htmlStyle,
+                        promotionButton.isHtmlStyle(),
                         items,
                         new PromoButtonCallback(promotionButton));
-
-        final PromoMessageCache.CachedMessage cached =
-                PromoMessageCache.get(affirmPromoRequest.cacheKey());
-        final String cachedMessage = cached == null ? null : cached.message(htmlStyle);
-        if (cached != null && !TextUtils.isEmpty(cachedMessage)) {
-            promotionButton.setTag(cached.showPrequal);
-            if (!promotionButton.hasLabel(cachedMessage)) {
-                promotionButton.setLabel(cachedMessage, cached.ala);
-            }
-        } else {
-            promotionButton.clearPromoContent();
-        }
-        promotionButton.setVisibility(View.VISIBLE);
+        promotionButton.showPlaceholder(PromoMessageCache.get(affirmPromoRequest.cacheKey()));
 
         PromoRequestManager.track(promotionButton, affirmPromoRequest);
         promotionButton.setOnClickListener(onClickListener);

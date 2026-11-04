@@ -96,6 +96,10 @@ public class AffirmPlugins {
         return configuration.countryCode;
     }
 
+    boolean useLegacyNativeRendering() {
+        return configuration.useLegacyNativeRendering;
+    }
+
     String environmentName() {
         return configuration.environment.name();
     }

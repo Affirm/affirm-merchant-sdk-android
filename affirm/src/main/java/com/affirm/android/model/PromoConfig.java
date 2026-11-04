@@ -17,6 +17,10 @@ public abstract class PromoConfig {
     @SerializedName("promo_style")
     public abstract String promoStyle();
 
+    @Nullable
+    @SerializedName("android_sdk_migrate_native_to_html_render")
+    public abstract Boolean migrateNativeToHtmlRender();
+
     public static TypeAdapter<PromoConfig> typeAdapter(Gson gson) {
         return new AutoValue_PromoConfig.GsonTypeAdapter(gson);
     }
@@ -32,6 +36,8 @@ public abstract class PromoConfig {
         public abstract Builder setPromoPrequalEnabled(boolean value);
 
         public abstract Builder setPromoStyle(String value);
+
+        public abstract Builder setMigrateNativeToHtmlRender(Boolean value);
 
         public abstract PromoConfig build();
     }

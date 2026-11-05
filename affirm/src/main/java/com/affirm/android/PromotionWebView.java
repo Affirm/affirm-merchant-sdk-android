@@ -2,11 +2,9 @@ package com.affirm.android;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,7 +12,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
-import android.webkit.URLUtil;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,23 +19,16 @@ import androidx.annotation.VisibleForTesting;
 
 import com.affirm.android.exception.ConnectionException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import static com.affirm.android.AffirmConstants.AFFIRM_FONT;
-import static com.affirm.android.AffirmConstants.API_KEY;
-import static com.affirm.android.AffirmConstants.BUNDLED_CSS;
-import static com.affirm.android.AffirmConstants.COUNTRY_CODE;
-import static com.affirm.android.AffirmConstants.HTML_FRAGMENT;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
-import static com.affirm.android.AffirmConstants.JAVASCRIPT;
 import static com.affirm.android.AffirmConstants.JS_PATH;
-import static com.affirm.android.AffirmConstants.LOCALE;
-import static com.affirm.android.AffirmConstants.PROMO_JS_BRIDGE;
-import static com.affirm.android.AffirmConstants.REMOTE_CSS_URL;
-import static com.affirm.android.AffirmConstants.SANITIZER_JS;
+import static com.affirm.android.AffirmConstants.PROMO_SCRIPT_MESSAGE_NAME;
 import static com.affirm.android.AffirmConstants.TEXT_HTML;
 import static com.affirm.android.AffirmConstants.UTF_8;
 
@@ -54,6 +44,8 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     private String loadedHtml;
     private String loadedCss;
     private String loadedTypeface;
+    @Nullable
+    private String renderId;
 
     public void setWebViewClickListener(OnClickListener listener) {
         setOnClickListener(listener == null ? null : v -> {
@@ -77,9 +69,10 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         }
         AffirmUtils.debuggableWebView(getContext());
         getSettings().setSupportMultipleWindows(false);
+        getSettings().setAllowFileAccess(false);
         setWebViewClient(new PromoWebViewClient(this));
         setWebChromeClient(new AffirmWebChromeClient(this));
-        addJavascriptInterface(new PromoJsBridge(), PROMO_JS_BRIDGE);
+        addJavascriptInterface(new PromoScriptMessageHandler(), PROMO_SCRIPT_MESSAGE_NAME);
 
         final GestureDetector tapDetector = new GestureDetector(context,
                 new GestureDetector.SimpleOnGestureListener() {
@@ -106,14 +99,22 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         loadedCss = remoteCssUrl;
         loadedTypeface = typeface;
         setVisibility(INVISIBLE);
-        if (!isAllowedCssUrl(remoteCssUrl)) {
-            AffirmLog.e("Remote promo CSS must use https or file:///android_asset/: "
-                    + remoteCssUrl);
-            logFailure(PromoRenderReason.RESOURCE_FAILED);
+        renderId = UUID.randomUUID().toString();
+        final AffirmPromoRendering.FontDeclaration font =
+                AffirmPromoRendering.fontDeclaration(typeface);
+        if (!AffirmPromoRendering.isPermittedStylesheetUrl(remoteCssUrl)
+                || !AffirmPromoRendering.isPermittedStylesheetUrl(font.url)) {
+            AffirmLog.e("Promo CSS and font URLs must use https or file:///android_asset/: "
+                    + remoteCssUrl + ", " + font.url);
+            logFailure(AffirmPromoRenderReason.RESOURCE_FAILED);
             return;
         }
-        loadDataWithBaseURL(PROMO_BASE_URL, initialHtml(promoHtml, remoteCssUrl, typeface),
-                TEXT_HTML, UTF_8, null);
+        final String page = initialHtml(promoHtml, remoteCssUrl, font);
+        if (page == null) {
+            logFailure(AffirmPromoRenderReason.TEMPLATE_ERROR);
+            return;
+        }
+        loadDataWithBaseURL(PROMO_BASE_URL, page, TEXT_HTML, UTF_8, null);
     }
 
     @VisibleForTesting
@@ -125,65 +126,34 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
                 || !TextUtils.equals(typeface, loadedTypeface);
     }
 
-    private static boolean isAllowedCssUrl(@Nullable String remoteCssUrl) {
-        return TextUtils.isEmpty(remoteCssUrl)
-                || URLUtil.isHttpsUrl(remoteCssUrl)
-                || URLUtil.isAssetUrl(remoteCssUrl);
-    }
-
-    private String initialHtml(String promoHtml, String remoteCssUrl, String typeface) {
-        String html;
-        InputStream ins = null;
-        try {
-            ins = getResources().openRawResource(R.raw.affirm_promo);
-            html = AffirmUtils.readInputStream(ins);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            AffirmUtils.closeInputStream(ins);
+    @Nullable
+    private String initialHtml(String promoHtml, String remoteCssUrl,
+                               AffirmPromoRendering.FontDeclaration font) {
+        final AffirmPlugins plugins = AffirmPlugins.get();
+        if (plugins == null) {
+            return null;
         }
-
-        final HashMap<String, String> map = new HashMap<>();
-        final String fullPath = HTTPS_PROTOCOL + AffirmPlugins.get().jsUrl() + JS_PATH;
-
-        String bundledCss = readRaw(R.raw.badge_styles);
-
-        map.put(SANITIZER_JS, readRaw(R.raw.dompurify));
-        map.put(AFFIRM_FONT, encodeForPage(typeface));
-        map.put(API_KEY, AffirmPlugins.get().publicKey());
-        map.put(JAVASCRIPT, fullPath);
-        map.put(LOCALE, AffirmPlugins.get().locale());
-        map.put(COUNTRY_CODE, AffirmPlugins.get().countryCode());
-        map.put(HTML_FRAGMENT, encodeForPage(promoHtml));
-        map.put(REMOTE_CSS_URL, encodeForPage(remoteCssUrl));
-        map.put(BUNDLED_CSS, bundledCss);
-        return AffirmUtils.replacePlaceholders(html, map);
-    }
-
-    /** Base64 of UTF-8; the page decodes it, so markup never reaches the template directly. */
-    @VisibleForTesting
-    @NonNull
-    static String encodeForPage(@Nullable String value) {
-        return TextUtils.isEmpty(value) ? ""
-                : Base64.encodeToString(value.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
+        final Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("renderId", renderId);
+        payload.put("html", nonNull(promoHtml));
+        payload.put("remoteCssURL", nonNull(remoteCssUrl));
+        payload.put("remoteFontURL", font.url);
+        payload.put("publicKey", nonNull(plugins.publicKey()));
+        payload.put("jsURL", HTTPS_PROTOCOL + plugins.jsUrl() + JS_PATH);
+        payload.put("locale", nonNull(plugins.locale()));
+        payload.put("countryCode", nonNull(plugins.countryCode()));
+        payload.put("bundledCSS", AffirmPromoRendering.bundledCss(getResources()) + font.css);
+        payload.put("timeoutMs", AffirmPromoRendering.HTML_TIMEOUT_MS);
+        return AffirmPromoRendering.htmlDocumentWithPayload(getResources(), payload);
     }
 
     @NonNull
-    private String readRaw(int resId) {
-        InputStream ins = null;
-        try {
-            ins = getResources().openRawResource(resId);
-            return AffirmUtils.readInputStream(ins);
-        } catch (Resources.NotFoundException | IOException e) {
-            AffirmLog.e("Failed to load raw resource "
-                    + getResources().getResourceEntryName(resId) + ": " + e);
-            return "";
-        } finally {
-            AffirmUtils.closeInputStream(ins);
-        }
+    private static String nonNull(@Nullable String value) {
+        return value == null ? "" : value;
     }
 
     private void logFailure(@NonNull String reason) {
+        renderId = null;
         loadedHtml = null;
         loadedCss = null;
         loadedTypeface = null;
@@ -196,17 +166,12 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         if (params == null || cssHeight <= 0) {
             return;
         }
-        int heightPx = cssToDevicePx(cssHeight, getResources().getDisplayMetrics().density);
+        int heightPx = AffirmPromoRendering.heightForCssPixels(cssHeight,
+                getResources().getDisplayMetrics().density);
         if (params.height != heightPx) {
             params.height = heightPx;
             setLayoutParams(params);
         }
-    }
-
-    /** The WebView maps CSS px 1:1 to dp. */
-    @VisibleForTesting
-    static int cssToDevicePx(int cssPx, float density) {
-        return (int) Math.ceil(cssPx * density);
     }
 
     @Override
@@ -217,37 +182,59 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     @Override
     public void onWebViewError(@NonNull ConnectionException error) {
         AffirmLog.e("AffirmPromotionWebView load failed " + error);
-        logFailure(PromoRenderReason.LOAD_ERROR);
+        logFailure(AffirmPromoRenderReason.LOAD_ERROR);
     }
 
     @Override
     public void onRendererGone() {
-        logFailure(PromoRenderReason.RENDER_PROCESS_GONE);
+        logFailure(AffirmPromoRenderReason.RENDER_PROCESS_GONE);
+    }
+
+    /** Handles a `window.webkit.messageHandlers.affirmPromo` message from the shared page. */
+    @VisibleForTesting
+    void onScriptMessage(@Nullable String message) {
+        final JSONObject body;
+        try {
+            body = new JSONObject(message == null ? "" : message);
+        } catch (JSONException e) {
+            AffirmLog.w("Ignored malformed promo script message");
+            return;
+        }
+        if (renderId == null || !renderId.equals(body.optString("renderId"))) {
+            AffirmLog.v("Ignored promo script message from a previous render");
+            return;
+        }
+        switch (body.optString("event")) {
+            case "sanitized":
+                AffirmLog.v("AffirmPromotionWebView sanitized, usable="
+                        + body.optBoolean("usable"));
+                break;
+            case "ready":
+                applyContentHeight(body.optInt("height"));
+                setVisibility(VISIBLE);
+                break;
+            case "height":
+                applyContentHeight(body.optInt("height"));
+                break;
+            case "failure":
+                logFailure(AffirmPromoRenderReason.fromPage(body.optString("reason", null)));
+                break;
+            default:
+                break;
+        }
+    }
+
+    @VisibleForTesting
+    @Nullable
+    String renderId() {
+        return renderId;
     }
 
     @SuppressWarnings("unused")
-    private class PromoJsBridge {
+    private class PromoScriptMessageHandler {
         @JavascriptInterface
-        public void onSanitized(final boolean usable) {
-            AffirmLog.v("AffirmPromotionWebView sanitized, usable=" + usable);
-        }
-
-        @JavascriptInterface
-        public void onReady(final int cssHeight) {
-            post(() -> {
-                applyContentHeight(cssHeight);
-                setVisibility(VISIBLE);
-            });
-        }
-
-        @JavascriptInterface
-        public void onHeightChanged(final int cssHeight) {
-            post(() -> applyContentHeight(cssHeight));
-        }
-
-        @JavascriptInterface
-        public void onFailure(final String reason) {
-            post(() -> logFailure(PromoRenderReason.fromPage(reason)));
+        public void postMessage(final String message) {
+            post(() -> onScriptMessage(message));
         }
     }
 }

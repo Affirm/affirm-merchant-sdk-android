@@ -24,8 +24,8 @@ class PromoMessageCacheTest {
         val cached = PromoMessageCache.get("a")
 
         assertThat(cached).isNotNull()
-        assertThat(cached!!.message(false)).isEqualTo("ala")
-        assertThat(cached.message(true)).isEqualTo("<p>html</p>")
+        assertThat(cached!!.ala).isEqualTo("ala")
+        assertThat(cached.htmlAla).isEqualTo("<p>html</p>")
         assertThat(cached.showPrequal).isTrue()
     }
 
@@ -58,5 +58,5 @@ class PromoMessageCacheTest {
     }
 
     private fun message(showPrequal: Boolean = false) =
-        PromoMessageCache.CachedMessage("ala", "<p>html</p>", showPrequal)
+        PromoMessageCache.CachedMessage("ala", "<p>html</p>", showPrequal, false)
 }

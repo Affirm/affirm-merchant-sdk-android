@@ -1566,7 +1566,6 @@ public final class Affirm {
                 new PromoRequest(promoId, pageType, amount, showCta,
                         promotionButton.getAffirmColor(),
                         promotionButton.getAffirmLogoType(),
-                        promotionButton.isHtmlStyle(),
                         items,
                         new PromoButtonCallback(promotionButton));
         promotionButton.showPlaceholder(PromoMessageCache.get(affirmPromoRequest.cacheKey()));

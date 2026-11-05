@@ -15,10 +15,10 @@ internal object PromoMessageCache {
     class CachedMessage(
         @JvmField val ala: String,
         @JvmField val htmlAla: String,
-        @JvmField val showPrequal: Boolean
-    ) {
-        fun message(htmlStyle: Boolean): String = if (htmlStyle) htmlAla else ala
-    }
+        @JvmField val showPrequal: Boolean,
+        /** The server flag from the same response, so a placeholder picks the same renderer. */
+        @JvmField val migrateToHtml: Boolean
+    )
 
     @JvmStatic
     fun get(key: String): CachedMessage? {

@@ -1,7 +1,6 @@
 package com.affirm.android
 
 import android.view.View
-import android.view.ViewGroup
 import com.affirm.android.PromoMessageCache.CachedMessage
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
@@ -19,7 +18,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [28])
 class PromoButtonStateTest {
 
-    private val cached = CachedMessage("ala", "<p>html</p>", true)
+    private val cached = CachedMessage("ala", "<p>html</p>", true, false)
 
     @Before
     fun setUp() {
@@ -42,70 +41,6 @@ class PromoButtonStateTest {
     }
 
     @Test
-    fun setLabelSkipsMessageAlreadyShown() {
-        val button = spy(plainButton())
-        button.setLabel("msg", "desc")
-
-        button.setLabel("msg", "desc")
-
-        verify(button, times(1)).removeAllViews()
-    }
-
-    @Test
-    fun setLabelUpdatesDescriptionOfMessageAlreadyShown() {
-        val button = plainButton()
-        button.setLabel("msg", "old")
-
-        button.setLabel("msg", "new")
-
-        assertThat(button.getChildAt(0).contentDescription).isEqualTo("new")
-    }
-
-    @Test
-    fun htmlSetLabelUpdatesDescriptionWithoutReloading() {
-        val button = htmlButton()
-        button.setLabel("<p>html</p>", "old")
-        var removedViews = 0
-        button.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
-            override fun onChildViewAdded(parent: View, child: View) = Unit
-            override fun onChildViewRemoved(parent: View, child: View) {
-                removedViews++
-            }
-        })
-
-        button.setLabel("<p>html</p>", "new")
-
-        assertThat(removedViews).isEqualTo(0)
-        assertThat(shownHtmlDescription(button)).isEqualTo("new")
-    }
-
-    @Test
-    fun restyledButtonRedrawsSameMessage() {
-        val button = spy(plainButton())
-        button.setLabel("msg", "desc")
-
-        button.configWithLocalStyling(
-            AffirmColor.AFFIRM_COLOR_TYPE_WHITE,
-            AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT
-        )
-        button.setLabel("msg", "desc")
-
-        verify(button, times(2)).removeAllViews()
-    }
-
-    @Test
-    fun destroyedHtmlButtonShowsSameMessageOnceStyledAgain() {
-        val button = htmlButton()
-        button.setLabel("<p>html</p>", "html")
-        button.destroy()
-
-        button.configWithHtmlStyling(null, null)
-        button.setLabel("<p>html</p>", "html")
-
-        assertThat(shownHtmlDescription(button)).isEqualTo("html")
-    }
-
-    @Test
     fun destroyCancelsAndClearsCurrentRequest() {
         val button = plainButton()
         val request = mock(PromoRequest::class.java)
@@ -118,17 +53,15 @@ class PromoButtonStateTest {
     }
 
     @Test
-    fun destroyedHtmlButtonIgnoresLabelUntilStyledAgain() {
+    fun destroyedHtmlButtonCanShowAgain() {
         val button = htmlButton()
-        button.destroy()
-
         button.setLabel("ala", "ala")
-        assertThat(button.isEmpty).isTrue()
+        button.destroy()
         assertThat(button.childCount).isEqualTo(0)
 
-        button.configWithHtmlStyling(null, null)
         button.setLabel("ala", "ala")
         assertThat(shownHtmlDescription(button)).isEqualTo("ala")
+        assertThat(button.getChildAt(0)).isSameAs(button.promotionWebView)
     }
 
     @Test
@@ -157,7 +90,7 @@ class PromoButtonStateTest {
         val button = htmlButton()
         button.setLabel("<p>previous</p>", "previous")
 
-        button.showPlaceholder(CachedMessage("ala", "", false))
+        button.showPlaceholder(CachedMessage("ala", "", false, false))
 
         assertThat(button.isEmpty).isTrue()
     }
@@ -165,9 +98,7 @@ class PromoButtonStateTest {
     @Test
     fun showPlaceholderMissClearsPreviousConfiguration() {
         val button = plainButton()
-        button.setLabel("previous", "previous")
-
-        button.setShowPrequal(true)
+        button.showPlaceholder(cached)
 
         button.showPlaceholder(null)
 

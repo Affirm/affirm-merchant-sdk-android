@@ -2,6 +2,7 @@ package com.affirm.android
 
 import android.view.View
 import com.affirm.android.exception.APIException
+import com.affirm.android.model.PromoResponse
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,11 +28,12 @@ class PromoButtonCallbackTest {
     }
 
     @Test
-    fun successUpdatesPrequalAndLabel() {
-        callback.onPromoWritten("msg", "desc", true)
+    fun successShowsTheResponse() {
+        val response = mock(PromoResponse::class.java)
 
-        verify(button).setShowPrequal(true)
-        verify(button).setLabel("msg", "desc")
+        callback.onPromoResponse(response, true)
+
+        verify(button).showResponse(response, true)
     }
 
     @Test

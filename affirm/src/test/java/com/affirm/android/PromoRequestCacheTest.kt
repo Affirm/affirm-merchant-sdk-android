@@ -56,8 +56,8 @@ class PromoRequestCacheTest {
 
         val cached = PromoMessageCache.get(request.cacheKey())
         assertThat(cached).isNotNull()
-        assertThat(cached!!.message(false)).isEqualTo("Starting at \$10/mo with affirm")
-        assertThat(cached.message(true)).isEqualTo("<p>Starting at \$10/mo</p>")
+        assertThat(cached!!.ala).isEqualTo("Starting at \$10/mo with affirm")
+        assertThat(cached.htmlAla).isEqualTo("<p>Starting at \$10/mo</p>")
         assertThat(cached.showPrequal).isTrue()
     }
 

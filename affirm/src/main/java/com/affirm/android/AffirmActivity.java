@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import static com.affirm.android.Affirm.RESULT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
+import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR_DETAIL;
 import static com.affirm.android.AffirmConstants.CHECKOUT_TOKEN;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.PREQUAL_ERROR;
@@ -16,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.affirm.android.model.AffirmError;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.VcnReason;
 
@@ -41,8 +43,13 @@ abstract class AffirmActivity extends AppCompatActivity {
     }
 
     protected void finishWithError(@Nullable String error) {
+        finishWithError(error, null);
+    }
+
+    protected void finishWithError(@Nullable String error, @Nullable AffirmError affirmError) {
         final Intent intent = new Intent();
         intent.putExtra(CHECKOUT_ERROR, error);
+        intent.putExtra(CHECKOUT_ERROR_DETAIL, affirmError);
         setResult(RESULT_ERROR, intent);
         finish();
     }

@@ -21,11 +21,10 @@ class AffirmWebView extends WebView {
 
         final String userAgent = USER_AGENT_PREFIX + " " + getSettings().getUserAgentString();
         getSettings().setUserAgentString(userAgent);
-        clearCache(true);
         getSettings().setJavaScriptEnabled(true);
         getSettings().setDomStorageEnabled(true);
         getSettings().setSupportMultipleWindows(true);
-        getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         setVerticalScrollBarEnabled(false);
     }
 
@@ -34,7 +33,6 @@ class AffirmWebView extends WebView {
             ((ViewGroup) getParent()).removeView(this);
         }
         removeAllViews();
-        clearCache(true);
         destroyDrawingCache();
         clearHistory();
         destroy();

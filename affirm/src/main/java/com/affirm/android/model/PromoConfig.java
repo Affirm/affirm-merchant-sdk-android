@@ -17,9 +17,14 @@ public abstract class PromoConfig {
     @SerializedName("promo_style")
     public abstract String promoStyle();
 
+    // Object so Gson never throws on a malformed flag; only a JSON boolean true migrates.
     @Nullable
     @SerializedName("android_sdk_migrate_native_to_html_render")
-    public abstract Boolean migrateNativeToHtmlRender();
+    abstract Object migrateNativeToHtmlRenderValue();
+
+    public boolean migrateNativeToHtmlRender() {
+        return Boolean.TRUE.equals(migrateNativeToHtmlRenderValue());
+    }
 
     public static TypeAdapter<PromoConfig> typeAdapter(Gson gson) {
         return new AutoValue_PromoConfig.GsonTypeAdapter(gson);
@@ -37,7 +42,7 @@ public abstract class PromoConfig {
 
         public abstract Builder setPromoStyle(String value);
 
-        public abstract Builder setMigrateNativeToHtmlRender(Boolean value);
+        public abstract Builder setMigrateNativeToHtmlRenderValue(Object value);
 
         public abstract PromoConfig build();
     }

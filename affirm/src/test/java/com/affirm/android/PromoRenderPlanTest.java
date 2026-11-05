@@ -27,7 +27,7 @@ public class PromoRenderPlanTest {
                         .setHtmlAla(htmlAla)
                         .setPromoConfig(PromoConfig.builder()
                                 .setPromoPrequalEnabled(false)
-                                .setMigrateNativeToHtmlRender(flag)
+                                .setMigrateNativeToHtmlRenderValue(flag)
                                 .build())
                         .build())
                 .build();

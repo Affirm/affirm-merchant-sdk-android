@@ -55,14 +55,15 @@ public class PromoConfigTest {
     }
 
     @Test
-    public void testParseMigrateNativeToHtmlRender() {
-        Assert.assertEquals(Boolean.TRUE, gson.fromJson(withFlag("true"), PromoConfig.class)
+    public void testOnlyJsonTrueMigratesNativeToHtmlRender() {
+        Assert.assertTrue(gson.fromJson(withFlag("true"), PromoConfig.class)
                 .migrateNativeToHtmlRender());
-        Assert.assertEquals(Boolean.FALSE, gson.fromJson(withFlag("false"), PromoConfig.class)
-                .migrateNativeToHtmlRender());
-        Assert.assertNull(gson.fromJson(withFlag("null"), PromoConfig.class)
-                .migrateNativeToHtmlRender());
-        Assert.assertNull(gson.fromJson(promoConfigJsonNoStyle, PromoConfig.class)
+        for (String value : new String[] {"false", "null", "\"true\"", "\"TRUE\"", "1", "{}", "[]"}) {
+            PromoConfig promoConfig = gson.fromJson(withFlag(value), PromoConfig.class);
+            Assert.assertFalse(value, promoConfig.migrateNativeToHtmlRender());
+            Assert.assertTrue(value, promoConfig.promoPrequalEnabled());
+        }
+        Assert.assertFalse(gson.fromJson(promoConfigJsonNoStyle, PromoConfig.class)
                 .migrateNativeToHtmlRender());
     }
 

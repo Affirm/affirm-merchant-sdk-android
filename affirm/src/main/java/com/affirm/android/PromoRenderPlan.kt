@@ -31,7 +31,7 @@ internal class PromoRenderPlan private constructor(
             val nativeText = promo.ala().replace(LOGO_PLACEHOLDER, "affirm")
                 .takeIf { it.isNotBlank() }
             val htmlText = promo.htmlAla().takeIf { it.isNotBlank() }
-            val migrateToHtml = promo.promoConfig().migrateNativeToHtmlRender() == true
+            val migrateToHtml = promo.promoConfig().migrateNativeToHtmlRender()
 
             val selected = PromoRendererDecision.decide(
                 merchantHtmlStyling,

@@ -113,12 +113,8 @@ public final class AffirmConstants {
     static final String TRACK_ORDER_OBJECT = "TRACK_ORDER_OBJECT";
     static final String TRACK_PRODUCT_OBJECT = "TRACK_PRODUCT_OBJECT";
 
-    static final String HTML_FRAGMENT = "HTML_FRAGMENT";
-    static final String REMOTE_CSS_URL = "REMOTE_CSS_URL";
-    static final String AFFIRM_FONT = "AFFIRM_FONT";
-    static final String BUNDLED_CSS = "BUNDLED_CSS";
-    static final String SANITIZER_JS = "SANITIZER_JS";
-    static final String PROMO_JS_BRIDGE = "AffirmPromoHost";
+    static final String PROMO_PAYLOAD = "{{AFFIRM_PROMO_PAYLOAD}}";
+    static final String PROMO_SCRIPT_MESSAGE_NAME = "affirmPromo";
 
     static final String USER_CONFIRMATION_URL_ACTION_KEY = "user_confirmation_url_action";
     static final String USER_CONFIRMATION_URL_ACTION_VALUE = "GET";

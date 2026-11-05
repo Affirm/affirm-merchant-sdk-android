@@ -2,15 +2,15 @@ package com.affirm.android
 
 import android.view.View
 import com.affirm.android.exception.AffirmException
+import com.affirm.android.model.PromoResponse
 
-/** Writes a promo response to [button], which may already show a cached message. */
+/** Shows a promo response on [button], which may already show a cached message. */
 internal class PromoButtonCallback(
     private val button: AffirmPromotionButton
-) : SpannablePromoCallback {
+) : PromoResponseCallback {
 
-    override fun onPromoWritten(promoMessage: String, promoDescription: String, showPrequal: Boolean) {
-        button.setShowPrequal(showPrequal)
-        button.setLabel(promoMessage, promoDescription)
+    override fun onPromoResponse(response: PromoResponse, showPrequal: Boolean) {
+        button.showResponse(response, showPrequal)
     }
 
     override fun onFailure(exception: AffirmException) {

@@ -41,7 +41,11 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     @VisibleForTesting
     static final String PROMO_BASE_URL = "file:///android_asset/";
 
-    private final Runnable htmlTimeout = () -> logFailure(AffirmPromoRenderReason.HTML_TIMEOUT);
+    interface RenderListener {
+        void onReady();
+
+        void onFailure(@NonNull String reason);
+    }
 
     private String loadedHtml;
     private String loadedCss;
@@ -49,7 +53,11 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     @Nullable
     private String renderId;
     @Nullable
-    private Runnable onDestroyedByRendererGone;
+    private RenderListener renderListener;
+
+    void setRenderListener(@Nullable RenderListener listener) {
+        renderListener = listener;
+    }
 
     public void setWebViewClickListener(OnClickListener listener) {
         setOnClickListener(listener == null ? null : v -> {
@@ -94,22 +102,12 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         setBackgroundColor(getResources().getColor(android.R.color.transparent));
     }
 
-    void setOnDestroyedByRendererGone(@Nullable Runnable callback) {
-        onDestroyedByRendererGone = callback;
-    }
-
-    /** True once the current promo has rendered and is showing. */
-    boolean isRenderReady() {
-        return renderId != null && getVisibility() == VISIBLE;
-    }
-
     public void loadWebData(String promoHtml, String remoteCssUrl, String typeface) {
         // Merchants may call this again with the same promo, e.g. from onStart. Reloading
         // would hide it until the page is ready again.
         if (isShowingSamePromo(promoHtml, remoteCssUrl, typeface)) {
             return;
         }
-        removeCallbacks(htmlTimeout);
         loadedHtml = promoHtml;
         loadedCss = remoteCssUrl;
         loadedTypeface = typeface;
@@ -131,7 +129,6 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             return;
         }
         loadDataWithBaseURL(PROMO_BASE_URL, page, TEXT_HTML, UTF_8, null);
-        postDelayed(htmlTimeout, AffirmPromoRendering.HTML_TIMEOUT_MS);
     }
 
     private boolean isShowingSamePromo(String html, String css, String typeface) {
@@ -168,13 +165,15 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     }
 
     private void logFailure(@NonNull String reason) {
-        removeCallbacks(htmlTimeout);
         renderId = null;
         loadedHtml = null;
         loadedCss = null;
         loadedTypeface = null;
         setVisibility(GONE);
         AffirmLog.e("AffirmPromotionWebView failed: " + reason);
+        if (renderListener != null) {
+            renderListener.onFailure(reason);
+        }
     }
 
     private void applyContentHeight(int cssHeight) {
@@ -204,11 +203,6 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     @Override
     public void onRendererGone() {
         logFailure(AffirmPromoRenderReason.RENDER_PROCESS_GONE);
-        // A WebView whose render process is gone can't be reused.
-        destroyWebView();
-        if (onDestroyedByRendererGone != null) {
-            onDestroyedByRendererGone.run();
-        }
     }
 
     /** Handles a `window.webkit.messageHandlers.affirmPromo` message from the shared page. */
@@ -227,9 +221,11 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         }
         switch (body.optString("event")) {
             case "ready":
-                removeCallbacks(htmlTimeout);
                 applyContentHeight(body.optInt("height"));
                 setVisibility(VISIBLE);
+                if (renderListener != null) {
+                    renderListener.onReady();
+                }
                 break;
             case "height":
                 applyContentHeight(body.optInt("height"));
@@ -240,12 +236,6 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             default:
                 break;
         }
-    }
-
-    @Override
-    protected void destroyWebView() {
-        removeCallbacks(htmlTimeout);
-        super.destroyWebView();
     }
 
     @VisibleForTesting

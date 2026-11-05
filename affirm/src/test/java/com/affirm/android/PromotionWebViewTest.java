@@ -1,6 +1,5 @@
 package com.affirm.android;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.SystemClock;
 import android.view.MotionEvent;
@@ -13,14 +12,10 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowWebView;
-
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -152,51 +147,6 @@ public class PromotionWebViewTest {
     }
 
     @Test
-    public void nativeTimeoutFailsWhenThePageNeverReports() {
-        initializeAffirm();
-        attachToWindow();
-        webView.loadWebData("<span>a</span>", null, null);
-
-        ShadowLooper.idleMainLooper(AffirmPromoRendering.HTML_TIMEOUT_MS - 1, TimeUnit.MILLISECONDS);
-        assertEquals(View.INVISIBLE, webView.getVisibility());
-
-        ShadowLooper.idleMainLooper(1, TimeUnit.MILLISECONDS);
-        assertEquals(View.GONE, webView.getVisibility());
-        assertNull(webView.renderId());
-    }
-
-    @Test
-    public void readyCancelsTheNativeTimeout() {
-        initializeAffirm();
-        attachToWindow();
-        webView.loadWebData("<span>a</span>", null, null);
-
-        webView.onScriptMessage(message("ready"));
-        ShadowLooper.idleMainLooper(AffirmPromoRendering.HTML_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-
-        assertEquals(View.VISIBLE, webView.getVisibility());
-        assertTrue(webView.isRenderReady());
-    }
-
-    @Test
-    public void rendererGoneDestroysTheWebView() {
-        initializeAffirm();
-        FrameLayout parent = new FrameLayout(context);
-        parent.addView(webView);
-        Runnable onDestroyed = mock(Runnable.class);
-        webView.setOnDestroyedByRendererGone(onDestroyed);
-        webView.loadWebData("<span>a</span>", null, null);
-
-        webView.onRendererGone();
-
-        ShadowWebView shadow = Shadow.extract(webView);
-        assertTrue(shadow.wasDestroyCalled());
-        assertEquals(0, parent.getChildCount());
-        assertNull(webView.renderId());
-        verify(onDestroyed).run();
-    }
-
-    @Test
     public void standaloneWebViewStaysAccessible() {
         assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
                 webView.getImportantForAccessibility());
@@ -300,10 +250,6 @@ public class PromotionWebViewTest {
     private String message(String event) {
         return "{\"event\":\"" + event + "\",\"renderId\":\"" + webView.renderId()
                 + "\",\"height\":20,\"reason\":\"html_empty\"}";
-    }
-
-    private void attachToWindow() {
-        Robolectric.buildActivity(Activity.class).setup().get().setContentView(webView);
     }
 
     private static void initializeAffirm() {

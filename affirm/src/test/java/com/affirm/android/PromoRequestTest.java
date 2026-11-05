@@ -2,6 +2,7 @@ package com.affirm.android;
 
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Item;
+import com.affirm.android.model.PromoResponse;
 import com.google.common.truth.Truth;
 
 import org.junit.Before;
@@ -31,6 +32,7 @@ import okhttp3.ResponseBody;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -214,6 +216,72 @@ public class PromoRequestTest {
         ShadowLooper.idleMainLooper();
 
         verify(callback).onFailure(any(AffirmException.class));
+    }
+
+    private static final String PROMO_JSON = "{\"promo\":{\"ala\":\"Pay with {affirm_logo}\","
+            + "\"html_ala\":\"<b>Pay</b>\",\"config\":{\"promo_prequal_enabled\":true,"
+            + "\"promo_style\":\"simple\",\"android_sdk_migrate_native_to_html_render\":true}}}";
+
+    @Test
+    public void responseCallbackGetsTheWholeResponseAndCachesIt() {
+        PromoResponseCallback callback = mock(PromoResponseCallback.class);
+        Call call = mockCall();
+        PromoRequest request = newResponseRequest(callback, call);
+        request.create();
+
+        respond(call, PROMO_JSON);
+
+        ArgumentCaptor<PromoResponse> captor = ArgumentCaptor.forClass(PromoResponse.class);
+        verify(callback).onPromoResponse(captor.capture(), eq(true));
+        PromoResponse response = captor.getValue();
+        Truth.assertThat(response.promo().ala()).isEqualTo("Pay with {affirm_logo}");
+        Truth.assertThat(response.promo().htmlAla()).isEqualTo("<b>Pay</b>");
+        Truth.assertThat(response.promo().promoConfig().migrateNativeToHtmlRender()).isTrue();
+        PromoMessageCache.CachedMessage cached = PromoMessageCache.get(request.cacheKey());
+        Truth.assertThat(cached.ala).isEqualTo("Pay with affirm");
+        Truth.assertThat(cached.htmlAla).isEqualTo("<b>Pay</b>");
+        Truth.assertThat(cached.migrateToHtml).isTrue();
+    }
+
+    @Test
+    public void emptyBodyFailsInsteadOfCrashing() {
+        for (String body : new String[] {"", "null"}) {
+            PromoResponseCallback callback = mock(PromoResponseCallback.class);
+            Call call = mockCall();
+            newResponseRequest(callback, call).create();
+
+            respond(call, body);
+
+            verify(callback, never()).onPromoResponse(any(PromoResponse.class), anyBoolean());
+            verify(callback).onFailure(any(AffirmException.class));
+        }
+    }
+
+    @Test
+    public void messageCallbackGetsTheSelectedCopy() {
+        SpannablePromoCallback nativeCallback = mock(SpannablePromoCallback.class);
+        Call nativeCall = mockCall();
+        newRequest(nativeCallback, nativeCall).create();
+        respond(nativeCall, PROMO_JSON);
+        verify(nativeCallback).onPromoWritten("Pay with affirm", "Pay with affirm", true);
+
+        SpannablePromoCallback htmlCallback = mock(SpannablePromoCallback.class);
+        Call htmlCall = mockCall();
+        OkHttpClient client = mock(OkHttpClient.class);
+        Mockito.when(client.newCall(any(Request.class))).thenReturn(htmlCall);
+        new PromoRequest(client, null, null, BigDecimal.ONE, false,
+                AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
+                true, null, htmlCallback).create();
+        respond(htmlCall, PROMO_JSON);
+        verify(htmlCallback).onPromoWritten("<b>Pay</b>", "Pay with affirm", true);
+    }
+
+    private PromoRequest newResponseRequest(PromoResponseCallback callback, Call call) {
+        OkHttpClient client = mock(OkHttpClient.class);
+        Mockito.when(client.newCall(any(Request.class))).thenReturn(call);
+        return new PromoRequest(client, null, null, BigDecimal.ONE, false,
+                AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
+                null, callback);
     }
 
     private static Call mockCall() {

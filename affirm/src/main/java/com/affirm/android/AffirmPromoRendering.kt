@@ -5,10 +5,10 @@ import android.webkit.URLUtil
 import androidx.annotation.RestrictTo
 import androidx.annotation.RestrictTo.Scope.LIBRARY
 import androidx.annotation.VisibleForTesting
+import androidx.core.text.HtmlCompat
 import com.affirm.android.AffirmConstants.PROMO_SCRIPT_MESSAGE_NAME
 import com.affirm.android.AffirmConstants.PROMO_PAYLOAD
 import com.google.gson.Gson
-import java.io.IOException
 import kotlin.math.ceil
 
 @RestrictTo(LIBRARY)
@@ -41,6 +41,9 @@ internal object AffirmPromoRendering {
 
     const val HTML_TIMEOUT_MS = 5000
 
+    // URLUtil.isResourceUrl is hidden from the SDK.
+    private const val RESOURCE_URL_PREFIX = "file:///android_res/"
+
     // The page posts to window.webkit.messageHandlers; this forwards to the JavascriptInterface
     // of the same name.
     private const val HOST_SHIM = "window.webkit={messageHandlers:{affirmPromo:{postMessage:" +
@@ -50,15 +53,19 @@ internal object AffirmPromoRendering {
         "<style[^>]*>(.*?)</style>",
         setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
     )
+    // An unclosed comment runs to the end.
     private val COMMENT = Regex("<!--.*?(-->|$)", RegexOption.DOT_MATCHES_ALL)
     private val LINK = Regex("<link\\b[^>]*>", RegexOption.IGNORE_CASE)
+    // rel can hold several values, e.g. rel="preload stylesheet".
     private val STYLESHEET = Regex("\\brel\\s*=\\s*[\"']?[^\"'>]*\\bstylesheet\\b", RegexOption.IGNORE_CASE)
+    // The value is in double quotes, single quotes or no quotes; one group per form.
     private val HREF = Regex("\\bhref\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\\s>]+))", RegexOption.IGNORE_CASE)
 
-    /** https or file:///android_asset/. Empty is allowed. */
+    /** https, file:///android_asset/ or file:///android_res/. Empty is allowed. */
     @JvmStatic
     fun isPermittedStylesheetUrl(url: String?): Boolean =
-        url.isNullOrEmpty() || URLUtil.isHttpsUrl(url) || URLUtil.isAssetUrl(url)
+        url.isNullOrEmpty() || URLUtil.isHttpsUrl(url) || URLUtil.isAssetUrl(url) ||
+            url.startsWith(RESOURCE_URL_PREFIX)
 
     /** CSS px from the page. The WebView maps them 1:1 onto dp. */
     @JvmStatic
@@ -111,6 +118,8 @@ internal object AffirmPromoRendering {
             .mapNotNull { link ->
                 HREF.find(link.value)?.groupValues?.drop(1)?.firstOrNull { it.isNotEmpty() }
             }
+            // Attribute values may use character references, e.g. `&amp;` in a query string.
+            .map { HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_LEGACY).toString() }
             .toList()
         if (urls.size > 1) {
             AffirmLog.w("Promo font declaration has ${urls.size} stylesheets; only the first is used")
@@ -120,11 +129,9 @@ internal object AffirmPromoRendering {
 
     private fun resource(resources: Resources, resId: Int): String = try {
         resources.openRawResource(resId).use { it.reader(Charsets.UTF_8).readText() }
-    } catch (e: Resources.NotFoundException) {
-        AffirmLog.e("Failed to load promo resource $resId: $e")
-        ""
-    } catch (e: IOException) {
-        AffirmLog.e("Failed to load promo resource $resId: $e")
+    } catch (e: Exception) {
+        // Resources.NotFoundException if the resource is missing, IOException if reading fails.
+        AffirmLog.e("Failed to load promo resource $resId", e)
         ""
     }
 }

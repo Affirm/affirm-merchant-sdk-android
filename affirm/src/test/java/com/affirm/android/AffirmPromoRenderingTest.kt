@@ -36,6 +36,8 @@ class AffirmPromoRenderingTest {
         assertThat(AffirmPromoRendering.isPermittedStylesheetUrl("https://cdn.test/a.css")).isTrue()
         assertThat(AffirmPromoRendering.isPermittedStylesheetUrl("file:///android_asset/a.css"))
             .isTrue()
+        assertThat(AffirmPromoRendering.isPermittedStylesheetUrl("file:///android_res/raw/a.css"))
+            .isTrue()
         assertThat(AffirmPromoRendering.isPermittedStylesheetUrl("http://cdn.test/a.css")).isFalse()
         assertThat(AffirmPromoRendering.isPermittedStylesheetUrl("file:///sdcard/a.css")).isFalse()
     }
@@ -112,6 +114,16 @@ class AffirmPromoRenderingTest {
         assertThat(font.css).isEqualTo(
             "@font-face{font-family:'L';src:url('file:///android_res/font/l.ttf');}"
         )
+    }
+
+    @Test
+    fun fontDeclarationDecodesCharacterReferencesInHref() {
+        val font = AffirmPromoRendering.fontDeclaration(
+            "<link href=\"https://fonts.test/css?family=A&amp;display=swap&#38;x=&#x31;\" " +
+                "rel=\"stylesheet\">"
+        )
+
+        assertThat(font.url).isEqualTo("https://fonts.test/css?family=A&display=swap&x=1")
     }
 
     @Test

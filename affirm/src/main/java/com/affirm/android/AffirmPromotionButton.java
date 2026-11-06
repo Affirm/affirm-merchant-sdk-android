@@ -101,13 +101,29 @@ public class AffirmPromotionButton extends FrameLayout {
         if (htmlStyling) {
             addView(promotionWebView);
             promotionWebView.loadWebData(promoMessage, remoteCssUrl, typefaceDeclaration);
-            promotionWebView.setContentDescription(promoDescription);
+            setContentDescription(promoDescription);
         } else {
             buildPromotionButtonIfNeeded();
             addView(promotionButton);
             promotionButton.setText(promotionButton.updateSpan(promoMessage));
             promotionButton.setContentDescription(promoDescription);
         }
+    }
+
+    private PromotionWebView createPromotionWebView() {
+        final PromotionWebView webView = new PromotionWebView(getContext());
+        webView.setWebViewClickListener(clickListener);
+        // The button is the accessibility element; TalkBack activating a link inside the page
+        // would do nothing.
+        webView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        // After the render process is gone, the promo stays hidden until the next label.
+        webView.setOnDestroyedByRendererGone(() -> {
+            if (promotionWebView == webView) {
+                clearPromoContent();
+                promotionWebView = createPromotionWebView();
+            }
+        });
+        return webView;
     }
 
     private void buildPromotionButtonIfNeeded() {
@@ -161,8 +177,7 @@ public class AffirmPromotionButton extends FrameLayout {
         this.htmlStyling = true;
         this.remoteCssUrl = remoteCssUrl;
         this.typefaceDeclaration = typefaceDeclaration;
-        promotionWebView = new PromotionWebView(getContext());
-        promotionWebView.setWebViewClickListener(clickListener);
+        promotionWebView = createPromotionWebView();
         message = null;
     }
 
@@ -235,7 +250,12 @@ public class AffirmPromotionButton extends FrameLayout {
 
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {
-        super.setOnClickListener(l);
+        super.setOnClickListener(l == null ? null : v -> {
+            // HTML promos only take taps once they have rendered.
+            if (!htmlStyling || promotionWebView != null && promotionWebView.isRenderReady()) {
+                l.onClick(v);
+            }
+        });
         clickListener = l;
 
         if (promotionWebView != null) {

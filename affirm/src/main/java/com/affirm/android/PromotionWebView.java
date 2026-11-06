@@ -41,11 +41,15 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     @VisibleForTesting
     static final String PROMO_BASE_URL = "file:///android_asset/";
 
+    private final Runnable htmlTimeout = () -> logFailure(AffirmPromoRenderReason.HTML_TIMEOUT);
+
     private String loadedHtml;
     private String loadedCss;
     private String loadedTypeface;
     @Nullable
     private String renderId;
+    @Nullable
+    private Runnable onDestroyedByRendererGone;
 
     public void setWebViewClickListener(OnClickListener listener) {
         setOnClickListener(listener == null ? null : v -> {
@@ -90,51 +94,62 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         setBackgroundColor(getResources().getColor(android.R.color.transparent));
     }
 
+    void setOnDestroyedByRendererGone(@Nullable Runnable callback) {
+        onDestroyedByRendererGone = callback;
+    }
+
+    /** True once the current promo has rendered and is showing. */
+    boolean isRenderReady() {
+        return renderId != null && getVisibility() == VISIBLE;
+    }
+
     public void loadWebData(String promoHtml, String remoteCssUrl, String typeface) {
-        if (!shouldReload(getVisibility(), promoHtml, remoteCssUrl, typeface,
-                loadedHtml, loadedCss, loadedTypeface)) {
+        // Merchants may call this again with the same promo, e.g. from onStart. Reloading
+        // would hide it until the page is ready again.
+        if (isShowingSamePromo(promoHtml, remoteCssUrl, typeface)) {
             return;
         }
+        removeCallbacks(htmlTimeout);
         loadedHtml = promoHtml;
         loadedCss = remoteCssUrl;
         loadedTypeface = typeface;
         setVisibility(INVISIBLE);
-        renderId = UUID.randomUUID().toString();
+        final String id = UUID.randomUUID().toString();
+        renderId = id;
         final AffirmPromoRendering.FontDeclaration font =
                 AffirmPromoRendering.fontDeclaration(typeface);
         if (!AffirmPromoRendering.isPermittedStylesheetUrl(remoteCssUrl)
                 || !AffirmPromoRendering.isPermittedStylesheetUrl(font.url)) {
-            AffirmLog.e("Promo CSS and font URLs must use https or file:///android_asset/: "
-                    + remoteCssUrl + ", " + font.url);
+            AffirmLog.e("Promo CSS and font URLs must use https, file:///android_asset/ or "
+                    + "file:///android_res/: " + remoteCssUrl + ", " + font.url);
             logFailure(AffirmPromoRenderReason.RESOURCE_FAILED);
             return;
         }
-        final String page = initialHtml(promoHtml, remoteCssUrl, font);
+        final String page = initialHtml(id, promoHtml, remoteCssUrl, font);
         if (page == null) {
             logFailure(AffirmPromoRenderReason.TEMPLATE_ERROR);
             return;
         }
         loadDataWithBaseURL(PROMO_BASE_URL, page, TEXT_HTML, UTF_8, null);
+        postDelayed(htmlTimeout, AffirmPromoRendering.HTML_TIMEOUT_MS);
     }
 
-    @VisibleForTesting
-    static boolean shouldReload(int visibility, String html, String css, String typeface,
-                                String loadedHtml, String loadedCss, String loadedTypeface) {
-        return visibility != VISIBLE
-                || !TextUtils.equals(html, loadedHtml)
-                || !TextUtils.equals(css, loadedCss)
-                || !TextUtils.equals(typeface, loadedTypeface);
+    private boolean isShowingSamePromo(String html, String css, String typeface) {
+        return getVisibility() == VISIBLE
+                && TextUtils.equals(html, loadedHtml)
+                && TextUtils.equals(css, loadedCss)
+                && TextUtils.equals(typeface, loadedTypeface);
     }
 
     @Nullable
-    private String initialHtml(String promoHtml, String remoteCssUrl,
+    private String initialHtml(@NonNull String id, String promoHtml, String remoteCssUrl,
                                AffirmPromoRendering.FontDeclaration font) {
         final AffirmPlugins plugins = AffirmPlugins.get();
         if (plugins == null) {
             return null;
         }
         final Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("renderId", renderId);
+        payload.put("renderId", id);
         payload.put("html", nonNull(promoHtml));
         payload.put("remoteCssURL", nonNull(remoteCssUrl));
         payload.put("remoteFontURL", font.url);
@@ -153,6 +168,7 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     }
 
     private void logFailure(@NonNull String reason) {
+        removeCallbacks(htmlTimeout);
         renderId = null;
         loadedHtml = null;
         loadedCss = null;
@@ -161,7 +177,7 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         AffirmLog.e("AffirmPromotionWebView failed: " + reason);
     }
 
-    void applyContentHeight(int cssHeight) {
+    private void applyContentHeight(int cssHeight) {
         ViewGroup.LayoutParams params = getLayoutParams();
         if (params == null || cssHeight <= 0) {
             return;
@@ -188,6 +204,11 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     @Override
     public void onRendererGone() {
         logFailure(AffirmPromoRenderReason.RENDER_PROCESS_GONE);
+        // A WebView whose render process is gone can't be reused.
+        destroyWebView();
+        if (onDestroyedByRendererGone != null) {
+            onDestroyedByRendererGone.run();
+        }
     }
 
     /** Handles a `window.webkit.messageHandlers.affirmPromo` message from the shared page. */
@@ -205,11 +226,8 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             return;
         }
         switch (body.optString("event")) {
-            case "sanitized":
-                AffirmLog.v("AffirmPromotionWebView sanitized, usable="
-                        + body.optBoolean("usable"));
-                break;
             case "ready":
+                removeCallbacks(htmlTimeout);
                 applyContentHeight(body.optInt("height"));
                 setVisibility(VISIBLE);
                 break;
@@ -222,6 +240,12 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             default:
                 break;
         }
+    }
+
+    @Override
+    protected void destroyWebView() {
+        removeCallbacks(htmlTimeout);
+        super.destroyWebView();
     }
 
     @VisibleForTesting

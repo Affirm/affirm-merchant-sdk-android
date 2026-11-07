@@ -151,11 +151,10 @@ class PromoRequest implements AffirmRequest {
         PromoMessageCache.put(cacheKey,
                 new PromoMessageCache.CachedMessage(ala, htmlAla, showPrequal));
         final String promoMessage = isHtmlStyle ? htmlAla : ala;
-        final String promoDescription = ala;
         if (TextUtils.isEmpty(promoMessage)) {
             handleErrorResponse(new Exception("Promo message is null or empty!"));
         } else {
-            callback.onPromoWritten(promoMessage, promoDescription, showPrequal);
+            callback.onPromoWritten(promoMessage, ala, showPrequal);
         }
     }
 

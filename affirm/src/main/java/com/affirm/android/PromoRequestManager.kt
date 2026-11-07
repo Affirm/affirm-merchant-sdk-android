@@ -14,8 +14,8 @@ import java.util.WeakHashMap
 /**
  * Tracks promo requests for a host [Lifecycle] and cancels them on `ON_DESTROY`.
  *
- * The host is resolved from the view: AndroidX Fragment first, then a [LifecycleOwner]
- * Activity. Otherwise the request is not bound to any lifecycle.
+ * The host is resolved from the view: the view lifecycle of an AndroidX Fragment first, then a
+ * [LifecycleOwner] Activity. Otherwise the request is not bound to any lifecycle.
  */
 @MainThread
 internal class PromoRequestManager private constructor() : LifecycleEventObserver {
@@ -93,7 +93,9 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
         private fun findLifecycleOwner(view: View): LifecycleOwner? {
             val activity = AffirmUtils.getActivityFromView(view)
             if (activity is FragmentActivity) {
-                findSupportFragment(view, activity)?.let { return it }
+                // The view lifecycle ends on onDestroyView, e.g. when the Fragment goes to the
+                // back stack, while the Fragment itself stays alive.
+                findSupportFragment(view, activity)?.let { return it.viewLifecycleOwner }
             }
             return activity as? LifecycleOwner
         }

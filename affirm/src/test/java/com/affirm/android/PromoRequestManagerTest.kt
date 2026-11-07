@@ -169,7 +169,7 @@ class PromoRequestManagerTest {
     }
 
     @Test
-    fun bindsToFragmentLifecycleInsteadOfActivity() {
+    fun bindsToFragmentViewLifecycleInsteadOfActivity() {
         val host = Robolectric.buildActivity(FragmentActivity::class.java).setup().get()
         val fragment = PromoFragment()
         host.supportFragmentManager
@@ -179,9 +179,11 @@ class PromoRequestManagerTest {
 
         val request = mock(PromoRequest::class.java)
         PromoRequestManager.track(fragment.promoView, request)
+        val viewLifecycle = fragment.viewLifecycleOwner.lifecycle
 
         assertThat(PromoRequestManager.hasManager(host.lifecycle)).isFalse()
-        assertThat(PromoRequestManager.hasManager(fragment.lifecycle)).isTrue()
+        assertThat(PromoRequestManager.hasManager(fragment.lifecycle)).isFalse()
+        assertThat(PromoRequestManager.hasManager(viewLifecycle)).isTrue()
         verify(request, never()).cancel()
 
         host.supportFragmentManager
@@ -190,7 +192,30 @@ class PromoRequestManagerTest {
             .commitNow()
 
         verify(request).cancel()
-        assertThat(PromoRequestManager.hasManager(fragment.lifecycle)).isFalse()
+        assertThat(PromoRequestManager.hasManager(viewLifecycle)).isFalse()
+    }
+
+    @Test
+    fun cancelsWhenFragmentViewIsDestroyedButFragmentStays() {
+        val host = Robolectric.buildActivity(FragmentActivity::class.java).setup().get()
+        val fragment = PromoFragment()
+        host.supportFragmentManager
+            .beginTransaction()
+            .add(android.R.id.content, fragment)
+            .commitNow()
+        val request = mock(PromoRequest::class.java)
+        PromoRequestManager.track(fragment.promoView, request)
+        val viewLifecycle = fragment.viewLifecycleOwner.lifecycle
+
+        // Like going to the back stack: onDestroyView runs, the Fragment is not destroyed.
+        host.supportFragmentManager
+            .beginTransaction()
+            .detach(fragment)
+            .commitNow()
+
+        assertThat(fragment.lifecycle.currentState).isNotEqualTo(Lifecycle.State.DESTROYED)
+        verify(request).cancel()
+        assertThat(PromoRequestManager.hasManager(viewLifecycle)).isFalse()
     }
 
     @Test
@@ -207,7 +232,8 @@ class PromoRequestManagerTest {
         PromoRequestManager.track(outside, mock(PromoRequest::class.java))
 
         assertThat(PromoRequestManager.hasManager(host.lifecycle)).isTrue()
-        assertThat(PromoRequestManager.hasManager(fragment.lifecycle)).isFalse()
+        assertThat(PromoRequestManager.hasManager(fragment.viewLifecycleOwner.lifecycle))
+            .isFalse()
     }
 
     @Test
@@ -226,8 +252,8 @@ class PromoRequestManagerTest {
 
         PromoRequestManager.track(child.promoView, mock(PromoRequest::class.java))
 
-        assertThat(PromoRequestManager.hasManager(child.lifecycle)).isTrue()
-        assertThat(PromoRequestManager.hasManager(parent.lifecycle)).isFalse()
+        assertThat(PromoRequestManager.hasManager(child.viewLifecycleOwner.lifecycle)).isTrue()
+        assertThat(PromoRequestManager.hasManager(parent.viewLifecycleOwner.lifecycle)).isFalse()
         assertThat(PromoRequestManager.hasManager(host.lifecycle)).isFalse()
     }
 

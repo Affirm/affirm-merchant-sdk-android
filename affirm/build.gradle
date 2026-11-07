@@ -10,6 +10,7 @@ apply from: 'maven-push.gradle'
 
 ext {
     androidxAppCompatVersion = '1.0.2'
+    androidxLifecycleVersion = '2.3.1'
     junitVersion = "4.12"
     testRunnerVersion = "1.2.0"
     testEspressoVersion = "3.0.2"
@@ -104,6 +105,7 @@ check.dependsOn "spotbugsDebug", "spotbugsRelease", "pmd", "checkstyle"
 
 dependencies {
     implementation "androidx.appcompat:appcompat:${androidxAppCompatVersion}"
+    implementation "androidx.lifecycle:lifecycle-runtime:${androidxLifecycleVersion}"
     implementation "androidx.constraintlayout:constraintlayout:2.0.1"
     implementation "androidx.gridlayout:gridlayout:1.0.0"
     implementation "org.joda:joda-money:0.12"

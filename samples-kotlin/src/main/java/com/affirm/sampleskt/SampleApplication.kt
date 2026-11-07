@@ -15,6 +15,8 @@ class SampleApplication : Application() {
                 .setLocale(Locale.US.toString())    // Default en_US
                 .setMerchantName(null)
                 .setLogLevel(Affirm.LOG_LEVEL_DEBUG)
+                // true keeps promo views native even when Affirm migrates them to HTML.
+                .setUseLegacyNativeRendering(false)
                 .build()
         )
     }

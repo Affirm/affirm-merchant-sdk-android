@@ -24,6 +24,8 @@ public class SampleApplication extends Application {
                 .setPrequalRequestCode(8003)
                 .setMerchantName("Merchant Name")
                 .setCardTip("We've added these card details to Rakuten Autofill for quick, easy checkout.")
+                // true keeps promo views native even when Affirm migrates them to HTML.
+                .setUseLegacyNativeRendering(false)
                 .build()
         );
     }

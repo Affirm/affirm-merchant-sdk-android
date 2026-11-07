@@ -53,4 +53,22 @@ public class PromoConfigTest {
         Assert.assertNull(promoConfig.promoStyle());
         Assert.assertTrue(promoConfig.promoPrequalEnabled());
     }
+
+    @Test
+    public void testOnlyJsonTrueMigratesNativeToHtmlRender() {
+        Assert.assertTrue(gson.fromJson(withFlag("true"), PromoConfig.class)
+                .migrateNativeToHtmlRender());
+        for (String value : new String[] {"false", "null", "\"true\"", "\"TRUE\"", "1", "{}", "[]"}) {
+            PromoConfig promoConfig = gson.fromJson(withFlag(value), PromoConfig.class);
+            Assert.assertFalse(value, promoConfig.migrateNativeToHtmlRender());
+            Assert.assertTrue(value, promoConfig.promoPrequalEnabled());
+        }
+        Assert.assertFalse(gson.fromJson(promoConfigJsonNoStyle, PromoConfig.class)
+                .migrateNativeToHtmlRender());
+    }
+
+    private static String withFlag(String value) {
+        return "{\"promo_prequal_enabled\":true,"
+                + "\"android_sdk_migrate_native_to_html_render\":" + value + "}";
+    }
 }

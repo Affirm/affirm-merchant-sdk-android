@@ -339,15 +339,18 @@ public class AffirmPromotionButtonRenderTest {
         verify(listener, times(1)).onClick(any(View.class));
     }
 
+    private PromoRenderPlan current(PromoResponse response) {
+        return PromoRenderPlan.create(button.isHtmlStyle(), false, button.nativeTypeface(), response);
+    }
+
     @Test
     public void sameResponseDoesNotReload() {
-        button.showResponse(response(NATIVE, HTML), true);
+        button.render(current(response(NATIVE, HTML)));
         PromotionWebView webView = button.getPromotionWebView();
 
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
 
         assertThat(button.getPromotionWebView()).isSameAs(webView);
-        assertThat(button.showsPrequal()).isFalse();
     }
 
     @Test
@@ -390,27 +393,13 @@ public class AffirmPromotionButtonRenderTest {
     }
 
     @Test
-    public void optOutSetAfterInitializationAppliesToTheNextResponse() {
-        button.showResponse(response(NATIVE, HTML), false);
-        assertThat(shown()).isSameAs(button.getPromotionWebView());
-
-        Affirm.setUseLegacyNativeRendering(true);
-        try {
-            button.showResponse(response(NATIVE, HTML), false);
-            assertThat(shown()).isInstanceOf(PromotionButton.class);
-        } finally {
-            Affirm.setUseLegacyNativeRendering(false);
-        }
-    }
-
-    @Test
     public void newLocalStylingAppliesToTheSameResponse() {
-        button.showResponse(response(NATIVE, HTML, false), false);
+        button.render(current(response(NATIVE, HTML, false)));
         PromotionButton nativeButton = (PromotionButton) shown();
 
         button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_WHITE,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT, Typeface.MONOSPACE);
-        button.showResponse(response(NATIVE, HTML, false), false);
+        button.render(current(response(NATIVE, HTML, false)));
 
         assertThat(shown()).isSameAs(nativeButton);
         assertThat(nativeButton.getTypeface()).isEqualTo(Typeface.MONOSPACE);
@@ -420,11 +409,11 @@ public class AffirmPromotionButtonRenderTest {
     @Test
     public void newHtmlStylingReloadsTheSameResponse() {
         button.configWithHtmlStyling();
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
         PromotionWebView first = button.getPromotionWebView();
 
         button.configWithHtmlStyling(null, "<style>body{color:red}</style>");
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
 
         assertThat(button.getPromotionWebView()).isSameAs(first);
         assertThat(page(first)).contains("body{color:red}");
@@ -432,11 +421,11 @@ public class AffirmPromotionButtonRenderTest {
 
     @Test
     public void switchingMigratedHtmlToExplicitHtmlReloadsWithoutNativeFallback() {
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
         PromotionWebView migrated = button.getPromotionWebView();
 
         button.configWithHtmlStyling();
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
         PromotionWebView explicit = button.getPromotionWebView();
         assertThat(explicit).isNotSameAs(migrated);
         assertThat(page(migrated)).contains("#affirm-promo-root{");
@@ -451,13 +440,13 @@ public class AffirmPromotionButtonRenderTest {
     @Test
     public void switchingExplicitHtmlToLocalStylingDropsTheMerchantCss() {
         button.configWithHtmlStyling("https://cdn.test/a.css");
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
         PromotionWebView explicit = button.getPromotionWebView();
         assertThat(page(explicit)).contains("https://cdn.test/a.css");
 
         button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.SERIF);
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
 
         PromotionWebView migrated = button.getPromotionWebView();
         assertThat(migrated).isNotSameAs(explicit);
@@ -469,12 +458,12 @@ public class AffirmPromotionButtonRenderTest {
     public void newLocalStylingRestylesMigratedHtml() {
         button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.SERIF);
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
         PromotionWebView first = button.getPromotionWebView();
 
         button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.MONOSPACE);
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
 
         assertThat(button.getPromotionWebView()).isSameAs(first);
         assertThat(page(first)).contains("font-family:monospace");
@@ -484,12 +473,12 @@ public class AffirmPromotionButtonRenderTest {
     public void sameLocalStylingKeepsMigratedHtml() {
         button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.SERIF);
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
         PromotionWebView first = button.getPromotionWebView();
 
         button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.SERIF);
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
 
         assertThat(button.getPromotionWebView()).isSameAs(first);
     }
@@ -630,11 +619,11 @@ public class AffirmPromotionButtonRenderTest {
 
     @Test
     public void destroyedButtonShowsTheSameResponseAgain() {
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
         button.destroy();
         assertThat(button.getChildCount()).isEqualTo(0);
 
-        button.showResponse(response(NATIVE, HTML), false);
+        button.render(current(response(NATIVE, HTML)));
 
         assertThat(shown()).isSameAs(button.getPromotionWebView());
     }

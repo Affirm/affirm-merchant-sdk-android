@@ -1,16 +1,11 @@
 package com.affirm.android
 
-import android.view.View
 import com.affirm.android.exception.APIException
 import com.affirm.android.model.PromoResponse
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when`
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -18,39 +13,23 @@ import org.robolectric.annotation.Config
 @Config(sdk = [28])
 class PromoButtonCallbackTest {
 
-    private lateinit var button: AffirmPromotionButton
-    private lateinit var callback: PromoButtonCallback
-
-    @Before
-    fun setUp() {
-        button = mock(AffirmPromotionButton::class.java)
-        callback = PromoButtonCallback(button)
-    }
+    private val button = mock(AffirmPromotionButton::class.java)
+    private val render = PromoRender(false, false, null, "KEY", "sandbox", { 0 }) { _, _ -> }
+    private val callback = PromoButtonCallback(button, render)
 
     @Test
-    fun successShowsTheResponse() {
+    fun successGoesToTheButtonWithItsRender() {
         val response = mock(PromoResponse::class.java)
 
         callback.onSuccess(response, true)
 
-        verify(button).showResponse(response, true)
+        verify(button).onPromoResponse(render, response, true)
     }
 
     @Test
-    fun failureHidesEmptyButton() {
-        `when`(button.isEmpty).thenReturn(true)
-
+    fun failureGoesToTheButtonWithItsRender() {
         callback.onFailure(APIException("boom", null))
 
-        verify(button).visibility = View.GONE
-    }
-
-    @Test
-    fun failureKeepsShownMessage() {
-        `when`(button.isEmpty).thenReturn(false)
-
-        callback.onFailure(APIException("boom", null))
-
-        verify(button, never()).visibility = anyInt()
+        verify(button).onPromoFailure(render)
     }
 }

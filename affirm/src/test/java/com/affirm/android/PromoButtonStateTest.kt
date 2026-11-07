@@ -171,7 +171,7 @@ class PromoButtonStateTest {
         (button.getChildAt(0) as? PromotionButton)?.text?.toString()
 
     private fun shownHtmlDescription(button: AffirmPromotionButton): CharSequence? =
-        (button.getChildAt(0) as? PromotionWebView)?.contentDescription
+        if (button.getChildAt(0) is PromotionWebView) button.contentDescription else null
 
     private fun plainButton() = AffirmPromotionButton(RuntimeEnvironment.application)
 

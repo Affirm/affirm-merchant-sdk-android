@@ -68,8 +68,12 @@ abstract class AffirmWebViewClient extends WebViewClient {
                 ? "Render process for this WebView has crashed."
                 : "Render process is gone for this WebView. Unspecified cause.";
         AffirmLog.e(errorMessage);
-        callbacks.onWebViewError(new ConnectionException(errorMessage));
+        notifyRenderProcessGone(errorMessage);
         return true;
+    }
+
+    void notifyRenderProcessGone(@NonNull String message) {
+        callbacks.onWebViewError(new ConnectionException(message));
     }
 
     public interface WebViewClientCallbacks {

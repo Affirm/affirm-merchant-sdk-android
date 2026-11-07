@@ -37,6 +37,7 @@ dependencies {
 //    implementation "com.affirm:affirm-android-sdk:1.0.13"
 
     implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"
+    implementation "androidx.recyclerview:recyclerview:1.0.0"
 
     testImplementation 'junit:junit:4.12'
 

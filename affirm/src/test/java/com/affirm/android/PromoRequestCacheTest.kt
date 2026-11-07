@@ -88,7 +88,8 @@ class PromoRequestCacheTest {
         buttonA.showPlaceholder(PromoMessageCache.get(promoA.cacheKey()))
         buttonB.showPlaceholder(PromoMessageCache.get(promoB.cacheKey()))
 
-        assertThat(buttonA.hasLabel("Starting at \$10/mo with affirm")).isTrue()
+        assertThat((buttonA.getChildAt(0) as PromotionButton).text.toString())
+            .isEqualTo("Starting at \$10/mo with affirm")
         assertThat(buttonB.isEmpty).isTrue()
     }
 

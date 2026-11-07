@@ -6,7 +6,6 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
@@ -37,9 +36,44 @@ class PromoButtonStateTest {
 
         button.setLabel("msg", "desc")
 
-        assertThat(button.hasLabel("msg")).isTrue()
-        assertThat(button.hasLabel("other")).isFalse()
+        assertThat(shownText(button)).isEqualTo("msg")
         assertThat(button.isEmpty).isFalse()
+    }
+
+    @Test
+    fun setLabelSkipsMessageAlreadyShown() {
+        val button = spy(plainButton())
+        button.setLabel("msg", "desc")
+
+        button.setLabel("msg", "desc")
+
+        verify(button, times(1)).removeAllViews()
+    }
+
+    @Test
+    fun restyledButtonRedrawsSameMessage() {
+        val button = spy(plainButton())
+        button.setLabel("msg", "desc")
+
+        button.configWithLocalStyling(
+            AffirmColor.AFFIRM_COLOR_TYPE_WHITE,
+            AffirmLogoType.AFFIRM_DISPLAY_TYPE_TEXT
+        )
+        button.setLabel("msg", "desc")
+
+        verify(button, times(2)).removeAllViews()
+    }
+
+    @Test
+    fun destroyedHtmlButtonShowsSameMessageOnceStyledAgain() {
+        val button = htmlButton()
+        button.setLabel("<p>html</p>", "html")
+        button.destroy()
+
+        button.configWithHtmlStyling(null, null)
+        button.setLabel("<p>html</p>", "html")
+
+        assertThat(shownHtmlDescription(button)).isEqualTo("html")
     }
 
     @Test
@@ -65,7 +99,7 @@ class PromoButtonStateTest {
 
         button.configWithHtmlStyling(null, null)
         button.setLabel("ala", "ala")
-        assertThat(button.hasLabel("ala")).isTrue()
+        assertThat(shownHtmlDescription(button)).isEqualTo("ala")
     }
 
     @Test
@@ -74,8 +108,8 @@ class PromoButtonStateTest {
 
         button.showPlaceholder(cached)
 
-        assertThat(button.hasLabel("ala")).isTrue()
-        assertThat(button.tag).isEqualTo(true)
+        assertThat(shownText(button)).isEqualTo("ala")
+        assertThat(button.showsPrequal()).isTrue()
     }
 
     @Test
@@ -84,7 +118,9 @@ class PromoButtonStateTest {
 
         button.showPlaceholder(cached)
 
-        assertThat(button.hasLabel("<p>html</p>")).isTrue()
+        // The description is the plain message; the WebView itself shows the HTML one.
+        assertThat(shownHtmlDescription(button)).isEqualTo("ala")
+        assertThat(button.isEmpty).isFalse()
     }
 
     @Test
@@ -102,10 +138,13 @@ class PromoButtonStateTest {
         val button = plainButton()
         button.setLabel("previous", "previous")
 
+        button.setShowPrequal(true)
+
         button.showPlaceholder(null)
 
         assertThat(button.isEmpty).isTrue()
         assertThat(button.childCount).isEqualTo(0)
+        assertThat(button.showsPrequal()).isFalse()
     }
 
     @Test
@@ -125,9 +164,14 @@ class PromoButtonStateTest {
 
         button.showPlaceholder(cached)
 
-        verify(button, times(1)).setLabel(anyString(), anyString())
-        assertThat(button.hasLabel("ala")).isTrue()
+        verify(button, times(1)).removeAllViews()
     }
+
+    private fun shownText(button: AffirmPromotionButton): String? =
+        (button.getChildAt(0) as? PromotionButton)?.text?.toString()
+
+    private fun shownHtmlDescription(button: AffirmPromotionButton): CharSequence? =
+        (button.getChildAt(0) as? PromotionWebView)?.contentDescription
 
     private fun plainButton() = AffirmPromotionButton(RuntimeEnvironment.application)
 

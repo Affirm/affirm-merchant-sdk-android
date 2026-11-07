@@ -1442,9 +1442,8 @@ public final class Affirm {
             if (activity == null || promotionButton.isEmpty()) {
                 return;
             }
-            boolean showPrequal = (boolean) promotionView.getTag();
             String type = pageType != null ? pageType.getType() : null;
-            if (showPrequal) {
+            if (promotionButton.showsPrequal()) {
                 PrequalActivity.startActivity(activity,
                         prequalRequest, amount, promoId, type);
             } else {
@@ -1484,9 +1483,8 @@ public final class Affirm {
             if (promotionButton.isEmpty()) {
                 return;
             }
-            boolean showPrequal = (boolean) promotionView.getTag();
             String type = pageType != null ? pageType.getType() : null;
-            if (showPrequal) {
+            if (promotionButton.showsPrequal()) {
                 PrequalFragment.newInstance(activity, containerViewId, amount,
                         promoId, type);
             } else {
@@ -1525,9 +1523,8 @@ public final class Affirm {
             if (promotionButton.isEmpty()) {
                 return;
             }
-            boolean showPrequal = (boolean) promotionView.getTag();
             String type = pageType != null ? pageType.getType() : null;
-            if (showPrequal) {
+            if (promotionButton.showsPrequal()) {
                 PrequalFragment.newInstance(fragment, containerViewId, amount,
                         promoId, type);
             } else {

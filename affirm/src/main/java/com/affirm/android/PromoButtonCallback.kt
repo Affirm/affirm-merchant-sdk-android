@@ -9,10 +9,8 @@ internal class PromoButtonCallback(
 ) : SpannablePromoCallback {
 
     override fun onPromoWritten(promoMessage: String, promoDescription: String, showPrequal: Boolean) {
-        button.tag = showPrequal
-        if (!button.hasLabel(promoMessage)) {
-            button.setLabel(promoMessage, promoDescription)
-        }
+        button.setShowPrequal(showPrequal)
+        button.setLabel(promoMessage, promoDescription)
     }
 
     override fun onFailure(exception: AffirmException) {

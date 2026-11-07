@@ -44,6 +44,9 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     private static final String RENDER_ID = "renderId";
 
     interface RenderListener {
+        /** Whether the promo HTML still has content after sanitizing. */
+        void onSanitized(boolean usable);
+
         void onReady();
 
         void onFailure(@NonNull String reason);
@@ -317,6 +320,11 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             return;
         }
         switch (body.optString("event")) {
+            case "sanitized":
+                if (renderListener != null) {
+                    renderListener.onSanitized(body.optBoolean("usable"));
+                }
+                break;
             case "ready":
                 applyContentSize(body);
                 setAlpha(1f);

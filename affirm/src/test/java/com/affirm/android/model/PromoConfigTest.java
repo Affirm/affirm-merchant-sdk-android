@@ -77,6 +77,23 @@ public class PromoConfigTest {
         }
     }
 
+    @Test
+    public void testMigrateNativeToHtmlRenderStatus() {
+        assertEquals(PromoConfig.FLAG_MISSING,
+                gson.fromJson(promoConfigJsonNoStyle, PromoConfig.class)
+                        .migrateNativeToHtmlRenderStatus());
+        assertEquals(PromoConfig.FLAG_NULL, statusOf("null"));
+        assertEquals(PromoConfig.FLAG_TRUE, statusOf("true"));
+        assertEquals(PromoConfig.FLAG_FALSE, statusOf("false"));
+        for (String value : new String[] {"\"true\"", "1", "{}", "[]"}) {
+            assertEquals(value, PromoConfig.FLAG_MALFORMED, statusOf(value));
+        }
+    }
+
+    private String statusOf(String value) {
+        return gson.fromJson(withFlag(value), PromoConfig.class).migrateNativeToHtmlRenderStatus();
+    }
+
     private static String withFlag(String value) {
         return "{\"promo_prequal_enabled\":true,"
                 + "\"android_sdk_migrate_native_to_html_render\":" + value + "}";

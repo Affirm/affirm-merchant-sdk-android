@@ -1582,15 +1582,12 @@ public final class Affirm {
             View.OnClickListener onClickListener) {
         AffirmUtils.requireNonNull(promotionButton,
                 "AffirmPromotionButton cannot be null");
-        final PromoRequest affirmPromoRequest =
+        promotionButton.startRender(callback ->
                 new PromoRequest(promoId, pageType, amount, showCta,
                         promotionButton.getAffirmColor(),
                         promotionButton.getAffirmLogoType(),
                         items,
-                        new PromoButtonCallback(promotionButton));
-        promotionButton.showPlaceholder(PromoMessageCache.get(affirmPromoRequest.cacheKey()));
-
-        PromoRequestManager.track(promotionButton, affirmPromoRequest);
+                        callback));
         promotionButton.setOnClickListener(onClickListener);
     }
 

@@ -187,6 +187,33 @@ public class PromoRenderPlanTest {
     }
 
     @Test
+    public void blankHtmlRecordsTheFallbackToNative() {
+        PromoRenderPlan plan = migrated(response(NATIVE, " ", true));
+        assertThat(plan.selected).isEqualTo(PromoRendererMode.HTML);
+        assertThat(plan.mode).isEqualTo(PromoRendererMode.NATIVE);
+        assertThat(plan.fallbackReason).isEqualTo(AffirmPromoRenderReason.MISSING_HTML);
+        assertThat(plan.nativeUsable).isTrue();
+        assertThat(plan.htmlPresent).isFalse();
+    }
+
+    @Test
+    public void shownHtmlHasNoFallbackReason() {
+        PromoRenderPlan plan = migrated(response(NATIVE, HTML, true));
+        assertThat(plan.selected).isEqualTo(PromoRendererMode.HTML);
+        assertThat(plan.fallbackReason).isNull();
+        assertThat(plan.explicitHtml).isFalse();
+        assertThat(plan.htmlPresent).isTrue();
+    }
+
+    @Test
+    public void explicitHtmlIsRecorded() {
+        PromoRenderPlan plan = explicitHtml(response(" ", HTML, false));
+        assertThat(plan.explicitHtml).isTrue();
+        assertThat(plan.selected).isEqualTo(PromoRendererMode.HTML);
+        assertThat(plan.nativeUsable).isFalse();
+    }
+
+    @Test
     public void defaultFontCanMigrate() {
         PromoRenderPlan plan = PromoRenderPlan.create(false, false, null, response(NATIVE, HTML, true));
         assertThat(plan.mode).isEqualTo(PromoRendererMode.HTML);

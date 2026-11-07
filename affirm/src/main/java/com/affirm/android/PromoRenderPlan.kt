@@ -17,7 +17,15 @@ internal class PromoRenderPlan private constructor(
     /** Plain-text accessibility description: the native copy, or empty. */
     @JvmField val description: String,
     /** An HTML render that fails later may switch to [description]. */
-    @JvmField val canFallBackToNative: Boolean
+    @JvmField val canFallBackToNative: Boolean,
+    /** The renderer the decision chose; differs from [mode] when blank HTML falls back. */
+    @JvmField val selected: PromoRendererMode,
+    @JvmField val decisionReason: String,
+    /** Set when [selected] is HTML but [mode] is native because the HTML was blank. */
+    @JvmField val fallbackReason: String?,
+    @JvmField val explicitHtml: Boolean,
+    @JvmField val nativeUsable: Boolean,
+    @JvmField val htmlPresent: Boolean
 ) {
     companion object {
         @JvmStatic
@@ -47,21 +55,26 @@ internal class PromoRenderPlan private constructor(
                 ?.takeIf { it.isNotBlank() }
             val htmlText = htmlAla?.takeIf { it.isNotBlank() }
 
-            val selected = PromoRendererDecision.decide(
+            val decision = PromoRendererDecision.decide(
                 merchantHtmlStyling,
                 useLegacyNativeRendering,
                 PromoHtmlStyle.isFontSupported(typeface),
                 migrateToHtml
-            ).selected
+            )
             val description = nativeText.orEmpty()
             val nativeAllowed = nativeText != null && !merchantHtmlStyling
-            val showHtml = selected == HTML && (htmlText != null || !nativeAllowed)
+            val showHtml = decision.selected == HTML && (htmlText != null || !nativeAllowed)
 
-            return if (showHtml) {
-                PromoRenderPlan(HTML, htmlText.orEmpty(), description, nativeAllowed)
-            } else {
-                PromoRenderPlan(NATIVE, description, description, false)
-            }
+            val mode = if (showHtml) HTML else NATIVE
+            val text = if (showHtml) htmlText.orEmpty() else description
+            val fallbackReason =
+                if (decision.selected == HTML && !showHtml) AffirmPromoRenderReason.MISSING_HTML
+                else null
+            return PromoRenderPlan(
+                mode, text, description, showHtml && nativeAllowed, decision.selected,
+                decision.decisionReason, fallbackReason, merchantHtmlStyling,
+                nativeText != null, htmlText != null
+            )
         }
     }
 }

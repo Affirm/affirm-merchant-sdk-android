@@ -5,6 +5,7 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
@@ -27,6 +28,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import static com.affirm.android.AffirmConstants.CONTENT_TYPE;
+import static com.affirm.android.AffirmConstants.PROMO_PATH;
 import static com.affirm.android.AffirmConstants.TRACKER_PATH;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
@@ -150,15 +152,19 @@ public final class AffirmClient {
 
     private static void trackNetworkError(Request request) {
         if (!request.url().toString().contains(TRACKER_PATH)) {
-            AffirmTracker.track(
-                    NETWORK_ERROR,
-                    ERROR,
-                    createTrackingNetworkJsonObj(
-                            request,
-                            null
-                    )
-            );
+            final JsonObject data = createTrackingNetworkJsonObj(request, null);
+            if (isPromoRequest(request)) {
+                // The promo URL holds the amount and items.
+                data.remove("url");
+            }
+            AffirmTracker.track(NETWORK_ERROR, ERROR, data);
         }
+    }
+
+    @VisibleForTesting
+    static boolean isPromoRequest(Request request) {
+        final String promoPathPrefix = PROMO_PATH.substring(0, PROMO_PATH.indexOf("%s"));
+        return request.url().encodedPath().contains(promoPathPrefix);
     }
 
     private static <T> void handleErrorResponse(Call call, Exception e,

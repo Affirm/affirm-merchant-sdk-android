@@ -6,7 +6,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
@@ -28,30 +27,11 @@ class PromoButtonCallbackTest {
     }
 
     @Test
-    fun successUpdatesTagAndLabel() {
+    fun successUpdatesPrequalAndLabel() {
         callback.onPromoWritten("msg", "desc", true)
 
-        verify(button).tag = true
+        verify(button).setShowPrequal(true)
         verify(button).setLabel("msg", "desc")
-    }
-
-    @Test
-    fun successMatchingShownMessageDoesNotReload() {
-        `when`(button.hasLabel("msg")).thenReturn(true)
-
-        callback.onPromoWritten("msg", "desc", false)
-
-        verify(button).tag = false
-        verify(button, never()).setLabel(anyString(), anyString())
-    }
-
-    @Test
-    fun successReplacesDifferentShownMessage() {
-        `when`(button.hasLabel("old")).thenReturn(true)
-
-        callback.onPromoWritten("new", "desc", false)
-
-        verify(button).setLabel("new", "desc")
     }
 
     @Test

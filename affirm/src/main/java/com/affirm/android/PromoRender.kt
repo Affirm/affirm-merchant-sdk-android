@@ -70,7 +70,7 @@ internal class PromoRender @VisibleForTesting constructor(
         fetchEndedAt = clock()
         this.plan = plan
         this.flagStatus = flagStatus
-        emitMode(plan.selected.code, plan.decisionReason)
+        emitMode(plan.selected.code, decisionReason(plan.decisionReason, flagStatus))
     }
 
     /** Ends the render with what the view shows, once the response has been decided. */
@@ -161,6 +161,16 @@ internal class PromoRender @VisibleForTesting constructor(
 
         private val PromoRendererMode.code: String
             get() = if (this == PromoRendererMode.HTML) HTML else NATIVE
+
+        /** A native pick by the flag says how the flag arrived when it was not a JSON boolean. */
+        private fun decisionReason(reason: String, flagStatus: String): String =
+            if (reason != PromoRendererDecision.FLAG_FALSE) reason
+            else when (flagStatus) {
+                PromoConfig.FLAG_MISSING -> PromoRendererDecision.FLAG_MISSING
+                PromoConfig.FLAG_NULL -> PromoRendererDecision.FLAG_NULL
+                PromoConfig.FLAG_MALFORMED -> PromoRendererDecision.FLAG_MALFORMED
+                else -> reason
+            }
 
         private fun fetchOutcome(plan: PromoRenderPlan?, outcome: Outcome): String = when {
             plan == null && outcome.outcome == CANCELLED -> "cancelled"

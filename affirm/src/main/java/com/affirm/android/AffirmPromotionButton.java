@@ -292,7 +292,7 @@ public class AffirmPromotionButton extends FrameLayout {
             releaseWebView();
             final PromotionWebView created;
             try {
-                created = new PromotionWebView(getContext());
+                created = createPromotionWebView();
             } catch (RuntimeException e) {
                 // No WebView provider on this device, or it is being updated.
                 AffirmLog.e("Promo WebView could not be created", e);
@@ -328,6 +328,13 @@ public class AffirmPromotionButton extends FrameLayout {
         return PromoHtmlStyle.migratedCss(promotionButton.getTypeface(),
                 promotionButton.getCurrentTextColor(), promotionButton.getTextSize(),
                 promotionButton.getGravity(), getResources().getDisplayMetrics().density);
+    }
+
+    /** Throws when the device has no usable WebView provider. */
+    @VisibleForTesting
+    @NonNull
+    PromotionWebView createPromotionWebView() {
+        return new PromotionWebView(getContext());
     }
 
     private void failHtml(@NonNull String reason, @NonNull String description,

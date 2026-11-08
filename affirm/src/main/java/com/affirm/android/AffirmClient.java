@@ -151,14 +151,25 @@ public final class AffirmClient {
     }
 
     private static void trackNetworkError(Request request) {
-        if (!request.url().toString().contains(TRACKER_PATH)) {
-            final JsonObject data = createTrackingNetworkJsonObj(request, null);
-            if (isPromoRequest(request)) {
-                // The promo URL holds the amount and items.
-                data.remove("url");
-            }
+        final JsonObject data = networkErrorData(request);
+        if (data != null) {
             AffirmTracker.track(NETWORK_ERROR, ERROR, data);
         }
+    }
+
+    /** Null for tracker requests, which are never reported. */
+    @VisibleForTesting
+    @Nullable
+    static JsonObject networkErrorData(Request request) {
+        if (request.url().toString().contains(TRACKER_PATH)) {
+            return null;
+        }
+        final JsonObject data = createTrackingNetworkJsonObj(request, null);
+        if (isPromoRequest(request)) {
+            // The promo URL holds the amount and items.
+            data.remove("url");
+        }
+        return data;
     }
 
     @VisibleForTesting

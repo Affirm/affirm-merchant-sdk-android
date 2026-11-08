@@ -160,6 +160,22 @@ test('badge classes survive and merchant CSS of equal specificity overrides them
     await withMerchant.page.close();
 });
 
+test('a real html_ala keeps its badge, price, logo and modal trigger', async () => {
+    // From a sandbox promos response (0% APR badge, adaptive promo style).
+    const html = "<span class='__apr_badge __apr_badge_indigo'>0% APR </span>or as low as "
+        + "<span class='affirm-ala-price'>$54</span>/mo with "
+        + "<span class='__affirm-logo __affirm-logo-blue'>Affirm</span>. "
+        + "<a class='affirm-modal-trigger'>Learn more</a>";
+    const { page, calls, rootHtml, sanitized } = await render({ html });
+    assert.equal(calls[0].event, 'ready');
+    assert.equal(sanitized, true);
+    assert.match(rootHtml, /<span class="__apr_badge __apr_badge_indigo">0% APR <\/span>/);
+    assert.match(rootHtml, /<span class="affirm-ala-price">\$54<\/span>/);
+    assert.match(rootHtml, /<span class="__affirm-logo __affirm-logo-blue">Affirm<\/span>/);
+    assert.match(rootHtml, /<a class="affirm-modal-trigger">Learn more<\/a>/);
+    await page.close();
+});
+
 test('remote CSS URL with a quote cannot inject attributes', async () => {
     const { page, calls } = await render({
         html: '<span>ok</span>',

@@ -90,43 +90,8 @@ public final class AffirmClient {
         call.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {
-                ResponseBody responseBody = response.body();
-                Gson gson = AffirmPlugins.get().gson();
-
-                if (response.isSuccessful()) {
-                    if (responseBody != null) {
-                        try {
-                            ParameterizedType type = (ParameterizedType) listener.getClass()
-                                    .getGenericInterfaces()[0];
-                            Type resolvedType = type.getActualTypeArguments()[0];
-                            T model = resolvedType == Void.class
-                                    ? null
-                                    : gson.fromJson(responseBody.string(), resolvedType);
-                            deliverOnMainThread(call, () -> listener.onSuccess(model));
-                        } catch (JsonSyntaxException | IOException e) {
-                            handleErrorResponse(
-                                    call,
-                                    new APIException("Some error occurred while parsing response",
-                                            e),
-                                    listener
-
-                            );
-                        }
-                    } else {
-                        handleErrorResponse(
-                                call,
-                                new APIException("Response was success, but body was null", null),
-                                listener);
-                    }
-                } else {
-                    trackNetworkError(call.request());
-                    handleErrorResponse(
-                            call,
-                            AffirmHttpClient.createExceptionAndTrackFromResponse(
-                                    response,
-                                    responseBody
-                            ),
-                            listener);
+                try (ResponseBody responseBody = response.body()) {
+                    handleResponse(call, response, responseBody, listener);
                 }
             }
 
@@ -140,6 +105,43 @@ public final class AffirmClient {
             }
         });
         return call;
+    }
+
+    private static <T> void handleResponse(Call call, Response response,
+                                           @Nullable ResponseBody responseBody,
+                                           AffirmListener<T> listener) {
+        Gson gson = AffirmPlugins.get().gson();
+
+        if (response.isSuccessful()) {
+            if (responseBody != null) {
+                try {
+                    ParameterizedType type = (ParameterizedType) listener.getClass()
+                            .getGenericInterfaces()[0];
+                    Type resolvedType = type.getActualTypeArguments()[0];
+                    T model = resolvedType == Void.class
+                            ? null
+                            : gson.fromJson(responseBody.string(), resolvedType);
+                    deliverOnMainThread(call, () -> listener.onSuccess(model));
+                } catch (JsonSyntaxException | IOException e) {
+                    handleErrorResponse(
+                            call,
+                            new APIException("Some error occurred while parsing response", e),
+                            listener
+                    );
+                }
+            } else {
+                handleErrorResponse(
+                        call,
+                        new APIException("Response was success, but body was null", null),
+                        listener);
+            }
+        } else {
+            trackNetworkError(call.request());
+            handleErrorResponse(
+                    call,
+                    AffirmHttpClient.createExceptionAndTrackFromResponse(response, responseBody),
+                    listener);
+        }
     }
 
     // Skipped if the call is cancelled before the main thread runs it, since a response may

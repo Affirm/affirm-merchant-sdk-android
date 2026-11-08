@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -137,6 +138,7 @@ public class AffirmPromotionButton extends FrameLayout {
     }
 
     /** Starts a managed render, cancelling the current one. */
+    @MainThread
     void startRender(@NonNull PromoRequestFactory factory) {
         cancelRender(SUPERSEDED);
         restartOnAttach = false;

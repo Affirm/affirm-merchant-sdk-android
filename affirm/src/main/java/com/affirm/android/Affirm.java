@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -1350,6 +1351,7 @@ public final class Affirm {
      * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
+    @MainThread
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            final BigDecimal amount,
                                            final boolean showCta) {
@@ -1364,6 +1366,7 @@ public final class Affirm {
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */
+    @MainThread
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            final BigDecimal amount,
                                            final boolean showCta,
@@ -1379,6 +1382,7 @@ public final class Affirm {
      * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
+    @MainThread
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final String promoId,
                                            final BigDecimal amount,
@@ -1395,6 +1399,7 @@ public final class Affirm {
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */
+    @MainThread
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final String promoId,
                                            final BigDecimal amount,
@@ -1412,6 +1417,7 @@ public final class Affirm {
      * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
+    @MainThread
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final PromoPageType pageType,
                                            final BigDecimal amount,
@@ -1429,6 +1435,7 @@ public final class Affirm {
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */
+    @MainThread
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final PromoPageType pageType,
                                            final BigDecimal amount,
@@ -1447,6 +1454,7 @@ public final class Affirm {
      * @param amount          (BigDecimal) eg 112.02 as $112 and ¢2
      * @param showCta         whether need to show cta
      */
+    @MainThread
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final String promoId,
                                            @Nullable final PromoPageType pageType,
@@ -1466,6 +1474,7 @@ public final class Affirm {
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */
+    @MainThread
     public static void configureWithAmount(@NonNull final AffirmPromotionButton promotionButton,
                                            @Nullable final String promoId,
                                            @Nullable final PromoPageType pageType,
@@ -1505,6 +1514,7 @@ public final class Affirm {
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */
+    @MainThread
     public static void configureWithAmount(
             @NonNull AppCompatActivity activity,
             @IdRes int containerViewId,
@@ -1545,6 +1555,7 @@ public final class Affirm {
      * @param showCta         whether need to show cta
      * @param items           A list of item objects.
      */
+    @MainThread
     public static void configureWithAmount(
             @NonNull Fragment fragment,
             @IdRes int containerViewId,

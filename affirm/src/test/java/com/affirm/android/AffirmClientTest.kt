@@ -10,7 +10,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.ResponseBody.Companion.asResponseBody
+import okio.Buffer
+import okio.ForwardingSource
+import okio.buffer
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,12 +36,25 @@ class AffirmClientTest {
 
     private fun request(url: String) = Request.Builder().url(url).build()
 
-    private fun <T> sendAndRespond(listener: AffirmClient.AffirmListener<T>, body: String) {
+    /** Returns whether the response body was closed. */
+    private fun <T> sendAndRespond(
+        listener: AffirmClient.AffirmListener<T>,
+        body: String,
+        code: Int = 200
+    ): Boolean {
+        var closed = false
+        val source = object : ForwardingSource(Buffer().writeUtf8(body)) {
+            override fun close() {
+                closed = true
+                super.close()
+            }
+        }
         var callback: Callback? = null
         val call = mock(Call::class.java) { invocation ->
             when (invocation.method.name) {
                 "enqueue" -> callback = invocation.getArgument(0)
                 "isCanceled" -> return@mock false
+                "request" -> return@mock request("https://tracker.affirm.com/collect")
             }
             null
         }
@@ -53,11 +69,28 @@ class AffirmClientTest {
         callback!!.onResponse(call, Response.Builder()
             .request(request("https://tracker.affirm.com/collect"))
             .protocol(Protocol.HTTP_1_1)
-            .code(200)
+            .code(code)
             .message("OK")
-            .body(body.toResponseBody("text/plain".toMediaType()))
+            .body(source.buffer().asResponseBody("text/plain".toMediaType(), -1))
             .build())
         ShadowLooper.idleMainLooper()
+        return closed
+    }
+
+    @Test
+    fun everyResponseBodyIsClosed() {
+        val void = object : AffirmClient.AffirmListener<Void> {
+            override fun onSuccess(response: Void?) {}
+            override fun onFailure(exception: AffirmException) {}
+        }
+        val json = object : AffirmClient.AffirmListener<JsonObject> {
+            override fun onSuccess(response: JsonObject?) {}
+            override fun onFailure(exception: AffirmException) {}
+        }
+
+        assertThat(sendAndRespond(void, "OK")).isTrue()
+        assertThat(sendAndRespond(json, "{}")).isTrue()
+        assertThat(sendAndRespond(json, "", code = 404)).isTrue()
     }
 
     @Test

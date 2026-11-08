@@ -5,10 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.affirm.android.AffirmTracker.TrackingEvent
 import com.affirm.android.exception.APIException
+import com.affirm.android.model.AffirmAdapterFactory
 import com.affirm.android.model.Promo
 import com.affirm.android.model.PromoConfig
 import com.affirm.android.model.PromoResponse
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import org.junit.After
 import org.junit.Before
@@ -395,6 +397,27 @@ class AffirmPromotionButtonTelemetryTest {
     }
 
     @Test
+    fun realResponseWithoutTheFlagReportsItMissing() {
+        start()
+        val response = GsonBuilder()
+            .registerTypeAdapterFactory(AffirmAdapterFactory.create())
+            .create()
+            .fromJson(REAL_RESPONSE, PromoResponse::class.java)
+        callbacks.last().onSuccess(response, false)
+
+        val mode = events.first { it.first == TrackingEvent.PROMO_RENDER_MODE }.second
+        assertThat(mode.string("selected_mode")).isEqualTo("native")
+        assertThat(mode.string("flag_status")).isEqualTo(PromoConfig.FLAG_MISSING)
+        assertThat(mode.get("flag_value").asBoolean).isFalse()
+        assertThat(mode.string("decision_reason")).isEqualTo(PromoRendererDecision.FLAG_MISSING)
+        val result = results().single()
+        assertThat(result.string("actual_renderer")).isEqualTo("native")
+        assertThat(result.string("outcome")).isEqualTo(PromoRender.SUCCESS)
+        assertThat(result.get("native_content_usable").asBoolean).isTrue()
+        assertThat(result.get("html_content_present").asBoolean).isTrue()
+    }
+
+    @Test
     fun destroyCancelsWithoutRestart() {
         start()
         button.destroy()
@@ -411,6 +434,9 @@ class AffirmPromotionButtonTelemetryTest {
     private companion object {
         const val NATIVE = "Pay over time with affirm"
         const val HTML = "<span>Pay over time</span>"
+
+        // A sandbox promos response body, as returned. It has no migration flag.
+        const val REAL_RESPONSE = """{"promo":{"ala":"0% APR or as low as ${'$'}54/mo with {affirm_logo}. Learn more","html_ala":"<span class='__apr_badge __apr_badge_indigo'>0% APR </span>or as low as <span class='affirm-ala-price'>${'$'}54</span>/mo with <span class='__affirm-logo __affirm-logo-blue'>Affirm</span>. <a class='affirm-modal-trigger'>Learn more</a>","config":{"promo_prequal_enabled":false,"promo_style":"adaptive","merchant_ari":"C8QU0QPNAD4VRGK3","loan_type":"installment","user_ari":"","toast_enabled":false,"enabled_integrations":[]}}}"""
 
         fun response(ala: String, htmlAla: String, migrate: Boolean): PromoResponse =
             PromoResponse.builder()

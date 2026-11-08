@@ -177,6 +177,7 @@ public class AffirmPromotionButton extends FrameLayout {
             css = null;
             pageStyle = migratedPageStyle();
             webView.getSettings().setTextZoom(100);
+            webView.setShrinkToContentWidth(true);
         }
         htmlAttempt = new HtmlAttempt(description, canFallBackToNative);
         webView.setRenderListener(htmlAttempt);

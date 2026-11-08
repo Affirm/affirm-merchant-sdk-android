@@ -304,6 +304,28 @@ test('ready waits for images and reports the content height', async () => {
     await page.close();
 });
 
+test('ready reports the content widths, not the viewport width', async () => {
+    const short = await render({ html: '<span>Pay over time</span>', width: 360 });
+    assert.equal(short.calls[0].event, 'ready');
+    const textWidth = await short.page.$eval('#affirm-promo-root span',
+        (span) => span.getBoundingClientRect().width);
+    const { width, lineWidth } = short.calls[0];
+    assert.ok(width >= textWidth && width < 360,
+        `width ${width} should follow the text (${textWidth}), not the viewport`);
+    assert.ok(Math.abs(lineWidth - width) <= 1, `one line: lineWidth ${lineWidth}, width ${width}`);
+    await short.page.close();
+
+    const long = await render({
+        html: `<span>${'Pay over time with Affirm '.repeat(10)}</span>`,
+        width: 240,
+    });
+    assert.equal(long.calls[0].event, 'ready');
+    assert.ok(long.calls[0].width > 240, `width ${long.calls[0].width} should be the unwrapped width`);
+    assert.ok(long.calls[0].lineWidth > 0 && long.calls[0].lineWidth <= 240,
+        `lineWidth ${long.calls[0].lineWidth} should be the widest wrapped line`);
+    await long.page.close();
+});
+
 test('long and localized text wraps inside the view and reports height changes', async () => {
     const longText = 'Paga en cuotas mensuales con Affirm 月々のお支払い '.repeat(12)
         + 'Supercalifragilisticexpialidocious'.repeat(4);

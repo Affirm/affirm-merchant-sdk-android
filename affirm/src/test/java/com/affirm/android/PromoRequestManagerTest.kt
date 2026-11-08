@@ -455,9 +455,8 @@ class PromoRequestManagerTest {
         false,
         AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
         AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
-        false,
         null,
-        mock(SpannablePromoCallback::class.java)
+        mock(PromoResponseCallback::class.java)
     ) {
         override fun create() {}
         override fun cancel() {}

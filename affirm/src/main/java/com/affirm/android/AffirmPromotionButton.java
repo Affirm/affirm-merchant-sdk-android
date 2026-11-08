@@ -174,11 +174,8 @@ public class AffirmPromotionButton extends FrameLayout {
             css = remoteCssUrl;
             pageStyle = typefaceDeclaration;
         } else {
-            buildPromotionButtonIfNeeded();
             css = null;
-            pageStyle = PromoHtmlStyle.migratedCss(promotionButton.getTypeface(),
-                    promotionButton.getCurrentTextColor(), promotionButton.getTextSize(),
-                    promotionButton.getGravity(), getResources().getDisplayMetrics().density);
+            pageStyle = migratedPageStyle();
             webView.getSettings().setTextZoom(100);
         }
         htmlAttempt = new HtmlAttempt(description, canFallBackToNative);
@@ -186,6 +183,15 @@ public class AffirmPromotionButton extends FrameLayout {
         postDelayed(htmlAttempt, AffirmPromoRendering.HTML_TIMEOUT_MS);
         addView(webView);
         webView.loadWebData(html, css, pageStyle);
+    }
+
+    /** The page style a migrated HTML render uses, from the current native text style. */
+    @Nullable
+    private String migratedPageStyle() {
+        buildPromotionButtonIfNeeded();
+        return PromoHtmlStyle.migratedCss(promotionButton.getTypeface(),
+                promotionButton.getCurrentTextColor(), promotionButton.getTextSize(),
+                promotionButton.getGravity(), getResources().getDisplayMetrics().density);
     }
 
     private void failHtml(@NonNull String description, boolean canFallBackToNative) {
@@ -302,9 +308,11 @@ public class AffirmPromotionButton extends FrameLayout {
      */
     public void configWithHtmlStyling(@Nullable String remoteCssUrl,
                                       @Nullable String typefaceDeclaration) {
-        if (!TextUtils.equals(remoteCssUrl, this.remoteCssUrl)
+        if (!htmlStyling
+                || !TextUtils.equals(remoteCssUrl, this.remoteCssUrl)
                 || !TextUtils.equals(typefaceDeclaration, this.typefaceDeclaration)) {
-            // Re-render with the new style even if the response is the same.
+            // Re-render with the new style even if the response is the same. A migrated HTML
+            // render shows the same copy with a different style and fallback.
             message = null;
         }
         this.htmlStyling = true;
@@ -347,19 +355,23 @@ public class AffirmPromotionButton extends FrameLayout {
                                        @Nullable Typeface typeface,
                                        int affirmTextColor,
                                        int affirmTextSize) {
+        final boolean wasHtmlStyling = this.htmlStyling;
         this.htmlStyling = false;
         this.affirmColor = affirmColor;
         this.affirmLogoType = affirmLogoType;
-        buildPromotionButtonIfNeeded();
-        if (promotionButton.getParent() == this) {
-            // Re-render with the new style even if the response is the same; native is cheap.
-            message = null;
-        }
+        final String previousPageStyle = migratedPageStyle();
         promotionButton.setAffirmColor(affirmColor);
         promotionButton.setAffirmLogoType(affirmLogoType);
         promotionButton.setTypeface(typeface);
         promotionButton.setAffirmTextColor(affirmTextColor);
         promotionButton.setAffirmTextSize(getResources().getDimensionPixelSize(affirmTextSize));
+        // Re-render with the new style even if the response is the same. Native is cheap; a
+        // migrated HTML render only reloads when its page style changes, so rebinding a list
+        // row with the same style does not flash.
+        if (wasHtmlStyling || promotionButton.getParent() == this
+                || !TextUtils.equals(previousPageStyle, migratedPageStyle())) {
+            message = null;
+        }
     }
 
     protected AffirmColor getAffirmColor() {

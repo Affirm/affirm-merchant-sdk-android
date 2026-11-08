@@ -5,6 +5,7 @@ import com.affirm.android.model.Item;
 import com.affirm.android.model.PromoResponse;
 import com.google.common.truth.Truth;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +59,12 @@ public class PromoRequestTest {
                     .build()
             );
         }
+        PromoMessageCache.evictAll();
+    }
+
+    @After
+    public void tearDown() {
+        PromoMessageCache.evictAll();
     }
 
     @Test
@@ -82,7 +89,7 @@ public class PromoRequestTest {
                 .build()
         );
         final PromoRequest affirmPromoRequest =
-                new PromoRequest(client, null, null, BigDecimal.valueOf(1100.0), false, AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, true, items, callback);
+                new PromoRequest(client, null, null, BigDecimal.valueOf(1100.0), false, AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, items, Affirm.promoMessageCallback(true, callback));
         affirmPromoRequest.create();
 
         Mockito.verify(client).newCall(requestCaptor.capture());
@@ -232,7 +239,7 @@ public class PromoRequestTest {
         respond(call, PROMO_JSON);
 
         ArgumentCaptor<PromoResponse> captor = ArgumentCaptor.forClass(PromoResponse.class);
-        verify(callback).onPromoResponse(captor.capture(), eq(true));
+        verify(callback).onSuccess(captor.capture(), eq(true));
         PromoResponse response = captor.getValue();
         Truth.assertThat(response.promo().ala()).isEqualTo("Pay with {affirm_logo}");
         Truth.assertThat(response.promo().htmlAla()).isEqualTo("<b>Pay</b>");
@@ -252,7 +259,7 @@ public class PromoRequestTest {
 
             respond(call, body);
 
-            verify(callback, never()).onPromoResponse(any(PromoResponse.class), anyBoolean());
+            verify(callback, never()).onSuccess(any(PromoResponse.class), anyBoolean());
             verify(callback).onFailure(any(AffirmException.class));
         }
     }
@@ -271,9 +278,43 @@ public class PromoRequestTest {
         Mockito.when(client.newCall(any(Request.class))).thenReturn(htmlCall);
         new PromoRequest(client, null, null, BigDecimal.ONE, false,
                 AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
-                true, null, htmlCallback).create();
+                null, Affirm.promoMessageCallback(true, htmlCallback)).create();
         respond(htmlCall, PROMO_JSON);
         verify(htmlCallback).onPromoWritten("<b>Pay</b>", "Pay with affirm", true);
+    }
+
+    @Test
+    public void emptySelectedCopyFailsTheMessageCallback() {
+        SpannablePromoCallback htmlCallback = mock(SpannablePromoCallback.class);
+        Call call = mockCall();
+        newResponseRequest(Affirm.promoMessageCallback(true, htmlCallback), call).create();
+
+        respond(call, "{\"promo\":{\"ala\":\"Pay with {affirm_logo}\",\"html_ala\":\"\","
+                + "\"config\":{\"promo_prequal_enabled\":true}}}");
+
+        verify(htmlCallback, never()).onPromoWritten(any(), any(), anyBoolean());
+        verify(htmlCallback).onFailure(any(AffirmException.class));
+    }
+
+    @Test
+    public void onlyAFastPromoStyleSkipsPrequal() {
+        String[][] cases = {
+                {"", "false"},
+                {",\"promo_style\":\"fast\"", "false"},
+                {",\"promo_style\":\" FAST \"", "false"},
+                {",\"promo_style\":\"simple\"", "true"},
+        };
+        for (String[] c : cases) {
+            PromoResponseCallback callback = mock(PromoResponseCallback.class);
+            Call call = mockCall();
+            newResponseRequest(callback, call).create();
+
+            respond(call, "{\"promo\":{\"ala\":\"a\",\"html_ala\":\"b\","
+                    + "\"config\":{\"promo_prequal_enabled\":true" + c[0] + "}}}");
+
+            verify(callback).onSuccess(any(PromoResponse.class),
+                    eq(Boolean.parseBoolean(c[1])));
+        }
     }
 
     private PromoRequest newResponseRequest(PromoResponseCallback callback, Call call) {
@@ -302,7 +343,7 @@ public class PromoRequestTest {
         Mockito.when(client.newCall(any(Request.class))).thenReturn(call, more);
         return new PromoRequest(client, null, null, BigDecimal.ONE, false,
                 AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
-                false, null, callback);
+                null, Affirm.promoMessageCallback(false, callback));
     }
 
     private void respondWithMalformedBody(Call call) {

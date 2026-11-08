@@ -263,6 +263,26 @@ class PromoRenderTest {
     }
 
     @Test
+    fun fetchFailureAfterTheResponseIsIgnored() {
+        val render = render()
+        render.onResponse(plan(), "false")
+        render.onFetchFailed()
+
+        assertThat(render.isEnded).isFalse()
+        assertThat(events.map { it.first }).containsExactly(TrackingEvent.PROMO_RENDER_MODE)
+    }
+
+    @Test
+    fun responseAfterACancelIsIgnored() {
+        val render = render()
+        render.cancel(AffirmPromoRenderReason.SUPERSEDED)
+        render.onResponse(plan(), "false")
+
+        assertThat(mode().string("selected_mode")).isEqualTo("none")
+        assertThat(result().string("reason")).isEqualTo(AffirmPromoRenderReason.SUPERSEDED)
+    }
+
+    @Test
     fun contentShownBeforeTheResponseDoesNotEndTheRender() {
         val render = render()
         render.onSettled(Outcome.shown(PromoRendererMode.NATIVE, null), null)

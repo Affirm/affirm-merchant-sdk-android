@@ -21,6 +21,7 @@ import org.mockito.Mockito.`when`
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowLooper
+import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
@@ -61,6 +62,16 @@ class AffirmPromotionButtonTelemetryTest {
 
     private fun respond(ala: String = NATIVE, htmlAla: String = HTML, migrate: Boolean = false) {
         callbacks.last().onSuccess(response(ala, htmlAla, migrate), false)
+    }
+
+    private fun useButtonWithoutWebView() {
+        val activity = button.context as Activity
+        button = object : AffirmPromotionButton(activity) {
+            override fun createPromotionWebView(): PromotionWebView =
+                throw IllegalStateException("No WebView provider")
+        }
+        activity.setContentView(button)
+        parent = button.parent as ViewGroup
     }
 
     private fun names() = events.map { it.first }
@@ -334,6 +345,19 @@ class AffirmPromotionButtonTelemetryTest {
     }
 
     @Test
+    fun renderThatEndsBeforeThePendingDetachIsKept() {
+        start()
+        parent.removeView(button)
+        respond()
+        ShadowLooper.idleMainLooper()
+
+        val result = results().single()
+        assertThat(result.string("outcome")).isEqualTo(PromoRender.SUCCESS)
+        parent.addView(button)
+        assertThat(callbacks).hasSize(1)
+    }
+
+    @Test
     fun finishedRenderSurvivesDetach() {
         start()
         respond()
@@ -392,6 +416,82 @@ class AffirmPromotionButtonTelemetryTest {
         button.destroy()
         ShadowLooper.idleMainLooper()
 
+        assertThat(results().single().string("reason"))
+            .isEqualTo(AffirmPromoRenderReason.HOST_DESTROYED)
+    }
+
+    @Test
+    fun missingWebViewFallsBackToNative() {
+        useButtonWithoutWebView()
+        start()
+        respond(migrate = true)
+
+        val result = results().single()
+        assertThat(result.string("actual_renderer")).isEqualTo("native")
+        assertThat(result.string("outcome")).isEqualTo(PromoRender.SUCCESS)
+        assertThat(result.string("fallback_reason"))
+            .isEqualTo(AffirmPromoRenderReason.WEBVIEW_UNAVAILABLE)
+        assertThat(result.get("fallback_succeeded").asBoolean).isTrue()
+        assertThat(button.visibility).isEqualTo(View.VISIBLE)
+    }
+
+    @Test
+    fun missingWebViewHidesExplicitHtml() {
+        useButtonWithoutWebView()
+        button.configWithHtmlStyling()
+        start()
+        respond()
+
+        val result = results().single()
+        assertThat(result.string("outcome")).isEqualTo(PromoRender.FAILURE)
+        assertThat(result.string("reason")).isEqualTo(AffirmPromoRenderReason.WEBVIEW_UNAVAILABLE)
+        assertThat(button.visibility).isEqualTo(View.GONE)
+    }
+
+    @Test
+    fun failureOfAReplacedRequestIsIgnored() {
+        start()
+        start()
+        assertThat(button.visibility).isEqualTo(View.VISIBLE)
+
+        callbacks.first().onFailure(APIException("boom", null))
+        assertThat(results()).hasSize(1)
+        assertThat(button.visibility).isEqualTo(View.VISIBLE)
+
+        respond()
+        assertThat(results()).hasSize(2)
+        assertThat(results().last().string("outcome")).isEqualTo(PromoRender.SUCCESS)
+    }
+
+    @Test
+    fun messagesFromAReplacedWebViewAreIgnored() {
+        start()
+        respond(migrate = true)
+        val first = button.promotionWebView!!
+        start()
+        respond(htmlAla = "$HTML<br>", migrate = true)
+        val second = button.promotionWebView!!
+
+        message(first, "\"event\":\"sanitized\",\"usable\":false")
+        message(first, "\"event\":\"ready\",\"height\":20")
+        assertThat(results()).hasSize(1)
+
+        message(second, "\"event\":\"sanitized\",\"usable\":true")
+        message(second, "\"event\":\"ready\",\"height\":20")
+        val result = results().last()
+        assertThat(result.string("actual_renderer")).isEqualTo("html")
+        assertThat(result.get("html_content_usable").asBoolean).isTrue()
+    }
+
+    @Test
+    fun configureWithAmountRunsAManagedRender() {
+        (button.context as Activity).finish()
+
+        Affirm.configureWithAmount(button, BigDecimal("1100"), false)
+
+        assertThat(names()).containsExactly(
+            TrackingEvent.PROMO_RENDER_MODE, TrackingEvent.PROMO_RENDER_RESULT
+        ).inOrder()
         assertThat(results().single().string("reason"))
             .isEqualTo(AffirmPromoRenderReason.HOST_DESTROYED)
     }

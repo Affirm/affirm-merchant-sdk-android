@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,7 @@ public class AffirmPromotionButton extends FrameLayout {
     private float affirmTextSize;
     private int affirmTextColor;
     private int affirmTextFont;
+    private int textGravity;
 
     @Nullable
     private OnClickListener clickListener;
@@ -85,6 +87,9 @@ public class AffirmPromotionButton extends FrameLayout {
 
         htmlStyling = typedArray.getBoolean(R.styleable.AffirmPromotionButton_htmlStyling,
                 false);
+
+        textGravity = typedArray.getInt(R.styleable.AffirmPromotionButton_android_gravity,
+                Gravity.TOP | Gravity.START);
 
         affirmLogoType = AffirmLogoType.getAffirmLogoType(affirmLogoTypeOrdinal);
         affirmColor = AffirmColor.getAffirmColor(affirmColorOrdinal);
@@ -264,6 +269,7 @@ public class AffirmPromotionButton extends FrameLayout {
     private void buildPromotionButtonIfNeeded() {
         if (promotionButton == null) {
             promotionButton = new PromotionButton(getContext());
+            promotionButton.setGravity(textGravity);
             promotionButton.setAffirmTextSize(affirmTextSize);
             promotionButton.setAffirmTextColor(affirmTextColor);
             promotionButton.setTypeface(affirmTextFont > 0
@@ -275,6 +281,12 @@ public class AffirmPromotionButton extends FrameLayout {
 
     public boolean isHtmlStyle() {
         return htmlStyling;
+    }
+
+    /** Aligns the promo text, like {@code android:gravity}. Call before the promo loads. */
+    public void setTextGravity(int gravity) {
+        buildPromotionButtonIfNeeded();
+        promotionButton.setGravity(gravity);
     }
 
     @Deprecated

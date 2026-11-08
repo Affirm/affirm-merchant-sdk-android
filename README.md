@@ -203,13 +203,13 @@ Affirm can switch an `AffirmPromotionButton` that uses local styling to show its
 
 - The HTML copies the button's text color, size, alignment and font. This works for the system default font and the built-in sans-serif, serif and monospace typefaces, including bold and italic. A button with any other font, such as one from `res/font`, stays native.
 - If the HTML can't be shown (no usable WebView, a page error, or not ready within 5 seconds), the button shows the native message instead.
-- `configWithHtmlStyling`, optionally with your CSS and a font declaration, is still the way to choose HTML yourself. Those buttons always show HTML and never fall back to native.
+- `configWithHtmlStyling`, optionally with your CSS and a font declaration, is still the way to choose HTML yourself. Those buttons always show HTML and never fall back to native. Their CSS and font URLs must use `https`, `file:///android_asset/` or `file:///android_res/`, and the promo must be ready within 5 seconds; otherwise the button is hidden.
+- Every HTML promo, including one from `configWithHtmlStyling`, keeps only basic text, link, image and SVG markup. Scripts, inline styles, and `id`, `name`, `aria-*` and `data-*` attributes are removed, so your CSS should select by class.
 - If a button is detached before its promo finishes loading, for example in a recycled list row, it loads again when reattached.
 - `fetchPromotion` and `fetchHtmlPromotion` are not affected.
 
 Differences from native you may notice:
 
-- Inline styles and ARIA attributes in the promo HTML are removed.
 - Line wrapping and baseline spacing can differ slightly from native text.
 - A WebView adds memory use and startup time.
 

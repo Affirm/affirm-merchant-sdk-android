@@ -73,6 +73,29 @@ class PromoRenderTest {
     }
 
     @Test
+    fun decisionReasonSaysHowAnUnusableFlagArrived() {
+        val expected = mapOf(
+            "false" to PromoRendererDecision.FLAG_FALSE,
+            "missing" to PromoRendererDecision.FLAG_MISSING,
+            "null" to PromoRendererDecision.FLAG_NULL,
+            "malformed" to PromoRendererDecision.FLAG_MALFORMED
+        )
+        for ((status, reason) in expected) {
+            events.clear()
+            render().onResponse(plan(), status)
+            assertThat(mode().string("decision_reason")).isEqualTo(reason)
+        }
+    }
+
+    @Test
+    fun otherDecisionReasonsIgnoreTheFlagStatus() {
+        render().onResponse(plan(explicitHtml = true), "missing")
+
+        assertThat(mode().string("decision_reason"))
+            .isEqualTo(PromoRendererDecision.EXPLICIT_HTML)
+    }
+
+    @Test
     fun bothEventsShareTheRenderIdentity() {
         val render = render()
         render.onResponse(plan(), "false")

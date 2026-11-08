@@ -151,7 +151,9 @@ public class AffirmPromotionButton extends FrameLayout {
         final PromoRequest request =
                 requestFactory.create(new PromoButtonCallback(this, newRender));
         showPlaceholder(PromoMessageCache.get(request.cacheKey()));
-        PromoRequestManager.track(this, request);
+        if (!PromoRequestManager.track(this, request)) {
+            cancelRender(HOST_DESTROYED);
+        }
     }
 
     private void cancelRender(@NonNull String reason) {
@@ -600,11 +602,22 @@ public class AffirmPromotionButton extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (render != null && !render.isEnded()) {
-            cancelRender(DETACHED);
-            clearPromoContent();
-            restartOnAttach = true;
+        final PromoRender detached = render;
+        if (detached != null && !detached.isEnded()) {
+            // Deferred: a Fragment's view is removed before its view lifecycle is destroyed,
+            // and a view moved within one pass is detached and attached again right away.
+            // post() still reaches the window's handler here, not the queue run on reattach.
+            post(() -> cancelIfStillDetached(detached));
         }
+    }
+
+    private void cancelIfStillDetached(@NonNull PromoRender detached) {
+        if (detached != render || detached.isEnded() || isAttachedToWindow()) {
+            return;
+        }
+        cancelRender(DETACHED);
+        clearPromoContent();
+        restartOnAttach = true;
     }
 
     @Override

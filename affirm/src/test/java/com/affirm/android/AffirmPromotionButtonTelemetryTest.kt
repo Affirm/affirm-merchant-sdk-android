@@ -150,6 +150,79 @@ class AffirmPromotionButtonTelemetryTest {
     }
 
     @Test
+    fun explicitHtmlFailureHidesWithoutFallback() {
+        button.configWithHtmlStyling()
+        start()
+        respond()
+
+        message(button.promotionWebView!!, "\"event\":\"failure\",\"reason\":\"resource_failed\"")
+
+        val result = results().single()
+        assertThat(result.string("selected_mode")).isEqualTo("html")
+        assertThat(result.string("actual_renderer")).isEqualTo("none")
+        assertThat(result.string("outcome")).isEqualTo(PromoRender.FAILURE)
+        assertThat(result.string("reason")).isEqualTo(AffirmPromoRenderReason.RESOURCE_FAILED)
+        assertThat(result.string("fallback_reason")).isNull()
+        assertThat(button.visibility).isEqualTo(View.GONE)
+    }
+
+    @Test
+    fun htmlFailureWithBlankNativeTextHides() {
+        start()
+        respond(ala = "", migrate = true)
+
+        ShadowLooper.idleMainLooper(AffirmPromoRendering.HTML_TIMEOUT_MS.toLong(), TimeUnit.MILLISECONDS)
+
+        val result = results().single()
+        assertThat(result.string("selected_mode")).isEqualTo("html")
+        assertThat(result.string("actual_renderer")).isEqualTo("none")
+        assertThat(result.string("outcome")).isEqualTo(PromoRender.FAILURE)
+        assertThat(result.string("reason")).isEqualTo(AffirmPromoRenderReason.HTML_TIMEOUT)
+        assertThat(result.string("fallback_reason")).isNull()
+        assertThat(result.get("native_content_usable").asBoolean).isFalse()
+        assertThat(button.visibility).isEqualTo(View.GONE)
+    }
+
+    @Test
+    fun nativeErrorEndsTheRender() {
+        breakNativeRendering()
+        start()
+        respond()
+
+        val result = results().single()
+        assertThat(result.string("selected_mode")).isEqualTo("native")
+        assertThat(result.string("actual_renderer")).isEqualTo("none")
+        assertThat(result.string("outcome")).isEqualTo(PromoRender.FAILURE)
+        assertThat(result.string("reason")).isEqualTo(AffirmPromoRenderReason.NATIVE_ERROR)
+        assertThat(result.string("fallback_reason")).isNull()
+        assertThat(button.visibility).isEqualTo(View.GONE)
+    }
+
+    @Test
+    fun nativeErrorDuringFallbackKeepsTheHtmlReason() {
+        breakNativeRendering()
+        start()
+        respond(migrate = true)
+
+        ShadowLooper.idleMainLooper(AffirmPromoRendering.HTML_TIMEOUT_MS.toLong(), TimeUnit.MILLISECONDS)
+
+        val result = results().single()
+        assertThat(result.string("selected_mode")).isEqualTo("html")
+        assertThat(result.string("outcome")).isEqualTo(PromoRender.FAILURE)
+        assertThat(result.string("reason")).isEqualTo(AffirmPromoRenderReason.NATIVE_ERROR)
+        assertThat(result.string("fallback_reason"))
+            .isEqualTo(AffirmPromoRenderReason.HTML_TIMEOUT)
+        assertThat(result.get("fallback_succeeded").asBoolean).isFalse()
+    }
+
+    /** A null logo color makes the native logo lookup throw. */
+    private fun breakNativeRendering() {
+        AffirmPromotionButton::class.java
+            .getMethod("setAffirmColor", AffirmColor::class.java)
+            .invoke(button, null)
+    }
+
+    @Test
     fun emptyResponseIsEmptyContent() {
         start()
         respond(ala = "", htmlAla = "")
@@ -180,6 +253,18 @@ class AffirmPromotionButtonTelemetryTest {
 
         assertThat(button.visibility).isEqualTo(View.VISIBLE)
         assertThat(button.getChildAt(0)).isInstanceOf(PromotionButton::class.java)
+    }
+
+    @Test
+    fun finishingHostEndsTheRender() {
+        (button.context as Activity).finish()
+        start()
+
+        assertThat(names()).containsExactly(
+            TrackingEvent.PROMO_RENDER_MODE, TrackingEvent.PROMO_RENDER_RESULT
+        ).inOrder()
+        assertThat(results().single().string("reason"))
+            .isEqualTo(AffirmPromoRenderReason.HOST_DESTROYED)
     }
 
     @Test
@@ -230,6 +315,8 @@ class AffirmPromotionButtonTelemetryTest {
     fun detachCancelsAndReattachStartsAgain() {
         start()
         parent.removeView(button)
+        assertThat(results()).isEmpty()
+        ShadowLooper.idleMainLooper()
 
         val cancelled = results().single()
         assertThat(cancelled.string("reason")).isEqualTo(AffirmPromoRenderReason.DETACHED)
@@ -262,11 +349,49 @@ class AffirmPromotionButtonTelemetryTest {
     fun reconfigureWhileDetachedReplacesTheRestart() {
         start()
         parent.removeView(button)
+        ShadowLooper.idleMainLooper()
         start()
 
         parent.addView(button)
 
         assertThat(callbacks).hasSize(2)
+    }
+
+    @Test
+    fun pendingDetachDoesNotCancelANewerRender() {
+        start()
+        parent.removeView(button)
+        start()
+        ShadowLooper.idleMainLooper()
+
+        assertThat(results().single().string("reason"))
+            .isEqualTo(AffirmPromoRenderReason.SUPERSEDED)
+        parent.addView(button)
+        assertThat(callbacks).hasSize(2)
+    }
+
+    @Test
+    fun moveWithinOnePassKeepsTheRender() {
+        start()
+        parent.removeView(button)
+        parent.addView(button)
+        ShadowLooper.idleMainLooper()
+
+        assertThat(events).isEmpty()
+        respond()
+        assertThat(results().single().string("outcome")).isEqualTo(PromoRender.SUCCESS)
+        assertThat(callbacks).hasSize(1)
+    }
+
+    @Test
+    fun destroyRightAfterDetachIsHostDestroyed() {
+        start()
+        parent.removeView(button)
+        button.destroy()
+        ShadowLooper.idleMainLooper()
+
+        assertThat(results().single().string("reason"))
+            .isEqualTo(AffirmPromoRenderReason.HOST_DESTROYED)
     }
 
     @Test

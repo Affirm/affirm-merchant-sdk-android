@@ -14,6 +14,9 @@ internal object PromoRendererDecision {
     const val UNSUPPORTED_FONT = "unsupported_font"
     const val FLAG_TRUE = "flag_true"
     const val FLAG_FALSE = "flag_false"
+    const val FLAG_MISSING = "flag_missing"
+    const val FLAG_NULL = "flag_null"
+    const val FLAG_MALFORMED = "flag_malformed"
 
     class Result(
         @JvmField val selected: PromoRendererMode,

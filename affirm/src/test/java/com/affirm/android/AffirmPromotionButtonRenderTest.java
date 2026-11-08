@@ -441,6 +441,38 @@ public class AffirmPromotionButtonRenderTest {
     }
 
     @Test
+    public void xmlHtmlStylingBuildsItsWebViewForSetLabel() {
+        AffirmPromotionButton xmlHtml = xmlHtmlStylingButton();
+
+        xmlHtml.setLabel(NATIVE, NATIVE);
+
+        assertThat(xmlHtml.getPromotionWebView()).isNotNull();
+        assertThat(xmlHtml.getChildAt(0)).isSameAs(xmlHtml.getPromotionWebView());
+    }
+
+    @Test
+    public void xmlHtmlStylingBuildsItsWebViewForAManagedRender() {
+        AffirmPromotionButton xmlHtml = xmlHtmlStylingButton();
+        assertThat(xmlHtml.isHtmlStyle()).isTrue();
+
+        xmlHtml.render(PromoRenderPlan.create(xmlHtml.isHtmlStyle(), false, null,
+                response(NATIVE, HTML)));
+
+        assertThat(xmlHtml.getPromotionWebView()).isNotNull();
+        assertThat(xmlHtml.getChildAt(0)).isSameAs(xmlHtml.getPromotionWebView());
+    }
+
+    /** Configured for HTML only by the XML attribute, without configWithHtmlStyling. */
+    private AffirmPromotionButton xmlHtmlStylingButton() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        AffirmPromotionButton xmlHtml = new AffirmPromotionButton(activity,
+                Robolectric.buildAttributeSet()
+                        .addAttribute(R.attr.htmlStyling, "true").build());
+        activity.setContentView(xmlHtml);
+        return xmlHtml;
+    }
+
+    @Test
     public void textGravityCentersMigratedHtml() {
         button.setTextGravity(Gravity.CENTER_HORIZONTAL);
 

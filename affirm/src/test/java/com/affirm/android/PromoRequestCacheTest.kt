@@ -163,8 +163,8 @@ class PromoRequestCacheTest {
             if (invocation.method.name == "newCall") call.call else RETURNS_DEFAULTS.answer(invocation)
         }
         return PromoRequest(
-            client, promoId, pageType, amount, showCta, color, logoType, htmlStyle, items,
-            mock(SpannablePromoCallback::class.java)
+            client, promoId, pageType, amount, showCta, color, logoType, items,
+            Affirm.promoMessageCallback(htmlStyle, mock(SpannablePromoCallback::class.java))
         )
     }
 

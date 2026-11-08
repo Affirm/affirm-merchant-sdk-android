@@ -7,7 +7,7 @@ import com.affirm.android.model.PromoResponse
 
 @RestrictTo(LIBRARY)
 internal interface PromoResponseCallback {
-    fun onPromoResponse(response: PromoResponse, showPrequal: Boolean)
+    fun onSuccess(response: PromoResponse, showPrequal: Boolean)
 
     fun onFailure(exception: AffirmException)
 }

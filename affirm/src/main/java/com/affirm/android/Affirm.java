@@ -3,6 +3,7 @@ package com.affirm.android;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
@@ -20,6 +22,7 @@ import com.affirm.android.model.CardDetailsInner;
 import com.affirm.android.model.Checkout;
 import com.affirm.android.model.Item;
 import com.affirm.android.model.PromoPageType;
+import com.affirm.android.model.PromoResponse;
 import com.affirm.android.model.VcnReason;
 import com.google.gson.JsonObject;
 
@@ -39,6 +42,7 @@ import static com.affirm.android.AffirmConstants.COUNTY_CODE_UK;
 import static com.affirm.android.AffirmConstants.COUNTY_CODE_USA;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.LOCALE_USA;
+import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
 import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_CLICK;
@@ -1711,7 +1715,7 @@ public final class Affirm {
 
     private static PromoRequest buildPromoRequest(@NonNull PromoRequestData requestData,
                                                   SpannablePromoCallback promoCallback,
-                                                  Boolean isHtmlStyle) {
+                                                  boolean isHtmlStyle) {
         return new PromoRequest(
                 requestData.getPromoId(),
                 requestData.getPageType(),
@@ -1719,10 +1723,34 @@ public final class Affirm {
                 requestData.showCta(),
                 requestData.getAffirmColor(),
                 requestData.getAffirmLogoType(),
-                isHtmlStyle,
                 requestData.getItems(),
-                promoCallback
+                promoMessageCallback(isHtmlStyle, promoCallback)
         );
+    }
+
+    /** Picks the HTML or plain promo message from a response for {@code fetchPromotion}. */
+    static PromoResponseCallback promoMessageCallback(
+            final boolean isHtmlStyle, @NonNull final SpannablePromoCallback callback) {
+        return new PromoResponseCallback() {
+            @Override
+            public void onSuccess(@NonNull PromoResponse response, boolean showPrequal) {
+                final String promo = response.promo().ala();
+                final String promoMessage = isHtmlStyle
+                        ? response.promo().htmlAla()
+                        : promo.replace(LOGO_PLACEHOLDER, "affirm");
+                final String promoDescription = promo.replace(LOGO_PLACEHOLDER, "affirm");
+                if (TextUtils.isEmpty(promoMessage)) {
+                    callback.onFailure(new APIException("Promo message is null or empty!", null));
+                } else {
+                    callback.onPromoWritten(promoMessage, promoDescription, showPrequal);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull AffirmException exception) {
+                callback.onFailure(exception);
+            }
+        };
     }
 
     /**

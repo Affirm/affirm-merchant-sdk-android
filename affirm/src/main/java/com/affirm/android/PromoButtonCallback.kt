@@ -9,7 +9,7 @@ internal class PromoButtonCallback(
     private val button: AffirmPromotionButton
 ) : PromoResponseCallback {
 
-    override fun onPromoResponse(response: PromoResponse, showPrequal: Boolean) {
+    override fun onSuccess(response: PromoResponse, showPrequal: Boolean) {
         button.showResponse(response, showPrequal)
     }
 

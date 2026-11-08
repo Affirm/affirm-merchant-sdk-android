@@ -31,7 +31,7 @@ class PromoButtonCallbackTest {
     fun successShowsTheResponse() {
         val response = mock(PromoResponse::class.java)
 
-        callback.onPromoResponse(response, true)
+        callback.onSuccess(response, true)
 
         verify(button).showResponse(response, true)
     }

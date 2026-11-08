@@ -230,6 +230,7 @@ public class AffirmPromotionButtonRenderTest {
         button.setOnClickListener(listener);
 
         button.render(migrated(NATIVE, HTML));
+        ready(button.getPromotionWebView());
         button.getPromotionWebView().performClick();
 
         verify(listener, times(1)).onClick(any(View.class));
@@ -285,6 +286,75 @@ public class AffirmPromotionButtonRenderTest {
         button.showResponse(response(NATIVE, HTML), false);
 
         assertThat(button.getPromotionWebView()).isNotSameAs(first);
+    }
+
+    @Test
+    public void switchingMigratedHtmlToExplicitHtmlReloadsWithoutNativeFallback() {
+        button.showResponse(response(NATIVE, HTML), false);
+        PromotionWebView migrated = button.getPromotionWebView();
+
+        button.configWithHtmlStyling();
+        button.showResponse(response(NATIVE, HTML), false);
+        PromotionWebView explicit = button.getPromotionWebView();
+        assertThat(explicit).isNotSameAs(migrated);
+        assertThat(page(migrated)).contains("#affirm-promo-root{");
+        assertThat(page(explicit)).doesNotContain("#affirm-promo-root{");
+
+        fail(explicit);
+
+        assertThat(button.getChildCount()).isEqualTo(0);
+        assertThat(button.getVisibility()).isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void switchingExplicitHtmlToLocalStylingDropsTheMerchantCss() {
+        button.configWithHtmlStyling("https://cdn.test/a.css");
+        button.showResponse(response(NATIVE, HTML), false);
+        PromotionWebView explicit = button.getPromotionWebView();
+        assertThat(page(explicit)).contains("https://cdn.test/a.css");
+
+        button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
+                AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.SERIF);
+        button.showResponse(response(NATIVE, HTML), false);
+
+        PromotionWebView migrated = button.getPromotionWebView();
+        assertThat(migrated).isNotSameAs(explicit);
+        assertThat(page(migrated)).doesNotContain("https://cdn.test/a.css");
+        assertThat(page(migrated)).contains("font-family:serif");
+    }
+
+    @Test
+    public void newLocalStylingRestylesMigratedHtml() {
+        button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
+                AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.SERIF);
+        button.showResponse(response(NATIVE, HTML), false);
+        PromotionWebView first = button.getPromotionWebView();
+
+        button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
+                AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.MONOSPACE);
+        button.showResponse(response(NATIVE, HTML), false);
+
+        PromotionWebView second = button.getPromotionWebView();
+        assertThat(second).isNotSameAs(first);
+        assertThat(page(second)).contains("font-family:monospace");
+    }
+
+    @Test
+    public void sameLocalStylingKeepsMigratedHtml() {
+        button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
+                AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.SERIF);
+        button.showResponse(response(NATIVE, HTML), false);
+        PromotionWebView first = button.getPromotionWebView();
+
+        button.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
+                AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.SERIF);
+        button.showResponse(response(NATIVE, HTML), false);
+
+        assertThat(button.getPromotionWebView()).isSameAs(first);
+    }
+
+    private static String page(PromotionWebView webView) {
+        return ((ShadowWebView) Shadow.extract(webView)).getLastLoadDataWithBaseURL().data;
     }
 
     @Test

@@ -39,6 +39,7 @@ public class AffirmPromotionButtonTest {
 
         PromotionWebView webView = button.getPromotionWebView();
         assertNotNull(webView);
+        ready(webView);
         webView.performClick();
 
         verify(listener, times(1)).onClick(any(View.class));
@@ -50,6 +51,7 @@ public class AffirmPromotionButtonTest {
         button.setLabel("<p>Pay</p>", "Pay");
         button.setOnClickListener(listener);
 
+        ready(button.getPromotionWebView());
         button.getPromotionWebView().performClick();
 
         verify(listener, times(1)).onClick(any(View.class));
@@ -62,8 +64,14 @@ public class AffirmPromotionButtonTest {
         button.setOnClickListener(listener);
         button.setOnClickListener(null);
 
+        ready(button.getPromotionWebView());
         button.getPromotionWebView().performClick();
 
         verify(listener, never()).onClick(any(View.class));
+    }
+
+    private static void ready(PromotionWebView webView) {
+        webView.onScriptMessage("{\"event\":\"ready\",\"renderId\":\""
+                + webView.renderId() + "\",\"height\":20}");
     }
 }

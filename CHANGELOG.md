@@ -1,14 +1,6 @@
 # Affirm Android SDK Changelog
 All notable changes to the SDK are documented in this file.
 
-## Unreleased
-- Feature: Affirm can show a locally styled `AffirmPromotionButton` as HTML, turned on per merchant from the server. Opt out with `setUseLegacyNativeRendering(true)`
-- Feature: support reusing `AffirmPromotionButton` in `RecyclerView`
-- Feature: track `Promo_render_mode` and `Promo_render_result` for each promo render
-- Fix: sanitize HTML promos and render them in a sandboxed page
-- Fix: treat HTML promo taps as button clicks, not WebView navigation
-- Change: bind promo requests to the AndroidX Lifecycle instead of a hidden fragment
-
 ## VERSION 2.0.36 (September 9, 2026)
 - Fix: apply system window insets on SDK-owned activities
 

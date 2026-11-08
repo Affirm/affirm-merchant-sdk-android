@@ -2,7 +2,9 @@ package com.affirm.android;
 
 import android.app.Activity;
 import android.graphics.Typeface;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.TextView;
 
 import com.affirm.android.model.Promo;
 import com.affirm.android.model.PromoConfig;
@@ -408,6 +410,43 @@ public class AffirmPromotionButtonRenderTest {
         readyWithWidth(button.getPromotionWebView(), 120);
 
         assertThat(measuredWidth(atMost)).isEqualTo(beforeReady);
+    }
+
+    private static int horizontalGravity(View view) {
+        return ((TextView) view).getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK;
+    }
+
+    @Test
+    public void textGravityCentersNativeText() {
+        button.render(PromoRenderPlan.create(false, true, null, response(NATIVE, HTML)));
+        assertThat(horizontalGravity(shown())).isEqualTo(Gravity.LEFT);
+
+        button.setTextGravity(Gravity.CENTER_HORIZONTAL);
+
+        assertThat(horizontalGravity(shown())).isEqualTo(Gravity.CENTER_HORIZONTAL);
+    }
+
+    @Test
+    public void xmlGravityCentersNativeText() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        AffirmPromotionButton centered = new AffirmPromotionButton(activity,
+                Robolectric.buildAttributeSet()
+                        .addAttribute(android.R.attr.gravity, "center_horizontal").build());
+        activity.setContentView(centered);
+
+        centered.render(PromoRenderPlan.create(false, true, null, response(NATIVE, HTML)));
+
+        assertThat(horizontalGravity(centered.getChildAt(0)))
+                .isEqualTo(Gravity.CENTER_HORIZONTAL);
+    }
+
+    @Test
+    public void textGravityCentersMigratedHtml() {
+        button.setTextGravity(Gravity.CENTER_HORIZONTAL);
+
+        button.render(migrated(NATIVE, HTML));
+
+        assertThat(page(button.getPromotionWebView())).contains("text-align:center");
     }
 
     private static String page(PromotionWebView webView) {

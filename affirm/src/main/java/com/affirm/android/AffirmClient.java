@@ -99,7 +99,9 @@ public final class AffirmClient {
                             ParameterizedType type = (ParameterizedType) listener.getClass()
                                     .getGenericInterfaces()[0];
                             Type resolvedType = type.getActualTypeArguments()[0];
-                            T model = gson.fromJson(responseBody.string(), resolvedType);
+                            T model = resolvedType == Void.class
+                                    ? null
+                                    : gson.fromJson(responseBody.string(), resolvedType);
                             deliverOnMainThread(call, () -> listener.onSuccess(model));
                         } catch (JsonSyntaxException | IOException e) {
                             handleErrorResponse(

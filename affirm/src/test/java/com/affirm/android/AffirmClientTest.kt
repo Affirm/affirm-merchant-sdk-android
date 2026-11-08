@@ -1,12 +1,96 @@
 package com.affirm.android
 
+import com.affirm.android.exception.AffirmException
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.JsonObject
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
+import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.shadows.ShadowLooper
 
+@RunWith(RobolectricTestRunner::class)
 class AffirmClientTest {
 
+    @Before
+    fun setUp() {
+        if (AffirmPlugins.get() == null) {
+            Affirm.initialize(
+                Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
+                    .build()
+            )
+        }
+    }
+
     private fun request(url: String) = Request.Builder().url(url).build()
+
+    private fun <T> sendAndRespond(listener: AffirmClient.AffirmListener<T>, body: String) {
+        var callback: Callback? = null
+        val call = mock(Call::class.java) { invocation ->
+            when (invocation.method.name) {
+                "enqueue" -> callback = invocation.getArgument(0)
+                "isCanceled" -> return@mock false
+            }
+            null
+        }
+        val client = mock(OkHttpClient::class.java) { call }
+        AffirmClient.send(client, object : AffirmClient.AffirmApiRequest {
+            override fun url() = "https://tracker.affirm.com/collect"
+            override fun method() = AffirmHttpRequest.Method.POST
+            override fun body() = JsonObject()
+            override fun headers(): Map<String, String>? = null
+        }, listener)
+
+        callback!!.onResponse(call, Response.Builder()
+            .request(request("https://tracker.affirm.com/collect"))
+            .protocol(Protocol.HTTP_1_1)
+            .code(200)
+            .message("OK")
+            .body(body.toResponseBody("text/plain".toMediaType()))
+            .build())
+        ShadowLooper.idleMainLooper()
+    }
+
+    @Test
+    fun voidListenerSucceedsWhateverTheBody() {
+        val results = mutableListOf<String>()
+        sendAndRespond(object : AffirmClient.AffirmListener<Void> {
+            override fun onSuccess(response: Void?) {
+                results.add("success")
+            }
+
+            override fun onFailure(exception: AffirmException) {
+                results.add("failure")
+            }
+        }, "OK")
+
+        assertThat(results).containsExactly("success")
+    }
+
+    @Test
+    fun typedListenerStillFailsOnABodyThatIsNotJson() {
+        val results = mutableListOf<String>()
+        sendAndRespond(object : AffirmClient.AffirmListener<JsonObject> {
+            override fun onSuccess(response: JsonObject?) {
+                results.add("success")
+            }
+
+            override fun onFailure(exception: AffirmException) {
+                results.add("failure")
+            }
+        }, "OK")
+
+        assertThat(results).containsExactly("failure")
+    }
 
     @Test
     fun promoRequestsAreRecognizedByPath() {

@@ -67,6 +67,16 @@ public class PromoConfigTest {
                 .migrateNativeToHtmlRender());
     }
 
+    @Test
+    public void testOnlyTheAndroidKeyMigratesNativeToHtmlRender() {
+        for (String key : new String[] {"ios_sdk_migrate_native_to_html_render",
+                "migrate_native_to_html_render", "ANDROID_SDK_MIGRATE_NATIVE_TO_HTML_RENDER"}) {
+            PromoConfig promoConfig = gson.fromJson(
+                    "{\"promo_prequal_enabled\":true,\"" + key + "\":true}", PromoConfig.class);
+            Assert.assertFalse(key, promoConfig.migrateNativeToHtmlRender());
+        }
+    }
+
     private static String withFlag(String value) {
         return "{\"promo_prequal_enabled\":true,"
                 + "\"android_sdk_migrate_native_to_html_render\":" + value + "}";

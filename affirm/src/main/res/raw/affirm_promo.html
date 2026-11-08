@@ -59,6 +59,38 @@
                     height += parseFloat(bodyStyle.marginBottom) || 0;
                     return Math.ceil(height);
                 }
+                // Widths a wrap_content view can shrink to: the promo on one line, and its widest
+                // line as wrapped in the current viewport.
+                function contentWidths() {
+                    var root = document.getElementById('affirm-promo-root');
+                    if (!root) {
+                        return { width: 0, lineWidth: 0 };
+                    }
+                    var rootStyle = window.getComputedStyle(root);
+                    var bodyStyle = window.getComputedStyle(document.body);
+                    function sum(values) {
+                        return values.reduce(function (total, value) {
+                            return total + (parseFloat(value) || 0);
+                        }, 0);
+                    }
+                    var bodyMargins = sum([bodyStyle.marginLeft, bodyStyle.marginRight]);
+                    var rootEdges = sum([rootStyle.paddingLeft, rootStyle.paddingRight,
+                        rootStyle.borderLeftWidth, rootStyle.borderRightWidth]);
+                    // The range covers the content only; the max-content box includes the edges.
+                    var range = document.createRange();
+                    range.selectNodeContents(root);
+                    var lineWidth = range.getBoundingClientRect().width + rootEdges + bodyMargins;
+                    var previous = root.style.width;
+                    root.style.width = 'max-content';
+                    var width = root.getBoundingClientRect().width + bodyMargins;
+                    root.style.width = previous;
+                    return { width: Math.ceil(width), lineWidth: Math.ceil(lineWidth) };
+                }
+                function sizeMessage(event) {
+                    var widths = contentWidths();
+                    return { event: event, height: contentHeight(),
+                        width: widths.width, lineWidth: widths.lineWidth };
+                }
                 function whenLoaded(element, isLoaded, reason) {
                     return new Promise(function (resolve) {
                         if (isLoaded) {
@@ -175,10 +207,10 @@
                             return;
                         }
                         settled = true;
-                        post({ event: 'ready', height: contentHeight() });
+                        post(sizeMessage('ready'));
                         if (window.ResizeObserver) {
                             new ResizeObserver(function () {
-                                post({ event: 'height', height: contentHeight() });
+                                post(sizeMessage('height'));
                             }).observe(document.body);
                         }
                     });

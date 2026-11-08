@@ -353,6 +353,63 @@ public class AffirmPromotionButtonRenderTest {
         assertThat(button.getPromotionWebView()).isSameAs(first);
     }
 
+    private static void readyWithWidth(PromotionWebView webView, int cssWidth) {
+        readyWithWidth(webView, cssWidth, cssWidth);
+    }
+
+    private static void readyWithWidth(PromotionWebView webView, int cssWidth, int cssLineWidth) {
+        webView.onScriptMessage("{\"event\":\"ready\",\"renderId\":\"" + webView.renderId()
+                + "\",\"height\":20,\"width\":" + cssWidth + ",\"lineWidth\":" + cssLineWidth + "}");
+        ShadowLooper.idleMainLooper();
+    }
+
+    private int px(int cssPixels) {
+        return AffirmPromoRendering.heightForCssPixels(cssPixels,
+                button.getResources().getDisplayMetrics().density);
+    }
+
+    private int measuredWidth(int widthMeasureSpec) {
+        button.measure(widthMeasureSpec,
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        return button.getMeasuredWidth();
+    }
+
+    @Test
+    public void migratedHtmlWrapsItsContentWidthLikeNative() {
+        button.render(migrated(NATIVE, HTML));
+        readyWithWidth(button.getPromotionWebView(), 120);
+
+        assertThat(measuredWidth(View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.AT_MOST)))
+                .isEqualTo(px(120));
+        assertThat(measuredWidth(View.MeasureSpec.makeMeasureSpec(50, View.MeasureSpec.AT_MOST)))
+                .isEqualTo(50);
+        assertThat(measuredWidth(View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.EXACTLY)))
+                .isEqualTo(2000);
+    }
+
+    @Test
+    public void wrappedMigratedHtmlWrapsItsWidestLine() {
+        button.render(migrated(NATIVE, HTML));
+        readyWithWidth(button.getPromotionWebView(), 400, 230);
+
+        assertThat(measuredWidth(View.MeasureSpec.makeMeasureSpec(px(250),
+                View.MeasureSpec.AT_MOST))).isEqualTo(px(230));
+        assertThat(measuredWidth(View.MeasureSpec.makeMeasureSpec(px(500),
+                View.MeasureSpec.AT_MOST))).isEqualTo(px(400));
+    }
+
+    @Test
+    public void explicitHtmlKeepsTheWidthItIsGiven() {
+        button.render(explicitHtml());
+        int atMost = View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.AT_MOST);
+        int beforeReady = measuredWidth(atMost);
+        assertThat(beforeReady).isNotEqualTo(px(120));
+
+        readyWithWidth(button.getPromotionWebView(), 120);
+
+        assertThat(measuredWidth(atMost)).isEqualTo(beforeReady);
+    }
+
     private static String page(PromotionWebView webView) {
         return ((ShadowWebView) Shadow.extract(webView)).getLastLoadDataWithBaseURL().data;
     }

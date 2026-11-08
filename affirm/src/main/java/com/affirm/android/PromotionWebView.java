@@ -54,9 +54,36 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     private String renderId;
     @Nullable
     private RenderListener renderListener;
+    private boolean shrinkToContentWidth;
+    private int contentWidthPx;
+    private int lineWidthPx;
 
     void setRenderListener(@Nullable RenderListener listener) {
         renderListener = listener;
+    }
+
+    /**
+     * Measures no wider than the promo needs when the parent leaves the width open, like a
+     * wrap_content TextView: the one-line width if it fits, else the widest wrapped line. The
+     * page reports both once it is ready.
+     */
+    void setShrinkToContentWidth(boolean shrink) {
+        shrinkToContentWidth = shrink;
+        requestLayout();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        final int mode = MeasureSpec.getMode(widthMeasureSpec);
+        if (shrinkToContentWidth && contentWidthPx > 0 && mode != MeasureSpec.EXACTLY) {
+            final int available = MeasureSpec.getSize(widthMeasureSpec);
+            int width = contentWidthPx;
+            if (mode == MeasureSpec.AT_MOST && width > available) {
+                width = lineWidthPx > 0 ? Math.min(lineWidthPx, available) : available;
+            }
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     public void setWebViewClickListener(OnClickListener listener) {
@@ -176,13 +203,24 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         }
     }
 
-    private void applyContentHeight(int cssHeight) {
+    private void applyContentSize(@NonNull JSONObject body) {
+        final float density = getResources().getDisplayMetrics().density;
+        final int widthPx = AffirmPromoRendering.heightForCssPixels(body.optInt("width"), density);
+        final int linePx =
+                AffirmPromoRendering.heightForCssPixels(body.optInt("lineWidth"), density);
+        if (widthPx > 0 && (widthPx != contentWidthPx || linePx != lineWidthPx)) {
+            contentWidthPx = widthPx;
+            lineWidthPx = linePx;
+            if (shrinkToContentWidth) {
+                requestLayout();
+            }
+        }
+        final int cssHeight = body.optInt("height");
         ViewGroup.LayoutParams params = getLayoutParams();
         if (params == null || cssHeight <= 0) {
             return;
         }
-        int heightPx = AffirmPromoRendering.heightForCssPixels(cssHeight,
-                getResources().getDisplayMetrics().density);
+        int heightPx = AffirmPromoRendering.heightForCssPixels(cssHeight, density);
         if (params.height != heightPx) {
             params.height = heightPx;
             setLayoutParams(params);
@@ -221,14 +259,14 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         }
         switch (body.optString("event")) {
             case "ready":
-                applyContentHeight(body.optInt("height"));
+                applyContentSize(body);
                 setVisibility(VISIBLE);
                 if (renderListener != null) {
                     renderListener.onReady();
                 }
                 break;
             case "height":
-                applyContentHeight(body.optInt("height"));
+                applyContentSize(body);
                 break;
             case "failure":
                 logFailure(AffirmPromoRenderReason.fromPage(body.optString("reason", null)));

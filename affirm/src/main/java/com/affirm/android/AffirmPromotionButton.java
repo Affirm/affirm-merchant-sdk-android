@@ -26,6 +26,8 @@ public class AffirmPromotionButton extends FrameLayout {
 
     private PromotionButton promotionButton;
     private PromotionWebView promotionWebView;
+    /** Explicit and migrated HTML set up the WebView differently, so a switch needs a new one. */
+    private boolean promotionWebViewExplicitHtml;
 
     private AffirmLogoType affirmLogoType;
     private AffirmColor affirmColor;
@@ -148,6 +150,7 @@ public class AffirmPromotionButton extends FrameLayout {
 
     private void showNative(@NonNull String text, @NonNull String description) {
         clearViews();
+        releaseWebView();
         buildPromotionButtonIfNeeded();
         addView(promotionButton);
         promotionButton.setText(promotionButton.updateSpan(text));
@@ -158,36 +161,44 @@ public class AffirmPromotionButton extends FrameLayout {
     private void showHtml(@NonNull String html, @NonNull String description,
                           boolean canFallBackToNative) {
         clearViews();
-        final PromotionWebView webView;
-        try {
-            webView = new PromotionWebView(getContext());
-        } catch (RuntimeException e) {
-            // No WebView provider on this device, or it is being updated.
-            AffirmLog.e("Promo WebView could not be created", e);
-            failHtml(description, canFallBackToNative);
-            return;
-        }
-        promotionWebView = webView;
-        webView.setWebViewClickListener(clickListener);
-        // The button reads the description; the WebView's own nodes would repeat it.
-        webView.setFocusable(false);
-        webView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-        setContentDescription(description);
+        final boolean explicitHtml = htmlStyling;
         final String css;
         final String pageStyle;
-        if (htmlStyling) {
+        if (explicitHtml) {
             css = remoteCssUrl;
             pageStyle = typefaceDeclaration;
         } else {
             css = null;
             pageStyle = migratedPageStyle();
-            webView.getSettings().setTextZoom(100);
-            webView.setShrinkToContentWidth(true);
         }
+        if (promotionWebView == null || explicitHtml != promotionWebViewExplicitHtml) {
+            releaseWebView();
+            final PromotionWebView created;
+            try {
+                created = new PromotionWebView(getContext());
+            } catch (RuntimeException e) {
+                // No WebView provider on this device, or it is being updated.
+                AffirmLog.e("Promo WebView could not be created", e);
+                failHtml(description, canFallBackToNative);
+                return;
+            }
+            created.setWebViewClickListener(clickListener);
+            // The button reads the description; the WebView's own nodes would repeat it.
+            created.setFocusable(false);
+            created.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+            if (!explicitHtml) {
+                created.getSettings().setTextZoom(100);
+                created.setShrinkToContentWidth(true);
+            }
+            addView(created);
+            promotionWebView = created;
+            promotionWebViewExplicitHtml = explicitHtml;
+        }
+        final PromotionWebView webView = promotionWebView;
+        setContentDescription(description);
         htmlAttempt = new HtmlAttempt(description, canFallBackToNative);
         webView.setRenderListener(htmlAttempt);
         postDelayed(htmlAttempt, AffirmPromoRendering.HTML_TIMEOUT_MS);
-        addView(webView);
         webView.loadWebData(html, css, pageStyle);
     }
 
@@ -209,14 +220,25 @@ public class AffirmPromotionButton extends FrameLayout {
         }
     }
 
-    /** Removes what is shown and releases the WebView, keeping {@code message}. */
+    /**
+     * Removes what is shown, keeping {@code message}. The WebView stays loaded but hidden, so
+     * the next HTML promo, e.g. on a recycled list row, does not load a new page.
+     */
     private void clearViews() {
         if (htmlAttempt != null) {
             removeCallbacks(htmlAttempt);
             htmlAttempt = null;
         }
-        removeAllViews();
+        if (promotionButton != null && promotionButton.getParent() == this) {
+            removeView(promotionButton);
+        }
         setContentDescription(null);
+        if (promotionWebView != null) {
+            promotionWebView.hidePromo();
+        }
+    }
+
+    private void releaseWebView() {
         if (promotionWebView != null) {
             promotionWebView.destroyWebView();
             promotionWebView = null;
@@ -262,6 +284,8 @@ public class AffirmPromotionButton extends FrameLayout {
             final boolean toNative = canFallBackToNative && !ready;
             AffirmLog.w("Promo HTML failed (" + reason + "), "
                     + (toNative ? "showing native" : "hiding"));
+            // The page or its renderer may be broken; the next HTML promo starts over.
+            releaseWebView();
             failHtml(description, toNative);
         }
     }
@@ -432,6 +456,7 @@ public class AffirmPromotionButton extends FrameLayout {
     public void destroy() {
         PromoRequestManager.untrack(this);
         clearPromoContent();
+        releaseWebView();
     }
 
     private boolean isContentShown() {
@@ -439,7 +464,7 @@ public class AffirmPromotionButton extends FrameLayout {
             return true;
         }
         return promotionWebView != null && promotionWebView.getParent() == this
-                && promotionWebView.getVisibility() == VISIBLE;
+                && promotionWebView.isPromoShown();
     }
 
     /**

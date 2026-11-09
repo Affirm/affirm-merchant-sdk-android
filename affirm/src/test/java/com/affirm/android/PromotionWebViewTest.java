@@ -99,15 +99,95 @@ public class PromotionWebViewTest {
     }
 
     @Test
+    public void loadedPageRendersTheNextPromoWithoutReloading() {
+        initializeAffirm();
+        webView.loadWebData("<span>a</span>", null, null);
+        ShadowWebView shadow = Shadow.extract(webView);
+        ShadowWebView.LoadDataWithBaseURL page = shadow.getLastLoadDataWithBaseURL();
+        webView.onScriptMessage(message("ready"));
+
+        webView.loadWebData("<span>b</span>", null, null);
+
+        assertEquals(page, shadow.getLastLoadDataWithBaseURL());
+        String script = shadow.getLastEvaluatedJavascript();
+        assertTrue(script, script.startsWith("window.affirmPromoRender({"));
+        assertTrue(script, script.contains(webView.renderId()));
+        assertTrue(script, script.contains("\\u003cspan\\u003eb\\u003c/span\\u003e"));
+        assertEquals(0f, webView.getAlpha(), 0f);
+    }
+
+    @Test
+    public void promoForALoadingPageRendersOnceThePageAnswers() {
+        initializeAffirm();
+        webView.loadWebData("<span>a</span>", null, null);
+        String first = webView.renderId();
+        webView.loadWebData("<span>b</span>", null, null);
+        ShadowWebView shadow = Shadow.extract(webView);
+        assertNull(shadow.getLastEvaluatedJavascript());
+
+        webView.onScriptMessage("{\"event\":\"sanitized\",\"usable\":true,\"renderId\":\""
+                + first + "\"}");
+
+        assertTrue(shadow.getLastEvaluatedJavascript().contains(webView.renderId()));
+    }
+
+    @Test
+    public void replacedPageDoesNotCountAsLoaded() {
+        initializeAffirm();
+        ShadowWebView shadow = Shadow.extract(webView);
+        webView.loadWebData("<span>a</span>", null, null);
+        String replacedPage = webView.renderId();
+        webView.loadWebData("<span>a</span>", null, "<style>p{color:red}</style>");
+        webView.loadWebData("<span>b</span>", null, "<style>p{color:red}</style>");
+
+        webView.onScriptMessage("{\"event\":\"sanitized\",\"usable\":true,\"renderId\":\""
+                + replacedPage + "\"}");
+
+        assertNull(shadow.getLastEvaluatedJavascript());
+    }
+
+    @Test
+    public void otherStyleOrAFailureLoadsANewPage() {
+        initializeAffirm();
+        ShadowWebView shadow = Shadow.extract(webView);
+        webView.loadWebData("<span>a</span>", null, null);
+        webView.onScriptMessage(message("ready"));
+
+        webView.loadWebData("<span>a</span>", null, "<style>p{color:red}</style>");
+        ShadowWebView.LoadDataWithBaseURL restyled = shadow.getLastLoadDataWithBaseURL();
+        assertTrue(restyled.data.contains("p{color:red}"));
+        webView.onScriptMessage(message("failure"));
+
+        webView.loadWebData("<span>b</span>", null, "<style>p{color:red}</style>");
+        assertNotEquals(restyled, shadow.getLastLoadDataWithBaseURL());
+        assertNull(shadow.getLastEvaluatedJavascript());
+    }
+
+    @Test
+    public void hiddenPromoIgnoresThePage() {
+        initializeAffirm();
+        webView.loadWebData("<span>a</span>", null, null);
+        String ready = message("ready");
+
+        webView.hidePromo();
+        webView.onScriptMessage(ready);
+
+        assertEquals(View.GONE, webView.getVisibility());
+        assertNull(webView.renderId());
+    }
+
+    @Test
     public void scriptMessagesFromAnotherRenderAreIgnored() {
         initializeAffirm();
         webView.loadWebData("<span>a</span>", null, null);
 
         webView.onScriptMessage("{\"event\":\"ready\",\"renderId\":\"old\",\"height\":20}");
-        assertEquals(View.INVISIBLE, webView.getVisibility());
+        assertEquals(View.VISIBLE, webView.getVisibility());
+        assertEquals(0f, webView.getAlpha(), 0f);
 
         webView.onScriptMessage(message("ready"));
         assertEquals(View.VISIBLE, webView.getVisibility());
+        assertEquals(1f, webView.getAlpha(), 0f);
     }
 
     @Test
@@ -131,7 +211,8 @@ public class PromotionWebViewTest {
         webView.onScriptMessage(null);
         webView.onScriptMessage("not json");
 
-        assertEquals(View.INVISIBLE, webView.getVisibility());
+        assertEquals(View.VISIBLE, webView.getVisibility());
+        assertEquals(0f, webView.getAlpha(), 0f);
     }
 
     @Test
@@ -236,6 +317,20 @@ public class PromotionWebViewTest {
 
         assertTrue(dispatch(downTime, downTime, MotionEvent.ACTION_DOWN, 10, 10));
         assertTrue(dispatch(downTime, downTime + 50, MotionEvent.ACTION_UP, 10, 10));
+    }
+
+    @Test
+    public void tapOnALoadingPromoIsIgnored() {
+        initializeAffirm();
+        webView.setWebViewClickListener(listener);
+        webView.loadWebData("<span>a</span>", null, null);
+
+        tap(SystemClock.uptimeMillis());
+        verify(listener, never()).onClick(any(View.class));
+
+        webView.onScriptMessage(message("ready"));
+        tap(SystemClock.uptimeMillis() + ViewConfiguration.getDoubleTapTimeout() + 100);
+        verify(listener, times(1)).onClick(any(View.class));
     }
 
     @Test

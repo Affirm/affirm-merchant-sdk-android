@@ -48,10 +48,16 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     }
 
     private String loadedHtml;
+    /** The CSS and typeface of the last promo, which the page was built with. */
     private String loadedCss;
     private String loadedTypeface;
     @Nullable
     private String renderId;
+    /** The render the page was loaded with; null when there is no usable page. */
+    @Nullable
+    private String pageRenderId;
+    /** The page has posted for {@code pageRenderId}, so window.affirmPromoRender exists. */
+    private boolean pageLoaded;
     @Nullable
     private RenderListener renderListener;
     private boolean shrinkToContentWidth;
@@ -121,12 +127,23 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
                     }
                 });
         tapDetector.setIsLongpressEnabled(false);
-        // Consume every touch so the WebView never handles taps itself.
+        // Consume every touch so the WebView never handles taps itself. A loading promo is
+        // transparent but still VISIBLE, so it must not take taps either.
         setOnTouchListener((v, event) -> {
-            tapDetector.onTouchEvent(event);
+            if (isPromoShown()) {
+                tapDetector.onTouchEvent(event);
+            }
             return true;
         });
         setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        // A hardware layer is a bitmap the list can scroll. The default WebView surface stays
+        // blank while a RecyclerView is moving and only composites again once the scroll stops.
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+    }
+
+    /** The page has posted ready and the promo is on screen. */
+    boolean isPromoShown() {
+        return getVisibility() == VISIBLE && getAlpha() > 0f;
     }
 
     public void loadWebData(String promoHtml, String remoteCssUrl, String typeface) {
@@ -135,12 +152,26 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         if (isShowingSamePromo(promoHtml, remoteCssUrl, typeface)) {
             return;
         }
+        final boolean samePage = pageRenderId != null
+                && TextUtils.equals(remoteCssUrl, loadedCss)
+                && TextUtils.equals(typeface, loadedTypeface);
         loadedHtml = promoHtml;
         loadedCss = remoteCssUrl;
         loadedTypeface = typeface;
-        setVisibility(INVISIBLE);
+        // VISIBLE, but transparent, until the page reports ready. INVISIBLE marks the document
+        // hidden, so requestAnimationFrame does not run while the list is scrolling.
+        setVisibility(VISIBLE);
+        setAlpha(0f);
         final String id = UUID.randomUUID().toString();
         renderId = id;
+        if (samePage) {
+            // Reloading would fetch Affirm.js and the stylesheets again, e.g. on every bind
+            // of a list row. A loading page renders this once it posts.
+            if (pageLoaded) {
+                renderInPage(id, promoHtml);
+            }
+            return;
+        }
         final AffirmPromoRendering.FontDeclaration font =
                 AffirmPromoRendering.fontDeclaration(typeface);
         if (!AffirmPromoRendering.isPermittedStylesheetUrl(remoteCssUrl)
@@ -155,11 +186,30 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             logFailure(AffirmPromoRenderReason.TEMPLATE_ERROR);
             return;
         }
+        pageRenderId = id;
+        pageLoaded = false;
         loadDataWithBaseURL(PROMO_BASE_URL, page, TEXT_HTML, UTF_8, null);
     }
 
+    private void renderInPage(@NonNull String id, String promoHtml) {
+        final Map<String, Object> job = new LinkedHashMap<>();
+        job.put("renderId", id);
+        job.put("html", nonNull(promoHtml));
+        evaluateJavascript("window.affirmPromoRender("
+                + AffirmPromoRendering.escapedJsonObject(job) + ");", null);
+    }
+
+    /**
+     * Hides the promo and ignores the page until the next {@link #loadWebData}, keeping the
+     * page loaded for it.
+     */
+    void hidePromo() {
+        renderId = null;
+        setVisibility(GONE);
+    }
+
     private boolean isShowingSamePromo(String html, String css, String typeface) {
-        return getVisibility() == VISIBLE
+        return isPromoShown()
                 && TextUtils.equals(html, loadedHtml)
                 && TextUtils.equals(css, loadedCss)
                 && TextUtils.equals(typeface, loadedTypeface);
@@ -192,11 +242,10 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     }
 
     private void logFailure(@NonNull String reason) {
-        renderId = null;
-        loadedHtml = null;
-        loadedCss = null;
-        loadedTypeface = null;
-        setVisibility(GONE);
+        // The page may be what failed, so the next promo loads a new one.
+        pageRenderId = null;
+        pageLoaded = false;
+        hidePromo();
         AffirmLog.e("AffirmPromotionWebView failed: " + reason);
         if (renderListener != null) {
             renderListener.onFailure(reason);
@@ -253,6 +302,14 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             AffirmLog.w("Ignored malformed promo script message");
             return;
         }
+        // A page replaced while loading can still post; only the current one counts.
+        if (!pageLoaded && pageRenderId != null
+                && pageRenderId.equals(body.optString("renderId"))) {
+            pageLoaded = true;
+            if (renderId != null && !renderId.equals(pageRenderId)) {
+                renderInPage(renderId, loadedHtml);
+            }
+        }
         if (renderId == null || !renderId.equals(body.optString("renderId"))) {
             AffirmLog.v("Ignored promo script message from a previous render");
             return;
@@ -260,6 +317,7 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         switch (body.optString("event")) {
             case "ready":
                 applyContentSize(body);
+                setAlpha(1f);
                 setVisibility(VISIBLE);
                 if (renderListener != null) {
                     renderListener.onReady();

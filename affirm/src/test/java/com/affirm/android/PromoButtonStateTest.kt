@@ -6,9 +6,10 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
 import org.mockito.Mockito.spy
-import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
@@ -124,7 +125,7 @@ class PromoButtonStateTest {
 
         button.showPlaceholder(cached)
 
-        verify(button, times(1)).removeAllViews()
+        verify(button, never()).removeView(any(View::class.java))
     }
 
     private fun shownText(button: AffirmPromotionButton): String? =

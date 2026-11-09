@@ -169,11 +169,28 @@ public class AffirmPromotionButtonRenderTest {
     @Test
     public void clearedButtonIgnoresAPendingTimeout() {
         button.render(migrated(NATIVE, HTML));
+        PromotionWebView webView = button.getPromotionWebView();
         button.showPlaceholder(null);
 
         ShadowLooper.idleMainLooper(AffirmPromoRendering.HTML_TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
-        assertThat(button.getChildCount()).isEqualTo(0);
+        assertThat(shown()).isSameAs(webView);
+        assertThat(webView.getVisibility()).isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void clearedButtonKeepsItsWebViewForTheNextHtml() {
+        button.render(migrated(NATIVE, HTML));
+        PromotionWebView webView = button.getPromotionWebView();
+        ready(webView);
+        String page = page(webView);
+
+        button.showPlaceholder(null);
+        button.render(migrated(NATIVE, HTML + "<br>"));
+
+        assertThat(shown()).isSameAs(webView);
+        assertThat(page(webView)).isSameAs(page);
+        assertThat(script(webView)).contains("affirmPromoRender");
     }
 
     @Test
@@ -214,16 +231,47 @@ public class AffirmPromotionButtonRenderTest {
     }
 
     @Test
-    public void failureFromAReplacedWebViewIsIgnored() {
+    public void nextHtmlRendersInTheLoadedPage() {
         button.render(migrated(NATIVE, HTML));
-        PromotionWebView first = button.getPromotionWebView();
+        PromotionWebView webView = button.getPromotionWebView();
+        ready(webView);
+        String page = page(webView);
+
         button.render(migrated(NATIVE, HTML + "<br>"));
-        PromotionWebView second = button.getPromotionWebView();
 
-        fail(first);
+        assertThat(button.getPromotionWebView()).isSameAs(webView);
+        assertThat(page(webView)).isSameAs(page);
+        assertThat(script(webView)).contains("affirmPromoRender");
+        assertThat(webView.getAlpha()).isEqualTo(0f);
+        ready(webView);
+        assertThat(webView.getAlpha()).isEqualTo(1f);
+    }
 
-        assertThat(second).isNotSameAs(first);
-        assertThat(shown()).isSameAs(second);
+    @Test
+    public void failureOfAReplacedRenderIsIgnored() {
+        button.render(migrated(NATIVE, HTML));
+        PromotionWebView webView = button.getPromotionWebView();
+        String first = webView.renderId();
+        button.render(migrated(NATIVE, HTML + "<br>"));
+
+        webView.onScriptMessage("{\"event\":\"failure\",\"renderId\":\"" + first + "\"}");
+        ShadowLooper.idleMainLooper();
+
+        assertThat(shown()).isSameAs(webView);
+        ready(webView);
+        assertThat(webView.getVisibility()).isEqualTo(View.VISIBLE);
+    }
+
+    @Test
+    public void failedHtmlStartsTheNextOneInANewWebView() {
+        button.render(migrated(NATIVE, HTML));
+        PromotionWebView failed = button.getPromotionWebView();
+        fail(failed);
+
+        button.render(migrated(NATIVE, HTML + "<br>"));
+
+        assertThat(button.getPromotionWebView()).isNotSameAs(failed);
+        assertThat(shown()).isSameAs(button.getPromotionWebView());
     }
 
     @Test
@@ -287,7 +335,8 @@ public class AffirmPromotionButtonRenderTest {
         button.configWithHtmlStyling(null, "<style>body{color:red}</style>");
         button.showResponse(response(NATIVE, HTML), false);
 
-        assertThat(button.getPromotionWebView()).isNotSameAs(first);
+        assertThat(button.getPromotionWebView()).isSameAs(first);
+        assertThat(page(first)).contains("body{color:red}");
     }
 
     @Test
@@ -336,9 +385,8 @@ public class AffirmPromotionButtonRenderTest {
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, Typeface.MONOSPACE);
         button.showResponse(response(NATIVE, HTML), false);
 
-        PromotionWebView second = button.getPromotionWebView();
-        assertThat(second).isNotSameAs(first);
-        assertThat(page(second)).contains("font-family:monospace");
+        assertThat(button.getPromotionWebView()).isSameAs(first);
+        assertThat(page(first)).contains("font-family:monospace");
     }
 
     @Test
@@ -483,6 +531,10 @@ public class AffirmPromotionButtonRenderTest {
 
     private static String page(PromotionWebView webView) {
         return ((ShadowWebView) Shadow.extract(webView)).getLastLoadDataWithBaseURL().data;
+    }
+
+    private static String script(PromotionWebView webView) {
+        return ((ShadowWebView) Shadow.extract(webView)).getLastEvaluatedJavascript();
     }
 
     @Test

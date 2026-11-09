@@ -9,7 +9,8 @@
         <script>
             (function () {
                 var host = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.affirmPromo;
-                var settled = false;
+                // The render that reports to the host. A new render settles the one it replaces.
+                var current = null;
                 var payload = null;
                 try {
                     payload = JSON.parse(document.getElementById('affirm-promo-payload').textContent);
@@ -20,14 +21,15 @@
                     if (!host || !payload) {
                         return;
                     }
-                    body.renderId = payload.renderId;
+                    body.renderId = current.id;
                     try {
                         host.postMessage(body);
                     } catch (e) {}
                 }
-                function fail(reason) {
-                    if (!settled) {
-                        settled = true;
+                function fail(reason, render) {
+                    render = render || current;
+                    if (render && !render.settled) {
+                        render.settled = true;
                         post({ event: 'failure', reason: reason });
                     }
                 }
@@ -35,7 +37,8 @@
                     fail('template_error');
                     return;
                 }
-                setTimeout(function () { fail('html_timeout'); }, payload.timeoutMs || 5000);
+                // Page setup below fails the first render.
+                current = { id: payload.renderId, settled: false };
 
                 window._affirm_config = {
                     public_api_key: payload.publicKey || '',
@@ -91,7 +94,7 @@
                     return { event: event, height: contentHeight(),
                         width: widths.width, lineWidth: widths.lineWidth };
                 }
-                function whenLoaded(element, isLoaded, reason) {
+                function whenLoaded(element, isLoaded, reason, render) {
                     return new Promise(function (resolve) {
                         if (isLoaded) {
                             if (isLoaded(element)) {
@@ -99,18 +102,18 @@
                                 return;
                             }
                             if (element.complete) {
-                                fail(reason);
+                                fail(reason, render);
                                 return;
                             }
                         }
                         element.addEventListener('load', function () {
                             if (isLoaded && !isLoaded(element)) {
-                                fail(reason);
+                                fail(reason, render);
                             } else {
                                 resolve();
                             }
                         });
-                        element.addEventListener('error', function () { fail(reason); });
+                        element.addEventListener('error', function () { fail(reason, render); });
                     });
                 }
                 function waitForStylesheet(url) {
@@ -143,80 +146,94 @@
                         data.keepAttr = false;
                     }
                 });
-                var root = document.getElementById('affirm-promo-root');
-                try {
-                    root.innerHTML = purify.sanitize(payload.html || '', {
-                        ALLOWED_TAGS: ['a', 'b', 'strong', 'em', 'i', 'u', 'small', 'sup', 'sub',
-                            'br', 'span', 'p', 'div', 'img', 'svg', 'g', 'path', 'circle', 'rect',
-                            'ellipse', 'line', 'polygon', 'polyline', 'title'],
-                        ALLOWED_ATTR: ['class', 'href', 'src', 'alt', 'title', 'width', 'height',
-                            'viewBox', 'd', 'fill', 'fill-rule', 'clip-rule', 'stroke',
-                            'stroke-width', 'transform', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry',
-                            'x1', 'y1', 'x2', 'y2', 'points', 'xmlns'],
-                        ALLOW_ARIA_ATTR: false,
-                        ALLOW_DATA_ATTR: false
-                    });
-                } catch (e) {
-                    fail('sanitizer_unavailable');
+                var stylesheets = [waitForStylesheet(payload.remoteCssURL || '')];
+                if (current.settled) {
                     return;
                 }
-                var usable = !!(root.textContent.trim() || root.querySelector('img[src], svg'));
-                post({ event: 'sanitized', usable: usable });
-                if (!usable) {
-                    fail('html_empty');
+                stylesheets.push(waitForStylesheet(payload.remoteFontURL || ''));
+                if (current.settled) {
                     return;
                 }
+                var resizeObserver = null;
 
-                var waits = [];
-                waits.push(waitForStylesheet(payload.remoteCssURL || ''));
-                if (settled) {
-                    return;
-                }
-                waits.push(waitForStylesheet(payload.remoteFontURL || ''));
-                if (settled) {
-                    return;
-                }
-                var images = root.querySelectorAll('img');
-                for (var i = 0; i < images.length; i++) {
-                    if (!images[i].getAttribute('src')) {
-                        continue;
-                    }
-                    waits.push(whenLoaded(images[i],
-                        function (el) { return el.complete && el.naturalWidth > 0; },
-                        'image_failed'));
-                }
-                if (document.fonts && document.fonts.ready) {
-                    waits.push(document.fonts.ready);
-                }
-                Promise.all(waits).then(function () {
-                    // fonts.ready also resolves when a font file fails to load.
-                    var fontFailed = false;
-                    if (document.fonts) {
-                        document.fonts.forEach(function (font) {
-                            if (font.status === 'error') {
-                                fontFailed = true;
-                            }
+                // Replaces the promo without reloading the page.
+                function render(job) {
+                    current.settled = true;
+                    var self = current = { id: job.renderId, settled: false };
+                    setTimeout(function () { fail('html_timeout', self); }, payload.timeoutMs || 5000);
+                    var root = document.getElementById('affirm-promo-root');
+                    try {
+                        root.innerHTML = purify.sanitize(job.html || '', {
+                            ALLOWED_TAGS: ['a', 'b', 'strong', 'em', 'i', 'u', 'small', 'sup', 'sub',
+                                'br', 'span', 'p', 'div', 'img', 'svg', 'g', 'path', 'circle', 'rect',
+                                'ellipse', 'line', 'polygon', 'polyline', 'title'],
+                            ALLOWED_ATTR: ['class', 'href', 'src', 'alt', 'title', 'width', 'height',
+                                'viewBox', 'd', 'fill', 'fill-rule', 'clip-rule', 'stroke',
+                                'stroke-width', 'transform', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry',
+                                'x1', 'y1', 'x2', 'y2', 'points', 'xmlns'],
+                            ALLOW_ARIA_ATTR: false,
+                            ALLOW_DATA_ATTR: false
                         });
-                    }
-                    if (fontFailed) {
-                        fail('font_failed');
+                    } catch (e) {
+                        fail('sanitizer_unavailable');
                         return;
                     }
-                    requestAnimationFrame(function () {
-                        if (settled) {
+                    var usable = !!(root.textContent.trim() || root.querySelector('img[src], svg'));
+                    post({ event: 'sanitized', usable: usable });
+                    if (!usable) {
+                        fail('html_empty');
+                        return;
+                    }
+
+                    var waits = stylesheets.slice();
+                    var images = root.querySelectorAll('img');
+                    for (var i = 0; i < images.length; i++) {
+                        if (!images[i].getAttribute('src')) {
+                            continue;
+                        }
+                        waits.push(whenLoaded(images[i],
+                            function (el) { return el.complete && el.naturalWidth > 0; },
+                            'image_failed', self));
+                    }
+                    if (document.fonts && document.fonts.ready) {
+                        waits.push(document.fonts.ready);
+                    }
+                    Promise.all(waits).then(function () {
+                        // fonts.ready also resolves when a font file fails to load.
+                        var fontFailed = false;
+                        if (document.fonts) {
+                            document.fonts.forEach(function (font) {
+                                if (font.status === 'error') {
+                                    fontFailed = true;
+                                }
+                            });
+                        }
+                        if (fontFailed) {
+                            fail('font_failed', self);
                             return;
                         }
-                        settled = true;
-                        post(sizeMessage('ready'));
-                        if (window.ResizeObserver) {
-                            new ResizeObserver(function () {
-                                post(sizeMessage('height'));
-                            }).observe(document.body);
-                        }
+                        requestAnimationFrame(function () {
+                            if (self.settled) {
+                                return;
+                            }
+                            self.settled = true;
+                            post(sizeMessage('ready'));
+                            if (window.ResizeObserver && !resizeObserver) {
+                                resizeObserver = new ResizeObserver(function () {
+                                    if (current.settled) {
+                                        post(sizeMessage('height'));
+                                    }
+                                });
+                                resizeObserver.observe(document.body);
+                            }
+                        });
+                    }, function () {
+                        fail('resource_failed', self);
                     });
-                }, function () {
-                    fail('resource_failed');
-                });
+                }
+
+                window.affirmPromoRender = render;
+                render({ renderId: payload.renderId, html: payload.html });
             })();
         </script>
     </body>

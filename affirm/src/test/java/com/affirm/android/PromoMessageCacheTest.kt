@@ -46,15 +46,15 @@ class PromoMessageCacheTest {
     }
 
     @Test
-    fun evictsLeastRecentlyUsedBeyond128Entries() {
-        (0 until 128).forEach { PromoMessageCache.put("key$it", message()) }
+    fun evictsLeastRecentlyUsedBeyond256Entries() {
+        (0 until 256).forEach { PromoMessageCache.put("key$it", message()) }
         PromoMessageCache.get("key0")
 
-        PromoMessageCache.put("key128", message())
+        PromoMessageCache.put("key256", message())
 
         assertThat(PromoMessageCache.get("key0")).isNotNull()
         assertThat(PromoMessageCache.get("key1")).isNull()
-        assertThat(PromoMessageCache.get("key128")).isNotNull()
+        assertThat(PromoMessageCache.get("key256")).isNotNull()
     }
 
     private fun message(showPrequal: Boolean = false) =

@@ -8,7 +8,7 @@ import androidx.collection.LruCache
  */
 internal object PromoMessageCache {
 
-    private const val MAX_ENTRIES = 128
+    private const val MAX_ENTRIES = 256
 
     private val cache = LruCache<String, CachedMessage>(MAX_ENTRIES)
 

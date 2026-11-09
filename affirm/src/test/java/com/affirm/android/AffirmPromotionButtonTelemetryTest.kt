@@ -464,20 +464,23 @@ class AffirmPromotionButtonTelemetryTest {
     }
 
     @Test
-    fun messagesFromAReplacedWebViewAreIgnored() {
+    fun messagesFromAReplacedRenderAreIgnored() {
         start()
         respond(migrate = true)
-        val first = button.promotionWebView!!
+        val webView = button.promotionWebView!!
+        val first = webView.renderId()
         start()
         respond(htmlAla = "$HTML<br>", migrate = true)
-        val second = button.promotionWebView!!
+        assertThat(button.promotionWebView).isSameAs(webView)
 
-        message(first, "\"event\":\"sanitized\",\"usable\":false")
-        message(first, "\"event\":\"ready\",\"height\":20")
+        for (body in listOf("\"event\":\"sanitized\",\"usable\":false", "\"event\":\"ready\"")) {
+            webView.onScriptMessage("{\"renderId\":\"$first\",$body}")
+            ShadowLooper.idleMainLooper()
+        }
         assertThat(results()).hasSize(1)
 
-        message(second, "\"event\":\"sanitized\",\"usable\":true")
-        message(second, "\"event\":\"ready\",\"height\":20")
+        message(webView, "\"event\":\"sanitized\",\"usable\":true")
+        message(webView, "\"event\":\"ready\",\"height\":20")
         val result = results().last()
         assertThat(result.string("actual_renderer")).isEqualTo("html")
         assertThat(result.get("html_content_usable").asBoolean).isTrue()

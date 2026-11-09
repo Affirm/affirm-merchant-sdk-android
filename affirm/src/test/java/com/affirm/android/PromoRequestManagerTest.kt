@@ -92,6 +92,22 @@ class PromoRequestManagerTest {
     }
 
     @Test
+    fun cancelRequestKeepsTheViewForDestroy() {
+        val button = spy(AffirmPromotionButton(activity))
+        doReturn(true).`when`(button).isAttachedToWindow
+        val request = mock(PromoRequest::class.java)
+        PromoRequestManager.track(button, request)
+
+        PromoRequestManager.cancelRequest(button)
+
+        verify(request).cancel()
+        assertThat(button.getTag(R.id.affirm_promo_request)).isNull()
+        assertThat(PromoRequestManager.trackedViewCount(activity.registry)).isEqualTo(1)
+        activity.registry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        verify(button).destroy()
+    }
+
+    @Test
     fun cancelsRequestsAndUnregistersOnDestroy() {
         val request = mock(PromoRequest::class.java)
         PromoRequestManager.track(attachedView(), request)

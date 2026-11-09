@@ -147,10 +147,20 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
         @JvmStatic
         @MainThread
         fun untrack(view: View) {
-            (view.getTag(R.id.affirm_promo_request) as? PromoRequest)?.cancel()
-            view.setTag(R.id.affirm_promo_request, null)
+            cancelRequest(view)
             lifecycleToManager.values.forEach { it.remove(view) }
             activityToManager.values.forEach { it.remove(view) }
+        }
+
+        /**
+         * Cancels the request started for [view], if any, but keeps [view], so the host's
+         * `ON_DESTROY` still destroys it, e.g. a detached list row that keeps its WebView.
+         */
+        @JvmStatic
+        @MainThread
+        fun cancelRequest(view: View) {
+            (view.getTag(R.id.affirm_promo_request) as? PromoRequest)?.cancel()
+            view.setTag(R.id.affirm_promo_request, null)
         }
 
         private fun managerFor(lifecycle: Lifecycle): PromoRequestManager {

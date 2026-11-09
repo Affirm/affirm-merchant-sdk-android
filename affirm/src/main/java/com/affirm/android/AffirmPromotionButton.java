@@ -159,11 +159,15 @@ public class AffirmPromotionButton extends FrameLayout {
     }
 
     private void cancelRender(@NonNull String reason) {
+        endRender(reason);
+        PromoRequestManager.untrack(this);
+    }
+
+    private void endRender(@NonNull String reason) {
         if (render != null) {
             render.cancel(reason);
             render = null;
         }
-        PromoRequestManager.untrack(this);
     }
 
     /** Shows the response of {@code from} with the inputs captured when it started. */
@@ -624,7 +628,9 @@ public class AffirmPromotionButton extends FrameLayout {
         if (detached != render || detached.isEnded() || isAttachedToWindow()) {
             return;
         }
-        cancelRender(DETACHED);
+        endRender(DETACHED);
+        // Still tracked, so the host destroys the WebView this keeps for the restart.
+        PromoRequestManager.cancelRequest(this);
         clearPromoContent();
         restartOnAttach = true;
     }

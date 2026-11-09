@@ -144,7 +144,7 @@ internal class PromoRender @VisibleForTesting constructor(
             sender(event, data)
         } catch (e: Exception) {
             // Tracking must never affect rendering.
-            AffirmLog.w("Failed to track ${event.name}: $e")
+            AffirmLog.w("Failed to track ${event.name}", e)
         }
     }
 

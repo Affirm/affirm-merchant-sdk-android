@@ -22,6 +22,8 @@ jobs:
           distribution: zulu
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Install legacy compile SDK
         run: sdkmanager 'platforms;android-28' 'build-tools;30.0.0'
       - name: Enable emulator acceleration

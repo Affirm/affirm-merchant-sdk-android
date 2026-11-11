@@ -196,9 +196,9 @@ public class AffirmPromotionButton extends FrameLayout {
         if (from != render) {
             return;
         }
-        if (isEmpty()) {
-            setVisibility(GONE);
-        }
+        // A cached message is only a placeholder while loading; it may hold outdated terms.
+        clearPromoContent();
+        setVisibility(GONE);
         from.onFetchFailed();
     }
 

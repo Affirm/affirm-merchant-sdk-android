@@ -40,200 +40,226 @@
                 // Page setup below fails the first render.
                 current = { id: payload.renderId, settled: false };
 
-                window._affirm_config = {
-                    public_api_key: payload.publicKey || '',
-                    script: payload.jsURL || '',
-                    locale: payload.locale || '',
-                    country_code: payload.countryCode || ''
-                };
-                (function(l,g,m,e,a,f,b){var d,c=l[m]||{},h=document.createElement(f),n=document.getElementsByTagName(f)[0],k=function(a,b,c){return function(){a[b]._.push([c,arguments])}};c[e]=k(c,e,"set");d=c[e];c[a]={};c[a]._=[];d._=[];c[a][b]=k(c,a,b);a=0;for(b="set add save post open empty reset on off trigger ready setProduct".split(" ");a<b.length;a++)d[b[a]]=k(c,e,b[a]);a=0;for(b=["get","token","url","items"];a<b.length;a++)d[b[a]]=function(){};h.async=!0;h.src=g[f];n.parentNode.insertBefore(h,n);delete g[f];d(g);l[m]=c})(window,window._affirm_config,"affirm","checkout","ui","script","ready");
-
-                function isHttps(url) {
-                    return /^https:\/\//i.test(url);
-                }
-                function isAllowedStylesheet(url) {
-                    return isHttps(url) || /^file:\/\//i.test(url);
-                }
-                function contentHeight() {
-                    var root = document.getElementById('affirm-promo-root');
-                    var height = root ? root.getBoundingClientRect().height : 0;
-                    var bodyStyle = window.getComputedStyle(document.body);
-                    height += parseFloat(bodyStyle.marginTop) || 0;
-                    height += parseFloat(bodyStyle.marginBottom) || 0;
-                    return Math.ceil(height);
-                }
-                // Widths a wrap_content view can shrink to: the promo on one line, and its widest
-                // line as wrapped in the current viewport.
-                function contentWidths() {
-                    var root = document.getElementById('affirm-promo-root');
-                    if (!root) {
-                        return { width: 0, lineWidth: 0 };
+                // Errors thrown by affirm.js are not ours to report; only this script's own failures are.
+                try {
+                    function isHttps(url) {
+                        return /^https:\/\//i.test(url);
                     }
-                    var rootStyle = window.getComputedStyle(root);
-                    var bodyStyle = window.getComputedStyle(document.body);
-                    function sum(values) {
-                        return values.reduce(function (total, value) {
-                            return total + (parseFloat(value) || 0);
-                        }, 0);
+                    function isAllowedStylesheet(url) {
+                        return isHttps(url) || /^file:\/\//i.test(url);
                     }
-                    var bodyMargins = sum([bodyStyle.marginLeft, bodyStyle.marginRight]);
-                    var rootEdges = sum([rootStyle.paddingLeft, rootStyle.paddingRight,
-                        rootStyle.borderLeftWidth, rootStyle.borderRightWidth]);
-                    // The range covers the content only; the max-content box includes the edges.
-                    var range = document.createRange();
-                    range.selectNodeContents(root);
-                    var lineWidth = range.getBoundingClientRect().width + rootEdges + bodyMargins;
-                    var previous = root.style.width;
-                    root.style.width = 'max-content';
-                    var width = root.getBoundingClientRect().width + bodyMargins;
-                    root.style.width = previous;
-                    return { width: Math.ceil(width), lineWidth: Math.ceil(lineWidth) };
-                }
-                function sizeMessage(event) {
-                    var widths = contentWidths();
-                    return { event: event, height: contentHeight(),
-                        width: widths.width, lineWidth: widths.lineWidth };
-                }
-                function whenLoaded(element, isLoaded, reason, render) {
-                    return new Promise(function (resolve) {
-                        if (isLoaded) {
-                            if (isLoaded(element)) {
-                                resolve();
-                                return;
-                            }
-                            if (element.complete) {
-                                fail(reason, render);
-                                return;
-                            }
+                    function contentHeight() {
+                        var root = document.getElementById('affirm-promo-root');
+                        var height = root ? root.getBoundingClientRect().height : 0;
+                        var bodyStyle = window.getComputedStyle(document.body);
+                        height += parseFloat(bodyStyle.marginTop) || 0;
+                        height += parseFloat(bodyStyle.marginBottom) || 0;
+                        return Math.ceil(height);
+                    }
+                    // Widths a wrap_content view can shrink to: the promo on one line, and its widest
+                    // line as wrapped in the current viewport.
+                    function contentWidths() {
+                        var root = document.getElementById('affirm-promo-root');
+                        if (!root) {
+                            return { width: 0, lineWidth: 0 };
                         }
-                        element.addEventListener('load', function () {
-                            if (isLoaded && !isLoaded(element)) {
-                                fail(reason, render);
-                            } else {
-                                resolve();
+                        var rootStyle = window.getComputedStyle(root);
+                        var bodyStyle = window.getComputedStyle(document.body);
+                        function sum(values) {
+                            return values.reduce(function (total, value) {
+                                return total + (parseFloat(value) || 0);
+                            }, 0);
+                        }
+                        var bodyMargins = sum([bodyStyle.marginLeft, bodyStyle.marginRight]);
+                        var rootEdges = sum([rootStyle.paddingLeft, rootStyle.paddingRight,
+                            rootStyle.borderLeftWidth, rootStyle.borderRightWidth]);
+                        // The range covers the content only; the max-content box includes the edges.
+                        var range = document.createRange();
+                        range.selectNodeContents(root);
+                        var lineWidth = range.getBoundingClientRect().width + rootEdges + bodyMargins;
+                        var previous = root.style.width;
+                        root.style.width = 'max-content';
+                        var width = root.getBoundingClientRect().width + bodyMargins;
+                        root.style.width = previous;
+                        return { width: Math.ceil(width), lineWidth: Math.ceil(lineWidth) };
+                    }
+                    function sizeMessage(event) {
+                        var widths = contentWidths();
+                        return { event: event, height: contentHeight(),
+                            width: widths.width, lineWidth: widths.lineWidth };
+                    }
+                    function whenLoaded(element, isLoaded, reason, render) {
+                        return new Promise(function (resolve) {
+                            if (isLoaded) {
+                                if (isLoaded(element)) {
+                                    resolve();
+                                    return;
+                                }
+                                if (element.complete) {
+                                    fail(reason, render);
+                                    return;
+                                }
                             }
+                            element.addEventListener('load', function () {
+                                if (isLoaded && !isLoaded(element)) {
+                                    fail(reason, render);
+                                } else {
+                                    resolve();
+                                }
+                            });
+                            element.addEventListener('error', function () { fail(reason, render); });
                         });
-                        element.addEventListener('error', function () { fail(reason, render); });
-                    });
-                }
-                function waitForStylesheet(url) {
-                    if (!url) {
-                        return Promise.resolve();
                     }
-                    if (!isAllowedStylesheet(url)) {
-                        fail('resource_failed');
-                        return Promise.resolve();
+                    function waitForStylesheet(url) {
+                        if (!url) {
+                            return Promise.resolve();
+                        }
+                        if (!isAllowedStylesheet(url)) {
+                            fail('resource_failed');
+                            return Promise.resolve();
+                        }
+                        var link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        var wait = whenLoaded(link, null, 'resource_failed');
+                        link.href = url;
+                        document.head.appendChild(link);
+                        return wait;
                     }
-                    var link = document.createElement('link');
-                    link.rel = 'stylesheet';
-                    var wait = whenLoaded(link, null, 'resource_failed');
-                    link.href = url;
-                    document.head.appendChild(link);
-                    return wait;
-                }
 
-                var style = document.createElement('style');
-                style.textContent = payload.bundledCSS || '';
-                document.head.appendChild(style);
+                    var style = document.createElement('style');
+                    style.textContent = (payload.bundledCSS || '') + '\n' + (payload.nativeCSS || '');
+                    document.head.appendChild(style);
 
-                var purify = window.DOMPurify;
-                if (!purify || !purify.isSupported) {
-                    fail('sanitizer_unavailable');
-                    return;
-                }
-                purify.addHook('uponSanitizeAttribute', function (node, data) {
-                    if ((data.attrName === 'href' || data.attrName === 'src') && !isHttps(data.attrValue)) {
-                        data.keepAttr = false;
-                    }
-                });
-                var stylesheets = [waitForStylesheet(payload.remoteCssURL || '')];
-                if (current.settled) {
-                    return;
-                }
-                stylesheets.push(waitForStylesheet(payload.remoteFontURL || ''));
-                if (current.settled) {
-                    return;
-                }
-                var resizeObserver = null;
-
-                // Replaces the promo without reloading the page.
-                function render(job) {
-                    current.settled = true;
-                    var self = current = { id: job.renderId, settled: false };
-                    setTimeout(function () { fail('html_timeout', self); }, payload.timeoutMs || 5000);
-                    var root = document.getElementById('affirm-promo-root');
-                    try {
-                        root.innerHTML = purify.sanitize(job.html || '', {
-                            ALLOWED_TAGS: ['a', 'b', 'strong', 'em', 'i', 'u', 'small', 'sup', 'sub',
-                                'br', 'span', 'p', 'div', 'img', 'svg', 'g', 'path', 'circle', 'rect',
-                                'ellipse', 'line', 'polygon', 'polyline', 'title'],
-                            ALLOWED_ATTR: ['class', 'href', 'src', 'alt', 'title', 'width', 'height',
-                                'viewBox', 'd', 'fill', 'fill-rule', 'clip-rule', 'stroke',
-                                'stroke-width', 'transform', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry',
-                                'x1', 'y1', 'x2', 'y2', 'points', 'xmlns'],
-                            ALLOW_ARIA_ATTR: false,
-                            ALLOW_DATA_ATTR: false
-                        });
-                    } catch (e) {
+                    var purify = window.DOMPurify;
+                    if (!purify || !purify.isSupported) {
                         fail('sanitizer_unavailable');
                         return;
                     }
-                    var usable = !!(root.textContent.trim() || root.querySelector('img[src], svg'));
-                    post({ event: 'sanitized', usable: usable });
-                    if (!usable) {
-                        fail('html_empty');
-                        return;
-                    }
+                    purify.addHook('uponSanitizeAttribute', function (node, data) {
+                        if ((data.attrName === 'href' || data.attrName === 'src') && !isHttps(data.attrValue)) {
+                            data.keepAttr = false;
+                        }
+                    });
+                    // Affirm.js and the stylesheets load once per page; later renders reuse them.
+                    var stylesheets = null;
+                    var resizeObserver = null;
 
-                    var waits = stylesheets.slice();
-                    var images = root.querySelectorAll('img');
-                    for (var i = 0; i < images.length; i++) {
-                        if (!images[i].getAttribute('src')) {
-                            continue;
-                        }
-                        waits.push(whenLoaded(images[i],
-                            function (el) { return el.complete && el.naturalWidth > 0; },
-                            'image_failed', self));
-                    }
-                    if (document.fonts && document.fonts.ready) {
-                        waits.push(document.fonts.ready);
-                    }
-                    Promise.all(waits).then(function () {
-                        // fonts.ready also resolves when a font file fails to load.
-                        var fontFailed = false;
-                        if (document.fonts) {
-                            document.fonts.forEach(function (font) {
-                                if (font.status === 'error') {
-                                    fontFailed = true;
-                                }
-                            });
-                        }
-                        if (fontFailed) {
-                            fail('font_failed', self);
-                            return;
-                        }
-                        requestAnimationFrame(function () {
-                            if (self.settled) {
+                    // Replaces the promo without reloading the page.
+                    function render(job) {
+                        current.settled = true;
+                        var self = current = { id: job.renderId, settled: false };
+                        setTimeout(function () { fail('html_timeout', self); }, payload.timeoutMs || 5000);
+                        try {
+                            var root = document.getElementById('affirm-promo-root');
+                            try {
+                                root.innerHTML = purify.sanitize(job.html || '', {
+                                    ALLOWED_TAGS: ['a', 'b', 'strong', 'em', 'i', 'u', 'small', 'sup', 'sub',
+                                        'br', 'span', 'p', 'div', 'img', 'svg', 'g', 'path', 'circle', 'rect',
+                                        'ellipse', 'line', 'polygon', 'polyline', 'title'],
+                                    ALLOWED_ATTR: ['class', 'href', 'src', 'alt', 'title', 'width', 'height',
+                                        'viewBox', 'd', 'fill', 'fill-rule', 'clip-rule', 'stroke',
+                                        'stroke-width', 'transform', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry',
+                                        'x1', 'y1', 'x2', 'y2', 'points', 'xmlns'],
+                                    ALLOW_ARIA_ATTR: false,
+                                    ALLOW_DATA_ATTR: false
+                                });
+                            } catch (e) {
+                                fail('sanitizer_unavailable', self);
                                 return;
                             }
-                            self.settled = true;
-                            post(sizeMessage('ready'));
-                            if (window.ResizeObserver && !resizeObserver) {
-                                resizeObserver = new ResizeObserver(function () {
-                                    if (current.settled) {
-                                        post(sizeMessage('height'));
+                            var usable = !!(root.textContent.trim() || root.querySelector('img[src], svg'));
+                            post({ event: 'sanitized', usable: usable });
+                            if (!usable) {
+                                fail('html_empty', self);
+                                return;
+                            }
+
+                            if (!stylesheets) {
+                                window._affirm_config = {
+                                    public_api_key: payload.publicKey || '',
+                                    script: payload.jsURL || '',
+                                    locale: payload.locale || '',
+                                    country_code: payload.countryCode || ''
+                                };
+                                (function(l,g,m,e,a,f,b){var d,c=l[m]||{},h=document.createElement(f),n=document.getElementsByTagName(f)[0],k=function(a,b,c){return function(){a[b]._.push([c,arguments])}};c[e]=k(c,e,"set");d=c[e];c[a]={};c[a]._=[];d._=[];c[a][b]=k(c,a,b);a=0;for(b="set add save post open empty reset on off trigger ready setProduct".split(" ");a<b.length;a++)d[b[a]]=k(c,e,b[a]);a=0;for(b=["get","token","url","items"];a<b.length;a++)d[b[a]]=function(){};h.async=!0;h.src=g[f];n.parentNode.insertBefore(h,n);delete g[f];d(g);l[m]=c})(window,window._affirm_config,"affirm","checkout","ui","script","ready");
+
+                                stylesheets = [];
+                                stylesheets.push(waitForStylesheet(payload.remoteCssURL || ''));
+                                if (self.settled) {
+                                    return;
+                                }
+                                stylesheets.push(waitForStylesheet(payload.remoteFontURL || ''));
+                                if (self.settled) {
+                                    return;
+                                }
+                            }
+                            var waits = stylesheets.slice();
+                            var images = root.querySelectorAll('img');
+                            for (var i = 0; i < images.length; i++) {
+                                if (!images[i].getAttribute('src')) {
+                                    continue;
+                                }
+                                waits.push(whenLoaded(images[i],
+                                    function (el) { return el.complete && el.naturalWidth > 0; },
+                                    'image_failed', self));
+                            }
+                            if (document.fonts && document.fonts.ready) {
+                                waits.push(document.fonts.ready);
+                            }
+                            Promise.all(waits).then(function () {
+                                // fonts.ready also resolves when a font file fails to load.
+                                var fontFailed = false;
+                                if (document.fonts) {
+                                    document.fonts.forEach(function (font) {
+                                        if (font.status === 'error') {
+                                            fontFailed = true;
+                                        }
+                                    });
+                                }
+                                if (fontFailed) {
+                                    fail('font_failed', self);
+                                    return;
+                                }
+                                // The WebView stays hidden until ready, and a hidden view may never get an
+                                // animation frame. getBoundingClientRect forces layout, so no frame is needed.
+                                setTimeout(function () {
+                                    if (self.settled) {
+                                        return;
+                                    }
+                                    var message;
+                                    try {
+                                        message = sizeMessage('ready');
+                                    } catch (e) {
+                                        fail('script_error', self);
+                                        return;
+                                    }
+                                    self.settled = true;
+                                    message.text = (root.textContent || '').replace(/\s+/g, ' ').trim();
+                                    post(message);
+                                    if (window.ResizeObserver && !resizeObserver) {
+                                        // A migrated body fills the view, so only the root sees content changes.
+                                        resizeObserver = new ResizeObserver(function () {
+                                            if (current.settled) {
+                                                post(sizeMessage('height'));
+                                            }
+                                        });
+                                        resizeObserver.observe(document.body);
+                                        resizeObserver.observe(root, { box: 'border-box' });
                                     }
                                 });
-                                resizeObserver.observe(document.body);
-                            }
-                        });
-                    }, function () {
-                        fail('resource_failed', self);
-                    });
-                }
+                            }, function () {
+                                fail('resource_failed', self);
+                            });
+                        } catch (e) {
+                            fail('script_error', self);
+                        }
+                    }
 
-                window.affirmPromoRender = render;
-                render({ renderId: payload.renderId, html: payload.html });
+                    window.affirmPromoRender = render;
+                    render({ renderId: payload.renderId, html: payload.html });
+                } catch (e) {
+                    fail('script_error');
+                }
             })();
         </script>
     </body>

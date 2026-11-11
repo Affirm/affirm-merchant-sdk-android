@@ -1,6 +1,9 @@
 package com.affirm.android
 
 import android.app.Activity
+import android.graphics.Color
+import android.graphics.Typeface
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import com.affirm.android.AffirmTracker.TrackingEvent
@@ -20,7 +23,9 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowLooper
+import org.robolectric.shadows.ShadowWebView
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
@@ -322,6 +327,25 @@ class AffirmPromotionButtonTelemetryTest {
             PromoRendererDecision.FLAG_TRUE, PromoRendererDecision.OPT_OUT
         ).inOrder()
         assertThat(button.getChildAt(0)).isInstanceOf(PromotionButton::class.java)
+    }
+
+    @Test
+    fun migratedHtmlUsesTheStyleAtStart() {
+        start()
+        val pageAtStart = PromoHtmlStyle.migratedCss(
+            button.nativeTypeface(), Color.BLACK,
+            button.resources.getDimensionPixelSize(R.dimen.affirm_promotion_size).toFloat(),
+            Gravity.TOP or Gravity.START, button.resources.displayMetrics.density
+        )!!
+        button.configWithLocalStyling(
+            AffirmColor.AFFIRM_COLOR_TYPE_BLUE, AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO,
+            Typeface.SERIF, android.R.color.white
+        )
+        respond(migrate = true)
+
+        val page = Shadow.extract<ShadowWebView>(button.promotionWebView!!)
+            .lastLoadDataWithBaseURL.data
+        assertThat(page).contains(AffirmPromoRendering.fontDeclaration(pageAtStart).css)
     }
 
     @Test

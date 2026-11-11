@@ -3,7 +3,9 @@ package com.affirm.android;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.affirm.android.model.Promo;
@@ -138,10 +140,46 @@ public class AffirmPromotionButtonRenderTest {
         assertThat(webView.isFocusable()).isFalse();
         assertThat(webView.getImportantForAccessibility())
                 .isEqualTo(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        assertThat(button.isFocusable()).isTrue();
+        assertThat(button.getAccessibilityClassName().toString())
+                .isEqualTo(Button.class.getName());
 
         button.render(PromoRenderPlan.create(false, true, null, response(NATIVE, HTML)));
 
         assertThat(button.getContentDescription()).isNull();
+        assertThat(button.isFocusable()).isFalse();
+        assertThat(button.getAccessibilityClassName().toString())
+                .isNotEqualTo(Button.class.getName());
+    }
+
+    @Test
+    public void enterOnShownHtmlClicksOnce() {
+        View.OnClickListener listener = mock(View.OnClickListener.class);
+        button.setOnClickListener(listener);
+        button.render(migrated(NATIVE, HTML));
+        assertThat(button.requestFocus()).isTrue();
+
+        pressEnter();
+        verify(listener, never()).onClick(any(View.class));
+
+        ready(button.getPromotionWebView());
+        pressEnter();
+        verify(listener, times(1)).onClick(any(View.class));
+    }
+
+    private void pressEnter() {
+        button.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        button.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER));
+        ShadowLooper.idleMainLooper();
+    }
+
+    @Test
+    public void failedExplicitHtmlIsNotFocusable() {
+        button.render(explicitHtml());
+
+        fail(button.getPromotionWebView());
+
+        assertThat(button.isFocusable()).isFalse();
     }
 
     @Test

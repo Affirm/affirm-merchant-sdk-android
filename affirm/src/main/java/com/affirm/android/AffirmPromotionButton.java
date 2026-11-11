@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -196,6 +197,8 @@ public class AffirmPromotionButton extends FrameLayout {
         }
         final PromotionWebView webView = promotionWebView;
         setContentDescription(description);
+        // Below API 26 a clickable view is not focusable on its own, so keys could not reach it.
+        setFocusable(true);
         htmlAttempt = new HtmlAttempt(description, canFallBackToNative);
         webView.setRenderListener(htmlAttempt);
         postDelayed(htmlAttempt, AffirmPromoRendering.HTML_TIMEOUT_MS);
@@ -233,6 +236,8 @@ public class AffirmPromotionButton extends FrameLayout {
             removeView(promotionButton);
         }
         setContentDescription(null);
+        // Native text is focused through its own button.
+        setFocusable(false);
         if (promotionWebView != null) {
             promotionWebView.hidePromo();
         }
@@ -440,6 +445,12 @@ public class AffirmPromotionButton extends FrameLayout {
         if (promotionWebView != null) {
             promotionWebView.setWebViewClickListener(l);
         }
+    }
+
+    /** TalkBack announces an HTML promo as a button, like the native one. */
+    @Override
+    public CharSequence getAccessibilityClassName() {
+        return isFocusable() ? Button.class.getName() : super.getAccessibilityClassName();
     }
 
     @VisibleForTesting

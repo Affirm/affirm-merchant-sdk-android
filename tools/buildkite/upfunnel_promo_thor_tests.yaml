@@ -5,6 +5,8 @@ env:
   UPFUNNEL_SDK_PROMO_HARNESS_REF: codex/fix-upfunnel-sdk-thor-fixture
   SDK_PROMO_PLATFORM: android
   SDK_PROMO_SETUP_ONLY: 'true'
+  SDK_PROMO_RETRY_BUILD: '162'
+  SDK_PROMO_RETRY_COMMIT: 18c12d438ab259c56135698a4c80e1e3bfc63d5c
   FE_REPO: ux
 steps:
   - label: ':pipeline: Generate live SDK promo tests'

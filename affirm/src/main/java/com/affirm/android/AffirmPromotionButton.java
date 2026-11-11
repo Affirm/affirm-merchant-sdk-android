@@ -67,6 +67,9 @@ public class AffirmPromotionButton extends FrameLayout {
     private PromoRequestFactory requestFactory;
     @Nullable
     private PromoRender render;
+    /** The migrated page style when {@code render} started, matching its decision's font. */
+    @Nullable
+    private String renderPageStyle;
     private boolean restartOnAttach;
     /** How the shown content ended; null while HTML loads or before anything is shown. */
     @Nullable
@@ -150,6 +153,7 @@ public class AffirmPromotionButton extends FrameLayout {
         final PromoRender newRender = PromoRender.start(htmlStyling, useLegacyNativeRendering(),
                 nativeTypeface());
         render = newRender;
+        renderPageStyle = migratedPageStyle();
         final PromoRequest request =
                 requestFactory.create(new PromoButtonCallback(this, newRender));
         showPlaceholder(PromoMessageCache.get(request.cacheKey()));
@@ -290,7 +294,8 @@ public class AffirmPromotionButton extends FrameLayout {
             pageStyle = typefaceDeclaration;
         } else {
             css = null;
-            pageStyle = migratedPageStyle();
+            // Restyling after configureWithAmount must not change a render decided on the old font.
+            pageStyle = render != null ? renderPageStyle : migratedPageStyle();
         }
         if (promotionWebView == null || explicitHtml != promotionWebViewExplicitHtml) {
             releaseWebView();

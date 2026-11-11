@@ -29,6 +29,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -90,6 +92,10 @@ public class PromoMessagingThorEspressoTest {
             try {
                 onView(withId(R.id.promo)).check(matches(
                         hasDescendant(withContentDescription(containsString(expected)))));
+                onView(withId(R.id.promotionTextView))
+                        .check(matches(isDisplayed()))
+                        .check(matches(withText(containsString(expected))))
+                        .check(matches(withContentDescription(containsString(expected))));
                 return;
             } catch (AssertionError error) {
                 last = error;

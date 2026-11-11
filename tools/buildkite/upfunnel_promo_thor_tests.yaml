@@ -2,9 +2,9 @@
 # Validation-only dependency refs; remove after UX merges and the generator is released.
 env:
   FE_BUILDKITE_BRANCH: preview/sdk-live-20261110
-  UPFUNNEL_SDK_PROMO_HARNESS_REF: b474d78e4398872cad8ce04729e33cace4f02998
+  UPFUNNEL_SDK_PROMO_HARNESS_REF: 2526ea3b4eb5af06b9b5f7858ac2d74637fdf988
   SDK_PROMO_PLATFORM: android
-  SDK_PROMO_FIREBASE_MATRIX: matrix-1skyk6sof5ewx
+  SDK_PROMO_REUSE_FIXTURE_BUILD: 01a1c87a-92b9-41b5-9245-65d9b25533e3
   FE_REPO: ux
 steps:
   - label: ':pipeline: Generate live SDK promo tests'

@@ -147,7 +147,7 @@ class AffirmPromotionButtonTelemetryTest {
     }
 
     @Test
-    fun newFallbackCopyKeepsTheFallbackOutcome() {
+    fun newFallbackCopyUpdatesTheReusedFallback() {
         PromoMessageCache.put(
             "telemetry-fallback", PromoMessageCache.CachedMessage(NATIVE, HTML, false, true)
         )
@@ -163,8 +163,7 @@ class AffirmPromotionButtonTelemetryTest {
         val result = results().last()
         assertThat(results()).hasSize(2)
         assertThat(result.string("actual_renderer")).isEqualTo("native")
-        assertThat(result.string("fallback_reason"))
-            .isEqualTo(AffirmPromoRenderReason.HTML_TIMEOUT)
+        assertThat(result.string("fallback_reason")).isNull()
     }
 
     @Test
@@ -238,6 +237,30 @@ class AffirmPromotionButtonTelemetryTest {
         AffirmPromotionButton::class.java
             .getMethod("setAffirmColor", AffirmColor::class.java)
             .invoke(button, null)
+    }
+
+    @Test
+    fun reboundFallbackIsNotCountedAgain() {
+        PromoMessageCache.put(
+            "telemetry-rebound", PromoMessageCache.CachedMessage(NATIVE, HTML, false, true)
+        )
+        start("telemetry-rebound")
+        respond(migrate = true)
+        ShadowLooper.idleMainLooper(AffirmPromoRendering.HTML_TIMEOUT_MS.toLong(), TimeUnit.MILLISECONDS)
+        assertThat(results().single().string("fallback_reason"))
+            .isEqualTo(AffirmPromoRenderReason.HTML_TIMEOUT)
+
+        start("telemetry-rebound")
+        respond(migrate = true)
+
+        val rebound = results().last()
+        assertThat(results()).hasSize(2)
+        assertThat(rebound.string("selected_mode")).isEqualTo("html")
+        assertThat(rebound.string("actual_renderer")).isEqualTo("native")
+        assertThat(rebound.string("outcome")).isEqualTo(PromoRender.SUCCESS)
+        assertThat(rebound.string("fallback_reason")).isNull()
+        assertThat(rebound.get("fallback_succeeded").asBoolean).isFalse()
+        assertThat(button.getChildAt(0)).isInstanceOf(PromotionButton::class.java)
     }
 
     @Test

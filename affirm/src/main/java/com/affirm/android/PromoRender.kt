@@ -36,6 +36,9 @@ internal class PromoRender @VisibleForTesting constructor(
         @JvmField val reason: String?,
         @JvmField val fallbackReason: String?
     ) {
+        /** The same content, kept by a later render that did not attempt HTML itself. */
+        fun reused() = Outcome(actual, outcome, reason, null)
+
         companion object {
             /** [fallbackReason] is set when native is shown after HTML failed. */
             @JvmStatic

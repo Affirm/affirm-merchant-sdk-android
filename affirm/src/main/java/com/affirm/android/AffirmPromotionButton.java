@@ -74,6 +74,9 @@ public class AffirmPromotionButton extends FrameLayout {
     /** How the shown content ended; null while HTML loads or before anything is shown. */
     @Nullable
     private PromoRender.Outcome outcome;
+    /** The render that was current when {@code outcome} was settled. */
+    @Nullable
+    private PromoRender outcomeRender;
     @Nullable
     private Boolean htmlContentUsable;
 
@@ -228,13 +231,17 @@ public class AffirmPromotionButton extends FrameLayout {
 
     private void settle(@NonNull PromoRender.Outcome settled) {
         outcome = settled;
+        outcomeRender = render;
         reportOutcome();
     }
 
     private void reportOutcome() {
-        if (render != null && outcome != null) {
-            render.onSettled(outcome, htmlContentUsable);
+        if (render == null || outcome == null) {
+            return;
         }
+        // Content kept from an earlier render, e.g. a rebound list row, already reported its
+        // fallback; this render attempted nothing, so it must not count the fallback again.
+        render.onSettled(outcomeRender == render ? outcome : outcome.reused(), htmlContentUsable);
     }
 
     /** Updates the native copy of the HTML promo already shown without reloading it. */

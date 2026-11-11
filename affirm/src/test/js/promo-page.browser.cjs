@@ -60,7 +60,8 @@ function fillTemplate({
  */
 async function render({
     html, remoteCss = '', remoteFont = '', extraCss = '', sanitizer = SANITIZER,
-    resources = {}, hang = [], width = 360, waitMs = 3000, timeoutMs = 5000, prelude = '',
+    resources = {}, hang = [], slow = {}, width = 360, waitMs = 3000, timeoutMs = 5000, prelude = '',
+    until = 'window.hostCalls.length > 0',
 }) {
     const page = await browser.newPage();
     await page.setViewport({ width, height: 640 });
@@ -74,6 +75,8 @@ async function render({
             request.respond({ contentType: 'text/html', body: filled });
         } else if (hang.includes(url)) {
             return;
+        } else if (slow[url]) {
+            setTimeout(() => request.abort(), slow[url]);
         } else if (resources[url]) {
             const { type, body, headers, delayMs = 0 } = resources[url];
             setTimeout(() => request.respond({ contentType: type, body, headers }), delayMs);
@@ -98,7 +101,7 @@ async function render({
         };
     });
     await page.goto(PAGE_URL, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => window.hostCalls.length > 0, { timeout: waitMs });
+    await page.waitForFunction(until, { timeout: waitMs });
     const calls = await page.evaluate(() => window.hostCalls);
     const rootHtml = await page.$eval('#affirm-promo-root', (root) => root.innerHTML);
     const sanitized = await page.evaluate(() => window.sanitized);
@@ -407,6 +410,21 @@ test('affirmPromoRender replaces the promo without reloading the page', async ()
         { timeout: 3000 });
     const third = (await page.evaluate(() => window.hostCalls)).find((call) => call.renderId === 'third');
     assert.equal(third.reason, 'html_empty');
+    await page.close();
+});
+
+test('a stylesheet that fails after a re-render fails the current render', async () => {
+    const { page } = await render({
+        html: '<span>first</span>',
+        remoteCss: 'https://merchant.test/slow.css',
+        slow: { 'https://merchant.test/slow.css': 500 },
+        until: 'window.sanitized !== null',
+    });
+    await page.evaluate(() => window.affirmPromoRender({ renderId: 'second', html: '<span>second</span>' }));
+    await page.waitForFunction(() => window.hostCalls.length > 0, { timeout: 3000 });
+    const calls = await page.evaluate(() => window.hostCalls);
+    assert.deepEqual(calls.map((call) => [call.renderId, call.event, call.reason]),
+        [['second', 'failure', 'resource_failed']]);
     await page.close();
 });
 

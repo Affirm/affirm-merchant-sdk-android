@@ -41,6 +41,8 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     @VisibleForTesting
     static final String PROMO_BASE_URL = "file:///android_asset/";
 
+    private static final String RENDER_ID = "renderId";
+
     interface RenderListener {
         void onReady();
 
@@ -193,7 +195,7 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
 
     private void renderInPage(@NonNull String id, String promoHtml) {
         final Map<String, Object> job = new LinkedHashMap<>();
-        job.put("renderId", id);
+        job.put(RENDER_ID, id);
         job.put("html", nonNull(promoHtml));
         evaluateJavascript("window.affirmPromoRender("
                 + AffirmPromoRendering.escapedJsonObject(job) + ");", null);
@@ -223,7 +225,7 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             return null;
         }
         final Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("renderId", id);
+        payload.put(RENDER_ID, id);
         payload.put("html", nonNull(promoHtml));
         payload.put("remoteCssURL", nonNull(remoteCssUrl));
         payload.put("remoteFontURL", font.url);
@@ -304,13 +306,13 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         }
         // A page replaced while loading can still post; only the current one counts.
         if (!pageLoaded && pageRenderId != null
-                && pageRenderId.equals(body.optString("renderId"))) {
+                && pageRenderId.equals(body.optString(RENDER_ID))) {
             pageLoaded = true;
             if (renderId != null && !renderId.equals(pageRenderId)) {
                 renderInPage(renderId, loadedHtml);
             }
         }
-        if (renderId == null || !renderId.equals(body.optString("renderId"))) {
+        if (renderId == null || !renderId.equals(body.optString(RENDER_ID))) {
             AffirmLog.v("Ignored promo script message from a previous render");
             return;
         }

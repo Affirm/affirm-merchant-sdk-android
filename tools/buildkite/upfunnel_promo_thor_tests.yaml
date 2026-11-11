@@ -4,6 +4,7 @@ env:
   FE_BUILDKITE_BRANCH: preview/sdk-live-20261110
   UPFUNNEL_SDK_PROMO_HARNESS_REF: codex/fix-upfunnel-sdk-thor-fixture
   SDK_PROMO_PLATFORM: android
+  SDK_PROMO_SETUP_ONLY: 'true'
   FE_REPO: ux
 steps:
   - label: ':pipeline: Generate live SDK promo tests'

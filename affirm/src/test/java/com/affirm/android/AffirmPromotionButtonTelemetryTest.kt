@@ -285,15 +285,20 @@ class AffirmPromotionButtonTelemetryTest {
     }
 
     @Test
-    fun fetchFailureKeepsTheCachedMessage() {
+    fun fetchFailureHidesTheCachedPlaceholder() {
         PromoMessageCache.put(
             "telemetry-cached", PromoMessageCache.CachedMessage(NATIVE, HTML, false, false)
         )
         start("telemetry-cached")
-        callbacks.last().onFailure(APIException("boom", null))
-
         assertThat(button.visibility).isEqualTo(View.VISIBLE)
         assertThat(button.getChildAt(0)).isInstanceOf(PromotionButton::class.java)
+
+        callbacks.last().onFailure(APIException("boom", null))
+
+        assertThat(button.visibility).isEqualTo(View.GONE)
+        assertThat(button.isEmpty).isTrue()
+        assertThat(results().single().string("reason"))
+            .isEqualTo(AffirmPromoRenderReason.FETCH_ERROR)
     }
 
     @Test

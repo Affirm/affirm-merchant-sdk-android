@@ -37,6 +37,17 @@ class PromoMessageCacheTest {
     }
 
     @Test
+    fun removeDropsOnlyThatKey() {
+        PromoMessageCache.put("a", message())
+        PromoMessageCache.put("b", message())
+
+        PromoMessageCache.remove("a")
+
+        assertThat(PromoMessageCache.get("a")).isNull()
+        assertThat(PromoMessageCache.get("b")).isNotNull()
+    }
+
+    @Test
     fun evictAllClearsEntries() {
         PromoMessageCache.put("a", message())
 

@@ -108,6 +108,7 @@ class PromoRequest implements AffirmRequest {
                     @Override
                     public void onSuccess(PromoResponse response) {
                         if (response == null) {
+                            PromoMessageCache.remove(cacheKey);
                             callback.onFailure(new APIException("Promo response is empty!",
                                     null));
                             return;
@@ -119,6 +120,8 @@ class PromoRequest implements AffirmRequest {
 
                     @Override
                     public void onFailure(AffirmException exception) {
+                        // The cached message may hold terms the server no longer offers.
+                        PromoMessageCache.remove(cacheKey);
                         callback.onFailure(exception);
                     }
                 });

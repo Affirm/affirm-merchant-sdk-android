@@ -1,3 +1,16 @@
+HTML rendering of locally styled promos
+==================
+
+No code change is required. Affirm can now show an `AffirmPromotionButton` that uses local styling as HTML, so its promo can look slightly different. See [HTML rendering of locally styled promos](README.md#html-rendering-of-locally-styled-promos) for what changes and when a button stays native.
+
+To keep every promo button native:
+
+```java
+Affirm.initialize(new Affirm.Configuration.Builder("public key", Affirm.Environment.SANDBOX)
+        .setUseLegacyNativeRendering(true)
+        .build());
+```
+
 UPGRADE GUIDE (upgrade from v1 to v2)
 ==================
 

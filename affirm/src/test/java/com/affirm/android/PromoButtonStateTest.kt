@@ -1,6 +1,7 @@
 package com.affirm.android
 
 import android.view.View
+import android.view.ViewGroup
 import com.affirm.android.PromoMessageCache.CachedMessage
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
@@ -48,6 +49,34 @@ class PromoButtonStateTest {
         button.setLabel("msg", "desc")
 
         verify(button, times(1)).removeAllViews()
+    }
+
+    @Test
+    fun setLabelUpdatesDescriptionOfMessageAlreadyShown() {
+        val button = plainButton()
+        button.setLabel("msg", "old")
+
+        button.setLabel("msg", "new")
+
+        assertThat(button.getChildAt(0).contentDescription).isEqualTo("new")
+    }
+
+    @Test
+    fun htmlSetLabelUpdatesDescriptionWithoutReloading() {
+        val button = htmlButton()
+        button.setLabel("<p>html</p>", "old")
+        var removedViews = 0
+        button.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
+            override fun onChildViewAdded(parent: View, child: View) = Unit
+            override fun onChildViewRemoved(parent: View, child: View) {
+                removedViews++
+            }
+        })
+
+        button.setLabel("<p>html</p>", "new")
+
+        assertThat(removedViews).isEqualTo(0)
+        assertThat(shownHtmlDescription(button)).isEqualTo("new")
     }
 
     @Test

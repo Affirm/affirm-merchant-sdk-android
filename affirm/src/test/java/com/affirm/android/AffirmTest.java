@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
@@ -51,6 +53,15 @@ public class AffirmTest {
     public void testSetLocale() {
         Affirm.setLocale(Locale.US.toString());
         assertEquals(Locale.US.toString(), AffirmPlugins.get().locale());
+    }
+
+    @Test
+    public void testSetUseLegacyNativeRendering() {
+        Affirm.setUseLegacyNativeRendering(true);
+        assertTrue(AffirmPlugins.get().useLegacyNativeRendering());
+
+        Affirm.setUseLegacyNativeRendering(false);
+        assertFalse(AffirmPlugins.get().useLegacyNativeRendering());
     }
 
     @Test

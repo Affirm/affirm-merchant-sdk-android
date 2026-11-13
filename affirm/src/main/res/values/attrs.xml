@@ -16,6 +16,7 @@
         <attr name="affirmTextSize" format="dimension" />
         <attr name="affirmTextColor" format="color" />
         <attr name="affirmTextFont" format="reference" />
+        <attr name="android:gravity" />
     </declare-styleable>
 
     <declare-styleable name="FixedAspectRatioFrameLayout">

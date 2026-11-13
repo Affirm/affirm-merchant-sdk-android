@@ -41,15 +41,58 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     @VisibleForTesting
     static final String PROMO_BASE_URL = "file:///android_asset/";
 
-    private final Runnable htmlTimeout = () -> logFailure(AffirmPromoRenderReason.HTML_TIMEOUT);
+    private static final String RENDER_ID = "renderId";
+
+    interface RenderListener {
+        void onReady();
+
+        void onFailure(@NonNull String reason);
+    }
 
     private String loadedHtml;
+    /** The CSS and typeface of the last promo, which the page was built with. */
     private String loadedCss;
     private String loadedTypeface;
     @Nullable
     private String renderId;
+    /** The render the page was loaded with; null when there is no usable page. */
     @Nullable
-    private Runnable onDestroyedByRendererGone;
+    private String pageRenderId;
+    /** The page has posted for {@code pageRenderId}, so window.affirmPromoRender exists. */
+    private boolean pageLoaded;
+    @Nullable
+    private RenderListener renderListener;
+    private boolean shrinkToContentWidth;
+    private int contentWidthPx;
+    private int lineWidthPx;
+
+    void setRenderListener(@Nullable RenderListener listener) {
+        renderListener = listener;
+    }
+
+    /**
+     * Measures no wider than the promo needs when the parent leaves the width open, like a
+     * wrap_content TextView: the one-line width if it fits, else the widest wrapped line. The
+     * page reports both once it is ready.
+     */
+    void setShrinkToContentWidth(boolean shrink) {
+        shrinkToContentWidth = shrink;
+        requestLayout();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        final int mode = MeasureSpec.getMode(widthMeasureSpec);
+        if (shrinkToContentWidth && contentWidthPx > 0 && mode != MeasureSpec.EXACTLY) {
+            final int available = MeasureSpec.getSize(widthMeasureSpec);
+            int width = contentWidthPx;
+            if (mode == MeasureSpec.AT_MOST && width > available) {
+                width = lineWidthPx > 0 ? Math.min(lineWidthPx, available) : available;
+            }
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
 
     public void setWebViewClickListener(OnClickListener listener) {
         setOnClickListener(listener == null ? null : v -> {
@@ -86,21 +129,23 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
                     }
                 });
         tapDetector.setIsLongpressEnabled(false);
-        // Consume every touch so the WebView never handles taps itself.
+        // Consume every touch so the WebView never handles taps itself. A loading promo is
+        // transparent but still VISIBLE, so it must not take taps either.
         setOnTouchListener((v, event) -> {
-            tapDetector.onTouchEvent(event);
+            if (isPromoShown()) {
+                tapDetector.onTouchEvent(event);
+            }
             return true;
         });
         setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        // A hardware layer is a bitmap the list can scroll. The default WebView surface stays
+        // blank while a RecyclerView is moving and only composites again once the scroll stops.
+        setLayerType(LAYER_TYPE_HARDWARE, null);
     }
 
-    void setOnDestroyedByRendererGone(@Nullable Runnable callback) {
-        onDestroyedByRendererGone = callback;
-    }
-
-    /** True once the current promo has rendered and is showing. */
-    boolean isRenderReady() {
-        return renderId != null && getVisibility() == VISIBLE;
+    /** The page has posted ready and the promo is on screen. */
+    boolean isPromoShown() {
+        return getVisibility() == VISIBLE && getAlpha() > 0f;
     }
 
     public void loadWebData(String promoHtml, String remoteCssUrl, String typeface) {
@@ -109,13 +154,26 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
         if (isShowingSamePromo(promoHtml, remoteCssUrl, typeface)) {
             return;
         }
-        removeCallbacks(htmlTimeout);
+        final boolean samePage = pageRenderId != null
+                && TextUtils.equals(remoteCssUrl, loadedCss)
+                && TextUtils.equals(typeface, loadedTypeface);
         loadedHtml = promoHtml;
         loadedCss = remoteCssUrl;
         loadedTypeface = typeface;
-        setVisibility(INVISIBLE);
+        // VISIBLE, but transparent, until the page reports ready. INVISIBLE marks the document
+        // hidden, so requestAnimationFrame does not run while the list is scrolling.
+        setVisibility(VISIBLE);
+        setAlpha(0f);
         final String id = UUID.randomUUID().toString();
         renderId = id;
+        if (samePage) {
+            // Reloading would fetch Affirm.js and the stylesheets again, e.g. on every bind
+            // of a list row. A loading page renders this once it posts.
+            if (pageLoaded) {
+                renderInPage(id, promoHtml);
+            }
+            return;
+        }
         final AffirmPromoRendering.FontDeclaration font =
                 AffirmPromoRendering.fontDeclaration(typeface);
         if (!AffirmPromoRendering.isPermittedStylesheetUrl(remoteCssUrl)
@@ -130,12 +188,30 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             logFailure(AffirmPromoRenderReason.TEMPLATE_ERROR);
             return;
         }
+        pageRenderId = id;
+        pageLoaded = false;
         loadDataWithBaseURL(PROMO_BASE_URL, page, TEXT_HTML, UTF_8, null);
-        postDelayed(htmlTimeout, AffirmPromoRendering.HTML_TIMEOUT_MS);
+    }
+
+    private void renderInPage(@NonNull String id, String promoHtml) {
+        final Map<String, Object> job = new LinkedHashMap<>();
+        job.put(RENDER_ID, id);
+        job.put("html", nonNull(promoHtml));
+        evaluateJavascript("window.affirmPromoRender("
+                + AffirmPromoRendering.escapedJsonObject(job) + ");", null);
+    }
+
+    /**
+     * Hides the promo and ignores the page until the next {@link #loadWebData}, keeping the
+     * page loaded for it.
+     */
+    void hidePromo() {
+        renderId = null;
+        setVisibility(GONE);
     }
 
     private boolean isShowingSamePromo(String html, String css, String typeface) {
-        return getVisibility() == VISIBLE
+        return isPromoShown()
                 && TextUtils.equals(html, loadedHtml)
                 && TextUtils.equals(css, loadedCss)
                 && TextUtils.equals(typeface, loadedTypeface);
@@ -149,7 +225,7 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             return null;
         }
         final Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("renderId", id);
+        payload.put(RENDER_ID, id);
         payload.put("html", nonNull(promoHtml));
         payload.put("remoteCssURL", nonNull(remoteCssUrl));
         payload.put("remoteFontURL", font.url);
@@ -168,22 +244,34 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     }
 
     private void logFailure(@NonNull String reason) {
-        removeCallbacks(htmlTimeout);
-        renderId = null;
-        loadedHtml = null;
-        loadedCss = null;
-        loadedTypeface = null;
-        setVisibility(GONE);
+        // The page may be what failed, so the next promo loads a new one.
+        pageRenderId = null;
+        pageLoaded = false;
+        hidePromo();
         AffirmLog.e("AffirmPromotionWebView failed: " + reason);
+        if (renderListener != null) {
+            renderListener.onFailure(reason);
+        }
     }
 
-    private void applyContentHeight(int cssHeight) {
+    private void applyContentSize(@NonNull JSONObject body) {
+        final float density = getResources().getDisplayMetrics().density;
+        final int widthPx = AffirmPromoRendering.heightForCssPixels(body.optInt("width"), density);
+        final int linePx =
+                AffirmPromoRendering.heightForCssPixels(body.optInt("lineWidth"), density);
+        if (widthPx > 0 && (widthPx != contentWidthPx || linePx != lineWidthPx)) {
+            contentWidthPx = widthPx;
+            lineWidthPx = linePx;
+            if (shrinkToContentWidth) {
+                requestLayout();
+            }
+        }
+        final int cssHeight = body.optInt("height");
         ViewGroup.LayoutParams params = getLayoutParams();
         if (params == null || cssHeight <= 0) {
             return;
         }
-        int heightPx = AffirmPromoRendering.heightForCssPixels(cssHeight,
-                getResources().getDisplayMetrics().density);
+        int heightPx = AffirmPromoRendering.heightForCssPixels(cssHeight, density);
         if (params.height != heightPx) {
             params.height = heightPx;
             setLayoutParams(params);
@@ -204,11 +292,6 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
     @Override
     public void onRendererGone() {
         logFailure(AffirmPromoRenderReason.RENDER_PROCESS_GONE);
-        // A WebView whose render process is gone can't be reused.
-        destroyWebView();
-        if (onDestroyedByRendererGone != null) {
-            onDestroyedByRendererGone.run();
-        }
     }
 
     /** Handles a `window.webkit.messageHandlers.affirmPromo` message from the shared page. */
@@ -221,18 +304,29 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             AffirmLog.w("Ignored malformed promo script message");
             return;
         }
-        if (renderId == null || !renderId.equals(body.optString("renderId"))) {
+        // A page replaced while loading can still post; only the current one counts.
+        if (!pageLoaded && pageRenderId != null
+                && pageRenderId.equals(body.optString(RENDER_ID))) {
+            pageLoaded = true;
+            if (renderId != null && !renderId.equals(pageRenderId)) {
+                renderInPage(renderId, loadedHtml);
+            }
+        }
+        if (renderId == null || !renderId.equals(body.optString(RENDER_ID))) {
             AffirmLog.v("Ignored promo script message from a previous render");
             return;
         }
         switch (body.optString("event")) {
             case "ready":
-                removeCallbacks(htmlTimeout);
-                applyContentHeight(body.optInt("height"));
+                applyContentSize(body);
+                setAlpha(1f);
                 setVisibility(VISIBLE);
+                if (renderListener != null) {
+                    renderListener.onReady();
+                }
                 break;
             case "height":
-                applyContentHeight(body.optInt("height"));
+                applyContentSize(body);
                 break;
             case "failure":
                 logFailure(AffirmPromoRenderReason.fromPage(body.optString("reason", null)));
@@ -240,12 +334,6 @@ public class PromotionWebView extends AffirmWebView implements AffirmWebChromeCl
             default:
                 break;
         }
-    }
-
-    @Override
-    protected void destroyWebView() {
-        removeCallbacks(htmlTimeout);
-        super.destroyWebView();
     }
 
     @VisibleForTesting

@@ -28,15 +28,29 @@ internal class PromoRenderPlan private constructor(
             response: PromoResponse
         ): PromoRenderPlan {
             val promo = response.promo()
-            val nativeText = promo.ala().replace(LOGO_PLACEHOLDER, "affirm")
-                .takeIf { it.isNotBlank() }
-            val htmlText = promo.htmlAla().takeIf { it.isNotBlank() }
-            val migrateToHtml = promo.promoConfig().migrateNativeToHtmlRender()
+            return create(
+                merchantHtmlStyling, useLegacyNativeRendering, typeface,
+                promo.ala(), promo.htmlAla(), promo.promoConfig().migrateNativeToHtmlRender()
+            )
+        }
+
+        @JvmStatic
+        fun create(
+            merchantHtmlStyling: Boolean,
+            useLegacyNativeRendering: Boolean,
+            typeface: Typeface?,
+            ala: String?,
+            htmlAla: String?,
+            migrateToHtml: Boolean
+        ): PromoRenderPlan {
+            val nativeText = ala?.replace(LOGO_PLACEHOLDER, "affirm")
+                ?.takeIf { it.isNotBlank() }
+            val htmlText = htmlAla?.takeIf { it.isNotBlank() }
 
             val selected = PromoRendererDecision.decide(
                 merchantHtmlStyling,
                 useLegacyNativeRendering,
-                PromoRendererDecision.isFontSupported(typeface),
+                PromoHtmlStyle.isFontSupported(typeface),
                 migrateToHtml
             ).selected
             val description = nativeText.orEmpty()

@@ -1,6 +1,7 @@
 package com.affirm.android
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,6 +39,8 @@ class PromoRequestManagerTest {
         activity.registry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
     }
 
+    private fun attachedView(): View = AttachedView(activity)
+
     @After
     fun tearDown() {
         PromoRequestManager.reset()
@@ -45,7 +48,7 @@ class PromoRequestManagerTest {
 
     @Test
     fun registersOneObserverForManyRequests() {
-        val views = (0 until 100).map { View(activity) }
+        val views = (0 until 100).map { attachedView() }
         views.forEach { PromoRequestManager.track(it, mock(PromoRequest::class.java)) }
 
         assertThat(activity.registry.observerCount).isEqualTo(1)
@@ -57,7 +60,7 @@ class PromoRequestManagerTest {
 
     @Test
     fun reconfiguringViewCancelsPreviousRequests() {
-        val view = View(activity)
+        val view = attachedView()
         val requests = (0 until 100).map { mock(PromoRequest::class.java) }
 
         requests.forEach { PromoRequestManager.track(view, it) }
@@ -74,7 +77,7 @@ class PromoRequestManagerTest {
     @Test
     fun cancelsRequestsAndUnregistersOnDestroy() {
         val request = mock(PromoRequest::class.java)
-        PromoRequestManager.track(View(activity), request)
+        PromoRequestManager.track(attachedView(), request)
 
         verify(request, never()).cancel()
         activity.registry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -134,7 +137,7 @@ class PromoRequestManagerTest {
         activity.registry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         val request = mock(PromoRequest::class.java)
 
-        PromoRequestManager.track(View(activity), request)
+        PromoRequestManager.track(attachedView(), request)
 
         verify(request, never()).create()
         assertThat(PromoRequestManager.hasManager(activity.registry)).isFalse()
@@ -257,9 +260,83 @@ class PromoRequestManagerTest {
         assertThat(PromoRequestManager.hasManager(host.lifecycle)).isFalse()
     }
 
+    @Test
+    fun requestStartedInActivityOnCreateBindsOnceAttached() {
+        val controller = Robolectric.buildActivity(FragmentActivity::class.java).create()
+        val host = controller.get()
+        val view = View(host)
+        host.setContentView(view)
+        val request = mock(PromoRequest::class.java)
+
+        PromoRequestManager.track(view, request)
+
+        assertThat(view.isAttachedToWindow).isFalse()
+        verify(request).create()
+        assertThat(PromoRequestManager.hasManager(host.lifecycle)).isFalse()
+
+        controller.start().resume().visible()
+
+        assertThat(PromoRequestManager.trackedRequestCount(host.lifecycle)).isEqualTo(1)
+        verify(request, never()).cancel()
+
+        controller.pause().stop().destroy()
+
+        verify(request).cancel()
+    }
+
+    @Test
+    fun requestStartedInOnCreateViewIsCancelledWithFragmentView() {
+        val host = Robolectric.buildActivity(FragmentActivity::class.java).setup().get()
+        val request = mock(PromoRequest::class.java)
+        val fragment = TrackInOnCreateViewFragment(request)
+        host.supportFragmentManager
+            .beginTransaction()
+            .add(android.R.id.content, fragment)
+            .commitNow()
+        val viewLifecycle = fragment.viewLifecycleOwner.lifecycle
+
+        verify(request).create()
+        assertThat(PromoRequestManager.trackedRequestCount(viewLifecycle)).isEqualTo(1)
+        assertThat(PromoRequestManager.trackedRequestCount(host.lifecycle)).isEqualTo(0)
+
+        host.supportFragmentManager
+            .beginTransaction()
+            .replace(android.R.id.content, PromoFragment())
+            .addToBackStack(null)
+            .commit()
+        host.supportFragmentManager.executePendingTransactions()
+
+        assertThat(host.lifecycle.currentState).isNotEqualTo(Lifecycle.State.DESTROYED)
+        verify(request).cancel()
+    }
+
+    @Test
+    fun requestReplacedBeforeAttachIsNotRebound() {
+        val host = Robolectric.buildActivity(FragmentActivity::class.java).setup().get()
+        val first = mock(PromoRequest::class.java)
+        val second = mock(PromoRequest::class.java)
+        val fragment = TrackInOnCreateViewFragment(first, second)
+        host.supportFragmentManager
+            .beginTransaction()
+            .add(android.R.id.content, fragment)
+            .commitNow()
+        val viewLifecycle = fragment.viewLifecycleOwner.lifecycle
+
+        verify(first).cancel()
+        assertThat(PromoRequestManager.trackedRequestCount(viewLifecycle)).isEqualTo(1)
+        assertThat(PromoRequestManager.trackedRequestCount(host.lifecycle)).isEqualTo(0)
+
+        host.supportFragmentManager
+            .beginTransaction()
+            .remove(fragment)
+            .commitNow()
+
+        verify(second).cancel()
+    }
+
     private fun trackUnreferencedRequest(): WeakReference<PromoRequest> {
         val request = NoOpPromoRequest()
-        PromoRequestManager.track(View(activity), request)
+        PromoRequestManager.track(attachedView(), request)
         assertThat(PromoRequestManager.trackedRequestCount(activity.registry)).isEqualTo(1)
         return WeakReference(request)
     }
@@ -294,6 +371,25 @@ class PromoRequestManagerTest {
                 addView(promoView)
             }
         }
+    }
+
+    /** Tracks [requests] in order from `onCreateView`, before the view is attached. */
+    internal class TrackInOnCreateViewFragment(private vararg val requests: PromoRequest) : Fragment() {
+
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View {
+            val promoView = View(requireContext())
+            requests.forEach { PromoRequestManager.track(promoView, it) }
+            return FrameLayout(requireContext()).apply { addView(promoView) }
+        }
+    }
+
+    /** Stands in for a view in a window, which the unstarted test Activity does not have. */
+    private class AttachedView(context: Context) : View(context) {
+        override fun isAttachedToWindow(): Boolean = true
     }
 
     open class TestLifecycleActivity : Activity(), LifecycleOwner {

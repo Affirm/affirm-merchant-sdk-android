@@ -14,8 +14,9 @@ import java.util.WeakHashMap
 /**
  * Tracks promo requests for a host [Lifecycle] and cancels them on `ON_DESTROY`.
  *
- * The host is resolved from the view: the view lifecycle of an AndroidX Fragment first, then a
- * [LifecycleOwner] Activity. Otherwise the request is not bound to any lifecycle.
+ * The host is resolved from the view once it is attached: the view lifecycle of an AndroidX
+ * Fragment first, then a [LifecycleOwner] Activity. Otherwise the request is not bound to any
+ * lifecycle.
  */
 @MainThread
 internal class PromoRequestManager private constructor() : LifecycleEventObserver {
@@ -70,18 +71,47 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
             if (activity != null && (activity.isFinishing || activity.isDestroyed)) {
                 return
             }
+            if (view.isAttachedToWindow) {
+                if (bind(view, request)) {
+                    request.create()
+                }
+            } else {
+                request.create()
+                bindOnAttach(view, request)
+            }
+        }
+
+        /** Returns false if the resolved host is already destroyed. */
+        private fun bind(view: View, request: PromoRequest): Boolean {
             val owner = findLifecycleOwner(view)
             if (owner == null) {
                 AffirmLog.w("Host is not a LifecycleOwner. Promo request will not be cancelled.")
-            } else {
-                // A destroyed Lifecycle never dispatches ON_DESTROY to a new observer, so its
-                // manager would never leave the map.
-                if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
-                    return
-                }
-                managerFor(owner.lifecycle).add(request)
+                return true
             }
-            request.create()
+            // A destroyed Lifecycle never dispatches ON_DESTROY to a new observer, so its
+            // manager would never leave the map.
+            if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
+                return false
+            }
+            managerFor(owner.lifecycle).add(request)
+            return true
+        }
+
+        /**
+         * Before attach, e.g. in `Activity.onCreate` or `Fragment.onCreateView`, the Fragment
+         * that will hold the view cannot be found yet.
+         */
+        private fun bindOnAttach(view: View, request: PromoRequest) {
+            view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(v: View) {
+                    v.removeOnAttachStateChangeListener(this)
+                    if (v.getTag(R.id.affirm_promo_request) === request && !bind(v, request)) {
+                        request.cancel()
+                    }
+                }
+
+                override fun onViewDetachedFromWindow(v: View) {}
+            })
         }
 
         private fun managerFor(lifecycle: Lifecycle): PromoRequestManager {

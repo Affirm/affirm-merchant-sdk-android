@@ -29,6 +29,8 @@ import com.affirm.android.PromotionCallbackV2;
 import com.affirm.android.PromotionWebView;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Address;
+import com.affirm.android.model.AffirmError;
+import com.affirm.android.model.AffirmErrorUi;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.AffirmTrackOrder;
 import com.affirm.android.model.AffirmTrackProduct;
@@ -344,8 +346,19 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
     }
 
     @Override
-    public void onAffirmCheckoutError(String message) {
-        Toast.makeText(getContext(), "Checkout Error: " + message, Toast.LENGTH_LONG).show();
+    public void onAffirmCheckoutError(@Nullable String message) {
+        onAffirmCheckoutError(message, null);
+    }
+
+    @Override
+    public void onAffirmCheckoutError(@Nullable String message,
+                                      @Nullable AffirmError error) {
+        final AffirmErrorUi ui = error != null ? error.ui() : null;
+        if (ui != null && ui.main() != null) {
+            Toast.makeText(getContext(), ui.main() + "\n" + ui.sub(), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getContext(), "Checkout Error: " + message, Toast.LENGTH_LONG).show();
+        }
     }
 
     // - Affirm.VcnCheckoutCallbacks

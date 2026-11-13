@@ -33,8 +33,11 @@
 
         <activity
             android:name=".PromoListActivity"
-            android:label="@string/promo_list"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/promo_list" />
+
+        <activity
+            android:name=".RenderMigrationActivity"
+            android:label="@string/render_demo" />
 
     </application>
 

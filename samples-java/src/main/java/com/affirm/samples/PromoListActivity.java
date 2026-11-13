@@ -1,9 +1,11 @@
 package com.affirm.samples;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,91 +18,116 @@ import com.affirm.android.AffirmPromotionButton;
 import com.affirm.android.model.PromoPageType;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.NumberFormat;
+import java.util.Locale;
 
+/**
+ * AffirmPromotionButton inside recycled rows: one button per row view, configured again with
+ * each row's amount when the view is rebound.
+ */
 public class PromoListActivity extends AppCompatActivity {
+
+    private static final int ROW_COUNT = 100;
+
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+    private RecyclerView list;
+    private TextView stats;
+    private int createdCount;
+    private int reboundCount;
+    private int configureCount;
+    private final ViewTreeObserver.OnPreDrawListener statusUpdater = () -> {
+        // A promo changes without a callback, e.g. its HTML becomes visible when ready.
+        for (int i = 0; i < list.getChildCount(); i++) {
+            ((PromoHolder) list.getChildViewHolder(list.getChildAt(i))).showStatus();
+        }
+        return true;
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_promo_list);
-        RecyclerView list = findViewById(R.id.promo_list);
+        currencyFormat.setMaximumFractionDigits(0);
+        stats = findViewById(R.id.stats);
+        list = findViewById(R.id.promo_list);
         list.setLayoutManager(new LinearLayoutManager(this));
-        list.setAdapter(new PromoListAdapter(buildRows()));
+        list.setAdapter(new PromoListAdapter());
+        list.getViewTreeObserver().addOnPreDrawListener(statusUpdater);
+        updateStats();
     }
 
-    private static List<PromoRow> buildRows() {
-        BigDecimal[] prices = {
-                BigDecimal.valueOf(50),
-                BigDecimal.valueOf(110),
-                BigDecimal.valueOf(250),
-                BigDecimal.valueOf(500),
-                BigDecimal.valueOf(1100),
-                BigDecimal.valueOf(2500),
-                BigDecimal.valueOf(80),
-                BigDecimal.valueOf(999),
-                BigDecimal.valueOf(75),
-                BigDecimal.valueOf(320)
-        };
-        List<PromoRow> rows = new ArrayList<>();
-        for (int i = 0; i < 40; i++) {
-            BigDecimal price = prices[i % prices.length];
-            rows.add(new PromoRow("Item " + (i + 1), price));
-        }
-        return rows;
+    @Override
+    protected void onDestroy() {
+        list.getViewTreeObserver().removeOnPreDrawListener(statusUpdater);
+        super.onDestroy();
     }
 
-    private static final class PromoRow {
-        final String name;
-        final BigDecimal price;
-
-        PromoRow(String name, BigDecimal price) {
-            this.name = name;
-            this.price = price;
-        }
+    private static BigDecimal amount(int position) {
+        return BigDecimal.valueOf(100 + position * 45);
     }
 
-    private static final class PromoListAdapter extends RecyclerView.Adapter<PromoHolder> {
+    private void updateStats() {
+        stats.setText("Views created: " + createdCount + "   Rebound: " + reboundCount
+                + "   Configure calls: " + configureCount);
+    }
 
-        private final List<PromoRow> rows;
-
-        PromoListAdapter(List<PromoRow> rows) {
-            this.rows = rows;
-        }
+    private final class PromoListAdapter extends RecyclerView.Adapter<PromoHolder> {
 
         @NonNull
         @Override
         public PromoHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
+            final View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_promo_list, parent, false);
-            return new PromoHolder(view);
+            createdCount++;
+            return new PromoHolder(view, createdCount);
         }
 
         @Override
         public void onBindViewHolder(@NonNull PromoHolder holder, int position) {
-            PromoRow row = rows.get(position);
-            holder.name.setText(row.name);
-            holder.price.setText("$" + row.price);
-            Affirm.configureWithAmount(holder.promo, PromoPageType.PRODUCT, row.price, true);
+            if (holder.bindCount > 0) {
+                reboundCount++;
+            }
+            final BigDecimal amount = amount(position);
+            holder.title.setText("Row " + position + " · " + currencyFormat.format(amount));
+            holder.holderLabel.setText(holder.bindCount == 0
+                    ? "view #" + holder.serial + " · new"
+                    : "view #" + holder.serial + " · rebound " + holder.bindCount + "×");
+            holder.bindCount++;
+
+            configureCount++;
+            Affirm.configureWithAmount(holder.promo, PromoPageType.PRODUCT, amount, true);
+            updateStats();
         }
 
         @Override
         public int getItemCount() {
-            return rows.size();
+            return ROW_COUNT;
         }
     }
 
     private static final class PromoHolder extends RecyclerView.ViewHolder {
-        final TextView name;
-        final TextView price;
+        final int serial;
+        int bindCount;
+        final TextView title;
+        final TextView holderLabel;
         final AffirmPromotionButton promo;
+        final TextView status;
 
-        PromoHolder(View itemView) {
+        PromoHolder(View itemView, int serial) {
             super(itemView);
-            name = itemView.findViewById(R.id.item_name);
-            price = itemView.findViewById(R.id.item_price);
+            this.serial = serial;
+            title = itemView.findViewById(R.id.item_title);
+            holderLabel = itemView.findViewById(R.id.item_holder);
             promo = itemView.findViewById(R.id.item_promo);
+            status = itemView.findViewById(R.id.item_status);
+        }
+
+        void showStatus() {
+            final String text = "Shown as " + PromoViewState.shownAs(promo);
+            // Setting the same text again would lay out and draw again, every frame.
+            if (!TextUtils.equals(text, status.getText())) {
+                status.setText(text);
+            }
         }
     }
 }

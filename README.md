@@ -377,6 +377,11 @@ We also support using fragment directly, only need to pass a ViewGroup id, we wi
 1. Copy the content of the `gradle.properties.template` to `affirm/gradle.properties`. This step is optional. There is a step inside `affirm/build.gradle` to do this automatically.
 2. Run the `samples-java` or `samples-kotlin` within Android Studio.
 
+`samples-java` has two screens for the HTML rendering of locally styled promos, opened from buttons on the main screen. Locally styled promos show HTML only when Affirm turns it on for the merchant:
+
+- **Native → HTML render** shows `configWithLocalStyling` and `configWithHtmlStyling` side by side. You can change the font and the text color, and turn on `useLegacyNativeRendering`. Each promo shows how it is rendered and what TalkBack reads.
+- **Promos in a RecyclerView** shows a promo with a different amount in each of 100 rows, and counts how often row views are created, rebound and configured again while you scroll.
+
 # Upgrade (from 1.x.x to 2.0.36)
 * If you are using an older version of the SDK, you can refer to this [upgrade document](https://github.com/Affirm/affirm-merchant-sdk-android/blob/master/UPGRADE.md). We recommend that you install the latest version to access the most up-to-date features and experience. 
 

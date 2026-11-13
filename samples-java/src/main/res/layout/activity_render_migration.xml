@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:layout_marginTop="0dp"
+            android:text="@string/render_demo_flag" />
+
+        <TextView
+            style="@style/RenderDemoNote"
+            android:text="@string/render_demo_flag_note" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/opt_out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/render_demo_opt_out" />
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:text="@string/render_demo_style" />
+
+        <TextView
+            style="@style/RenderDemoNote"
+            android:text="@string/render_demo_style_note" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioGroup
+                android:id="@+id/font"
+                style="@style/RenderDemoChoices"
+                android:layout_width="wrap_content"
+                android:checkedButton="@+id/font_default">
+
+                <RadioButton
+                    android:id="@id/font_default"
+                    style="@style/RenderDemoChoice"
+                    android:text="@string/render_demo_font_default" />
+
+                <RadioButton
+                    android:id="@+id/font_bold"
+                    style="@style/RenderDemoChoice"
+                    android:text="@string/render_demo_font_bold" />
+
+                <RadioButton
+                    android:id="@+id/font_serif_italic"
+                    style="@style/RenderDemoChoice"
+                    android:text="@string/render_demo_font_serif_italic" />
+
+                <RadioButton
+                    android:id="@+id/font_mono"
+                    style="@style/RenderDemoChoice"
+                    android:text="@string/render_demo_font_mono" />
+
+                <RadioButton
+                    android:id="@+id/font_custom"
+                    style="@style/RenderDemoChoice"
+                    android:text="@string/render_demo_font_custom" />
+            </RadioGroup>
+        </HorizontalScrollView>
+
+        <RadioGroup
+            android:id="@+id/color"
+            style="@style/RenderDemoChoices"
+            android:checkedButton="@+id/color_gray">
+
+            <RadioButton
+                android:id="@id/color_gray"
+                style="@style/RenderDemoChoice"
+                android:text="@string/render_demo_color_gray" />
+
+            <RadioButton
+                android:id="@+id/color_indigo"
+                style="@style/RenderDemoChoice"
+                android:text="@string/render_demo_color_indigo" />
+
+            <RadioButton
+                android:id="@+id/color_black"
+                style="@style/RenderDemoChoice"
+                android:text="@string/render_demo_color_black" />
+        </RadioGroup>
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:text="@string/render_demo_native_api" />
+
+        <TextView
+            style="@style/RenderDemoNote"
+            android:text="@string/render_demo_native_api_note" />
+
+        <!-- The tinted card shows whether the promo's background is transparent. -->
+        <LinearLayout style="@style/RenderDemoCard">
+
+            <com.affirm.android.AffirmPromotionButton
+                android:id="@+id/native_api_promo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:htmlStyling="false" />
+
+            <TextView
+                android:id="@+id/native_api_status"
+                style="@style/RenderDemoStatus" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:text="@string/render_demo_explicit_html" />
+
+        <TextView
+            style="@style/RenderDemoNote"
+            android:text="@string/render_demo_explicit_html_note" />
+
+        <LinearLayout style="@style/RenderDemoCard">
+
+            <com.affirm.android.AffirmPromotionButton
+                android:id="@+id/explicit_html_promo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:htmlStyling="true" />
+
+            <TextView
+                android:id="@+id/explicit_html_status"
+                style="@style/RenderDemoStatus" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

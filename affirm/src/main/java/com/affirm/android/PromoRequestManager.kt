@@ -1,5 +1,8 @@
 package com.affirm.android
 
+import android.app.Activity
+import android.app.Application
+import android.os.Bundle
 import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.VisibleForTesting
@@ -12,11 +15,11 @@ import java.util.Collections
 import java.util.WeakHashMap
 
 /**
- * Tracks promo requests for a host [Lifecycle] and cancels them on `ON_DESTROY`.
+ * Tracks promo requests for a host and cancels them when the host is destroyed.
  *
  * The host is resolved from the view once it is attached: the view lifecycle of an AndroidX
- * Fragment first, then a [LifecycleOwner] Activity. Otherwise the request is not bound to any
- * lifecycle.
+ * Fragment first, then a [LifecycleOwner] Activity, then any other Activity through
+ * [Application.ActivityLifecycleCallbacks].
  */
 @MainThread
 internal class PromoRequestManager private constructor() : LifecycleEventObserver {
@@ -53,6 +56,21 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
 
     companion object {
         private val lifecycleToManager = HashMap<Lifecycle, PromoRequestManager>()
+        private val activityToManager = HashMap<Activity, PromoRequestManager>()
+        private var callbacksApplication: Application? = null
+
+        private val activityCallbacks = object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityDestroyed(activity: Activity) {
+                activityToManager.remove(activity)?.cancelAll()
+            }
+
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityStarted(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityStopped(activity: Activity) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+        }
 
         /**
          * Cancels the request previously started for [view], then starts [request] and
@@ -83,17 +101,21 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
 
         /** Returns false if the resolved host is already destroyed. */
         private fun bind(view: View, request: PromoRequest): Boolean {
-            val owner = findLifecycleOwner(view)
-            if (owner == null) {
-                AffirmLog.w("Host is not a LifecycleOwner. Promo request will not be cancelled.")
-                return true
+            val activity = AffirmUtils.getActivityFromView(view)
+            val owner = findLifecycleOwner(view, activity)
+            // A destroyed host never reports its destruction again, so its manager would never
+            // leave the map.
+            when {
+                owner != null -> {
+                    if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) return false
+                    managerFor(owner.lifecycle).add(request)
+                }
+                activity != null -> {
+                    if (activity.isDestroyed) return false
+                    managerFor(activity).add(request)
+                }
+                else -> AffirmLog.w("Promo view has no Activity. Request will not be cancelled.")
             }
-            // A destroyed Lifecycle never dispatches ON_DESTROY to a new observer, so its
-            // manager would never leave the map.
-            if (owner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
-                return false
-            }
-            managerFor(owner.lifecycle).add(request)
             return true
         }
 
@@ -120,8 +142,18 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
             }
         }
 
-        private fun findLifecycleOwner(view: View): LifecycleOwner? {
-            val activity = AffirmUtils.getActivityFromView(view)
+        /** For an Activity that is not a [LifecycleOwner]. */
+        private fun managerFor(activity: Activity): PromoRequestManager {
+            val application = activity.application
+            if (callbacksApplication !== application) {
+                callbacksApplication?.unregisterActivityLifecycleCallbacks(activityCallbacks)
+                application.registerActivityLifecycleCallbacks(activityCallbacks)
+                callbacksApplication = application
+            }
+            return activityToManager.getOrPut(activity) { PromoRequestManager() }
+        }
+
+        private fun findLifecycleOwner(view: View, activity: Activity?): LifecycleOwner? {
             if (activity is FragmentActivity) {
                 // The view lifecycle ends on onDestroyView, e.g. when the Fragment goes to the
                 // back stack, while the Fragment itself stays alive.
@@ -173,6 +205,7 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
         private fun untrack(request: PromoRequest) {
             request.cancel()
             lifecycleToManager.values.forEach { it.remove(request) }
+            activityToManager.values.forEach { it.remove(request) }
         }
 
         @VisibleForTesting
@@ -186,12 +219,21 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
         }
 
         @VisibleForTesting
+        fun hasManager(activity: Activity): Boolean {
+            return activityToManager.containsKey(activity)
+        }
+
+        @VisibleForTesting
         fun reset() {
             lifecycleToManager.entries.toList().forEach { (lifecycle, manager) ->
                 lifecycle.removeObserver(manager)
                 manager.cancelAll()
             }
             lifecycleToManager.clear()
+            activityToManager.values.forEach { it.cancelAll() }
+            activityToManager.clear()
+            callbacksApplication?.unregisterActivityLifecycleCallbacks(activityCallbacks)
+            callbacksApplication = null
         }
     }
 }

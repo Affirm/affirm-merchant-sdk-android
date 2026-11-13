@@ -19,6 +19,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.robolectric.Robolectric
@@ -145,21 +146,62 @@ class PromoRequestManagerTest {
     }
 
     @Test
-    fun startsButDoesNotBindRawActivity() {
-        val controller = Robolectric.buildActivity(Activity::class.java).setup()
+    fun startsButDoesNotBindViewOutsideActivity() {
         val request = mock(PromoRequest::class.java)
 
-        PromoRequestManager.track(View(controller.get()), request)
+        PromoRequestManager.track(AttachedView(activity.applicationContext), request)
 
         verify(request).create()
-        controller.destroy()
+        assertThat(PromoRequestManager.hasManager(activity)).isFalse()
+        assertThat(PromoRequestManager.hasManager(activity.registry)).isFalse()
+    }
+
+    @Test
+    fun cancelsRawActivityRequestsOnDestroy() {
+        val controller = Robolectric.buildActivity(Activity::class.java).setup()
+        val host = controller.get()
+        val view = View(host)
+        host.setContentView(view)
+        val request = mock(PromoRequest::class.java)
+
+        PromoRequestManager.track(view, request)
+
+        verify(request).create()
+        assertThat(PromoRequestManager.hasManager(host)).isTrue()
+
+        controller.pause().stop().destroy()
+
+        verify(request).cancel()
+        assertThat(PromoRequestManager.hasManager(host)).isFalse()
+    }
+
+    @Test
+    fun rawActivityRequestStartedInOnCreateIsCancelledOnDestroy() {
+        val controller = Robolectric.buildActivity(Activity::class.java).create()
+        val host = controller.get()
+        val view = View(host)
+        host.setContentView(view)
+        val request = mock(PromoRequest::class.java)
+
+        PromoRequestManager.track(view, request)
+
+        assertThat(PromoRequestManager.hasManager(host)).isFalse()
+
+        controller.start().resume().visible()
+
+        assertThat(PromoRequestManager.hasManager(host)).isTrue()
         verify(request, never()).cancel()
+
+        controller.pause().stop().destroy()
+
+        verify(request).cancel()
     }
 
     @Test
     fun reconfiguringViewInRawActivityCancelsPreviousRequest() {
         val controller = Robolectric.buildActivity(Activity::class.java).setup()
         val view = View(controller.get())
+        controller.get().setContentView(view)
         val first = mock(PromoRequest::class.java)
         val second = mock(PromoRequest::class.java)
 
@@ -168,7 +210,14 @@ class PromoRequestManagerTest {
 
         verify(first).cancel()
         verify(second).create()
+        verify(second, never()).cancel()
         assertThat(view.getTag(R.id.affirm_promo_request)).isSameAs(second)
+
+        controller.pause().stop().destroy()
+
+        // Only the current request is cancelled on destroy; the replaced one is not tracked.
+        verify(first, times(1)).cancel()
+        verify(second).cancel()
     }
 
     @Test

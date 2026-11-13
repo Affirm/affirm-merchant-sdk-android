@@ -351,6 +351,45 @@ public class AffirmPromotionButtonRenderTest {
     }
 
     @Test
+    public void sameHtmlWithNewFallbackUpdatesItWithoutReloading() {
+        String newNative = "Pay in 4 with affirm";
+        button.render(migrated(NATIVE, HTML));
+        PromotionWebView webView = button.getPromotionWebView();
+        String renderId = webView.renderId();
+
+        button.render(migrated(newNative, HTML));
+
+        assertThat(button.getPromotionWebView()).isSameAs(webView);
+        assertThat(webView.renderId()).isEqualTo(renderId);
+        assertThat(button.getContentDescription().toString()).isEqualTo(newNative);
+        fail(webView);
+        assertThat(((PromotionButton) shown()).getText().toString()).isEqualTo(newNative);
+    }
+
+    @Test
+    public void sameHtmlWithNewFallbackUpdatesTheShownFallback() {
+        String newNative = "Pay in 4 with affirm";
+        button.render(migrated(NATIVE, HTML));
+        fail(button.getPromotionWebView());
+
+        button.render(migrated(newNative, HTML));
+
+        PromotionButton fallback = (PromotionButton) shown();
+        assertThat(fallback.getText().toString()).isEqualTo(newNative);
+        assertThat(fallback.getContentDescription().toString()).isEqualTo(newNative);
+    }
+
+    @Test
+    public void sameTextForAnotherRendererIsRenderedAgain() {
+        button.render(PromoRenderPlan.create(false, true, null, response(NATIVE, NATIVE)));
+        assertThat(shown()).isInstanceOf(PromotionButton.class);
+
+        button.render(migrated(NATIVE, NATIVE));
+
+        assertThat(shown()).isSameAs(button.getPromotionWebView());
+    }
+
+    @Test
     public void newLocalStylingAppliesToTheSameResponse() {
         button.showResponse(response(NATIVE, HTML, false), false);
         PromotionButton nativeButton = (PromotionButton) shown();

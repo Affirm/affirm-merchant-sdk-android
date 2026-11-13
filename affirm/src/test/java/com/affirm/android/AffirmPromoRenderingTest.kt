@@ -20,6 +20,7 @@ class AffirmPromoRenderingTest {
             AffirmPromoRenderReason.HTML_EMPTY,
             AffirmPromoRenderReason.RESOURCE_FAILED,
             AffirmPromoRenderReason.IMAGE_FAILED,
+            AffirmPromoRenderReason.FONT_FAILED,
             AffirmPromoRenderReason.HTML_TIMEOUT,
             AffirmPromoRenderReason.TEMPLATE_ERROR
         ).forEach { assertThat(AffirmPromoRenderReason.fromPage(it)).isEqualTo(it) }

@@ -20,12 +20,13 @@ internal object AffirmPromoRenderReason {
     const val HTML_EMPTY = "html_empty"
     const val RESOURCE_FAILED = "resource_failed"
     const val IMAGE_FAILED = "image_failed"
+    const val FONT_FAILED = "font_failed"
     const val HTML_TIMEOUT = "html_timeout"
     const val TEMPLATE_ERROR = "template_error"
 
     private val PAGE_REASONS = setOf(
-        SANITIZER_UNAVAILABLE, HTML_EMPTY, RESOURCE_FAILED, IMAGE_FAILED, HTML_TIMEOUT,
-        TEMPLATE_ERROR
+        SANITIZER_UNAVAILABLE, HTML_EMPTY, RESOURCE_FAILED, IMAGE_FAILED, FONT_FAILED,
+        HTML_TIMEOUT, TEMPLATE_ERROR
     )
 
     /** Page-supplied codes stay as-is. Anything else, including native-only codes, becomes script_error. */

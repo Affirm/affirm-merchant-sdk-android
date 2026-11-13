@@ -157,6 +157,19 @@
                     waits.push(document.fonts.ready);
                 }
                 Promise.all(waits).then(function () {
+                    // fonts.ready also resolves when a font file fails to load.
+                    var fontFailed = false;
+                    if (document.fonts) {
+                        document.fonts.forEach(function (font) {
+                            if (font.status === 'error') {
+                                fontFailed = true;
+                            }
+                        });
+                    }
+                    if (fontFailed) {
+                        fail('font_failed');
+                        return;
+                    }
                     requestAnimationFrame(function () {
                         if (settled) {
                             return;

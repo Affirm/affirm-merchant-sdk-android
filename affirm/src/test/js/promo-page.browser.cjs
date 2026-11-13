@@ -13,6 +13,8 @@ const BADGE_CSS = fs.readFileSync(path.join(RAW, 'badge_styles.css'), 'utf8');
 const CHROME_PATH = process.env.CHROME_PATH
     || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const PAGE_URL = 'https://promo.test/';
+const FONT_TTF = fs.readFileSync(
+    path.resolve(__dirname, '../../../../samples-java/src/main/res/font/lacquer_regular.ttf'));
 const PNG_1X1 = Buffer.from(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
     'base64');
@@ -50,7 +52,8 @@ function fillTemplate({ html, remoteCss = '', remoteFont = '', extraCss = '', sa
 }
 
 /**
- * @param resources https URL -> { type, body } served to the page; any other https URL fails.
+ * @param resources https URL -> { type, body, headers, delayMs } served to the page; any other
+ *     https URL fails.
  */
 async function render({
     html, remoteCss = '', remoteFont = '', extraCss = '', sanitizer = SANITIZER,
@@ -67,7 +70,8 @@ async function render({
         } else if (hang.includes(url)) {
             return;
         } else if (resources[url]) {
-            request.respond({ contentType: resources[url].type, body: resources[url].body });
+            const { type, body, headers, delayMs = 0 } = resources[url];
+            setTimeout(() => request.respond({ contentType: type, body, headers }), delayMs);
         } else if (url.startsWith('data:')) {
             request.continue();
         } else {
@@ -233,6 +237,49 @@ test('remote CSS, font CSS and image load errors fail', async () => {
     });
     assert.equal(failureReason(decodedButBroken.calls), 'image_failed');
     await decodedButBroken.page.close();
+});
+
+const FONT_CSS_URL = 'https://fonts.test/font.css';
+const FONT_FILE_URL = 'https://fonts.test/font.ttf';
+
+/** Renders text in a font whose CSS loads and whose file is served as [fontFile], if at all. */
+function renderWithFont(fontFile) {
+    const resources = {
+        [FONT_CSS_URL]: {
+            type: 'text/css',
+            body: `@font-face{font-family:TestFont;src:url(${FONT_FILE_URL}) format('truetype')}`,
+        },
+    };
+    if (fontFile) {
+        resources[FONT_FILE_URL] = fontFile;
+    }
+    return render({
+        html: '<span>ok</span>',
+        remoteFont: FONT_CSS_URL,
+        extraCss: '#affirm-promo-root{font-family:TestFont,serif}',
+        resources,
+    });
+}
+
+const fontStatus = (page) => page.evaluate(() => [...document.fonts].map((font) => font.status));
+
+test('a font file that fails to load fails with font_failed', async () => {
+    const { page, calls } = await renderWithFont(null);
+    assert.equal(failureReason(calls), 'font_failed');
+    assert.deepEqual(await fontStatus(page), ['error']);
+    await page.close();
+});
+
+test('ready waits for a delayed font file', async () => {
+    const { page, calls } = await renderWithFont({
+        type: 'font/ttf',
+        body: FONT_TTF,
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        delayMs: 1000,
+    });
+    assert.equal(calls[0].event, 'ready');
+    assert.deepEqual(await fontStatus(page), ['loaded']);
+    await page.close();
 });
 
 test('required resources that never settle fail with html_timeout', { timeout: 10000 }, async () => {

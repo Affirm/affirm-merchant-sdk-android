@@ -390,6 +390,20 @@ public class AffirmPromotionButtonRenderTest {
     }
 
     @Test
+    public void optOutSetAfterInitializationAppliesToTheNextResponse() {
+        button.showResponse(response(NATIVE, HTML), false);
+        assertThat(shown()).isSameAs(button.getPromotionWebView());
+
+        Affirm.setUseLegacyNativeRendering(true);
+        try {
+            button.showResponse(response(NATIVE, HTML), false);
+            assertThat(shown()).isInstanceOf(PromotionButton.class);
+        } finally {
+            Affirm.setUseLegacyNativeRendering(false);
+        }
+    }
+
+    @Test
     public void newLocalStylingAppliesToTheSameResponse() {
         button.showResponse(response(NATIVE, HTML, false), false);
         PromotionButton nativeButton = (PromotionButton) shown();

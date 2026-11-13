@@ -679,6 +679,22 @@ public final class Affirm {
                         .build());
     }
 
+    /**
+     * Updates {@link Configuration.Builder#setUseLegacyNativeRendering} after initialization.
+     * Applies from the next {@code configureWithAmount} call.
+     */
+    public static void setUseLegacyNativeRendering(boolean useLegacyNativeRendering) {
+        if (!isInitialized()) {
+            AffirmLog.w(AFFIRM_NOT_INITIALIZED_MESSAGE);
+            return;
+        }
+
+        AffirmPlugins.get().setConfiguration(
+                new Affirm.Configuration.Builder(AffirmPlugins.get().getConfiguration())
+                        .setUseLegacyNativeRendering(useLegacyNativeRendering)
+                        .build());
+    }
+
     private static boolean isInitialized() {
         return AffirmPlugins.get() != null;
     }

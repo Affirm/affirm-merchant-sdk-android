@@ -43,9 +43,7 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
     private fun releaseAll() {
         // Not toList(): for a single element it calls first(), which throws if GC clears the
         // entry after size() is read. toArray() tolerates entries cleared mid-iteration.
-        views.toTypedArray().forEach { view ->
-            if (view is AffirmPromotionButton) view.destroy() else untrack(view)
-        }
+        views.toTypedArray().forEach { release(it) }
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -78,25 +76,34 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
         /**
          * Cancels the request previously started for [view], then starts [request] and
          * cancels it when the resolved host is destroyed.
+         *
+         * @return false if the host is already finishing or destroyed, so [request] never
+         * starts and its callback is never called.
          */
         @JvmStatic
         @MainThread
-        fun track(view: View, request: PromoRequest) {
+        fun track(view: View, request: PromoRequest): Boolean {
             untrack(view)
             view.setTag(R.id.affirm_promo_request, request)
 
             val activity = AffirmUtils.getActivityFromView(view)
             if (activity != null && (activity.isFinishing || activity.isDestroyed)) {
-                return
+                return false
             }
             if (view.isAttachedToWindow) {
-                if (bind(view)) {
-                    request.create()
+                if (!bind(view)) {
+                    return false
                 }
             } else {
-                request.create()
                 bindOnAttach(view, request)
             }
+            request.create()
+            return true
+        }
+
+        /** Ends what [view] shows as if its host were destroyed. */
+        private fun release(view: View) {
+            if (view is AffirmPromotionButton) view.destroy() else untrack(view)
         }
 
         /** Returns false if the resolved host is already destroyed. */
@@ -128,7 +135,7 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
                 override fun onViewAttachedToWindow(v: View) {
                     v.removeOnAttachStateChangeListener(this)
                     if (v.getTag(R.id.affirm_promo_request) === request && !bind(v)) {
-                        request.cancel()
+                        release(v)
                     }
                 }
 
@@ -140,10 +147,20 @@ internal class PromoRequestManager private constructor() : LifecycleEventObserve
         @JvmStatic
         @MainThread
         fun untrack(view: View) {
-            (view.getTag(R.id.affirm_promo_request) as? PromoRequest)?.cancel()
-            view.setTag(R.id.affirm_promo_request, null)
+            cancelRequest(view)
             lifecycleToManager.values.forEach { it.remove(view) }
             activityToManager.values.forEach { it.remove(view) }
+        }
+
+        /**
+         * Cancels the request started for [view], if any, but keeps [view], so the host's
+         * `ON_DESTROY` still destroys it, e.g. a detached list row that keeps its WebView.
+         */
+        @JvmStatic
+        @MainThread
+        fun cancelRequest(view: View) {
+            (view.getTag(R.id.affirm_promo_request) as? PromoRequest)?.cancel()
+            view.setTag(R.id.affirm_promo_request, null)
         }
 
         private fun managerFor(lifecycle: Lifecycle): PromoRequestManager {

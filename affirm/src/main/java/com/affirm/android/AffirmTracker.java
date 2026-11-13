@@ -44,7 +44,9 @@ final class AffirmTracker {
         PREQUAL_WEBVIEW_FAIL("Prequal webView failed"),
         PRODUCT_WEBVIEW_FAIL("Product webView failed"),
         SITE_WEBVIEW_FAIL("Site webView failed"),
-        NETWORK_ERROR("network error");
+        NETWORK_ERROR("network error"),
+        PROMO_RENDER_MODE("Promo_render_mode"),
+        PROMO_RENDER_RESULT("Promo_render_result");
 
         private final String mName;
 
@@ -103,9 +105,14 @@ final class AffirmTracker {
         data.addProperty("release", BuildConfig.VERSION_NAME);
         data.addProperty("android_sdk", Build.VERSION.SDK_INT);
         data.addProperty("device_name", Build.MODEL);
-        data.addProperty("merchant_key", AffirmPlugins.get().publicKey());
-        data.addProperty("environment",
-                AffirmPlugins.get().environmentName().toLowerCase(Locale.getDefault()));
+        // Promo render events carry the key and environment captured at render start.
+        if (!data.has("merchant_key")) {
+            data.addProperty("merchant_key", AffirmPlugins.get().publicKey());
+        }
+        if (!data.has("environment")) {
+            data.addProperty("environment",
+                    AffirmPlugins.get().environmentName().toLowerCase(Locale.getDefault()));
+        }
         data.addProperty("event_name", eventName);
         data.addProperty("level", level.getLevel());
     }

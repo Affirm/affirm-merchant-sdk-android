@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -18,8 +19,21 @@ import com.affirm.android.model.PromoResponse;
 
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO;
+import static com.affirm.android.AffirmPromoRenderReason.DETACHED;
+import static com.affirm.android.AffirmPromoRenderReason.HOST_DESTROYED;
+import static com.affirm.android.AffirmPromoRenderReason.MISSING_HTML;
+import static com.affirm.android.AffirmPromoRenderReason.MISSING_NATIVE;
+import static com.affirm.android.AffirmPromoRenderReason.NATIVE_ERROR;
+import static com.affirm.android.AffirmPromoRenderReason.SUPERSEDED;
+import static com.affirm.android.AffirmPromoRenderReason.WEBVIEW_UNAVAILABLE;
 
 public class AffirmPromotionButton extends FrameLayout {
+
+    /** Builds the request of a managed render; called again to restart after reattach. */
+    interface PromoRequestFactory {
+        @NonNull
+        PromoRequest create(@NonNull PromoResponseCallback callback);
+    }
 
     private boolean htmlStyling;
     private String message;
@@ -48,6 +62,23 @@ public class AffirmPromotionButton extends FrameLayout {
 
     @Nullable
     private HtmlAttempt htmlAttempt;
+
+    @Nullable
+    private PromoRequestFactory requestFactory;
+    @Nullable
+    private PromoRender render;
+    /** The migrated page style when {@code render} started, matching its decision's font. */
+    @Nullable
+    private String renderPageStyle;
+    private boolean restartOnAttach;
+    /** How the shown content ended; null while HTML loads or before anything is shown. */
+    @Nullable
+    private PromoRender.Outcome outcome;
+    /** The render that was current when {@code outcome} was settled. */
+    @Nullable
+    private PromoRender outcomeRender;
+    @Nullable
+    private Boolean htmlContentUsable;
 
     public AffirmPromotionButton(@NonNull Context context) {
         this(context, null);
@@ -106,17 +137,69 @@ public class AffirmPromotionButton extends FrameLayout {
         this.message = promoMessage;
         messageMode = htmlStyling ? PromoRendererMode.HTML : PromoRendererMode.NATIVE;
         if (htmlStyling) {
-            showHtml(promoMessage, promoDescription, false);
+            showHtml(promoMessage, promoDescription, false, true);
         } else {
-            showNative(promoMessage, promoDescription);
+            showNative(promoMessage, promoDescription, null);
         }
     }
 
-    /** Shows the promo in {@code response} with the planned renderer. */
-    void showResponse(@NonNull PromoResponse response, boolean showPrequal) {
+    /** Starts a managed render, cancelling the current one. */
+    @MainThread
+    void startRender(@NonNull PromoRequestFactory factory) {
+        cancelRender(SUPERSEDED);
+        restartOnAttach = false;
+        requestFactory = factory;
+        beginRender();
+    }
+
+    private void beginRender() {
+        final PromoRender newRender = PromoRender.start(htmlStyling, useLegacyNativeRendering(),
+                nativeTypeface());
+        render = newRender;
+        renderPageStyle = migratedPageStyle();
+        final PromoRequest request =
+                requestFactory.create(new PromoButtonCallback(this, newRender));
+        showPlaceholder(PromoMessageCache.get(request.cacheKey()));
+        if (!PromoRequestManager.track(this, request)) {
+            cancelRender(HOST_DESTROYED);
+        }
+    }
+
+    private void cancelRender(@NonNull String reason) {
+        endRender(reason);
+        PromoRequestManager.untrack(this);
+    }
+
+    private void endRender(@NonNull String reason) {
+        if (render != null) {
+            render.cancel(reason, htmlContentUsable);
+            render = null;
+        }
+    }
+
+    /** Shows the response of {@code from} with the inputs captured when it started. */
+    void onPromoResponse(@NonNull PromoRender from, @NonNull PromoResponse response,
+                         boolean showPrequal) {
+        if (from != render) {
+            return;
+        }
         this.showPrequal = showPrequal;
-        render(PromoRenderPlan.create(htmlStyling, useLegacyNativeRendering(), nativeTypeface(),
-                response));
+        final PromoRenderPlan plan = PromoRenderPlan.create(from.explicitHtml, from.optOut,
+                from.typeface, response);
+        from.onResponse(plan, response.promo().promoConfig().migrateNativeToHtmlRenderStatus());
+        render(plan);
+        // The content may already be settled, e.g. the same message shown from the cache.
+        reportOutcome();
+    }
+
+    void onPromoFailure(@NonNull PromoRender from) {
+        if (from != render) {
+            return;
+        }
+        // A cached message is only a placeholder while loading; it may hold outdated terms.
+        clearPromoContent();
+        setVisibility(GONE);
+        from.onFetchFailed();
     }
 
     /**
@@ -132,14 +215,33 @@ public class AffirmPromotionButton extends FrameLayout {
         AffirmLog.d("Promo renders as " + (plan.text.isEmpty() ? "hidden" : plan.mode));
         message = plan.text;
         messageMode = plan.mode;
+        outcome = null;
+        htmlContentUsable = null;
         if (plan.text.isEmpty()) {
             clearPromoContent();
             setVisibility(GONE);
+            settle(PromoRender.Outcome.empty(
+                    plan.mode == PromoRendererMode.HTML ? MISSING_HTML : MISSING_NATIVE));
         } else if (plan.mode == PromoRendererMode.HTML) {
-            showHtml(plan.text, plan.description, plan.canFallBackToNative);
+            showHtml(plan.text, plan.description, plan.canFallBackToNative, plan.explicitHtml);
         } else {
-            showNative(plan.text, plan.description);
+            showNative(plan.text, plan.description, plan.fallbackReason);
         }
+    }
+
+    private void settle(@NonNull PromoRender.Outcome settled) {
+        outcome = settled;
+        outcomeRender = render;
+        reportOutcome();
+    }
+
+    private void reportOutcome() {
+        if (render == null || outcome == null) {
+            return;
+        }
+        // Content kept from an earlier render, e.g. a rebound list row, already reported its
+        // fallback; this render attempted nothing, so it must not count the fallback again.
+        render.onSettled(outcomeRender == render ? outcome : outcome.reused(), htmlContentUsable);
     }
 
     /** Updates the native copy of the HTML promo already shown without reloading it. */
@@ -148,9 +250,11 @@ public class AffirmPromotionButton extends FrameLayout {
             htmlAttempt.description = plan.description;
             htmlAttempt.canFallBackToNative = plan.canFallBackToNative;
             setContentDescription(plan.description);
-        } else if (plan.canFallBackToNative) {
-            // The HTML failed and shows its native fallback.
-            showNative(plan.description, plan.description);
+        } else if (plan.canFallBackToNative && promotionButton != null
+                && promotionButton.getParent() == this) {
+            // The HTML failed and shows its native fallback; its outcome is already reported.
+            promotionButton.setText(promotionButton.updateSpan(plan.description));
+            promotionButton.setContentDescription(plan.description);
         }
     }
 
@@ -166,20 +270,30 @@ public class AffirmPromotionButton extends FrameLayout {
         return plugins != null && plugins.useLegacyNativeRendering();
     }
 
-    private void showNative(@NonNull String text, @NonNull String description) {
+    /** {@code fallbackReason} is what failed in HTML when this is the native fallback. */
+    private void showNative(@NonNull String text, @NonNull String description,
+                            @Nullable String fallbackReason) {
         clearViews();
         releaseWebView();
-        buildPromotionButtonIfNeeded();
-        addView(promotionButton);
-        promotionButton.setText(promotionButton.updateSpan(text));
-        promotionButton.setContentDescription(description);
+        try {
+            buildPromotionButtonIfNeeded();
+            addView(promotionButton);
+            promotionButton.setText(promotionButton.updateSpan(text));
+            promotionButton.setContentDescription(description);
+        } catch (RuntimeException e) {
+            AffirmLog.e("Native promo could not be shown", e);
+            clearPromoContent();
+            setVisibility(GONE);
+            settle(PromoRender.Outcome.failed(NATIVE_ERROR, fallbackReason));
+            return;
+        }
+        settle(PromoRender.Outcome.shown(PromoRendererMode.NATIVE, fallbackReason));
     }
 
     /** With {@code canFallBackToNative}, a failure before the HTML shows switches to native. */
     private void showHtml(@NonNull String html, @NonNull String description,
-                          boolean canFallBackToNative) {
+                          boolean canFallBackToNative, boolean explicitHtml) {
         clearViews();
-        final boolean explicitHtml = htmlStyling;
         final String css;
         final String pageStyle;
         if (explicitHtml) {
@@ -187,17 +301,18 @@ public class AffirmPromotionButton extends FrameLayout {
             pageStyle = typefaceDeclaration;
         } else {
             css = null;
-            pageStyle = migratedPageStyle();
+            // Restyling after configureWithAmount must not change a render decided on the old font.
+            pageStyle = render != null ? renderPageStyle : migratedPageStyle();
         }
         if (promotionWebView == null || explicitHtml != promotionWebViewExplicitHtml) {
             releaseWebView();
             final PromotionWebView created;
             try {
-                created = new PromotionWebView(getContext());
+                created = createPromotionWebView();
             } catch (RuntimeException e) {
                 // No WebView provider on this device, or it is being updated.
                 AffirmLog.e("Promo WebView could not be created", e);
-                failHtml(description, canFallBackToNative);
+                failHtml(WEBVIEW_UNAVAILABLE, description, canFallBackToNative);
                 return;
             }
             created.setWebViewClickListener(clickListener);
@@ -231,12 +346,21 @@ public class AffirmPromotionButton extends FrameLayout {
                 promotionButton.getGravity(), getResources().getDisplayMetrics().density);
     }
 
-    private void failHtml(@NonNull String description, boolean canFallBackToNative) {
+    /** Throws when the device has no usable WebView provider. */
+    @VisibleForTesting
+    @NonNull
+    PromotionWebView createPromotionWebView() {
+        return new PromotionWebView(getContext());
+    }
+
+    private void failHtml(@NonNull String reason, @NonNull String description,
+                          boolean canFallBackToNative) {
         if (canFallBackToNative) {
-            showNative(description, description);
+            showNative(description, description, reason);
         } else {
             clearPromoContent();
             setVisibility(GONE);
+            settle(PromoRender.Outcome.failed(reason, null));
         }
     }
 
@@ -279,10 +403,20 @@ public class AffirmPromotionButton extends FrameLayout {
         }
 
         @Override
+        public void onSanitized(boolean usable) {
+            if (htmlAttempt == this) {
+                htmlContentUsable = usable;
+            }
+        }
+
+        @Override
         public void onReady() {
             ready = true;
             removeCallbacks(this);
             AffirmLog.d("Promo HTML is showing");
+            if (htmlAttempt == this) {
+                settle(PromoRender.Outcome.shown(PromoRendererMode.HTML, null));
+            }
         }
 
         @Override
@@ -308,7 +442,7 @@ public class AffirmPromotionButton extends FrameLayout {
                     + (toNative ? "showing native" : "hiding"));
             // The page or its renderer may be broken; the next HTML promo starts over.
             releaseWebView();
-            failHtml(description, toNative);
+            failHtml(reason, description, toNative);
         }
     }
 
@@ -482,9 +616,44 @@ public class AffirmPromotionButton extends FrameLayout {
      * Activity, is destroyed.
      */
     public void destroy() {
-        PromoRequestManager.untrack(this);
+        cancelRender(HOST_DESTROYED);
+        requestFactory = null;
+        restartOnAttach = false;
         clearPromoContent();
         releaseWebView();
+    }
+
+    /** An unfinished render is cancelled on detach and started again on reattach. */
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        final PromoRender detached = render;
+        if (detached != null && !detached.isEnded()) {
+            // Deferred: a Fragment's view is removed before its view lifecycle is destroyed,
+            // and a view moved within one pass is detached and attached again right away.
+            // post() still reaches the window's handler here, not the queue run on reattach.
+            post(() -> cancelIfStillDetached(detached));
+        }
+    }
+
+    private void cancelIfStillDetached(@NonNull PromoRender detached) {
+        if (detached != render || detached.isEnded() || isAttachedToWindow()) {
+            return;
+        }
+        endRender(DETACHED);
+        // Still tracked, so the host destroys the WebView this keeps for the restart.
+        PromoRequestManager.cancelRequest(this);
+        clearPromoContent();
+        restartOnAttach = true;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (restartOnAttach && requestFactory != null) {
+            restartOnAttach = false;
+            beginRender();
+        }
     }
 
     private boolean isContentShown() {
@@ -515,6 +684,7 @@ public class AffirmPromotionButton extends FrameLayout {
     private void clearPromoContent() {
         message = null;
         showPrequal = false;
+        outcome = null;
         clearViews();
     }
 }

@@ -5,6 +5,7 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
@@ -27,6 +28,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 import static com.affirm.android.AffirmConstants.CONTENT_TYPE;
+import static com.affirm.android.AffirmConstants.PROMO_PATH;
 import static com.affirm.android.AffirmConstants.TRACKER_PATH;
 import static com.affirm.android.AffirmTracker.TrackingEvent.NETWORK_ERROR;
 import static com.affirm.android.AffirmTracker.TrackingLevel.ERROR;
@@ -88,41 +90,8 @@ public final class AffirmClient {
         call.enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {
-                ResponseBody responseBody = response.body();
-                Gson gson = AffirmPlugins.get().gson();
-
-                if (response.isSuccessful()) {
-                    if (responseBody != null) {
-                        try {
-                            ParameterizedType type = (ParameterizedType) listener.getClass()
-                                    .getGenericInterfaces()[0];
-                            Type resolvedType = type.getActualTypeArguments()[0];
-                            T model = gson.fromJson(responseBody.string(), resolvedType);
-                            deliverOnMainThread(call, () -> listener.onSuccess(model));
-                        } catch (JsonSyntaxException | IOException e) {
-                            handleErrorResponse(
-                                    call,
-                                    new APIException("Some error occurred while parsing response",
-                                            e),
-                                    listener
-
-                            );
-                        }
-                    } else {
-                        handleErrorResponse(
-                                call,
-                                new APIException("Response was success, but body was null", null),
-                                listener);
-                    }
-                } else {
-                    trackNetworkError(call.request());
-                    handleErrorResponse(
-                            call,
-                            AffirmHttpClient.createExceptionAndTrackFromResponse(
-                                    response,
-                                    responseBody
-                            ),
-                            listener);
+                try (ResponseBody responseBody = response.body()) {
+                    handleResponse(call, response, responseBody, listener);
                 }
             }
 
@@ -138,6 +107,43 @@ public final class AffirmClient {
         return call;
     }
 
+    private static <T> void handleResponse(Call call, Response response,
+                                           @Nullable ResponseBody responseBody,
+                                           AffirmListener<T> listener) {
+        Gson gson = AffirmPlugins.get().gson();
+
+        if (response.isSuccessful()) {
+            if (responseBody != null) {
+                try {
+                    ParameterizedType type = (ParameterizedType) listener.getClass()
+                            .getGenericInterfaces()[0];
+                    Type resolvedType = type.getActualTypeArguments()[0];
+                    T model = resolvedType == Void.class
+                            ? null
+                            : gson.fromJson(responseBody.string(), resolvedType);
+                    deliverOnMainThread(call, () -> listener.onSuccess(model));
+                } catch (JsonSyntaxException | IOException e) {
+                    handleErrorResponse(
+                            call,
+                            new APIException("Some error occurred while parsing response", e),
+                            listener
+                    );
+                }
+            } else {
+                handleErrorResponse(
+                        call,
+                        new APIException("Response was success, but body was null", null),
+                        listener);
+            }
+        } else {
+            trackNetworkError(call.request());
+            handleErrorResponse(
+                    call,
+                    AffirmHttpClient.createExceptionAndTrackFromResponse(response, responseBody),
+                    listener);
+        }
+    }
+
     // Skipped if the call is cancelled before the main thread runs it, since a response may
     // already be queued when cancel() is called.
     private static void deliverOnMainThread(Call call, Runnable runnable) {
@@ -149,16 +155,31 @@ public final class AffirmClient {
     }
 
     private static void trackNetworkError(Request request) {
-        if (!request.url().toString().contains(TRACKER_PATH)) {
-            AffirmTracker.track(
-                    NETWORK_ERROR,
-                    ERROR,
-                    createTrackingNetworkJsonObj(
-                            request,
-                            null
-                    )
-            );
+        final JsonObject data = networkErrorData(request);
+        if (data != null) {
+            AffirmTracker.track(NETWORK_ERROR, ERROR, data);
         }
+    }
+
+    /** Null for tracker requests, which are never reported. */
+    @VisibleForTesting
+    @Nullable
+    static JsonObject networkErrorData(Request request) {
+        if (request.url().toString().contains(TRACKER_PATH)) {
+            return null;
+        }
+        final JsonObject data = createTrackingNetworkJsonObj(request, null);
+        if (isPromoRequest(request)) {
+            // The promo URL holds the amount and items.
+            data.remove("url");
+        }
+        return data;
+    }
+
+    @VisibleForTesting
+    static boolean isPromoRequest(Request request) {
+        final String promoPathPrefix = PROMO_PATH.substring(0, PROMO_PATH.indexOf("%s"));
+        return request.url().encodedPath().contains(promoPathPrefix);
     }
 
     private static <T> void handleErrorResponse(Call call, Exception e,

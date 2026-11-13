@@ -105,6 +105,31 @@ class PromoRequestCacheTest {
     }
 
     @Test
+    fun failedResponseRemovesCachedMessage() {
+        val call = CapturingCall()
+        val request = newRequest(call)
+        PromoMessageCache.put(request.cacheKey(), cachedMessage())
+
+        request.create()
+        respond(call, "not json")
+
+        assertThat(PromoMessageCache.get(request.cacheKey())).isNull()
+    }
+
+    @Test
+    fun cancelledRequestKeepsCachedMessage() {
+        val call = CapturingCall()
+        val request = newRequest(call)
+        PromoMessageCache.put(request.cacheKey(), cachedMessage())
+
+        request.create()
+        request.cancel()
+        respond(call, "not json")
+
+        assertThat(PromoMessageCache.get(request.cacheKey())).isNotNull()
+    }
+
+    @Test
     fun htmlAndPlainButtonsShareCacheKey() {
         assertThat(newRequest(htmlStyle = true).cacheKey())
             .isEqualTo(newRequest(htmlStyle = false).cacheKey())
@@ -187,6 +212,9 @@ class PromoRequestCacheTest {
             """"config":{"promo_prequal_enabled":true,""" +
             """"promo_style":"${if (prequal) "simple" else "fast"}"}}}"""
 
+    private fun cachedMessage() =
+        PromoMessageCache.CachedMessage("Starting at \$9/mo with affirm", "<p>old</p>", true, false)
+
     private fun item() = Item.builder()
         .setDisplayName("Wheel")
         .setImageUrl("http://merchant.com/wheel.jpg")
@@ -198,12 +226,19 @@ class PromoRequestCacheTest {
 
     private class CapturingCall {
         lateinit var callback: Callback
+        private var cancelled = false
         val call: Call = mock(Call::class.java) { invocation ->
-            if (invocation.method.name == "enqueue") {
-                callback = invocation.getArgument(0)
-                null
-            } else {
-                RETURNS_DEFAULTS.answer(invocation)
+            when (invocation.method.name) {
+                "enqueue" -> {
+                    callback = invocation.getArgument(0)
+                    null
+                }
+                "cancel" -> {
+                    cancelled = true
+                    null
+                }
+                "isCanceled" -> cancelled
+                else -> RETURNS_DEFAULTS.answer(invocation)
             }
         }
     }

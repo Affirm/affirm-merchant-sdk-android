@@ -49,6 +49,19 @@ public class AffirmTrackerTest {
         assertEquals(AffirmTracker.TrackingLevel.INFO.getLevel(), data.get("level").getAsString());
     }
 
+    @Test
+    public void testTrackKeepsCapturedMerchantKeyAndEnvironment() {
+        JsonObject eventData = new JsonObject();
+        eventData.addProperty("merchant_key", "CAPTURED");
+        eventData.addProperty("environment", "production");
+
+        JsonObject data = AffirmTracker.addTrackingData("event", eventData,
+                AffirmTracker.TrackingLevel.INFO);
+
+        assertEquals("CAPTURED", data.get("merchant_key").getAsString());
+        assertEquals("production", data.get("environment").getAsString());
+    }
+
     @NonNull
     private static JsonObject addTrackingData(@NonNull String eventName,
                                               @Nullable JsonObject eventData,

@@ -225,7 +225,7 @@ class PromoRenderTest {
 
     @Test
     fun cancelBeforeTheResponse() {
-        render().cancel(AffirmPromoRenderReason.DETACHED)
+        render().cancel(AffirmPromoRenderReason.DETACHED, true)
 
         val mode = mode()
         assertThat(mode.string("selected_mode")).isEqualTo("none")
@@ -234,6 +234,7 @@ class PromoRenderTest {
         assertThat(result.string("outcome")).isEqualTo(PromoRender.CANCELLED)
         assertThat(result.string("reason")).isEqualTo(AffirmPromoRenderReason.DETACHED)
         assertThat(result.string("fetch_outcome")).isEqualTo("cancelled")
+        assertThat(result.get("html_content_usable").isJsonNull).isTrue()
     }
 
     @Test

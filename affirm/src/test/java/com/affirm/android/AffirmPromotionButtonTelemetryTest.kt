@@ -132,6 +132,27 @@ class AffirmPromotionButtonTelemetryTest {
     }
 
     @Test
+    fun cancelAfterSanitizationKeepsTheResult() {
+        start()
+        respond(migrate = true)
+        message(button.promotionWebView!!, "\"event\":\"sanitized\",\"usable\":false")
+        start()
+
+        val cancelled = results().single()
+        assertThat(cancelled.string("outcome")).isEqualTo(PromoRender.CANCELLED)
+        assertThat(cancelled.get("html_content_usable").asBoolean).isFalse()
+    }
+
+    @Test
+    fun cancelBeforeSanitizationReportsItUnknown() {
+        start()
+        respond(migrate = true)
+        start()
+
+        assertThat(results().single().get("html_content_usable").isJsonNull).isTrue()
+    }
+
+    @Test
     fun htmlTimeoutFallsBackToNative() {
         start()
         respond(migrate = true)

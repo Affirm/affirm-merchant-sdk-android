@@ -90,6 +90,8 @@ public class AffirmPromotionButton extends FrameLayout {
         }
         if (promoMessage.equals(message)) {
             // Already shown, e.g. from the cache. Reloading would make it flash.
+            (htmlStyling ? promotionWebView : promotionButton)
+                    .setContentDescription(promoDescription);
             return;
         }
         this.message = promoMessage;

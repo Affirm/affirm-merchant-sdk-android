@@ -89,14 +89,17 @@ internal class PromoRender @VisibleForTesting constructor(
         end(Outcome.failed(AffirmPromoRenderReason.FETCH_ERROR, null), null)
     }
 
-    /** [reason] is superseded, detached or host_destroyed. */
-    fun cancel(reason: String) {
+    /**
+     * [reason] is superseded, detached or host_destroyed. [htmlContentUsable] is ignored before
+     * the response, since it then belongs to an earlier render.
+     */
+    fun cancel(reason: String, htmlContentUsable: Boolean? = null) {
         if (isEnded) return
         if (plan == null) {
             fetchEndedAt = clock()
             emitMode(NONE, reason)
         }
-        end(Outcome.cancelled(reason), null)
+        end(Outcome.cancelled(reason), if (plan == null) null else htmlContentUsable)
     }
 
     private fun end(outcome: Outcome, htmlContentUsable: Boolean?) {

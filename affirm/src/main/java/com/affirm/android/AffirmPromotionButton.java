@@ -172,7 +172,7 @@ public class AffirmPromotionButton extends FrameLayout {
 
     private void endRender(@NonNull String reason) {
         if (render != null) {
-            render.cancel(reason);
+            render.cancel(reason, htmlContentUsable);
             render = null;
         }
     }

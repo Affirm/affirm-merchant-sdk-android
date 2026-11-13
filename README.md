@@ -216,6 +216,8 @@ Affirm.initialize(new Affirm.Configuration.Builder("public key", Affirm.Environm
         .build());
 ```
 
+To change it after initialization, call `Affirm.setUseLegacyNativeRendering(boolean)`. It applies from the next `configureWithAmount` call.
+
 
 Tapping on the `AffirmPromotionButton` automatically start prequalification flow.
 

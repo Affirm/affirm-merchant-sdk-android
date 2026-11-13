@@ -35,6 +35,7 @@ public class AffirmPlugins {
 
     void setConfiguration(Affirm.Configuration configuration) {
         this.configuration = configuration;
+        PromoMessageCache.evictAll();
     }
 
     static void initialize(@NonNull Affirm.Configuration configuration) {
@@ -60,6 +61,7 @@ public class AffirmPlugins {
         synchronized (LOCK) {
             instance = null;
         }
+        PromoMessageCache.evictAll();
     }
 
     public CardDetailsInner getCachedCardDetails() {

@@ -200,6 +200,7 @@ public class PromoRequestTest {
         ShadowLooper.idleMainLooper();
 
         verify(callback, never()).onFailure(any(AffirmException.class));
+        verify(call, never()).request();
     }
 
     @Test

@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
 import static com.affirm.android.AffirmColor.AFFIRM_COLOR_TYPE_BLUE;
@@ -32,6 +33,9 @@ public class AffirmPromotionButton extends FrameLayout {
     private float affirmTextSize;
     private int affirmTextColor;
     private int affirmTextFont;
+
+    @Nullable
+    private OnClickListener clickListener;
 
     public AffirmPromotionButton(@NonNull Context context) {
         this(context, null);
@@ -160,6 +164,7 @@ public class AffirmPromotionButton extends FrameLayout {
         this.remoteCssUrl = remoteCssUrl;
         this.typefaceDeclaration = typefaceDeclaration;
         promotionWebView = new PromotionWebView(getContext());
+        promotionWebView.setWebViewClickListener(clickListener);
         message = null;
     }
 
@@ -233,10 +238,17 @@ public class AffirmPromotionButton extends FrameLayout {
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {
         super.setOnClickListener(l);
+        clickListener = l;
 
         if (promotionWebView != null) {
             promotionWebView.setWebViewClickListener(l);
         }
+    }
+
+    @VisibleForTesting
+    @Nullable
+    PromotionWebView getPromotionWebView() {
+        return promotionWebView;
     }
 
     /**

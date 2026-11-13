@@ -23,6 +23,8 @@ public class AffirmPromotionButton extends FrameLayout {
 
     private boolean htmlStyling;
     private String message;
+    /** The renderer {@code message} was planned for. */
+    private PromoRendererMode messageMode;
     private boolean showPrequal;
 
     private PromotionButton promotionButton;
@@ -102,6 +104,7 @@ public class AffirmPromotionButton extends FrameLayout {
 
     protected void setLabel(@NonNull String promoMessage, @NonNull String promoDescription) {
         this.message = promoMessage;
+        messageMode = htmlStyling ? PromoRendererMode.HTML : PromoRendererMode.NATIVE;
         if (htmlStyling) {
             showHtml(promoMessage, promoDescription, false);
         } else {
@@ -121,12 +124,14 @@ public class AffirmPromotionButton extends FrameLayout {
      * to the native copy.
      */
     void render(@NonNull PromoRenderPlan plan) {
-        if (!plan.text.isEmpty() && plan.text.equals(message)) {
+        if (!plan.text.isEmpty() && plan.mode == messageMode && plan.text.equals(message)) {
             // Already shown, e.g. from the cache. Reloading would make it flash.
+            updateFallback(plan);
             return;
         }
         AffirmLog.d("Promo renders as " + (plan.text.isEmpty() ? "hidden" : plan.mode));
         message = plan.text;
+        messageMode = plan.mode;
         if (plan.text.isEmpty()) {
             clearPromoContent();
             setVisibility(GONE);
@@ -134,6 +139,18 @@ public class AffirmPromotionButton extends FrameLayout {
             showHtml(plan.text, plan.description, plan.canFallBackToNative);
         } else {
             showNative(plan.text, plan.description);
+        }
+    }
+
+    /** Updates the native copy of the HTML promo already shown without reloading it. */
+    private void updateFallback(@NonNull PromoRenderPlan plan) {
+        if (htmlAttempt != null) {
+            htmlAttempt.description = plan.description;
+            htmlAttempt.canFallBackToNative = plan.canFallBackToNative;
+            setContentDescription(plan.description);
+        } else if (plan.canFallBackToNative) {
+            // The HTML failed and shows its native fallback.
+            showNative(plan.description, plan.description);
         }
     }
 
@@ -252,8 +269,8 @@ public class AffirmPromotionButton extends FrameLayout {
 
     /** Watches one HTML load; also the timeout, since the page can't report a stalled load. */
     private final class HtmlAttempt implements PromotionWebView.RenderListener, Runnable {
-        private final String description;
-        private final boolean canFallBackToNative;
+        private String description;
+        private boolean canFallBackToNative;
         private boolean ready;
 
         HtmlAttempt(@NonNull String description, boolean canFallBackToNative) {

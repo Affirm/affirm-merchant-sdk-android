@@ -50,4 +50,20 @@ public class AffirmPluginsTest {
     public void testBaseInvalidCheckoutRedirectUrl() {
         Truth.assertThat(AffirmPlugins.get().invalidCheckoutRedirectUrl()).isEqualTo("sandbox.affirm.com/u/");
     }
+
+    @Test
+    public void testUseLegacyNativeRenderingDefaultsToFalse() {
+        Truth.assertThat(AffirmPlugins.get().useLegacyNativeRendering()).isFalse();
+    }
+
+    @Test
+    public void testUseLegacyNativeRenderingIsKeptWhenCopied() {
+        Affirm.Configuration optedOut =
+                new Affirm.Configuration.Builder("Y8CQXFF044903JC0", Affirm.Environment.SANDBOX)
+                        .setUseLegacyNativeRendering(true)
+                        .build();
+        Truth.assertThat(optedOut.useLegacyNativeRendering).isTrue();
+        Truth.assertThat(new Affirm.Configuration.Builder(optedOut).build()
+                .useLegacyNativeRendering).isTrue();
+    }
 }

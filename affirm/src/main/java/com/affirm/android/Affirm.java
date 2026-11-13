@@ -196,6 +196,7 @@ public final class Affirm {
         final String cardTip;
         final String locale;
         final String countryCode;
+        final boolean useLegacyNativeRendering;
 
         Configuration(Builder builder) {
             this.publicKey = builder.publicKey;
@@ -203,6 +204,7 @@ public final class Affirm {
             this.cardTip = builder.cardTip;
             this.locale = builder.locale;
             this.countryCode = builder.countryCode;
+            this.useLegacyNativeRendering = builder.useLegacyNativeRendering;
 
             if (builder.environment != null) {
                 this.environment = builder.environment;
@@ -220,6 +222,7 @@ public final class Affirm {
             private String locale = LOCALE_USA;
             // When a country-code is not provided, the country-code will default to USA
             private String countryCode = COUNTY_CODE_USA;
+            private boolean useLegacyNativeRendering;
 
             /**
              * @param configuration Set the configuration to be used by Affirm.
@@ -231,6 +234,7 @@ public final class Affirm {
                 this.cardTip = configuration.cardTip;
                 this.locale = configuration.locale;
                 this.countryCode = configuration.countryCode;
+                this.useLegacyNativeRendering = configuration.useLegacyNativeRendering;
             }
 
             /**
@@ -379,6 +383,18 @@ public final class Affirm {
              */
             public Builder setCardTip(@Nullable String cardTip) {
                 this.cardTip = cardTip;
+                return this;
+            }
+
+            /**
+             * Keep native-API promo views on the native renderer even when the server
+             * flag would migrate them to HTML.
+             *
+             * @param useLegacyNativeRendering true to opt out of HTML migration
+             * @return The same builder, for easy chaining.
+             */
+            public Builder setUseLegacyNativeRendering(boolean useLegacyNativeRendering) {
+                this.useLegacyNativeRendering = useLegacyNativeRendering;
                 return this;
             }
 

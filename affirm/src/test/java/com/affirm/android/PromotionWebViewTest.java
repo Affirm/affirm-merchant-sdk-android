@@ -26,6 +26,7 @@ public class PromotionWebViewTest {
     private Context context;
     private PromotionWebView webView;
     private View.OnClickListener listener;
+    private int touchSlop;
     private int dragDistance;
 
     @Before
@@ -33,7 +34,8 @@ public class PromotionWebViewTest {
         context = RuntimeEnvironment.getApplication();
         webView = new PromotionWebView(context);
         listener = mock(View.OnClickListener.class);
-        dragDistance = ViewConfiguration.get(context).getScaledTouchSlop() * 4;
+        touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        dragDistance = touchSlop * 4;
     }
 
     @Test
@@ -52,6 +54,19 @@ public class PromotionWebViewTest {
         webView.setWebViewClickListener(listener);
 
         tap(SystemClock.uptimeMillis());
+
+        verify(listener, times(1)).onClick(webView);
+    }
+
+    @Test
+    public void tapWithSmallMovementInvokesListenerOnce() {
+        webView.setWebViewClickListener(listener);
+        long downTime = SystemClock.uptimeMillis();
+        int jitter = touchSlop - 1;
+
+        dispatch(downTime, downTime, MotionEvent.ACTION_DOWN, 10, 10);
+        dispatch(downTime, downTime + 25, MotionEvent.ACTION_MOVE, 10 + jitter, 10);
+        dispatch(downTime, downTime + 50, MotionEvent.ACTION_UP, 10 + jitter, 10);
 
         verify(listener, times(1)).onClick(webView);
     }

@@ -26,8 +26,8 @@ import com.affirm.android.model.PromoPageType;
 import java.math.BigDecimal;
 
 /**
- * Shows the native-to-HTML promo render migration: the same native configure call rendered as
- * native text or as HTML, next to an explicit HTML call.
+ * Shows the native-to-HTML promo render migration: a native configure call rendered as native
+ * text or as HTML.
  */
 public class RenderMigrationActivity extends AppCompatActivity {
 
@@ -44,14 +44,11 @@ public class RenderMigrationActivity extends AppCompatActivity {
     private EditText amountInput;
     private TextView loaded;
     private AffirmPromotionButton nativeApiPromo;
-    private AffirmPromotionButton explicitHtmlPromo;
     private TextView nativeApiStatus;
-    private TextView explicitHtmlStatus;
     private LogPanel logPanel;
     private final ViewTreeObserver.OnPreDrawListener statusUpdater = () -> {
         // A promo changes without a callback, e.g. its HTML becomes visible when ready.
         showStatus(nativeApiPromo, nativeApiStatus);
-        showStatus(explicitHtmlPromo, explicitHtmlStatus);
         return true;
     };
 
@@ -67,9 +64,7 @@ public class RenderMigrationActivity extends AppCompatActivity {
         amountInput = findViewById(R.id.amount);
         loaded = findViewById(R.id.loaded);
         nativeApiPromo = findViewById(R.id.native_api_promo);
-        explicitHtmlPromo = findViewById(R.id.explicit_html_promo);
         nativeApiStatus = findViewById(R.id.native_api_status);
-        explicitHtmlStatus = findViewById(R.id.explicit_html_status);
         final TextView log = findViewById(R.id.log);
         logPanel = new LogPanel(log);
 
@@ -176,15 +171,13 @@ public class RenderMigrationActivity extends AppCompatActivity {
     }
 
     private void reload() {
-        loaded.setText(getString(R.string.render_demo_loaded, context()));
+        loaded.setText(context() + " · useLegacyNativeRendering " + optOut.isChecked());
         LogPanel.mark(context() + " · font " + selectedFontName()
                 + " · useLegacyNativeRendering " + optOut.isChecked());
         nativeApiPromo.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, selectedTypeface(), selectedColor(),
                 R.dimen.render_demo_text_size);
         Affirm.configureWithAmount(nativeApiPromo, PromoPageType.PRODUCT, amount, true);
-        explicitHtmlPromo.configWithHtmlStyling(null, null);
-        Affirm.configureWithAmount(explicitHtmlPromo, PromoPageType.PRODUCT, amount, true);
     }
 
     @NonNull
@@ -194,14 +187,7 @@ public class RenderMigrationActivity extends AppCompatActivity {
     }
 
     private Typeface selectedTypeface() {
-        final int checked = font.getCheckedRadioButtonId();
-        if (checked == R.id.font_bold) {
-            return Typeface.DEFAULT_BOLD;
-        } else if (checked == R.id.font_serif_italic) {
-            return Typeface.create(Typeface.SERIF, Typeface.ITALIC);
-        } else if (checked == R.id.font_mono) {
-            return Typeface.MONOSPACE;
-        } else if (checked == R.id.font_custom) {
+        if (font.getCheckedRadioButtonId() == R.id.font_custom) {
             return ResourcesCompat.getFont(this, R.font.lacquer_regular);
         }
         return Typeface.DEFAULT;

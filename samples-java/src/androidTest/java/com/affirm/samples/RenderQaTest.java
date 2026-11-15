@@ -278,9 +278,7 @@ public class RenderQaTest {
                 .append("- WebView: ").append(webViewVersion()).append('\n')
                 .append("- Result: ").append(passed).append(" passed, ")
                 .append(steps.size() - passed).append(" failed\n\n")
-                .append("Expected and Actual are what the `configWithLocalStyling` promo shows. ")
-                .append("The page also has a `configWithHtmlStyling` promo, which always ")
-                .append("renders HTML, so each log has its `Promo renders as HTML` line too.\n\n")
+                .append("Expected and Actual are what the `configWithLocalStyling` promo shows.\n\n")
                 .append("| # | Public key | Country | Amount | Scenario | Expected | Actual | Result |\n")
                 .append("|---|---|---|---|---|---|---|---|\n");
         for (Step step : steps) {
@@ -314,7 +312,7 @@ public class RenderQaTest {
         final StringBuilder lines = new StringBuilder();
         for (String line : log.split("\n")) {
             if (line.contains("): ---- ") || line.contains("): Promo ")
-                    || line.contains("): Track Promo_render_") || line.contains("): Ignoring ")) {
+                    || line.contains("): Ignoring ")) {
                 lines.append(line).append('\n');
             }
         }

@@ -1,7 +1,6 @@
 package com.affirm.android;
 
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,9 +72,6 @@ final class AffirmTracker {
     static void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
                       @Nullable JsonObject data) {
         final JsonObject trackingData = addTrackingData(event.mName, data, level);
-        if (AffirmLog.getLogLevel() <= Log.DEBUG) {
-            AffirmLog.d("Track " + event.mName + ": " + trackingData);
-        }
         new TrackerRequest(trackingData).create();
     }
 

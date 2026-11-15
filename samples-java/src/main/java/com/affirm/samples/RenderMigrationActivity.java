@@ -1,14 +1,19 @@
 package com.affirm.samples;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -27,14 +32,22 @@ import java.math.BigDecimal;
  */
 public class RenderMigrationActivity extends AppCompatActivity {
 
-    private static final BigDecimal PRICE = BigDecimal.valueOf(1100.0);
+    // The SDK has no getters for these; kept so other screens use the loaded merchant.
+    private static String publicKey = Config.PUBLIC_KEY;
+    private static String countryCode = Config.COUNTRY_CODE;
+    private static BigDecimal amount = BigDecimal.valueOf(1100);
 
+    private RadioGroup country;
     private RadioGroup font;
     private RadioGroup color;
+    private SwitchCompat optOut;
+    private EditText publicKeyInput;
+    private EditText amountInput;
     private AffirmPromotionButton nativeApiPromo;
     private AffirmPromotionButton explicitHtmlPromo;
     private TextView nativeApiStatus;
     private TextView explicitHtmlStatus;
+    private LogPanel logPanel;
     private final ViewTreeObserver.OnPreDrawListener statusUpdater = () -> {
         // A promo changes without a callback, e.g. its HTML becomes visible when ready.
         showStatus(nativeApiPromo, nativeApiStatus);
@@ -46,14 +59,31 @@ public class RenderMigrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_render_migration);
+        country = findViewById(R.id.country);
         font = findViewById(R.id.font);
         color = findViewById(R.id.color);
+        optOut = findViewById(R.id.opt_out);
+        publicKeyInput = findViewById(R.id.public_key);
+        amountInput = findViewById(R.id.amount);
         nativeApiPromo = findViewById(R.id.native_api_promo);
         explicitHtmlPromo = findViewById(R.id.explicit_html_promo);
         nativeApiStatus = findViewById(R.id.native_api_status);
         explicitHtmlStatus = findViewById(R.id.explicit_html_status);
+        final TextView log = findViewById(R.id.log);
+        logPanel = new LogPanel(log);
 
-        final SwitchCompat optOut = findViewById(R.id.opt_out);
+        ((TextView) findViewById(R.id.environment)).setText(
+                getString(R.string.render_demo_environment, BuildConfig.AFFIRM_ENVIRONMENT));
+        publicKeyInput.setText(publicKey);
+        amountInput.setText(amount.toPlainString());
+        country.check(countryButton(countryCode));
+        findViewById(R.id.load).setOnClickListener(v -> load());
+        findViewById(R.id.copy_log).setOnClickListener(v -> {
+            final ClipboardManager clipboard =
+                    (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setPrimaryClip(ClipData.newPlainText("Affirm SDK log", log.getText()));
+        });
+
         optOut.setOnCheckedChangeListener((button, checked) -> {
             Affirm.setUseLegacyNativeRendering(checked);
             reload();
@@ -65,8 +95,21 @@ public class RenderMigrationActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        logPanel.start();
+    }
+
+    @Override
+    protected void onPause() {
+        logPanel.stop();
+        super.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         getWindow().getDecorView().getViewTreeObserver().removeOnPreDrawListener(statusUpdater);
+        logPanel.release();
         if (isFinishing()) {
             // Leave the rest of the sample app with the configured opt-out.
             Affirm.setUseLegacyNativeRendering(false);
@@ -74,13 +117,78 @@ public class RenderMigrationActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    private void load() {
+        final String key = publicKeyInput.getText().toString().trim();
+        final BigDecimal newAmount = parseAmount(amountInput.getText().toString());
+        if (key.isEmpty()) {
+            publicKeyInput.setError(getString(R.string.render_demo_public_key_missing));
+            return;
+        }
+        if (newAmount == null) {
+            amountInput.setError(getString(R.string.render_demo_amount_invalid));
+            return;
+        }
+        final String newCountryCode =
+                ((TextView) findViewById(country.getCheckedRadioButtonId())).getText().toString();
+        publicKey = key;
+        amount = newAmount;
+        Affirm.setPublicKey(key);
+        if (!newCountryCode.equals(countryCode)) {
+            countryCode = newCountryCode;
+            Affirm.setCountryCode(countryCode);
+            Affirm.setLocale(localeOf(countryCode));
+        }
+        reload();
+    }
+
+    private static int countryButton(@NonNull String countryCode) {
+        switch (countryCode) {
+            case "USA":
+                return R.id.country_usa;
+            case "CAN":
+                return R.id.country_can;
+            default:
+                return R.id.country_gbr;
+        }
+    }
+
+    @NonNull
+    private static String localeOf(@NonNull String countryCode) {
+        switch (countryCode) {
+            case "USA":
+                return "en_US";
+            case "CAN":
+                return "en_CA";
+            default:
+                return "en_GB";
+        }
+    }
+
+    @Nullable
+    private static BigDecimal parseAmount(@NonNull String text) {
+        try {
+            final BigDecimal parsed = new BigDecimal(text.trim());
+            return parsed.signum() > 0 ? parsed : null;
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     private void reload() {
+        LogPanel.mark(context() + " · font " + selectedFontName()
+                + " · useLegacyNativeRendering " + optOut.isChecked());
         nativeApiPromo.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
                 AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO, selectedTypeface(), selectedColor(),
                 R.dimen.render_demo_text_size);
-        Affirm.configureWithAmount(nativeApiPromo, PromoPageType.PRODUCT, PRICE, true);
+        Affirm.configureWithAmount(nativeApiPromo, PromoPageType.PRODUCT, amount, true);
         explicitHtmlPromo.configWithHtmlStyling(null, null);
-        Affirm.configureWithAmount(explicitHtmlPromo, PromoPageType.PRODUCT, PRICE, true);
+        Affirm.configureWithAmount(explicitHtmlPromo, PromoPageType.PRODUCT, amount, true);
+    }
+
+    @NonNull
+    private static String context() {
+        return BuildConfig.AFFIRM_ENVIRONMENT + " · " + countryCode + " · " + publicKey + " · "
+                + amount.toPlainString();
     }
 
     private Typeface selectedTypeface() {
@@ -95,6 +203,12 @@ public class RenderMigrationActivity extends AppCompatActivity {
             return ResourcesCompat.getFont(this, R.font.lacquer_regular);
         }
         return Typeface.DEFAULT;
+    }
+
+    @NonNull
+    private String selectedFontName() {
+        final TextView checked = findViewById(font.getCheckedRadioButtonId());
+        return checked.getText().toString();
     }
 
     private int selectedColor() {
@@ -112,6 +226,7 @@ public class RenderMigrationActivity extends AppCompatActivity {
         if (promo.getVisibility() == View.VISIBLE) {
             text += "\nTalkBack: \"" + PromoViewState.talkBackLabel(promo) + "\"";
         }
+        text += "\n" + context();
         // Setting the same text again would lay out and draw again, every frame.
         if (!TextUtils.equals(text, status.getText())) {
             status.setText(text);

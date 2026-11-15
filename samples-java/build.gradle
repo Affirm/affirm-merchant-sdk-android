@@ -1,5 +1,17 @@
 apply plugin: 'com.android.application'
 
+def localProperties = new Properties()
+if (rootProject.file('local.properties').exists()) {
+    rootProject.file('local.properties').withInputStream { localProperties.load(it) }
+}
+// -PaffirmEnvironment=production, or affirm.qa.environment in local.properties.
+def affirmEnvironment = (project.findProperty('affirmEnvironment')
+        ?: localProperties.getProperty('affirm.qa.environment')
+        ?: 'sandbox').toString().toUpperCase(Locale.US)
+if (!(affirmEnvironment in ['SANDBOX', 'PRODUCTION'])) {
+    throw new GradleException("affirmEnvironment must be sandbox or production, not $affirmEnvironment")
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -11,6 +23,8 @@ android {
         consumerProguardFiles 'proguard-rules.pro'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "AFFIRM_ENVIRONMENT", "\"$affirmEnvironment\""
     }
 
     repositories {

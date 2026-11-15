@@ -13,6 +13,73 @@
         <TextView
             style="@style/RenderDemoHeader"
             android:layout_marginTop="0dp"
+            android:text="@string/render_demo_merchant" />
+
+        <TextView
+            android:id="@+id/environment"
+            style="@style/RenderDemoNote" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:baselineAligned="true"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/public_key"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:fontFamily="monospace"
+                android:hint="@string/render_demo_public_key"
+                android:importantForAutofill="no"
+                android:inputType="textCapCharacters|textNoSuggestions"
+                android:maxLines="1"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/amount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:hint="@string/render_demo_amount"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:maxLines="1"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/load"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/render_demo_load" />
+        </LinearLayout>
+
+        <RadioGroup
+            android:id="@+id/country"
+            style="@style/RenderDemoChoices">
+
+            <RadioButton
+                android:id="@+id/country_usa"
+                style="@style/RenderDemoChoice"
+                android:text="@string/render_demo_country_usa" />
+
+            <RadioButton
+                android:id="@+id/country_gbr"
+                style="@style/RenderDemoChoice"
+                android:text="@string/render_demo_country_gbr" />
+
+            <RadioButton
+                android:id="@+id/country_can"
+                style="@style/RenderDemoChoice"
+                android:text="@string/render_demo_country_can" />
+        </RadioGroup>
+
+        <TextView
+            style="@style/RenderDemoHeader"
             android:text="@string/render_demo_flag" />
 
         <TextView
@@ -134,5 +201,37 @@
                 android:id="@+id/explicit_html_status"
                 style="@style/RenderDemoStatus" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/RenderDemoHeader"
+                android:layout_width="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_weight="1"
+                android:text="@string/render_demo_log" />
+
+            <Button
+                android:id="@+id/copy_log"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/render_demo_copy" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/renderDemoLog"
+            android:fontFamily="monospace"
+            android:padding="8dp"
+            android:textIsSelectable="true"
+            android:textSize="12sp" />
     </LinearLayout>
 </ScrollView>

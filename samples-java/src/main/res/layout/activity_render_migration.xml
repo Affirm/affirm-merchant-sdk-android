@@ -160,6 +160,10 @@
         </RadioGroup>
 
         <TextView
+            android:id="@+id/loaded"
+            style="@style/RenderDemoHeader" />
+
+        <TextView
             style="@style/RenderDemoHeader"
             android:text="@string/render_demo_native_api" />
 

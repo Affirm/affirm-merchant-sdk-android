@@ -58,7 +58,7 @@ import static org.junit.Assume.assumeTrue;
 public class RenderQaTest {
 
     private static final String HTML = "HTML";
-    private static final String NATIVE = "native text";
+    private static final String NATIVE = "Native";
     private static final long SETTLE_TIMEOUT_MS = 30_000;
     // A cached message is shown while the request runs, so a state must hold for a while.
     private static final long STABLE_MS = 4_000;
@@ -314,7 +314,7 @@ public class RenderQaTest {
         final StringBuilder lines = new StringBuilder();
         for (String line : log.split("\n")) {
             if (line.contains("): ---- ") || line.contains("): Promo ")
-                    || line.contains("): Ignoring ")) {
+                    || line.contains("): Track Promo_render_") || line.contains("): Ignoring ")) {
                 lines.append(line).append('\n');
             }
         }

@@ -379,7 +379,7 @@ We also support using fragment directly, only need to pass a ViewGroup id, we wi
 
 `samples-java` has two screens for the HTML rendering of locally styled promos, opened from buttons on the main screen. Locally styled promos show HTML only when Affirm turns it on for the merchant:
 
-- **Native → HTML render** shows `configWithLocalStyling` and `configWithHtmlStyling` side by side. You can enter a public key, a country and an amount, change the font and the text color, and turn on `useLegacyNativeRendering`. Each promo shows how it is rendered and what TalkBack reads, and the bottom of the page shows the SDK's log. The sample uses the sandbox; to use production, build it with `-PaffirmEnvironment=production` or add `affirm.qa.environment=production` to `local.properties`.
+- **Native → HTML render** shows `configWithLocalStyling` and `configWithHtmlStyling` side by side. You can enter a public key, a country and an amount, change the font and the text color, and turn on `useLegacyNativeRendering`. Each promo shows how it is rendered, and the bottom of the page shows the SDK's log. The sample uses the sandbox; to use production, build it with `-PaffirmEnvironment=production` or add `affirm.qa.environment=production` to `local.properties`.
 - **Promos in a RecyclerView** shows a promo with a different amount in each of 100 rows, and counts how often row views are created, rebound and configured again while you scroll.
 
 # Upgrade (from 1.x.x to 2.0.36)

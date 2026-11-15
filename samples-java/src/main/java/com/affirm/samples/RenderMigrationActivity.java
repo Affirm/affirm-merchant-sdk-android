@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -43,6 +42,7 @@ public class RenderMigrationActivity extends AppCompatActivity {
     private SwitchCompat optOut;
     private EditText publicKeyInput;
     private EditText amountInput;
+    private TextView loaded;
     private AffirmPromotionButton nativeApiPromo;
     private AffirmPromotionButton explicitHtmlPromo;
     private TextView nativeApiStatus;
@@ -65,6 +65,7 @@ public class RenderMigrationActivity extends AppCompatActivity {
         optOut = findViewById(R.id.opt_out);
         publicKeyInput = findViewById(R.id.public_key);
         amountInput = findViewById(R.id.amount);
+        loaded = findViewById(R.id.loaded);
         nativeApiPromo = findViewById(R.id.native_api_promo);
         explicitHtmlPromo = findViewById(R.id.explicit_html_promo);
         nativeApiStatus = findViewById(R.id.native_api_status);
@@ -175,6 +176,7 @@ public class RenderMigrationActivity extends AppCompatActivity {
     }
 
     private void reload() {
+        loaded.setText(getString(R.string.render_demo_loaded, context()));
         LogPanel.mark(context() + " · font " + selectedFontName()
                 + " · useLegacyNativeRendering " + optOut.isChecked());
         nativeApiPromo.configWithLocalStyling(AffirmColor.AFFIRM_COLOR_TYPE_BLUE,
@@ -222,11 +224,7 @@ public class RenderMigrationActivity extends AppCompatActivity {
     }
 
     private static void showStatus(AffirmPromotionButton promo, TextView status) {
-        String text = "Shown as: " + PromoViewState.shownAs(promo);
-        if (promo.getVisibility() == View.VISIBLE) {
-            text += "\nTalkBack: \"" + PromoViewState.talkBackLabel(promo) + "\"";
-        }
-        text += "\n" + context();
+        final String text = "Shown as: " + PromoViewState.shownAs(promo);
         // Setting the same text again would lay out and draw again, every frame.
         if (!TextUtils.equals(text, status.getText())) {
             status.setText(text);

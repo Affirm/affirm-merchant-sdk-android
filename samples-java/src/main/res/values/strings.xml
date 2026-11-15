@@ -19,6 +19,7 @@
     <string name="render_demo_public_key">Public key</string>
     <string name="render_demo_amount">Amount</string>
     <string name="render_demo_load">Load</string>
+    <string name="render_demo_loaded">Loaded: %s</string>
     <string name="render_demo_country_usa">USA</string>
     <string name="render_demo_country_gbr">GBR</string>
     <string name="render_demo_country_can">CAN</string>

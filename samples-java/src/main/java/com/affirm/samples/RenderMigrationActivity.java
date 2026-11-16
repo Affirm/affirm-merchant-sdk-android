@@ -31,7 +31,8 @@ import java.math.BigDecimal;
  */
 public class RenderMigrationActivity extends AppCompatActivity {
 
-    // The SDK has no getters for these; kept so other screens use the loaded merchant.
+    // The SDK has no getters for these, so the demo keeps what it last loaded. The key and the
+    // country stay set in the SDK after leaving, so other screens use the loaded merchant.
     private static String publicKey = Config.PUBLIC_KEY;
     private static String countryCode = Config.COUNTRY_CODE;
     private static BigDecimal amount = BigDecimal.valueOf(1100);
@@ -124,8 +125,7 @@ public class RenderMigrationActivity extends AppCompatActivity {
             amountInput.setError(getString(R.string.render_demo_amount_invalid));
             return;
         }
-        final String newCountryCode =
-                ((TextView) findViewById(country.getCheckedRadioButtonId())).getText().toString();
+        final String newCountryCode = countryCodeOf(country.getCheckedRadioButtonId());
         publicKey = key;
         amount = newAmount;
         Affirm.setPublicKey(key);
@@ -146,6 +146,16 @@ public class RenderMigrationActivity extends AppCompatActivity {
             default:
                 return R.id.country_gbr;
         }
+    }
+
+    @NonNull
+    private static String countryCodeOf(int countryButton) {
+        if (countryButton == R.id.country_usa) {
+            return "USA";
+        } else if (countryButton == R.id.country_can) {
+            return "CAN";
+        }
+        return "GBR";
     }
 
     @NonNull

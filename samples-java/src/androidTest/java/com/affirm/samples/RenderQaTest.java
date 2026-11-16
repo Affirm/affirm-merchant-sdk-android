@@ -120,7 +120,13 @@ public class RenderQaTest {
         onMain(() -> font.check(R.id.font_custom));
         checkRenderer(demo, qaCase, "Custom font (Lacquer), useLegacyNativeRendering=false",
                 NATIVE, promo);
-        onMain(() -> font.check(R.id.font_default));
+        onMain(() -> optOut.setChecked(true));
+        checkRenderer(demo, qaCase, "Custom font (Lacquer), useLegacyNativeRendering=true",
+                NATIVE, promo);
+        onMain(() -> {
+            optOut.setChecked(false);
+            font.check(R.id.font_default);
+        });
         waitSettled(promo);
 
         tapPromo(demo, qaCase, promo);
@@ -235,7 +241,7 @@ public class RenderQaTest {
         return last == null ? new TreeMap<>() : last;
     }
 
-    /** Scrolls the demo so the opt-out switch, the fonts and both promos are on screen. */
+    /** Scrolls the demo so the opt-out switch, the fonts and the promo are on screen. */
     private void showPromos(RenderMigrationActivity demo) {
         onMain(() -> {
             final View optOut = demo.findViewById(R.id.opt_out);

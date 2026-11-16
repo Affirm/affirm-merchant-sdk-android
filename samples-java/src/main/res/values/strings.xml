@@ -30,10 +30,12 @@
     <string name="render_demo_copy">Copy</string>
     <string name="render_demo_opt_out">useLegacyNativeRendering (opt out)</string>
     <string name="render_demo_style">Native style</string>
-    <string name="render_demo_style_note">Only the default, sans-serif, serif and monospace typefaces (regular, bold, italic, bold italic) map to HTML. Other fonts, such as one from res/font, stay native.</string>
+    <string name="render_demo_style_note">System fonts can be shown in HTML. A custom font, such as one from res/font, stays native.</string>
     <string name="render_demo_font_default">System font (default)</string>
     <string name="render_demo_font_custom">Custom font: Lacquer (stays native)</string>
     <string name="render_demo_color_gray">Gray</string>
     <string name="render_demo_color_indigo">Indigo</string>
     <string name="render_demo_color_black">Black</string>
-    <string name="render_demo_native_api_note">Native API. Shown as HTML when the flag is on, with this font, size and color. Falls back to native text if the HTML fails.</string></resources>
+    <string name="render_demo_native_api_note">Native API. Shown as HTML when the flag is on, with this font, size and color. Falls back to native text if the HTML fails.</string>
+</resources>
+

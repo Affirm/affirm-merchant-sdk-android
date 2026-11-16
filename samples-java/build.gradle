@@ -1,17 +1,5 @@
 apply plugin: 'com.android.application'
 
-def localProperties = new Properties()
-if (rootProject.file('local.properties').exists()) {
-    rootProject.file('local.properties').withInputStream { localProperties.load(it) }
-}
-// -PaffirmEnvironment=production, or affirm.qa.environment in local.properties.
-def affirmEnvironment = (project.findProperty('affirmEnvironment')
-        ?: localProperties.getProperty('affirm.qa.environment')
-        ?: 'sandbox').toString().toUpperCase(Locale.US)
-if (!(affirmEnvironment in ['SANDBOX', 'PRODUCTION'])) {
-    throw new GradleException("affirmEnvironment must be sandbox or production, not $affirmEnvironment")
-}
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -23,8 +11,6 @@ android {
         consumerProguardFiles 'proguard-rules.pro'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField "String", "AFFIRM_ENVIRONMENT", "\"$affirmEnvironment\""
     }
 
     repositories {
@@ -62,90 +48,4 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
 
-/** Calls {@code onLine} with each line written to it. */
-class LineOutputStream extends OutputStream {
-    private final Closure onLine
-    private final ByteArrayOutputStream line = new ByteArrayOutputStream()
-
-    LineOutputStream(Closure onLine) {
-        this.onLine = onLine
-    }
-
-    @Override
-    void write(int b) {
-        if (b == ('\n' as char)) {
-            onLine(line.toString('UTF-8').replace('\r', ''))
-            line.reset()
-        } else {
-            line.write(b)
-        }
-    }
-}
-
-// Cases are publicKey:amount:html|native[:USA|GBR|CAN], comma separated; the country defaults to
-// USA. Keep production keys in local.properties.
-def qaCases = (project.findProperty('qaCases') ?: localProperties.getProperty('affirm.qa.cases'))?.toString()
-
-task renderQa {
-    group = 'verification'
-    description = 'Runs RenderQaTest on the connected device and saves screenshots, logs and summary.md under build/render-qa.'
-    dependsOn 'installDebug', 'installDebugAndroidTest'
-
-    doLast {
-        def adb = android.adbExecutable.absolutePath
-        def runId = new Date().format('yyyyMMdd-HHmmss')
-        def output = new StringBuilder()
-        def printer = new LineOutputStream({ String line ->
-            output.append(line).append('\n')
-            if (line.startsWith('INSTRUMENTATION_STATUS: qa=')) {
-                println line.substring('INSTRUMENTATION_STATUS: qa='.length())
-            }
-        })
-        println "Render QA on $affirmEnvironment, run $runId"
-        exec {
-            commandLine adb, 'shell', 'am', 'instrument', '-w', '-r',
-                    '-e', 'class', 'com.affirm.samples.RenderQaTest',
-                    '-e', 'qaCases', qaCases,
-                    '-e', 'runId', runId,
-                    'com.affirm.samples.test/androidx.test.runner.AndroidJUnitRunner'
-            standardOutput = printer
-            errorOutput = printer
-            ignoreExitValue = true
-        }
-
-        def localRoot = file("$buildDir/render-qa")
-        localRoot.mkdirs()
-        exec {
-            commandLine adb, 'pull', "/sdcard/Android/data/com.affirm.samples/files/affirm-qa/$runId", localRoot.absolutePath
-            standardOutput = new ByteArrayOutputStream()
-            ignoreExitValue = true
-        }
-        def runDir = new File(localRoot, runId)
-        runDir.mkdirs()
-        new File(runDir, 'instrumentation.txt').text = output.toString()
-
-        def summary = new File(runDir, 'summary.md')
-        if (summary.exists()) {
-            summary.eachLine { line ->
-                if (line.startsWith('- ') || line.startsWith('|')) {
-                    println line
-                }
-            }
-        }
-        println "\nEvidence: ${runDir.absolutePath}"
-        def text = output.toString()
-        if (!text.contains('OK (') || text.contains('FAILURES!!!')) {
-            def result = text.indexOf('INSTRUMENTATION_RESULT: stream=')
-            println(result >= 0 ? text.substring(result) : text)
-            throw new GradleException("Render QA failed. See ${summary.exists() ? summary : runDir}")
-        }
-    }
-}
-
-gradle.taskGraph.whenReady { graph ->
-    if (graph.hasTask(renderQa) && !qaCases) {
-        throw new GradleException('Add the cases to local.properties, e.g.\n' +
-                'affirm.qa.environment=production\n' +
-                'affirm.qa.cases=PUBLIC_KEY:500:html,OTHER_KEY:100:native,UK_KEY:100:native:GBR')
-    }
-}
+apply from: 'render-qa.gradle'

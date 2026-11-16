@@ -33,6 +33,8 @@ final class LogPanel {
     private final Runnable refresh = new Runnable() {
         @Override
         public void run() {
+            // The next read is scheduled when this one is done, so slow reads do not pile up.
+            final int run = generation;
             reader.execute(() -> {
                 final String text = withoutNoise(read());
                 handler.post(() -> {
@@ -40,11 +42,15 @@ final class LogPanel {
                     if (!TextUtils.equals(text, view.getText())) {
                         view.setText(text);
                     }
+                    // A read still running from before stop() must not start a second loop.
+                    if (run == generation) {
+                        handler.postDelayed(refresh, REFRESH_MS);
+                    }
                 });
             });
-            handler.postDelayed(this, REFRESH_MS);
         }
     };
+    private int generation;
 
     LogPanel(@NonNull TextView view) {
         this.view = view;
@@ -56,11 +62,12 @@ final class LogPanel {
     }
 
     void start() {
-        handler.removeCallbacks(refresh);
+        stop();
         handler.post(refresh);
     }
 
     void stop() {
+        generation++;
         handler.removeCallbacks(refresh);
     }
 

@@ -92,6 +92,7 @@ public final class AffirmConstants {
 
     static final String CHECKOUT_TOKEN = "checkout_token";
     static final String CHECKOUT_ERROR = "checkout_error";
+    static final String CHECKOUT_ERROR_DETAIL = "checkout_error_detail";
     static final String CHECKOUT_EXTRA = "checkout_extra";
     static final String CHECKOUT_RECEIVE_REASON_CODES = "checkout_receive_reason_codes";
     static final String CHECKOUT_CAAS_EXTRA = "checkout_caas_extra";

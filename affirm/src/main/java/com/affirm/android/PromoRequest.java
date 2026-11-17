@@ -1,7 +1,6 @@
 package com.affirm.android;
 
 import android.net.Uri;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,7 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.Item;
-import com.affirm.android.model.PromoConfig;
+import com.affirm.android.model.Promo;
 import com.affirm.android.model.PromoPageType;
 import com.affirm.android.model.PromoResponse;
 import com.google.gson.JsonObject;
@@ -55,9 +54,7 @@ class PromoRequest implements AffirmRequest {
     @Nullable
     private final List<Item> items;
     @NonNull
-    private final SpannablePromoCallback callback;
-
-    private final boolean isHtmlStyle;
+    private final PromoResponseCallback callback;
 
     private Call promoCall;
 
@@ -68,12 +65,11 @@ class PromoRequest implements AffirmRequest {
             final boolean showCta,
             @NonNull final AffirmColor affirmColor,
             @NonNull final AffirmLogoType affirmLogoType,
-            boolean isHtmlStyle,
             @Nullable List<Item> items,
-            @NonNull SpannablePromoCallback callback
+            @NonNull PromoResponseCallback callback
     ) {
         this(null, promoId, pageType, dollarAmount, showCta,
-                affirmColor, affirmLogoType, isHtmlStyle, items, callback);
+                affirmColor, affirmLogoType, items, callback);
     }
 
     @VisibleForTesting
@@ -85,9 +81,8 @@ class PromoRequest implements AffirmRequest {
             final boolean showCta,
             @NonNull final AffirmColor affirmColor,
             @NonNull final AffirmLogoType affirmLogoType,
-            boolean isHtmlStyle,
             @Nullable List<Item> items,
-            @NonNull SpannablePromoCallback callback
+            @NonNull PromoResponseCallback callback
     ) {
         this.okHttpClient = okHttpClient;
         this.promoId = promoId;
@@ -96,7 +91,6 @@ class PromoRequest implements AffirmRequest {
         this.showCta = showCta;
         this.affirmColor = affirmColor;
         this.affirmLogoType = affirmLogoType;
-        this.isHtmlStyle = isHtmlStyle;
         this.items = items;
         this.callback = callback;
     }
@@ -113,7 +107,14 @@ class PromoRequest implements AffirmRequest {
                 new AffirmClient.AffirmListener<PromoResponse>() {
                     @Override
                     public void onSuccess(PromoResponse response) {
-                        handleSuccessResponse(response, cacheKey);
+                        if (response == null) {
+                            callback.onFailure(new APIException("Promo response is empty!",
+                                    null));
+                            return;
+                        }
+                        final boolean showPrequal = shouldShowPrequal(response);
+                        cache(cacheKey, response, showPrequal);
+                        callback.onSuccess(response, showPrequal);
                     }
 
                     @Override
@@ -140,26 +141,11 @@ class PromoRequest implements AffirmRequest {
         return new AffirmPromoRequest().url();
     }
 
-    private void handleSuccessResponse(PromoResponse promoResponse, String cacheKey) {
-        final boolean showPrequal = shouldShowPrequal(promoResponse);
-
-        final String promo = promoResponse.promo().ala();
-        final String htmlPromo = promoResponse.promo().htmlAla();
-
-        final String ala = promo.replace(LOGO_PLACEHOLDER, "affirm");
-        final String htmlAla = htmlPromo == null ? "" : htmlPromo;
-        PromoMessageCache.put(cacheKey,
-                new PromoMessageCache.CachedMessage(ala, htmlAla, showPrequal));
-        final String promoMessage = isHtmlStyle ? htmlAla : ala;
-        if (TextUtils.isEmpty(promoMessage)) {
-            handleErrorResponse(new Exception("Promo message is null or empty!"));
-        } else {
-            callback.onPromoWritten(promoMessage, ala, showPrequal);
-        }
-    }
-
-    private void handleErrorResponse(Exception e) {
-        callback.onFailure(new APIException(e.getMessage(), e));
+    private static void cache(String cacheKey, PromoResponse response, boolean showPrequal) {
+        final Promo promo = response.promo();
+        PromoMessageCache.put(cacheKey, new PromoMessageCache.CachedMessage(
+                promo.ala().replace(LOGO_PLACEHOLDER, "affirm"), promo.htmlAla(),
+                showPrequal, promo.promoConfig().migrateNativeToHtmlRender()));
     }
 
     class AffirmPromoRequest implements AffirmClient.AffirmApiRequest {
@@ -216,16 +202,7 @@ class PromoRequest implements AffirmRequest {
     }
 
     private static boolean shouldShowPrequal(PromoResponse promoResponse) {
-        if (promoResponse == null || promoResponse.promo() == null) {
-            return false;
-        }
-
-        PromoConfig config = promoResponse.promo().promoConfig();
-        if (config == null) {
-            return false;
-        }
-
-        String style = config.promoStyle();
+        String style = promoResponse.promo().promoConfig().promoStyle();
         if (style == null) {
             return false;
         }

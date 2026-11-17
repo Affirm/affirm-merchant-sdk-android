@@ -32,7 +32,9 @@ after(async () => {
 });
 
 /** Mirrors AffirmPromoRendering.htmlDocument. */
-function fillTemplate({ html, remoteCss = '', remoteFont = '', extraCss = '', sanitizer, timeoutMs = 5000 }) {
+function fillTemplate({
+    html, remoteCss = '', remoteFont = '', extraCss = '', sanitizer, timeoutMs = 5000, prelude = '',
+}) {
     const payload = {
         renderId: 'test-render',
         html,
@@ -47,7 +49,8 @@ function fillTemplate({ html, remoteCss = '', remoteFont = '', extraCss = '', sa
     };
     const json = JSON.stringify(payload).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
     const documentStart = (sanitizer ? `<script>${sanitizer}</script>` : '')
-        + `<script>${HOST_SHIM}</script>`;
+        + `<script>${HOST_SHIM}</script>`
+        + (prelude ? `<script>${prelude}</script>` : '');
     return documentStart + TEMPLATE.split('{{AFFIRM_PROMO_PAYLOAD}}').join(json);
 }
 
@@ -57,18 +60,23 @@ function fillTemplate({ html, remoteCss = '', remoteFont = '', extraCss = '', sa
  */
 async function render({
     html, remoteCss = '', remoteFont = '', extraCss = '', sanitizer = SANITIZER,
-    resources = {}, hang = [], width = 360, waitMs = 3000, timeoutMs = 5000,
+    resources = {}, hang = [], slow = {}, width = 360, waitMs = 3000, timeoutMs = 5000, prelude = '',
+    until = 'window.hostCalls.length > 0',
 }) {
     const page = await browser.newPage();
     await page.setViewport({ width, height: 640 });
     await page.setRequestInterception(true);
-    const filled = fillTemplate({ html, remoteCss, remoteFont, extraCss, sanitizer, timeoutMs });
+    const filled = fillTemplate({
+        html, remoteCss, remoteFont, extraCss, sanitizer, timeoutMs, prelude,
+    });
     page.on('request', (request) => {
         const url = request.url();
         if (url === PAGE_URL) {
             request.respond({ contentType: 'text/html', body: filled });
         } else if (hang.includes(url)) {
             return;
+        } else if (slow[url]) {
+            setTimeout(() => request.abort(), slow[url]);
         } else if (resources[url]) {
             const { type, body, headers, delayMs = 0 } = resources[url];
             setTimeout(() => request.respond({ contentType: type, body, headers }), delayMs);
@@ -93,7 +101,7 @@ async function render({
         };
     });
     await page.goto(PAGE_URL, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => window.hostCalls.length > 0, { timeout: waitMs });
+    await page.waitForFunction(until, { timeout: waitMs });
     const calls = await page.evaluate(() => window.hostCalls);
     const rootHtml = await page.$eval('#affirm-promo-root', (root) => root.innerHTML);
     const sanitized = await page.evaluate(() => window.sanitized);
@@ -293,6 +301,30 @@ test('required resources that never settle fail with html_timeout', { timeout: 1
     await page.close();
 });
 
+test('errors thrown by the page script fail with script_error', async () => {
+    const setup = await render({
+        html: '<span>ok</span>',
+        prelude: 'document.createElement=function(){throw new Error("setup");};',
+    });
+    assert.equal(failureReason(setup.calls), 'script_error');
+    await setup.page.close();
+
+    const loader = await render({
+        html: '<span>ok</span>',
+        prelude: 'document.getElementsByTagName=function(){throw new Error("loader");};',
+    });
+    assert.equal(failureReason(loader.calls), 'script_error');
+    await loader.page.close();
+
+    const sizing = await render({
+        html: '<span>ok</span>',
+        prelude: 'document.createRange=function(){throw new Error("sizing");};',
+    });
+    assert.equal(failureReason(sizing.calls), 'script_error');
+    assert.equal(sizing.calls.some((call) => call.event === 'ready'), false);
+    await sizing.page.close();
+});
+
 test('ready waits for images and reports the content height', async () => {
     const { page, calls } = await render({
         html: '<span>ok</span><img src="https://cdn.test/logo.png" width="10" height="40">',
@@ -302,6 +334,28 @@ test('ready waits for images and reports the content height', async () => {
     assert.ok(calls[0].height >= 40 && calls[0].height < 200,
         `height ${calls[0].height} should follow the promo root, not the viewport`);
     await page.close();
+});
+
+test('ready reports the content widths, not the viewport width', async () => {
+    const short = await render({ html: '<span>Pay over time</span>', width: 360 });
+    assert.equal(short.calls[0].event, 'ready');
+    const textWidth = await short.page.$eval('#affirm-promo-root span',
+        (span) => span.getBoundingClientRect().width);
+    const { width, lineWidth } = short.calls[0];
+    assert.ok(width >= textWidth && width < 360,
+        `width ${width} should follow the text (${textWidth}), not the viewport`);
+    assert.ok(Math.abs(lineWidth - width) <= 1, `one line: lineWidth ${lineWidth}, width ${width}`);
+    await short.page.close();
+
+    const long = await render({
+        html: `<span>${'Pay over time with Affirm '.repeat(10)}</span>`,
+        width: 240,
+    });
+    assert.equal(long.calls[0].event, 'ready');
+    assert.ok(long.calls[0].width > 240, `width ${long.calls[0].width} should be the unwrapped width`);
+    assert.ok(long.calls[0].lineWidth > 0 && long.calls[0].lineWidth <= 240,
+        `lineWidth ${long.calls[0].lineWidth} should be the widest wrapped line`);
+    await long.page.close();
 });
 
 test('long and localized text wraps inside the view and reports height changes', async () => {
@@ -320,6 +374,68 @@ test('long and localized text wraps inside the view and reports height changes',
     assert.ok(widths.content <= widths.viewport, JSON.stringify(widths));
     const before = calls[0].height;
     await page.$eval('#affirm-promo-root', (root) => { root.style.paddingBottom = '200px'; });
+    await page.waitForFunction(
+        (initial) => window.hostCalls.some((call) => call.event === 'height' && call.height > initial),
+        { timeout: 3000 }, before);
+    await page.close();
+});
+
+test('ready reports the promo text', async () => {
+    const { page, calls } = await render({ html: '<span>Pay  over\n time</span> <b>with Affirm</b>' });
+    assert.equal(calls[0].event, 'ready');
+    assert.equal(calls[0].text, 'Pay over time with Affirm');
+    await page.close();
+});
+
+test('affirmPromoRender replaces the promo without reloading the page', async () => {
+    const { page, calls } = await render({ html: '<span>first</span>' });
+    assert.equal(calls[0].event, 'ready');
+    assert.equal(calls[0].renderId, 'test-render');
+    await page.evaluate(() => {
+        window.affirmLoads = document.querySelectorAll('script[src]').length;
+        window.affirmPromoRender({ renderId: 'second', html: '<span>second promo</span>' });
+    });
+    await page.waitForFunction(
+        () => window.hostCalls.some((call) => call.renderId === 'second' && call.event === 'ready'),
+        { timeout: 3000 });
+    const second = (await page.evaluate(() => window.hostCalls)).find((call) => call.renderId === 'second');
+    assert.equal(second.text, 'second promo');
+    assert.equal(await page.$eval('#affirm-promo-root', (root) => root.textContent), 'second promo');
+    assert.equal(await page.evaluate(
+        () => document.querySelectorAll('script[src]').length - window.affirmLoads), 0);
+
+    await page.evaluate(() => window.affirmPromoRender({ renderId: 'third', html: '<script></script>' }));
+    await page.waitForFunction(
+        () => window.hostCalls.some((call) => call.renderId === 'third' && call.event === 'failure'),
+        { timeout: 3000 });
+    const third = (await page.evaluate(() => window.hostCalls)).find((call) => call.renderId === 'third');
+    assert.equal(third.reason, 'html_empty');
+    await page.close();
+});
+
+test('a stylesheet that fails after a re-render fails the current render', async () => {
+    const { page } = await render({
+        html: '<span>first</span>',
+        remoteCss: 'https://merchant.test/slow.css',
+        slow: { 'https://merchant.test/slow.css': 500 },
+        until: 'window.sanitized !== null',
+    });
+    await page.evaluate(() => window.affirmPromoRender({ renderId: 'second', html: '<span>second</span>' }));
+    await page.waitForFunction(() => window.hostCalls.length > 0, { timeout: 3000 });
+    const calls = await page.evaluate(() => window.hostCalls);
+    assert.deepEqual(calls.map((call) => [call.renderId, call.event, call.reason]),
+        [['second', 'failure', 'resource_failed']]);
+    await page.close();
+});
+
+test('root size changes are reported when the body fills the view', async () => {
+    const { page, calls } = await render({
+        html: '<span>ok</span>',
+        extraCss: 'html,body{height:100%;}',
+    });
+    assert.equal(calls[0].event, 'ready');
+    const before = calls[0].height;
+    await page.$eval('#affirm-promo-root', (root) => { root.style.paddingBottom = '40px'; });
     await page.waitForFunction(
         (initial) => window.hostCalls.some((call) => call.event === 'height' && call.height > initial),
         { timeout: 3000 }, before);

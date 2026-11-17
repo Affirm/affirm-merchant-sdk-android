@@ -56,8 +56,8 @@ class PromoRequestCacheTest {
 
         val cached = PromoMessageCache.get(request.cacheKey())
         assertThat(cached).isNotNull()
-        assertThat(cached!!.message(false)).isEqualTo("Starting at \$10/mo with affirm")
-        assertThat(cached.message(true)).isEqualTo("<p>Starting at \$10/mo</p>")
+        assertThat(cached!!.ala).isEqualTo("Starting at \$10/mo with affirm")
+        assertThat(cached.htmlAla).isEqualTo("<p>Starting at \$10/mo</p>")
         assertThat(cached.showPrequal).isTrue()
     }
 
@@ -163,8 +163,8 @@ class PromoRequestCacheTest {
             if (invocation.method.name == "newCall") call.call else RETURNS_DEFAULTS.answer(invocation)
         }
         return PromoRequest(
-            client, promoId, pageType, amount, showCta, color, logoType, htmlStyle, items,
-            mock(SpannablePromoCallback::class.java)
+            client, promoId, pageType, amount, showCta, color, logoType, items,
+            Affirm.promoMessageCallback(htmlStyle, mock(SpannablePromoCallback::class.java))
         )
     }
 

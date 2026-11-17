@@ -97,6 +97,8 @@ public final class AffirmConstants {
     static final String CHECKOUT_CAAS_EXTRA = "checkout_caas_extra";
     static final String CHECKOUT_MONEY = "checkout_money";
     static final String CHECKOUT_CARD_AUTH_WINDOW = "checkout_card_auth_window";
+    static final String CHECKOUT_SESSION_CODE = "checkout_session_code";
+    static final String CHECKOUT_SESSION_CODE_USED = "checkout_session_code_used";
     static final String CHECKOUT_META = "meta";
     static final String CHECKOUT_META_LOCALE = "locale";
     static final String CREDIT_DETAILS = "credit_details";
@@ -104,6 +106,13 @@ public final class AffirmConstants {
     static final String NEW_FLOW = "new_flow";
 
     static final String PREQUAL_ERROR = "prequal_error";
+
+    static final String CONNECTED_ACCOUNTS_SESSION_CODE_PARAM = "session_code";
+    static final String CONNECTED_ACCOUNTS_CODE_VERIFIER_PARAM = "code_verifier";
+    static final String CONNECTED_ACCOUNTS_DIGEST_ALGORITHM = "SHA-256";
+    static final int CONNECTED_ACCOUNTS_VERIFIER_BYTES = 32;
+    static final String CONNECTED_ACCOUNTS_TRACK_STATUS = "status";
+    static final String CONNECTED_ACCOUNTS_TRACK_DECORATED = "decorated";
 
     static final String URL = "URL";
     static final String URL2 = "URL2";

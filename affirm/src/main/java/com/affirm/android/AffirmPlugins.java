@@ -3,6 +3,7 @@ package com.affirm.android;
 import android.webkit.CookieManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.affirm.android.model.AffirmAdapterFactory;
 import com.affirm.android.model.CardDetailsInner;
@@ -24,6 +25,9 @@ public class AffirmPlugins {
     private Gson gson;
 
     private CardDetailsInner cardDetailsInner;
+
+    private String codeVerifier;
+    private String codeChallenge;
 
     AffirmPlugins(@NonNull Affirm.Configuration configuration) {
         this.configuration = configuration;
@@ -70,6 +74,25 @@ public class AffirmPlugins {
 
     public void setCacheCardDetails(CardDetailsInner cardDetailsInner) {
         this.cardDetailsInner = cardDetailsInner;
+    }
+
+    // Read-then-write callers must hold this instance's lock.
+    synchronized void cachePrepareAuthState(@NonNull String verifier, @NonNull String challenge) {
+        this.codeVerifier = verifier;
+        this.codeChallenge = challenge;
+    }
+
+    @Nullable
+    synchronized String cachedCodeChallenge() {
+        return codeChallenge;
+    }
+
+    @Nullable
+    synchronized String consumeCodeVerifier() {
+        final String verifier = codeVerifier;
+        codeVerifier = null;
+        codeChallenge = null;
+        return verifier;
     }
 
     public String publicKey() {

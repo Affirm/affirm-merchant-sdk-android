@@ -1,7 +1,6 @@
 package com.affirm.android;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -74,8 +73,6 @@ public final class Affirm {
 
     static final int RESULT_ERROR = -8575;
     static final int RESULT_CHECKOUT_CANCEL = -8576;
-
-    private static final String LIFE_FRAGMENT_TAG = "LifeFragmentTag";
 
     private static void setCheckoutRequest(int checkoutRequest) {
         Affirm.checkoutRequest = checkoutRequest != 0
@@ -1576,51 +1573,7 @@ public final class Affirm {
                         items,
                         callback);
 
-        final LifecycleListener lifecycleListener = new LifecycleListener() {
-            @Override
-            public void onStart() {
-
-            }
-
-            @Override
-            public void onStop() {
-
-            }
-
-            @Override
-            public void onDestroy() {
-                affirmPromoRequest.cancel();
-            }
-        };
-
-        promotionButton.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
-            @Override
-            public void onViewAttachedToWindow(final View v) {
-                Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
-                    return;
-                }
-
-                LifeListenerFragment fragment =
-                        getLifeListenerFragment(activity);
-                fragment.addLifeListener(lifecycleListener);
-            }
-
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                promotionButton.removeOnAttachStateChangeListener(this);
-                Activity activity = AffirmUtils.getActivityFromView(v);
-                if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
-                    return;
-                }
-
-                LifeListenerFragment fragment =
-                        getLifeListenerFragment(activity);
-                fragment.removeLifeListener(lifecycleListener);
-            }
-        });
-
-        affirmPromoRequest.create();
+        PromoRequestManager.track(promotionButton, affirmPromoRequest);
         promotionButton.setOnClickListener(onClickListener);
     }
 
@@ -1831,22 +1784,6 @@ public final class Affirm {
                     type,
                     promoRequestModal.getPromoId());
         }
-    }
-
-    // Add a blank fragment to handle the lifecycle of the activity
-    private static LifeListenerFragment getLifeListenerFragment(Activity activity) {
-        final FragmentManager manager = activity.getFragmentManager();
-        LifeListenerFragment fragment =
-                (LifeListenerFragment) manager.findFragmentByTag(LIFE_FRAGMENT_TAG);
-        if (fragment == null) {
-            fragment = new LifeListenerFragment();
-            manager
-                    .beginTransaction()
-                    .add(fragment, LIFE_FRAGMENT_TAG)
-                    .commitAllowingStateLoss();
-            manager.executePendingTransactions();
-        }
-        return fragment;
     }
 
     /**

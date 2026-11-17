@@ -52,6 +52,10 @@ public final class AffirmClient {
         Map<String, String> headers();
     }
 
+    /**
+     * Called on the main thread. Neither method is called once the {@link Call} returned by
+     * {@code send} has been cancelled on the main thread.
+     */
     public interface AffirmListener<T> {
 
         void onSuccess(T response);
@@ -94,11 +98,10 @@ public final class AffirmClient {
                                     .getGenericInterfaces()[0];
                             Type resolvedType = type.getActualTypeArguments()[0];
                             T model = gson.fromJson(responseBody.string(), resolvedType);
-                            new Handler(Looper.getMainLooper()).post(
-                                    () -> listener.onSuccess(model)
-                            );
+                            deliverOnMainThread(call, () -> listener.onSuccess(model));
                         } catch (JsonSyntaxException | IOException e) {
                             handleErrorResponse(
+                                    call,
                                     new APIException("Some error occurred while parsing response",
                                             e),
                                     listener
@@ -107,12 +110,14 @@ public final class AffirmClient {
                         }
                     } else {
                         handleErrorResponse(
+                                call,
                                 new APIException("Response was success, but body was null", null),
                                 listener);
                     }
                 } else {
                     trackNetworkError(call.request());
                     handleErrorResponse(
+                            call,
                             AffirmHttpClient.createExceptionAndTrackFromResponse(
                                     response,
                                     responseBody
@@ -123,11 +128,24 @@ public final class AffirmClient {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                if (call.isCanceled()) {
+                    return;
+                }
                 trackNetworkError(call.request());
-                handleErrorResponse(e, listener);
+                handleErrorResponse(call, e, listener);
             }
         });
         return call;
+    }
+
+    // Skipped if the call is cancelled before the main thread runs it, since a response may
+    // already be queued when cancel() is called.
+    private static void deliverOnMainThread(Call call, Runnable runnable) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            if (!call.isCanceled()) {
+                runnable.run();
+            }
+        });
     }
 
     private static void trackNetworkError(Request request) {
@@ -143,9 +161,8 @@ public final class AffirmClient {
         }
     }
 
-    private static <T> void handleErrorResponse(Exception e, AffirmListener<T> listener) {
-        new Handler(Looper.getMainLooper()).post(
-                () -> listener.onFailure(new APIException(e.getMessage(), e))
-        );
+    private static <T> void handleErrorResponse(Call call, Exception e,
+                                                AffirmListener<T> listener) {
+        deliverOnMainThread(call, () -> listener.onFailure(new APIException(e.getMessage(), e)));
     }
 }

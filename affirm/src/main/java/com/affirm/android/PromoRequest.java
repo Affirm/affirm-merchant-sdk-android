@@ -107,11 +107,13 @@ class PromoRequest implements AffirmRequest {
             promoCall.cancel();
         }
 
-        promoCall = AffirmClient.send(okHttpClient, new AffirmPromoRequest(),
+        final AffirmPromoRequest request = new AffirmPromoRequest();
+        final String cacheKey = request.url();
+        promoCall = AffirmClient.send(okHttpClient, request,
                 new AffirmClient.AffirmListener<PromoResponse>() {
                     @Override
                     public void onSuccess(PromoResponse response) {
-                        handleSuccessResponse(response);
+                        handleSuccessResponse(response, cacheKey);
                     }
 
                     @Override
@@ -129,20 +131,30 @@ class PromoRequest implements AffirmRequest {
         }
     }
 
-    private void handleSuccessResponse(PromoResponse promoResponse) {
+    /**
+     * Identifies the promo this request asks for: every parameter and the configuration it
+     * depends on are part of the request URL.
+     */
+    @NonNull
+    String cacheKey() {
+        return new AffirmPromoRequest().url();
+    }
+
+    private void handleSuccessResponse(PromoResponse promoResponse, String cacheKey) {
         final boolean showPrequal = shouldShowPrequal(promoResponse);
 
         final String promo = promoResponse.promo().ala();
         final String htmlPromo = promoResponse.promo().htmlAla();
 
-        final String promoMessage = isHtmlStyle
-                ? htmlPromo
-                : promo.replace(LOGO_PLACEHOLDER, "affirm");
-        final String promoDescription = promo.replace(LOGO_PLACEHOLDER, "affirm");
+        final String ala = promo.replace(LOGO_PLACEHOLDER, "affirm");
+        final String htmlAla = htmlPromo == null ? "" : htmlPromo;
+        PromoMessageCache.put(cacheKey,
+                new PromoMessageCache.CachedMessage(ala, htmlAla, showPrequal));
+        final String promoMessage = isHtmlStyle ? htmlAla : ala;
         if (TextUtils.isEmpty(promoMessage)) {
             handleErrorResponse(new Exception("Promo message is null or empty!"));
         } else {
-            callback.onPromoWritten(promoMessage, promoDescription, showPrequal);
+            callback.onPromoWritten(promoMessage, ala, showPrequal);
         }
     }
 

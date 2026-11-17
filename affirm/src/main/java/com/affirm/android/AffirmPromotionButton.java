@@ -18,6 +18,7 @@ public class AffirmPromotionButton extends FrameLayout {
 
     private boolean htmlStyling;
     private String message;
+    private boolean showPrequal;
 
     private PromotionButton promotionButton;
     private PromotionWebView promotionWebView;
@@ -83,6 +84,16 @@ public class AffirmPromotionButton extends FrameLayout {
     }
 
     protected void setLabel(@NonNull String promoMessage, @NonNull String promoDescription) {
+        if (htmlStyling && promotionWebView == null) {
+            // Released by destroy(); configWithHtmlStyling creates a new one.
+            return;
+        }
+        if (promoMessage.equals(message)) {
+            // Already shown, e.g. from the cache. Reloading would make it flash.
+            (htmlStyling ? promotionWebView : promotionButton)
+                    .setContentDescription(promoDescription);
+            return;
+        }
         this.message = promoMessage;
         removeAllViews();
         if (htmlStyling) {
@@ -149,6 +160,7 @@ public class AffirmPromotionButton extends FrameLayout {
         this.remoteCssUrl = remoteCssUrl;
         this.typefaceDeclaration = typefaceDeclaration;
         promotionWebView = new PromotionWebView(getContext());
+        message = null;
     }
 
     public void configWithLocalStyling(@NonNull AffirmColor affirmColor,
@@ -195,6 +207,7 @@ public class AffirmPromotionButton extends FrameLayout {
         promotionButton.setTypeface(typeface);
         promotionButton.setAffirmTextColor(affirmTextColor);
         promotionButton.setAffirmTextSize(getResources().getDimensionPixelSize(affirmTextSize));
+        message = null;
     }
 
     protected AffirmColor getAffirmColor() {
@@ -209,6 +222,14 @@ public class AffirmPromotionButton extends FrameLayout {
         return TextUtils.isEmpty(message);
     }
 
+    boolean showsPrequal() {
+        return showPrequal;
+    }
+
+    void setShowPrequal(boolean showPrequal) {
+        this.showPrequal = showPrequal;
+    }
+
     @Override
     public void setOnClickListener(@Nullable OnClickListener l) {
         super.setOnClickListener(l);
@@ -218,10 +239,39 @@ public class AffirmPromotionButton extends FrameLayout {
         }
     }
 
+    /**
+     * Cancels the promo request and releases the WebView used by HTML styling. Called
+     * automatically when the view of the host AndroidX Fragment, or the host LifecycleOwner
+     * Activity, is destroyed.
+     */
     public void destroy() {
+        PromoRequestManager.untrack(this);
+        clearPromoContent();
         if (promotionWebView != null) {
             promotionWebView.destroyWebView();
             promotionWebView = null;
         }
+    }
+
+    /**
+     * Shows {@code cached} until the response arrives, or clears the label left by a previous
+     * configuration when there is nothing to show.
+     */
+    void showPlaceholder(@Nullable PromoMessageCache.CachedMessage cached) {
+        final String cachedMessage = cached == null ? null : cached.message(htmlStyling);
+        if (cached != null && !TextUtils.isEmpty(cachedMessage)) {
+            showPrequal = cached.showPrequal;
+            setLabel(cachedMessage, cached.ala);
+        } else {
+            clearPromoContent();
+        }
+        setVisibility(VISIBLE);
+    }
+
+    private void clearPromoContent() {
+        message = null;
+        showPrequal = false;
+        removeAllViews();
+        setContentDescription(null);
     }
 }

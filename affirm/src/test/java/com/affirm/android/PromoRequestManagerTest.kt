@@ -17,8 +17,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
+import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
@@ -53,9 +55,9 @@ class PromoRequestManagerTest {
         views.forEach { PromoRequestManager.track(it, mock(PromoRequest::class.java)) }
 
         assertThat(activity.registry.observerCount).isEqualTo(1)
-        assertThat(PromoRequestManager.trackedRequestCount(activity.registry)).isEqualTo(100)
-        // Also keeps the views reachable until here: their tags are the only strong
-        // references to the requests, so the count above could otherwise drop under GC.
+        assertThat(PromoRequestManager.trackedViewCount(activity.registry)).isEqualTo(100)
+        // Also keeps the views reachable until here: the manager holds them weakly, so the
+        // count above could otherwise drop under GC.
         views.forEach { assertThat(it.getTag(R.id.affirm_promo_request)).isNotNull() }
     }
 
@@ -71,8 +73,22 @@ class PromoRequestManagerTest {
         verify(last).create()
         verify(last, never()).cancel()
         assertThat(view.getTag(R.id.affirm_promo_request)).isSameAs(last)
-        assertThat(PromoRequestManager.trackedRequestCount(activity.registry)).isEqualTo(1)
+        assertThat(PromoRequestManager.trackedViewCount(activity.registry)).isEqualTo(1)
         assertThat(activity.registry.observerCount).isEqualTo(1)
+    }
+
+    @Test
+    fun untrackCancelsAndForgetsViewRequest() {
+        val view = attachedView()
+        val request = mock(PromoRequest::class.java)
+        PromoRequestManager.track(view, request)
+        assertThat(PromoRequestManager.trackedViewCount(activity.registry)).isEqualTo(1)
+
+        PromoRequestManager.untrack(view)
+
+        verify(request).cancel()
+        assertThat(view.getTag(R.id.affirm_promo_request)).isNull()
+        assertThat(PromoRequestManager.trackedViewCount(activity.registry)).isEqualTo(0)
     }
 
     @Test
@@ -89,13 +105,26 @@ class PromoRequestManagerTest {
     }
 
     @Test
+    fun destroysPromotionButtonsOnDestroy() {
+        val button = spy(AffirmPromotionButton(activity))
+        doReturn(true).`when`(button).isAttachedToWindow
+        val request = mock(PromoRequest::class.java)
+        PromoRequestManager.track(button, request)
+
+        activity.registry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+
+        verify(button).destroy()
+        verify(request).cancel()
+    }
+
+    @Test
     fun releasesDiscardedViewAndRequestBeforeDestroy() {
         val ref = trackUnreferencedRequest()
 
         // WeakHashMap only drops an entry after the cleared reference is enqueued, which
         // happens on another thread some time after ref.get() returns null.
         var i = 0
-        while (i < 100 && PromoRequestManager.trackedRequestCount(activity.registry) != 0) {
+        while (i < 100 && PromoRequestManager.trackedViewCount(activity.registry) != 0) {
             System.gc()
             System.runFinalization()
             Thread.sleep(10)
@@ -103,7 +132,7 @@ class PromoRequestManagerTest {
         }
 
         assertThat(ref.get()).isNull()
-        assertThat(PromoRequestManager.trackedRequestCount(activity.registry)).isEqualTo(0)
+        assertThat(PromoRequestManager.trackedViewCount(activity.registry)).isEqualTo(0)
         assertThat(activity.registry.observerCount).isEqualTo(1)
     }
 
@@ -271,6 +300,35 @@ class PromoRequestManagerTest {
     }
 
     @Test
+    fun destroyingOneFragmentOnlyDestroysItsOwnButtons() {
+        val host = Robolectric.buildActivity(FragmentActivity::class.java).setup().get()
+        val first = PromoFragment()
+        val second = PromoFragment()
+        host.supportFragmentManager
+            .beginTransaction()
+            .add(android.R.id.content, first)
+            .add(android.R.id.content, second)
+            .commitNow()
+        val firstButton = first.addButton()
+        val secondButton = second.addButton()
+        val firstRequest = mock(PromoRequest::class.java)
+        val secondRequest = mock(PromoRequest::class.java)
+        PromoRequestManager.track(firstButton, firstRequest)
+        PromoRequestManager.track(secondButton, secondRequest)
+
+        host.supportFragmentManager
+            .beginTransaction()
+            .remove(first)
+            .commitNow()
+
+        verify(firstRequest).cancel()
+        assertThat(firstButton.getTag(R.id.affirm_promo_request)).isNull()
+        verify(secondRequest, never()).cancel()
+        assertThat(secondButton.getTag(R.id.affirm_promo_request)).isSameAs(secondRequest)
+        assertThat(PromoRequestManager.trackedViewCount(second.viewLifecycleOwner.lifecycle)).isEqualTo(1)
+    }
+
+    @Test
     fun bindsToActivityWhenViewIsOutsideFragments() {
         val host = Robolectric.buildActivity(FragmentActivity::class.java).setup().get()
         val fragment = PromoFragment()
@@ -325,7 +383,7 @@ class PromoRequestManagerTest {
 
         controller.start().resume().visible()
 
-        assertThat(PromoRequestManager.trackedRequestCount(host.lifecycle)).isEqualTo(1)
+        assertThat(PromoRequestManager.trackedViewCount(host.lifecycle)).isEqualTo(1)
         verify(request, never()).cancel()
 
         controller.pause().stop().destroy()
@@ -345,8 +403,8 @@ class PromoRequestManagerTest {
         val viewLifecycle = fragment.viewLifecycleOwner.lifecycle
 
         verify(request).create()
-        assertThat(PromoRequestManager.trackedRequestCount(viewLifecycle)).isEqualTo(1)
-        assertThat(PromoRequestManager.trackedRequestCount(host.lifecycle)).isEqualTo(0)
+        assertThat(PromoRequestManager.trackedViewCount(viewLifecycle)).isEqualTo(1)
+        assertThat(PromoRequestManager.trackedViewCount(host.lifecycle)).isEqualTo(0)
 
         host.supportFragmentManager
             .beginTransaction()
@@ -372,8 +430,8 @@ class PromoRequestManagerTest {
         val viewLifecycle = fragment.viewLifecycleOwner.lifecycle
 
         verify(first).cancel()
-        assertThat(PromoRequestManager.trackedRequestCount(viewLifecycle)).isEqualTo(1)
-        assertThat(PromoRequestManager.trackedRequestCount(host.lifecycle)).isEqualTo(0)
+        assertThat(PromoRequestManager.trackedViewCount(viewLifecycle)).isEqualTo(1)
+        assertThat(PromoRequestManager.trackedViewCount(host.lifecycle)).isEqualTo(0)
 
         host.supportFragmentManager
             .beginTransaction()
@@ -386,7 +444,7 @@ class PromoRequestManagerTest {
     private fun trackUnreferencedRequest(): WeakReference<PromoRequest> {
         val request = NoOpPromoRequest()
         PromoRequestManager.track(attachedView(), request)
-        assertThat(PromoRequestManager.trackedRequestCount(activity.registry)).isEqualTo(1)
+        assertThat(PromoRequestManager.trackedViewCount(activity.registry)).isEqualTo(1)
         return WeakReference(request)
     }
 
@@ -418,6 +476,12 @@ class PromoRequestManagerTest {
             return FrameLayout(requireContext()).apply {
                 id = containerId
                 addView(promoView)
+            }
+        }
+
+        fun addButton(): AffirmPromotionButton {
+            return AffirmPromotionButton(requireContext()).also {
+                (requireView() as ViewGroup).addView(it)
             }
         }
     }

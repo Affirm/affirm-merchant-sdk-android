@@ -1442,9 +1442,8 @@ public final class Affirm {
             if (activity == null || promotionButton.isEmpty()) {
                 return;
             }
-            boolean showPrequal = (boolean) promotionView.getTag();
             String type = pageType != null ? pageType.getType() : null;
-            if (showPrequal) {
+            if (promotionButton.showsPrequal()) {
                 PrequalActivity.startActivity(activity,
                         prequalRequest, amount, promoId, type);
             } else {
@@ -1484,9 +1483,8 @@ public final class Affirm {
             if (promotionButton.isEmpty()) {
                 return;
             }
-            boolean showPrequal = (boolean) promotionView.getTag();
             String type = pageType != null ? pageType.getType() : null;
-            if (showPrequal) {
+            if (promotionButton.showsPrequal()) {
                 PrequalFragment.newInstance(activity, containerViewId, amount,
                         promoId, type);
             } else {
@@ -1525,9 +1523,8 @@ public final class Affirm {
             if (promotionButton.isEmpty()) {
                 return;
             }
-            boolean showPrequal = (boolean) promotionView.getTag();
             String type = pageType != null ? pageType.getType() : null;
-            if (showPrequal) {
+            if (promotionButton.showsPrequal()) {
                 PrequalFragment.newInstance(fragment, containerViewId, amount,
                         promoId, type);
             } else {
@@ -1549,29 +1546,14 @@ public final class Affirm {
             View.OnClickListener onClickListener) {
         AffirmUtils.requireNonNull(promotionButton,
                 "AffirmPromotionButton cannot be null");
-        final SpannablePromoCallback callback = new SpannablePromoCallback() {
-            @Override
-            public void onPromoWritten(@NonNull String promoMessage,
-                                       @NonNull String promoDescription,
-                                       boolean showPrequal) {
-                promotionButton.setTag(showPrequal);
-                promotionButton.setLabel(promoMessage, promoDescription);
-            }
-
-            @Override
-            public void onFailure(@NonNull AffirmException exception) {
-                AffirmLog.e(exception.toString());
-                promotionButton.setVisibility(View.GONE);
-            }
-        };
-
         final PromoRequest affirmPromoRequest =
                 new PromoRequest(promoId, pageType, amount, showCta,
                         promotionButton.getAffirmColor(),
                         promotionButton.getAffirmLogoType(),
                         promotionButton.isHtmlStyle(),
                         items,
-                        callback);
+                        new PromoButtonCallback(promotionButton));
+        promotionButton.showPlaceholder(PromoMessageCache.get(affirmPromoRequest.cacheKey()));
 
         PromoRequestManager.track(promotionButton, affirmPromoRequest);
         promotionButton.setOnClickListener(onClickListener);

@@ -4,5 +4,9 @@ public class Config {
 
     public static final String PUBLIC_KEY = "3HCWTVU5BYWZB9RK";
 
+    public static final String COUNTRY_CODE = "GBR";  // Default USA
+
+    public static final String LOCALE = "en_GB";  // Default en_US
+
     public static final String MODAL_ID = "5LNMQ33SEUYHLNUC";
 }

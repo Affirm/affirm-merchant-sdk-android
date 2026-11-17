@@ -11,5 +11,31 @@
         <item>Show Credit Card</item>
     </string-array>
     <string name="fragment_usages">Fragments Usages</string>
-    <string name="promo_list">Promo RecyclerView</string>
+    <string name="promo_list">Promos in a RecyclerView</string>
+    <string name="promo_list_note">Each row has its own amount. Only the rows on screen have views; scrolling rebinds them, and each rebound row configures its one promo button again. A render still in flight for the old row is superseded, and its late reply is ignored.</string>
+    <string name="render_demo">Native → HTML render</string>
+    <string name="render_demo_merchant">Merchant</string>
+    <string name="render_demo_environment">Environment: %s (set at build time with -PaffirmEnvironment or affirm.qa.environment in local.properties)</string>
+    <string name="render_demo_public_key">Public key</string>
+    <string name="render_demo_amount">Amount</string>
+    <string name="render_demo_load">Load</string>
+    <string name="render_demo_country_usa">USA</string>
+    <string name="render_demo_country_gbr">GBR</string>
+    <string name="render_demo_country_can">CAN</string>
+    <string name="render_demo_public_key_missing">Enter a public key</string>
+    <string name="render_demo_amount_invalid">Enter an amount above 0</string>
+    <string name="render_demo_flag">Server flag</string>
+    <string name="render_demo_flag_note">The native API shows HTML only when Affirm turns on android_sdk_migrate_native_to_html_render for the merchant. Until then it shows native text. The chosen renderer and why the HTML failed are logged under the Affirm logcat tag, and shown at the bottom of this page.</string>
+    <string name="render_demo_log">SDK log since the last load</string>
+    <string name="render_demo_copy">Copy</string>
+    <string name="render_demo_opt_out">useLegacyNativeRendering (opt out)</string>
+    <string name="render_demo_style">Native style</string>
+    <string name="render_demo_style_note">System fonts can be shown in HTML. A custom font, such as one from res/font, stays native.</string>
+    <string name="render_demo_font_default">System font (default)</string>
+    <string name="render_demo_font_custom">Custom font: Lacquer (stays native)</string>
+    <string name="render_demo_color_gray">Gray</string>
+    <string name="render_demo_color_indigo">Indigo</string>
+    <string name="render_demo_color_black">Black</string>
+    <string name="render_demo_native_api_note">Native API. Shown as HTML when the flag is on, with this font, size and color. Falls back to native text if the HTML fails.</string>
 </resources>
+

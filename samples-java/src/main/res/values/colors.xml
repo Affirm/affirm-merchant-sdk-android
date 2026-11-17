@@ -3,4 +3,8 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="renderDemoCard">#33FFCC00</color>
+    <color name="renderDemoGray">#8E8E93</color>
+    <color name="renderDemoIndigo">#5856D6</color>
+    <color name="renderDemoLog">#0F000000</color>
 </resources>

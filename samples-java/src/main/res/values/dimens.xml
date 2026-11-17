@@ -1,2 +1,3 @@
 <resources>
+    <dimen name="render_demo_text_size">15sp</dimen>
 </resources>

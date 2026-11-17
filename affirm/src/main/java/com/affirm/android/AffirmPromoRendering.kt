@@ -23,6 +23,14 @@ internal object AffirmPromoRenderReason {
     const val FONT_FAILED = "font_failed"
     const val HTML_TIMEOUT = "html_timeout"
     const val TEMPLATE_ERROR = "template_error"
+    const val WEBVIEW_UNAVAILABLE = "webview_unavailable"
+    const val MISSING_HTML = "missing_html"
+    const val MISSING_NATIVE = "missing_native"
+    const val NATIVE_ERROR = "native_error"
+    const val FETCH_ERROR = "fetch_error"
+    const val SUPERSEDED = "superseded"
+    const val DETACHED = "detached"
+    const val HOST_DESTROYED = "host_destroyed"
 
     private val PAGE_REASONS = setOf(
         SANITIZER_UNAVAILABLE, HTML_EMPTY, RESOURCE_FAILED, IMAGE_FAILED, FONT_FAILED,

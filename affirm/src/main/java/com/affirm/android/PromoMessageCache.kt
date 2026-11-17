@@ -31,6 +31,11 @@ internal object PromoMessageCache {
     }
 
     @JvmStatic
+    fun remove(key: String) {
+        cache.remove(key)
+    }
+
+    @JvmStatic
     fun evictAll() {
         cache.evictAll()
     }

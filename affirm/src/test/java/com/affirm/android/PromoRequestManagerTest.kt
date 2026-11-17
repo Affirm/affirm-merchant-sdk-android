@@ -92,6 +92,22 @@ class PromoRequestManagerTest {
     }
 
     @Test
+    fun cancelRequestKeepsTheViewForDestroy() {
+        val button = spy(AffirmPromotionButton(activity))
+        doReturn(true).`when`(button).isAttachedToWindow
+        val request = mock(PromoRequest::class.java)
+        PromoRequestManager.track(button, request)
+
+        PromoRequestManager.cancelRequest(button)
+
+        verify(request).cancel()
+        assertThat(button.getTag(R.id.affirm_promo_request)).isNull()
+        assertThat(PromoRequestManager.trackedViewCount(activity.registry)).isEqualTo(1)
+        activity.registry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        verify(button).destroy()
+    }
+
+    @Test
     fun cancelsRequestsAndUnregistersOnDestroy() {
         val request = mock(PromoRequest::class.java)
         PromoRequestManager.track(attachedView(), request)
@@ -144,7 +160,7 @@ class PromoRequestManagerTest {
         `when`(view.context).thenReturn(destroyed)
         val request = mock(PromoRequest::class.java)
 
-        PromoRequestManager.track(view, request)
+        assertThat(PromoRequestManager.track(view, request)).isFalse()
 
         verify(request, never()).create()
     }
@@ -157,7 +173,7 @@ class PromoRequestManagerTest {
         `when`(view.context).thenReturn(finishing)
         val request = mock(PromoRequest::class.java)
 
-        PromoRequestManager.track(view, request)
+        assertThat(PromoRequestManager.track(view, request)).isFalse()
 
         verify(request, never()).create()
     }
@@ -167,7 +183,7 @@ class PromoRequestManagerTest {
         activity.registry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         val request = mock(PromoRequest::class.java)
 
-        PromoRequestManager.track(attachedView(), request)
+        assertThat(PromoRequestManager.track(attachedView(), request)).isFalse()
 
         verify(request, never()).create()
         assertThat(PromoRequestManager.hasManager(activity.registry)).isFalse()
@@ -178,7 +194,8 @@ class PromoRequestManagerTest {
     fun startsButDoesNotBindViewOutsideActivity() {
         val request = mock(PromoRequest::class.java)
 
-        PromoRequestManager.track(AttachedView(activity.applicationContext), request)
+        assertThat(PromoRequestManager.track(AttachedView(activity.applicationContext), request))
+            .isTrue()
 
         verify(request).create()
         assertThat(PromoRequestManager.hasManager(activity)).isFalse()
@@ -193,7 +210,7 @@ class PromoRequestManagerTest {
         host.setContentView(view)
         val request = mock(PromoRequest::class.java)
 
-        PromoRequestManager.track(view, request)
+        assertThat(PromoRequestManager.track(view, request)).isTrue()
 
         verify(request).create()
         assertThat(PromoRequestManager.hasManager(host)).isTrue()

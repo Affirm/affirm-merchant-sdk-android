@@ -134,6 +134,13 @@ public final class PrequalFragment extends AffirmFragment
     }
 
     @Override
+    void onNotInitialized(@NonNull String message) {
+        if (listener != null) {
+            listener.onAffirmPrequalError(message);
+        }
+    }
+
+    @Override
     public void onWebViewError(@NonNull ConnectionException error) {
         AffirmTracker.track(PREQUAL_WEBVIEW_FAIL, ERROR, createTrackingException(error));
         removeFragment(TAG);

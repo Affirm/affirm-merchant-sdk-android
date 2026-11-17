@@ -48,7 +48,9 @@ abstract class CheckoutBaseFragment extends AffirmFragment {
 
     @Override
     public void onDestroy() {
-        checkoutRequest.cancel();
+        if (checkoutRequest != null) {
+            checkoutRequest.cancel();
+        }
         super.onDestroy();
     }
 }

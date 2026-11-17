@@ -197,6 +197,13 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
     }
 
     @Override
+    void onNotInitialized(@NonNull String message) {
+        if (listener != null) {
+            listener.onAffirmVcnCheckoutError(message);
+        }
+    }
+
+    @Override
     public void onWebViewError(@NonNull ConnectionException error) {
         AffirmTracker.track(VCN_CHECKOUT_WEBVIEW_FAIL, ERROR,
                 createTrackingException(error));

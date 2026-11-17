@@ -27,9 +27,13 @@ import com.affirm.android.widget.VCNCardView;
 import java.util.Locale;
 
 import static com.affirm.android.Affirm.RESULT_CHECKOUT_CANCEL;
+import static com.affirm.android.Affirm.RESULT_ERROR;
+import static com.affirm.android.AffirmConstants.AFFIRM_NOT_INITIALIZED_MESSAGE;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_ERROR;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
+import static com.affirm.android.AffirmConstants.VCN_CARD_DETAILS_UNAVAILABLE_MESSAGE;
 
 public class VcnDisplayActivity extends AppCompatActivity {
 
@@ -69,6 +73,19 @@ public class VcnDisplayActivity extends AppCompatActivity {
         }
 
         super.onCreate(savedInstanceState);
+
+        AffirmPlugins plugins = AffirmPlugins.get();
+        if (plugins == null) {
+            AffirmLog.e(AFFIRM_NOT_INITIALIZED_MESSAGE);
+            finishWithError(AFFIRM_NOT_INITIALIZED_MESSAGE);
+            return;
+        }
+        if (plugins.getCachedCardDetails() == null) {
+            AffirmLog.e(VCN_CARD_DETAILS_UNAVAILABLE_MESSAGE);
+            finishWithError(VCN_CARD_DETAILS_UNAVAILABLE_MESSAGE);
+            return;
+        }
+
         setContentView(R.layout.activity_vcn_display);
         AffirmUtils.applyWindowInsets(findViewById(android.R.id.content));
 
@@ -179,6 +196,13 @@ public class VcnDisplayActivity extends AppCompatActivity {
 
     private void onCancellation() {
         setResult(RESULT_CHECKOUT_CANCEL);
+        finish();
+    }
+
+    private void finishWithError(@NonNull String error) {
+        Intent intent = new Intent();
+        intent.putExtra(CHECKOUT_ERROR, error);
+        setResult(RESULT_ERROR, intent);
         finish();
     }
 

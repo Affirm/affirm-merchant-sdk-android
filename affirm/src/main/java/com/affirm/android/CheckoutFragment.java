@@ -122,6 +122,13 @@ public final class CheckoutFragment extends CheckoutBaseFragment
     }
 
     @Override
+    void onNotInitialized(@NonNull String message) {
+        if (listener != null) {
+            listener.onAffirmCheckoutError(message);
+        }
+    }
+
+    @Override
     public void onWebViewError(@NonNull ConnectionException error) {
         AffirmTracker.track(CHECKOUT_WEBVIEW_FAIL, ERROR, createTrackingException(error));
         removeFragment(TAG);

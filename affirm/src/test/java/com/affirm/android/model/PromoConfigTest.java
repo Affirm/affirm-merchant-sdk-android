@@ -53,4 +53,32 @@ public class PromoConfigTest {
         Assert.assertNull(promoConfig.promoStyle());
         Assert.assertTrue(promoConfig.promoPrequalEnabled());
     }
+
+    @Test
+    public void testOnlyJsonTrueMigratesNativeToHtmlRender() {
+        Assert.assertTrue(gson.fromJson(withFlag("true"), PromoConfig.class)
+                .migrateNativeToHtmlRender());
+        for (String value : new String[] {"false", "null", "\"true\"", "\"TRUE\"", "1", "{}", "[]"}) {
+            PromoConfig promoConfig = gson.fromJson(withFlag(value), PromoConfig.class);
+            Assert.assertFalse(value, promoConfig.migrateNativeToHtmlRender());
+            Assert.assertTrue(value, promoConfig.promoPrequalEnabled());
+        }
+        Assert.assertFalse(gson.fromJson(promoConfigJsonNoStyle, PromoConfig.class)
+                .migrateNativeToHtmlRender());
+    }
+
+    @Test
+    public void testOnlyTheAndroidKeyMigratesNativeToHtmlRender() {
+        for (String key : new String[] {"ios_sdk_migrate_native_to_html_render",
+                "migrate_native_to_html_render", "ANDROID_SDK_MIGRATE_NATIVE_TO_HTML_RENDER"}) {
+            PromoConfig promoConfig = gson.fromJson(
+                    "{\"promo_prequal_enabled\":true,\"" + key + "\":true}", PromoConfig.class);
+            Assert.assertFalse(key, promoConfig.migrateNativeToHtmlRender());
+        }
+    }
+
+    private static String withFlag(String value) {
+        return "{\"promo_prequal_enabled\":true,"
+                + "\"android_sdk_migrate_native_to_html_render\":" + value + "}";
+    }
 }

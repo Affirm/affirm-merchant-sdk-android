@@ -1,6 +1,7 @@
 package com.affirm.android;
 
 import android.os.Build;
+import android.webkit.RenderProcessGoneDetail;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -22,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class PromoWebViewClientTest {
 
     @Mock
-    AffirmWebViewClient.WebViewClientCallbacks callbacks;
+    PromoWebViewClient.Callbacks callbacks;
     @Mock
     WebView webview;
 
@@ -43,6 +44,20 @@ public class PromoWebViewClientTest {
                     resourceRequest.getUrl() != null ? resourceRequest.getUrl().toString() : "");
         }
         Mockito.verify(callbacks, never()).onWebViewError(new ConnectionException("error msg"));
+    }
+
+    @Test
+    public void renderProcessGoneNotifiesRendererGone() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return;
+        }
+        RenderProcessGoneDetail detail = Mockito.mock(RenderProcessGoneDetail.class);
+        when(detail.didCrash()).thenReturn(true);
+
+        promoWebViewClient.onRenderProcessGone(webview, detail);
+
+        Mockito.verify(callbacks).onRendererGone();
+        Mockito.verify(callbacks, never()).onWebViewError(Mockito.any(ConnectionException.class));
     }
 
     @Test

@@ -197,6 +197,27 @@ You can add fonts by following the steps below, so you can customize the fonts i
 affirmPromotionButton2.configWithHtmlStyling("file:///android_asset/remote_promo.css", typefaceDeclaration);
 ```
 
+#### HTML rendering of locally styled promos
+
+Affirm can show a locally styled `AffirmPromotionButton` as HTML in a WebView. Affirm turns this on per merchant from the server; no code change is needed.
+
+- The HTML uses the button's text color, size, alignment and font. Only the default, sans-serif, serif and monospace typefaces can switch; a button with any other font, such as one from `res/font`, stays native.
+- If the HTML isn't ready within 5 seconds, or the device has no WebView, the button shows the native message.
+- Buttons set up with `configWithHtmlStyling` always show HTML and are hidden if it fails. Their CSS and font URLs must be `https://` URLs or app files under `file:///android_asset/` or `file:///android_res/`.
+- HTML promos keep only basic text, link, image and SVG markup. Scripts, inline styles, and `id`, `name`, `aria-*` and `data-*` attributes are removed, so style by class.
+- Line wrapping can differ slightly from native, and the WebView adds some memory and startup time.
+- `fetchPromotion` and `fetchHtmlPromotion` are not affected.
+
+To keep every promo button native:
+
+```java
+Affirm.initialize(new Affirm.Configuration.Builder("public key", Affirm.Environment.SANDBOX)
+        .setUseLegacyNativeRendering(true)
+        .build());
+```
+
+To change it after initialization, call `Affirm.setUseLegacyNativeRendering(boolean)`. It applies from the next `configureWithAmount` call.
+
 
 Tapping on the `AffirmPromotionButton` automatically start prequalification flow.
 

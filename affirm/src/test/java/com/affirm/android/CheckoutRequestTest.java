@@ -2,6 +2,8 @@ package com.affirm.android;
 
 import com.affirm.android.model.Checkout;
 import com.google.common.truth.Truth;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +11,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
 
 import okhttp3.Request;
 import okhttp3.Call;
@@ -121,5 +126,40 @@ public class CheckoutRequestTest {
         Mockito.verify(client).newCall(requestCaptor.capture());
         Request request = requestCaptor.getValue();
         Truth.assertThat(RequestUtilsTest.bodyToString(request)).isEqualTo(generateExpectedCheckoutWithOutMetadata());
+    }
+
+    @Test
+    public void testCheckoutWithAccountLinkingId() throws Exception {
+        Truth.assertThat(sentAccountLinkingId(false)).isEqualTo("link_123");
+    }
+
+    @Test
+    public void testVcnCheckoutWithAccountLinkingId() throws Exception {
+        Truth.assertThat(sentAccountLinkingId(true)).isEqualTo("link_123");
+    }
+
+    private static String sentAccountLinkingId(boolean useVCN) throws Exception {
+        OkHttpClient client = mock(OkHttpClient.class);
+        Call call = mock(Call.class);
+        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
+
+        Mockito.when(client.newCall(any(Request.class))).thenReturn(call);
+
+        Checkout checkout = Checkout.builder()
+                .setItems(new HashMap<>())
+                .setShippingAmount(BigDecimal.ZERO)
+                .setTaxAmount(BigDecimal.ZERO)
+                .setTotal(BigDecimal.valueOf(10.0))
+                .setSendShippingAddresses(false)
+                .setAccountLinkingId("link_123")
+                .build();
+        CheckoutRequest checkoutRequest = new CheckoutRequest(client, checkout, null, null, null, useVCN, -1);
+        checkoutRequest.create();
+
+        Mockito.verify(client).newCall(requestCaptor.capture());
+        JsonObject body = new JsonParser()
+                .parse(RequestUtilsTest.bodyToString(requestCaptor.getValue()))
+                .getAsJsonObject();
+        return body.getAsJsonObject("checkout").get("account_linking_id").getAsString();
     }
 }

@@ -105,6 +105,14 @@ public final class AffirmConstants {
 
     static final String PREQUAL_ERROR = "prequal_error";
 
+    static final String CONNECTED_ACCOUNTS_SESSION_CODE_PARAM = "session_code";
+    static final String CONNECTED_ACCOUNTS_CODE_VERIFIER_PARAM = "code_verifier";
+    static final String CONNECTED_ACCOUNTS_DIGEST_ALGORITHM = "SHA-256";
+    static final int CONNECTED_ACCOUNTS_VERIFIER_BYTES = 32;
+    static final String CONNECTED_ACCOUNTS_TRACK_STATUS = "status";
+    static final String CONNECTED_ACCOUNTS_TRACK_DECORATED = "decorated";
+    static final String CONNECTED_ACCOUNTS_TRACK_CHECKOUT_ARI = "checkout_ari";
+
     static final String URL = "URL";
     static final String URL2 = "URL2";
     static final String CONFIRM_CB_URL = "CONFIRM_CB_URL";

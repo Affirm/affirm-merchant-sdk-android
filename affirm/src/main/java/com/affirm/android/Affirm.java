@@ -594,9 +594,14 @@ public final class Affirm {
      * Initializes Affirm. Call it in {@link android.app.Application#onCreate()}, so Affirm is
      * initialized before Android restores an Affirm screen in a new process.
      * <p>
-     * Later calls are ignored; use the setters such as {@link #setPublicKey(String)} to change
-     * the configuration. If Affirm restored the configuration of a previous process because it
-     * was not initialized yet, this call replaces the restored configuration.
+     * Later calls are ignored and keep the current configuration; use the setters such as
+     * {@link #setPublicKey(String)} to change it. If Affirm restored the configuration of a
+     * previous process because it was not initialized yet, this call replaces the restored
+     * configuration, and fields not set on {@code configuration} get their default values.
+     * <p>
+     * The request codes, reason codes and log level are not part of {@code configuration}: they
+     * take effect as soon as their {@link Configuration.Builder} setter is called, even if this
+     * call is ignored, and the ones not set keep their current values.
      *
      * @param configuration The configuration to be used by Affirm.
      */

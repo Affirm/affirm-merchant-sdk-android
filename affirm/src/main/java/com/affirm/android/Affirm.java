@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.affirm.android.exception.APIException;
 import com.affirm.android.exception.AffirmException;
 import com.affirm.android.model.AffirmError;
+import com.affirm.android.model.AffirmPrepareAuthResult;
 import com.affirm.android.model.AffirmTrack;
 import com.affirm.android.model.CardDetails;
 import com.affirm.android.model.CardDetailsInner;
@@ -130,6 +131,10 @@ public final class Affirm {
         void onAffirmVcnCheckoutCancelledReason(@NonNull VcnReason vcnReason);
 
         void onAffirmVcnCheckoutSuccess(@NonNull CardDetails cardDetails);
+    }
+
+    public interface PrepareAuthCallback {
+        void onPrepareAuthResult(@NonNull AffirmPrepareAuthResult result);
     }
 
     public enum Environment {

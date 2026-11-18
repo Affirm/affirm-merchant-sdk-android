@@ -78,6 +78,11 @@ public abstract class Checkout implements Parcelable {
     @SerializedName("financing_program")
     public abstract String financingProgram();
 
+    // Connected Accounts account linking ID. optional
+    @Nullable
+    @SerializedName("account_linking_id")
+    public abstract String accountLinkingId();
+
     @AutoValue.Builder
     public abstract static class Builder {
         /**
@@ -114,6 +119,8 @@ public abstract class Checkout implements Parcelable {
         }
 
         public abstract Builder setFinancingProgram(String value);
+
+        public abstract Builder setAccountLinkingId(String value);
 
         abstract Checkout autoBuild();
 

@@ -1,14 +1,22 @@
 package com.affirm.android.model;
 
+import android.os.Parcel;
+
 import com.affirm.android.CheckoutFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class CheckoutTest {
@@ -23,5 +31,43 @@ public class CheckoutTest {
     public void testCheckoutToJson() {
         final Checkout checkout = CheckoutFactory.create();
         assertEquals(gson.toJson(checkout), expectCheckout);
+    }
+
+    @Test
+    public void testCheckoutWithAccountLinkingIdToJson() {
+        final JsonObject json = gson.toJsonTree(checkoutWithAccountLinkingId()).getAsJsonObject();
+        assertEquals("link_123", json.get("account_linking_id").getAsString());
+    }
+
+    @Test
+    public void testCheckoutWithoutAccountLinkingIdOmitsField() {
+        final Checkout checkout = CheckoutFactory.create();
+        assertNull(checkout.accountLinkingId());
+        final JsonObject json = gson.toJsonTree(checkout).getAsJsonObject();
+        assertFalse(json.has("account_linking_id"));
+    }
+
+    @Test
+    public void testAccountLinkingIdSurvivesParcel() {
+        final Parcel parcel = Parcel.obtain();
+        try {
+            checkoutWithAccountLinkingId().writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            final Checkout restored = AutoValue_Checkout.CREATOR.createFromParcel(parcel);
+            assertEquals("link_123", restored.accountLinkingId());
+        } finally {
+            parcel.recycle();
+        }
+    }
+
+    private static Checkout checkoutWithAccountLinkingId() {
+        return Checkout.builder()
+                .setItems(new HashMap<>())
+                .setShippingAmount(0)
+                .setTaxAmount(0)
+                .setTotal(BigDecimal.valueOf(10.0))
+                .setSendShippingAddresses(false)
+                .setAccountLinkingId("link_123")
+                .build();
     }
 }

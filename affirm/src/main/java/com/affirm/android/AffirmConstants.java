@@ -97,6 +97,8 @@ public final class AffirmConstants {
     static final String CHECKOUT_CAAS_EXTRA = "checkout_caas_extra";
     static final String CHECKOUT_MONEY = "checkout_money";
     static final String CHECKOUT_CARD_AUTH_WINDOW = "checkout_card_auth_window";
+    static final String CHECKOUT_SESSION_CODE = "checkout_session_code";
+    static final String CHECKOUT_SESSION_CODE_CONSUMED = "checkout_session_code_consumed";
     static final String CHECKOUT_META = "meta";
     static final String CHECKOUT_META_LOCALE = "locale";
     static final String CREDIT_DETAILS = "credit_details";

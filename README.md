@@ -132,6 +132,34 @@ Once the checkout has been successfully confirmed by the user, the AffirmCheckou
 
 Note - For VCN Checkout, all actions should be done using your existing payment gateway and debit card processor using the virtual card number returned after a successful checkout.
 
+### Connected Accounts
+
+Connected Accounts lets returning customers skip signing in to Affirm. Complete the [merchant integration](https://docs.affirm.com/developers/docs/set-up-connected-accounts) first (including storing tokens on your backend), then:
+
+1. Set the account linking ID on the checkout:
+    ```java
+    Checkout checkout = Checkout.builder()
+            // ...
+            .setAccountLinkingId(accountLinkingId)
+            .build();
+    ```
+2. Ask the SDK for a PKCE code challenge and send it to your backend to obtain a session code. The matching code verifier stays inside the SDK.
+    ```java
+    Affirm.prepareAuth(result -> {
+        if (result.status() == AffirmPrepareAuthResult.Status.PENDING) {
+            // send result.codeChallenge() to your backend, which returns a session code
+        }
+    });
+    ```
+3. Pass the session code when starting checkout:
+    ```java
+    Affirm.startCheckout(this, checkout, null, -1, false, sessionCode);
+    // or, embedded:
+    Affirm.startCheckout(this, R.id.container, checkout, null, -1, false, sessionCode);
+    ```
+
+The SDK appends the session code and code verifier to the first checkout load only. Session codes are single use and expire after 60 seconds, so start checkout right after obtaining one; if the checkout reloads (for example after rotation), it continues as a normal checkout. Call `prepareAuth` again before the next checkout. `prepareAuth` calls back synchronously on the calling thread. If anything is missing or fails, checkout proceeds as a normal checkout. Only the `startCheckout` overloads that take a `sessionCode` support Connected Accounts; the VCN loan amount flow does not.
+
 ## Promotional Messaging
 
 Affirm promotional messaging components—payment messaging and educational modals—show customers how they can use Affirm to finance their purchases. Promos consist of promotional messaging, which appears directly in your app, and a modal, which which offers users an ability to prequalify.

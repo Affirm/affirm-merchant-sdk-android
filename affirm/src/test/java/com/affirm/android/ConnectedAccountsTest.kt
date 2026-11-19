@@ -7,9 +7,12 @@ import com.affirm.android.AffirmConstants.CONNECTED_ACCOUNTS_TRACK_CHECKOUT_ARI
 import com.affirm.android.AffirmConstants.CONNECTED_ACCOUNTS_TRACK_DECORATED
 import com.affirm.android.AffirmConstants.CONNECTED_ACCOUNTS_TRACK_STATUS
 import com.affirm.android.AffirmConstants.CONNECTED_ACCOUNTS_VERIFIER_BYTES
+import com.affirm.android.AffirmTracker.TrackingEvent
 import com.affirm.android.ConnectedAccounts.DecorateReason
 import com.affirm.android.model.AffirmPrepareAuthResult
 import com.affirm.android.model.AffirmPrepareAuthResult.Status
+import com.google.gson.JsonObject
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNotEquals
@@ -29,6 +32,9 @@ import java.util.concurrent.TimeUnit
 @RunWith(RobolectricTestRunner::class)
 class ConnectedAccountsTest {
 
+    private val defaultSender = ConnectedAccounts.trackingSender
+    private val events = Collections.synchronizedList(ArrayList<Pair<TrackingEvent, JsonObject>>())
+
     @Before
     fun setup() {
         if (AffirmPlugins.get() == null) {
@@ -38,6 +44,41 @@ class ConnectedAccountsTest {
             )
         }
         ConnectedAccounts.clear()
+        ConnectedAccounts.trackingSender =
+            ConnectedAccounts.TrackingSender { event, data -> events.add(event to data) }
+    }
+
+    @After
+    fun tearDown() {
+        ConnectedAccounts.trackingSender = defaultSender
+    }
+
+    @Test
+    fun prepareAuthTracksStatusOncePerCall() {
+        prepareAuth()
+        prepareAuth()
+
+        assertEquals(
+            listOf(TrackingEvent.CONNECTED_ACCOUNTS_PREPARE_AUTH, TrackingEvent.CONNECTED_ACCOUNTS_PREPARE_AUTH),
+            events.map { it.first }
+        )
+        assertTrue(events.all { it.second.get(CONNECTED_ACCOUNTS_TRACK_STATUS).asString == "pending" })
+    }
+
+    @Test
+    fun decorateRedirectUrlTracksDecorated() {
+        ConnectedAccounts.decorateRedirectUrl(TEST_REDIRECT_URL, "sc_1", "v_1")
+        ConnectedAccounts.decorateRedirectUrl(TEST_REDIRECT_URL, "sc_1", null)
+
+        assertEquals(listOf(true, false), decorations())
+    }
+
+    @Test
+    fun decorateRedirectUrlWithoutSessionCodeDoesNotTrack() {
+        assertEquals(TEST_REDIRECT_URL, ConnectedAccounts.decorateRedirectUrl(TEST_REDIRECT_URL, "", "v_1"))
+        ConnectedAccounts.decorateRedirectUrl(TEST_REDIRECT_URL, null, "v_1")
+
+        assertTrue(decorations().isEmpty())
     }
 
     @Test
@@ -115,7 +156,7 @@ class ConnectedAccountsTest {
         AffirmPlugins.reset()
         try {
             var result: AffirmPrepareAuthResult? = null
-            ConnectedAccounts.prepareAuth { result = it }
+            Affirm.prepareAuth { result = it }
             assertEquals(Status.UNAVAILABLE, result!!.status)
             assertNull(result!!.codeChallenge)
             assertNull(ConnectedAccounts.consumeCodeVerifier())
@@ -242,6 +283,7 @@ class ConnectedAccountsTest {
     fun decorateTrackingDataMatchesIos() {
         assertTrackingData(DecorateReason.DECORATED, true)
         assertTrackingData(DecorateReason.MISSING_VERIFIER, false)
+        assertTrackingData(DecorateReason.ALREADY_CONSUMED, false)
         assertTrackingData(DecorateReason.ERROR, false)
     }
 
@@ -262,9 +304,13 @@ class ConnectedAccountsTest {
         assertEquals("ARI123", data.get(CONNECTED_ACCOUNTS_TRACK_CHECKOUT_ARI).asString)
     }
 
+    private fun decorations(): List<Boolean> = events
+        .filter { it.first == TrackingEvent.CONNECTED_ACCOUNTS_CHECKOUT_DECORATED }
+        .map { it.second.get(CONNECTED_ACCOUNTS_TRACK_DECORATED).asBoolean }
+
     private fun prepareAuth(): AffirmPrepareAuthResult {
         var result: AffirmPrepareAuthResult? = null
-        ConnectedAccounts.prepareAuth { result = it }
+        Affirm.prepareAuth { result = it }
         return result!!
     }
 

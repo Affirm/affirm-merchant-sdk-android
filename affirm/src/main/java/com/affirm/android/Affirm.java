@@ -746,6 +746,16 @@ public final class Affirm {
     }
 
     /**
+     * Connected Accounts: get a PKCE code challenge to exchange for a session code. Returns the
+     * same challenge until a checkout with a session code uses it.
+     * The callback is invoked synchronously on the calling thread, before this method returns.
+     */
+    public static void prepareAuth(@NonNull PrepareAuthCallback callback) {
+        AffirmUtils.requireNonNull(callback, "PrepareAuthCallback cannot be null");
+        ConnectedAccounts.prepareAuth(callback);
+    }
+
+    /**
      * Start checkout flow/ vcn checkout flow. Don't forget to call onActivityResult
      * to get the processed result
      *
@@ -839,16 +849,29 @@ public final class Affirm {
      */
     public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                      @Nullable String caas, int cardAuthWindow, boolean useVCN) {
+        startCheckout(activity, checkout, caas, cardAuthWindow, useVCN, null);
+    }
+
+    /**
+     * Same as {@link #startCheckout(Activity, Checkout, String, int, boolean)}, plus a
+     * Connected Accounts session code.
+     *
+     * @param sessionCode Connected Accounts session code from your backend, obtained after
+     *                    {@link #prepareAuth}; single use. Pass null for a normal checkout.
+     */
+    public static void startCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
+                                     @Nullable String caas, int cardAuthWindow, boolean useVCN,
+                                     @Nullable String sessionCode) {
         AffirmUtils.requireNonNull(activity, "activity cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow, useVCN);
         if (useVCN) {
             AffirmTracker.track(VCN_CHECKOUT_CREATION_CLICK, INFO, trackInfo);
-            startVcnCheckout(activity, checkout, caas, null, false, cardAuthWindow);
+            startVcnCheckout(activity, checkout, caas, null, false, cardAuthWindow, sessionCode);
         } else {
             AffirmTracker.track(CHECKOUT_WEBVIEW_CLICK, INFO, trackInfo);
             CheckoutActivity.startActivity(activity, checkoutRequest, checkout, caas,
-                    cardAuthWindow);
+                    cardAuthWindow, sessionCode);
         }
     }
 
@@ -864,17 +887,30 @@ public final class Affirm {
      */
     public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
                                      @Nullable String caas, int cardAuthWindow, boolean useVCN) {
+        startCheckout(fragment, checkout, caas, cardAuthWindow, useVCN, null);
+    }
+
+    /**
+     * Same as {@link #startCheckout(Fragment, Checkout, String, int, boolean)}, plus a
+     * Connected Accounts session code.
+     *
+     * @param sessionCode Connected Accounts session code from your backend, obtained after
+     *                    {@link #prepareAuth}; single use. Pass null for a normal checkout.
+     */
+    public static void startCheckout(@NonNull Fragment fragment, @NonNull Checkout checkout,
+                                     @Nullable String caas, int cardAuthWindow, boolean useVCN,
+                                     @Nullable String sessionCode) {
         AffirmUtils.requireNonNull(fragment, "fragment cannot be null");
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow, useVCN);
         if (useVCN) {
             AffirmTracker.track(VCN_CHECKOUT_CREATION_CLICK, INFO, trackInfo);
             VcnCheckoutActivity.startActivity(fragment, vcnCheckoutRequest, checkout, caas,
-                    null, cardAuthWindow, false);
+                    null, cardAuthWindow, false, sessionCode);
         } else {
             AffirmTracker.track(CHECKOUT_WEBVIEW_CLICK, INFO, trackInfo);
             CheckoutActivity.startActivity(fragment, checkoutRequest, checkout, caas,
-                    cardAuthWindow);
+                    cardAuthWindow, sessionCode);
         }
     }
 
@@ -1030,9 +1066,10 @@ public final class Affirm {
      */
     protected static void startVcnCheckout(@NonNull Activity activity, @NonNull Checkout checkout,
                                            @Nullable String caas, @Nullable Money money,
-                                           boolean newFlow, int cardAuthWindow) {
+                                           boolean newFlow, int cardAuthWindow,
+                                           @Nullable String sessionCode) {
         VcnCheckoutActivity.startActivity(activity, vcnCheckoutRequest, checkout, caas, money,
-                cardAuthWindow, newFlow);
+                cardAuthWindow, newFlow, sessionCode);
     }
 
     /**
@@ -1053,13 +1090,59 @@ public final class Affirm {
                                                @Nullable String caas,
                                                int cardAuthWindow,
                                                boolean useVCN) {
+        return startCheckout(activity, containerViewId, checkout, caas, cardAuthWindow, useVCN,
+                null);
+    }
+
+    /**
+     * Same as {@link #startCheckout(AppCompatActivity, int, Checkout, String, int, boolean)},
+     * plus a Connected Accounts session code.
+     *
+     * @param sessionCode Connected Accounts session code from your backend, obtained after
+     *                    {@link #prepareAuth}; single use. Pass null for a normal checkout.
+     */
+    public static AffirmFragment startCheckout(@NonNull AppCompatActivity activity,
+                                               @IdRes int containerViewId,
+                                               @NonNull Checkout checkout,
+                                               @Nullable String caas,
+                                               int cardAuthWindow,
+                                               boolean useVCN,
+                                               @Nullable String sessionCode) {
+        return startCheckout(activity, containerViewId, checkout, caas, null, cardAuthWindow,
+                false, useVCN, sessionCode);
+    }
+
+    /**
+     * Use a `AffirmFragment` to start checkout flow/ vcn checkout flow. And in you host activity,
+     * you need implements CheckoutCallbacks / VcnCheckoutCallbacks
+     *
+     * @param activity        activity {@link AppCompatActivity}
+     * @param containerViewId The specified view will contain the fragment
+     * @param checkout        checkout object that contains address & shipping info & others...
+     * @param caas            caas merchant-level attribute
+     * @param money           money that user input
+     * @param cardAuthWindow  the value is a positive integer, 0 being a valid value
+     * @param newFlow         new flow
+     * @param useVCN          Start VCN checkout or not
+     * @param sessionCode     Connected Accounts session code
+     * @return a `AffirmFragment`
+     */
+    protected static AffirmFragment startCheckout(@NonNull AppCompatActivity activity,
+                                                  @IdRes int containerViewId,
+                                                  @NonNull Checkout checkout,
+                                                  @Nullable String caas,
+                                                  @Nullable Money money,
+                                                  int cardAuthWindow,
+                                                  boolean newFlow,
+                                                  boolean useVCN,
+                                                  @Nullable String sessionCode) {
         if (useVCN) {
             return VcnCheckoutFragment.newInstance(activity,
-                    containerViewId, checkout, receiveReasonCodes, caas, null,
-                    cardAuthWindow, false);
+                    containerViewId, checkout, receiveReasonCodes, caas, money, cardAuthWindow,
+                    newFlow, sessionCode);
         } else {
             return CheckoutFragment.newInstance(activity,
-                    containerViewId, checkout, caas, cardAuthWindow);
+                    containerViewId, checkout, caas, cardAuthWindow, sessionCode);
         }
     }
 
@@ -1081,77 +1164,31 @@ public final class Affirm {
                                                @Nullable String caas,
                                                int cardAuthWindow,
                                                boolean useVCN) {
+        return startCheckout(fragment, containerViewId, checkout, caas, cardAuthWindow, useVCN,
+                null);
+    }
+
+    /**
+     * Same as {@link #startCheckout(Fragment, int, Checkout, String, int, boolean)}, plus a
+     * Connected Accounts session code.
+     *
+     * @param sessionCode Connected Accounts session code from your backend, obtained after
+     *                    {@link #prepareAuth}; single use. Pass null for a normal checkout.
+     */
+    public static AffirmFragment startCheckout(@NonNull Fragment fragment,
+                                               @IdRes int containerViewId,
+                                               @NonNull Checkout checkout,
+                                               @Nullable String caas,
+                                               int cardAuthWindow,
+                                               boolean useVCN,
+                                               @Nullable String sessionCode) {
         if (useVCN) {
             return VcnCheckoutFragment.newInstance(fragment,
                     containerViewId, checkout, receiveReasonCodes, caas, null,
-                    cardAuthWindow, false);
+                    cardAuthWindow, false, sessionCode);
         } else {
             return CheckoutFragment.newInstance(fragment,
-                    containerViewId, checkout, caas, cardAuthWindow);
-        }
-    }
-
-    /**
-     * Use a `AffirmFragment` to start checkout flow/ vcn checkout flow. And in you host activity,
-     * you need implements CheckoutCallbacks / VcnCheckoutCallbacks
-     *
-     * @param activity        activity {@link AppCompatActivity}
-     * @param containerViewId The specified view will contain the fragment
-     * @param checkout        checkout object that contains address & shipping info & others...
-     * @param caas            caas merchant-level attribute
-     * @param money           momoney that user inputney
-     * @param cardAuthWindow  the value is a positive integer, 0 being a valid value
-     * @param newFlow         new flow
-     * @param useVCN          Start VCN checkout or not
-     * @return a `AffirmFragment`
-     */
-    protected static AffirmFragment startCheckout(@NonNull AppCompatActivity activity,
-                                                  @IdRes int containerViewId,
-                                                  @NonNull Checkout checkout,
-                                                  @Nullable String caas,
-                                                  @Nullable Money money,
-                                                  int cardAuthWindow,
-                                                  boolean newFlow,
-                                                  boolean useVCN) {
-        if (useVCN) {
-            return VcnCheckoutFragment.newInstance(activity,
-                    containerViewId, checkout, receiveReasonCodes, caas, money, cardAuthWindow,
-                    newFlow);
-        } else {
-            return CheckoutFragment.newInstance(activity,
-                    containerViewId, checkout, caas, cardAuthWindow);
-        }
-    }
-
-    /**
-     * Use a `AffirmFragment` to start checkout flow/ vcn checkout flow. And in you host activity,
-     * you need implements CheckoutCallbacks / VcnCheckoutCallbacks
-     *
-     * @param fragment        fragment {@link Fragment}
-     * @param containerViewId The specified view will contain the fragment
-     * @param checkout        checkout object that contains address & shipping info & others...
-     * @param caas            caas merchant-level attribute
-     * @param money           money that user input
-     * @param cardAuthWindow  the value is a positive integer, 0 being a valid value
-     * @param newFlow         new flow
-     * @param useVCN          Start VCN checkout or not
-     * @return a `AffirmFragment`
-     */
-    protected static AffirmFragment startCheckout(@NonNull Fragment fragment,
-                                                  @IdRes int containerViewId,
-                                                  @NonNull Checkout checkout,
-                                                  @Nullable String caas,
-                                                  @Nullable Money money,
-                                                  int cardAuthWindow,
-                                                  boolean newFlow,
-                                                  boolean useVCN) {
-        if (useVCN) {
-            return VcnCheckoutFragment.newInstance(fragment,
-                    containerViewId, checkout, receiveReasonCodes, caas, money, cardAuthWindow,
-                    newFlow);
-        } else {
-            return CheckoutFragment.newInstance(fragment,
-                    containerViewId, checkout, caas, cardAuthWindow);
+                    containerViewId, checkout, caas, cardAuthWindow, sessionCode);
         }
     }
 

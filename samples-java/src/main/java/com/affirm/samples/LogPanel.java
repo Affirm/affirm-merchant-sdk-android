@@ -61,6 +61,11 @@ final class LogPanel {
         Log.i(TAG, MARKER + message);
     }
 
+    /** Adds a line to the current section. */
+    static void note(@NonNull String message) {
+        Log.i(TAG, message);
+    }
+
     void start() {
         stop();
         handler.post(refresh);

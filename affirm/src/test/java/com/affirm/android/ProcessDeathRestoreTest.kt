@@ -12,6 +12,9 @@ import com.affirm.android.AffirmConstants.CHECKOUT_ERROR
 import com.affirm.android.AffirmConstants.CHECKOUT_EXTRA
 import com.affirm.android.AffirmConstants.TYPE_EXTRA
 import com.affirm.android.AffirmConstants.VCN_CARD_DETAILS_UNAVAILABLE_MESSAGE
+import com.affirm.android.model.CardDetails
+import com.affirm.android.model.CardDetailsInner
+import com.affirm.android.model.VcnReason
 import com.google.common.truth.Truth.assertThat
 import org.junit.After
 import org.junit.Before
@@ -25,6 +28,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowActivity
 import java.math.BigDecimal
+import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
@@ -153,6 +157,40 @@ class ProcessDeathRestoreTest {
     }
 
     @Test
+    fun vcnDisplayActivity_restoredAfterProcessDeath_routesErrorToCustomRequestCode() {
+        Affirm.initialize(
+            Affirm.Configuration.Builder("public_key", Affirm.Environment.SANDBOX)
+                .setVcnCheckoutRequestCode(8002)
+                .build()
+        )
+        AffirmPlugins.get().setCacheCardDetails(CardDetailsInner(cardDetails(), Date()))
+        val savedState = Bundle()
+        Robolectric.buildActivity(VcnDisplayActivity::class.java, vcnDisplayIntent())
+            .setup()
+            .saveInstanceState(savedState)
+            .pause()
+            .stop()
+            .destroy()
+
+        AffirmPlugins.reset()
+        resetRequestCodes()
+        val activity = Robolectric.buildActivity(VcnDisplayActivity::class.java, vcnDisplayIntent())
+            .setup(savedState)
+            .get()
+
+        assertThat(Affirm.getVcnCheckoutRequest()).isEqualTo(8002)
+        assertThat(activity.isFinishing).isTrue()
+        assertThat(shadow(activity).resultCode).isEqualTo(Affirm.RESULT_ERROR)
+
+        val callbacks = RecordingVcnCheckoutCallbacks()
+        val handled = Affirm.handleVcnCheckoutData(
+            callbacks, 8002, shadow(activity).resultCode, shadow(activity).resultIntent
+        )
+        assertThat(handled).isTrue()
+        assertThat(callbacks.error).isEqualTo(VCN_CARD_DETAILS_UNAVAILABLE_MESSAGE)
+    }
+
+    @Test
     fun vcnDisplayActivity_withoutConfiguration_finishesWithError() {
         val activity = Robolectric.buildActivity(VcnDisplayActivity::class.java, vcnDisplayIntent())
             .setup()
@@ -227,11 +265,33 @@ class ProcessDeathRestoreTest {
         Intent(RuntimeEnvironment.getApplication(), VcnDisplayActivity::class.java)
             .putExtra(CHECKOUT_EXTRA, CheckoutFactory.create())
 
+    private fun cardDetails(): CardDetails = CardDetails.builder()
+        .setCardholderName("John Smith")
+        .setCheckoutToken("checkout_token")
+        .setCvv("123")
+        .setNumber("4012888888881881")
+        .setExpiration("0719")
+        .build()
+
     private fun resetRequestCodes() {
         Affirm.Configuration.Builder("unused")
             .setCheckoutRequestCode(0)
             .setVcnCheckoutRequestCode(0)
             .setPrequalRequestCode(0)
+    }
+
+    private class RecordingVcnCheckoutCallbacks : Affirm.VcnCheckoutCallbacks {
+        var error: String? = null
+
+        override fun onAffirmVcnCheckoutError(message: String?) {
+            error = message
+        }
+
+        override fun onAffirmVcnCheckoutCancelled() = Unit
+
+        override fun onAffirmVcnCheckoutCancelledReason(vcnReason: VcnReason) = Unit
+
+        override fun onAffirmVcnCheckoutSuccess(cardDetails: CardDetails) = Unit
     }
 
     class EmbeddedCheckoutHost : AppCompatActivity(), Affirm.CheckoutCallbacks {

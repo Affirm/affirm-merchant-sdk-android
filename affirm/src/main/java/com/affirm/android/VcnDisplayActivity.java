@@ -72,6 +72,7 @@ public class VcnDisplayActivity extends AppCompatActivity {
             caas = getIntent().getStringExtra(CHECKOUT_CAAS_EXTRA);
         }
 
+        AffirmPlugins.restoreIfNeeded(savedInstanceState);
         super.onCreate(savedInstanceState);
 
         AffirmPlugins plugins = AffirmPlugins.get();
@@ -165,6 +166,7 @@ public class VcnDisplayActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelable(CHECKOUT_EXTRA, checkout);
         outState.putString(CHECKOUT_CAAS_EXTRA, caas);
+        AffirmPlugins.saveState(outState);
     }
 
     @Override

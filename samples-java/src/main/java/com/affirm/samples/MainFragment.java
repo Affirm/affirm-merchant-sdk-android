@@ -144,6 +144,7 @@ public class MainFragment extends Fragment implements Affirm.CheckoutCallbacks,
         view.findViewById(R.id.fragmentUsages).setOnClickListener(v -> startActivity(new Intent(getActivity(), FragmentUsagesActivity.class)));
         view.findViewById(R.id.promoList).setOnClickListener(v -> startActivity(new Intent(getActivity(), PromoListActivity.class)));
         view.findViewById(R.id.renderDemo).setOnClickListener(v -> startActivity(new Intent(getActivity(), RenderMigrationActivity.class)));
+        view.findViewById(R.id.connectedAccounts).setOnClickListener(v -> startActivity(new Intent(getActivity(), ConnectedAccountsActivity.class)));
 
         // Option1 - Load via findViewById
         AffirmPromotionButton affirmPromotionButton1 = view.findViewById(R.id.promo);

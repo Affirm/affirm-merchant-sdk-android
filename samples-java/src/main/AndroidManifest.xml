@@ -39,6 +39,10 @@
             android:name=".RenderMigrationActivity"
             android:label="@string/render_demo" />
 
+        <activity
+            android:name=".ConnectedAccountsActivity"
+            android:label="@string/connected_accounts" />
+
     </application>
 
 </manifest>

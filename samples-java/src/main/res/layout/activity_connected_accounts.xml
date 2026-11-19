@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            style="@style/RenderDemoNote"
+            android:layout_marginTop="0dp"
+            android:text="@string/connected_accounts_note" />
+
+        <TextView
+            android:id="@+id/environment"
+            style="@style/RenderDemoNote" />
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:text="@string/connected_accounts_public_key" />
+
+        <EditText
+            android:id="@+id/public_key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="monospace"
+            android:hint="@string/connected_accounts_public_key_hint"
+            android:importantForAutofill="no"
+            android:inputType="textNoSuggestions"
+            android:maxLines="1"
+            android:text="@string/connected_accounts_public_key_default"
+            android:textSize="14sp" />
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:text="@string/connected_accounts_customer" />
+
+        <EditText
+            android:id="@+id/account_linking_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="monospace"
+            android:hint="@string/connected_accounts_id_hint"
+            android:importantForAutofill="no"
+            android:inputType="textNoSuggestions"
+            android:maxLines="1"
+            android:text="@string/connected_accounts_id_default"
+            android:textSize="14sp" />
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:text="@string/connected_accounts_backend" />
+
+        <RadioGroup
+            android:id="@+id/backend_mode"
+            style="@style/RenderDemoChoices"
+            android:checkedButton="@+id/backend_linked"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@id/backend_linked"
+                style="@style/RenderDemoChoice"
+                android:text="@string/connected_accounts_backend_linked" />
+
+            <RadioButton
+                android:id="@+id/backend_not_linked"
+                style="@style/RenderDemoChoice"
+                android:text="@string/connected_accounts_backend_not_linked" />
+
+            <RadioButton
+                android:id="@+id/backend_token_rejected"
+                style="@style/RenderDemoChoice"
+                android:text="@string/connected_accounts_backend_token_rejected" />
+
+            <RadioButton
+                android:id="@+id/backend_manual"
+                style="@style/RenderDemoChoice"
+                android:text="@string/connected_accounts_backend_manual" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/manual"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/RenderDemoNote"
+                android:text="@string/connected_accounts_manual_note" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/code_challenge"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="monospace"
+                    android:freezesText="true"
+                    android:hint="@string/connected_accounts_challenge_empty"
+                    android:textIsSelectable="true"
+                    android:textSize="12sp" />
+
+                <Button
+                    android:id="@+id/copy_challenge"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/render_demo_copy" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/get_challenge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connected_accounts_get_challenge" />
+
+            <EditText
+                android:id="@+id/session_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="monospace"
+                android:hint="@string/connected_accounts_session_code_hint"
+                android:importantForAutofill="no"
+                android:inputType="textNoSuggestions"
+                android:maxLines="1"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/checkout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/checkout" />
+
+            <Button
+                android:id="@+id/vcn_checkout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="@string/vcn_checkout" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/RenderDemoHeader"
+                android:layout_width="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_weight="1"
+                android:text="@string/connected_accounts_log" />
+
+            <Button
+                android:id="@+id/copy_log"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/render_demo_copy" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/renderDemoLog"
+            android:fontFamily="monospace"
+            android:padding="8dp"
+            android:textIsSelectable="true"
+            android:textSize="12sp" />
+    </LinearLayout>
+</ScrollView>

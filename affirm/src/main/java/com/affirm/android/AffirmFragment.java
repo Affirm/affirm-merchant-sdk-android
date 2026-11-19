@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import static com.affirm.android.AffirmConstants.AFFIRM_NOT_INITIALIZED_MESSAGE;
+
 abstract class AffirmFragment extends Fragment implements AffirmWebChromeClient.Callbacks {
 
     protected static final String TAG_PREFIX = "AffirmFragment";
@@ -21,6 +23,8 @@ abstract class AffirmFragment extends Fragment implements AffirmWebChromeClient.
     abstract void initViews();
 
     abstract void onAttached();
+
+    abstract void onNotInitialized(@NonNull String message);
 
     protected static void addFragment(FragmentManager fragmentManager, @IdRes int containerViewId,
                                       @NonNull Fragment fragment, @NonNull String tag) {
@@ -45,6 +49,7 @@ abstract class AffirmFragment extends Fragment implements AffirmWebChromeClient.
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        AffirmPlugins.restoreIfNeeded(savedInstanceState);
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
@@ -60,6 +65,15 @@ abstract class AffirmFragment extends Fragment implements AffirmWebChromeClient.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        if (AffirmPlugins.get() == null) {
+            AffirmLog.e(AFFIRM_NOT_INITIALIZED_MESSAGE);
+            if (getTag() != null) {
+                removeFragment(getTag());
+            }
+            onNotInitialized(AFFIRM_NOT_INITIALIZED_MESSAGE);
+            return;
+        }
+
         webView = view.findViewById(R.id.webview);
         progressIndicator = view.findViewById(R.id.progressIndicator);
 
@@ -69,9 +83,17 @@ abstract class AffirmFragment extends Fragment implements AffirmWebChromeClient.
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        AffirmPlugins.saveState(outState);
+    }
+
+    @Override
     public void onDestroy() {
-        webView.destroyWebView();
-        webView = null;
+        if (webView != null) {
+            webView.destroyWebView();
+            webView = null;
+        }
         super.onDestroy();
     }
 

@@ -44,6 +44,7 @@ import static com.affirm.android.AffirmConstants.COUNTY_CODE_USA;
 import static com.affirm.android.AffirmConstants.CREDIT_DETAILS;
 import static com.affirm.android.AffirmConstants.LOCALE_USA;
 import static com.affirm.android.AffirmConstants.LOGO_PLACEHOLDER;
+import static com.affirm.android.AffirmConstants.PREQUAL_ERROR;
 import static com.affirm.android.AffirmConstants.VCN_REASON;
 import static com.affirm.android.AffirmLogoType.AFFIRM_DISPLAY_TYPE_LOGO;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_CLICK;
@@ -79,28 +80,44 @@ public final class Affirm {
     static final int RESULT_ERROR = -8575;
     static final int RESULT_CHECKOUT_CANCEL = -8576;
 
-    private static void setCheckoutRequest(int checkoutRequest) {
+    static void setCheckoutRequest(int checkoutRequest) {
         Affirm.checkoutRequest = checkoutRequest != 0
                 ? checkoutRequest
                 : DEFAULT_CHECKOUT_REQUEST;
     }
 
-    private static void setVcnCheckoutRequest(int vcnCheckoutRequest) {
+    static void setVcnCheckoutRequest(int vcnCheckoutRequest) {
         Affirm.vcnCheckoutRequest = vcnCheckoutRequest != 0
                 ? vcnCheckoutRequest
                 : DEFAULT_VCN_CHECKOUT_REQUEST;
     }
 
-    private static void setPrequalRequest(int prequalRequest) {
+    static void setPrequalRequest(int prequalRequest) {
         Affirm.prequalRequest = prequalRequest != 0
                 ? prequalRequest
                 : DEFAULT_PREQUAL_REQUEST;
     }
 
-    private static void setReceiveReasonCodes(@Nullable String receiveReasonCodes) {
+    static void setReceiveReasonCodes(@Nullable String receiveReasonCodes) {
         Affirm.receiveReasonCodes = receiveReasonCodes != null
                 ? receiveReasonCodes
                 : DEFAULT_RECEIVE_REASON_CODES;
+    }
+
+    static int getCheckoutRequest() {
+        return checkoutRequest;
+    }
+
+    static int getVcnCheckoutRequest() {
+        return vcnCheckoutRequest;
+    }
+
+    static int getPrequalRequest() {
+        return prequalRequest;
+    }
+
+    static String getReceiveReasonCodes() {
+        return receiveReasonCodes;
     }
 
     public interface PrequalCallbacks {
@@ -194,6 +211,7 @@ public final class Affirm {
         }
     }
 
+    // Every field must also be saved and restored in AffirmPlugins.saveState/readConfiguration.
     public static final class Configuration {
         final String publicKey;
         final Environment environment;
@@ -572,13 +590,23 @@ public final class Affirm {
         return AffirmLog.getLogLevel();
     }
 
+    /**
+     * Initializes Affirm. Call it in {@link android.app.Application#onCreate()}, so Affirm is
+     * initialized before Android restores an Affirm screen in a new process.
+     * <p>
+     * Later calls are ignored and keep the current configuration; use the setters such as
+     * {@link #setPublicKey(String)} to change it. If Affirm restored the configuration of a
+     * previous process because it was not initialized yet, this call replaces the restored
+     * configuration, and fields not set on {@code configuration} get their default values.
+     * <p>
+     * The request codes, reason codes and log level are not part of {@code configuration}: they
+     * take effect as soon as their {@link Configuration.Builder} setter is called, even if this
+     * call is ignored, and the ones not set keep their current values.
+     *
+     * @param configuration The configuration to be used by Affirm.
+     */
     public static void initialize(@NonNull Configuration configuration) {
         AffirmUtils.requireNonNull(configuration, "configuration cannot be null");
-
-        if (isInitialized()) {
-            AffirmLog.w("Affirm is already initialized");
-            return;
-        }
         AffirmPlugins.initialize(configuration);
     }
 
@@ -1848,7 +1876,7 @@ public final class Affirm {
             switch (resultCode) {
                 case RESULT_ERROR:
                     AffirmUtils.requireNonNull(data);
-                    callbacks.onAffirmPrequalError(data.getStringExtra(CHECKOUT_ERROR));
+                    callbacks.onAffirmPrequalError(data.getStringExtra(PREQUAL_ERROR));
                     break;
                 default:
                     break;

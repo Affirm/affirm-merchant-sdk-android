@@ -178,6 +178,13 @@ public final class ModalFragment extends AffirmFragment implements ModalWebViewC
     }
 
     @Override
+    void onNotInitialized(@NonNull String message) {
+        if (listener != null) {
+            listener.onAffirmPrequalError(message);
+        }
+    }
+
+    @Override
     public void onWebViewError(@NonNull ConnectionException error) {
         AffirmTracker.track(type.failureEvent, ERROR, createTrackingException(error));
         removeFragment(TAG);

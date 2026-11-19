@@ -59,6 +59,10 @@ android {
     lintOptions {
         disable 'ContentDescription', 'Instantiatable'
     }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
 }
 
 pmd {

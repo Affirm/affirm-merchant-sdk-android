@@ -18,6 +18,7 @@ import com.affirm.android.model.CheckoutResponse;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
+import static com.affirm.android.AffirmConstants.CHECKOUT_SESSION_CODE;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_CREATION_FAIL;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_CREATION_SUCCESS;
 import static com.affirm.android.AffirmTracker.TrackingEvent.CHECKOUT_WEBVIEW_FAIL;
@@ -38,25 +39,28 @@ public final class CheckoutFragment extends CheckoutBaseFragment
                                         @IdRes int containerViewId,
                                         @NonNull Checkout checkout,
                                         @Nullable String caas,
-                                        int cardAuthWindow) {
+                                        int cardAuthWindow,
+                                        @Nullable String sessionCode) {
         return newInstance(activity.getSupportFragmentManager(), containerViewId, checkout,
-                caas, cardAuthWindow);
+                caas, cardAuthWindow, sessionCode);
     }
 
     static CheckoutFragment newInstance(@NonNull Fragment fragment,
                                         @IdRes int containerViewId,
                                         @NonNull Checkout checkout,
                                         @Nullable String caas,
-                                        int cardAuthWindow) {
+                                        int cardAuthWindow,
+                                        @Nullable String sessionCode) {
         return newInstance(fragment.getChildFragmentManager(), containerViewId, checkout,
-                caas, cardAuthWindow);
+                caas, cardAuthWindow, sessionCode);
     }
 
     private static CheckoutFragment newInstance(@NonNull FragmentManager fragmentManager,
                                                 @IdRes int containerViewId,
                                                 @NonNull Checkout checkout,
                                                 @Nullable String caas,
-                                                int cardAuthWindow) {
+                                                int cardAuthWindow,
+                                                @Nullable String sessionCode) {
         if (fragmentManager.findFragmentByTag(TAG) != null) {
             return (CheckoutFragment) fragmentManager.findFragmentByTag(TAG);
         }
@@ -66,6 +70,7 @@ public final class CheckoutFragment extends CheckoutBaseFragment
         bundle.putParcelable(CHECKOUT_EXTRA, checkout);
         bundle.putString(CHECKOUT_CAAS_EXTRA, caas);
         bundle.putInt(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
+        bundle.putString(CHECKOUT_SESSION_CODE, sessionCode);
 
         fragment.setArguments(bundle);
 
@@ -117,7 +122,7 @@ public final class CheckoutFragment extends CheckoutBaseFragment
             @Override
             public void onSuccess(@NonNull CheckoutResponse response) {
                 AffirmTracker.track(CHECKOUT_CREATION_SUCCESS, INFO, null);
-                webView.loadUrl(response.redirectUrl());
+                webView.loadUrl(connectedAccountsRedirectUrl(response.redirectUrl()));
             }
         };
     }

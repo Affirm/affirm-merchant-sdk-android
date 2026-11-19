@@ -1,12 +1,14 @@
 package com.affirm.android;
 
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.affirm.android.AffirmTracker.TrackingEvent;
 import com.affirm.android.model.AffirmPrepareAuthResult;
 import com.affirm.android.model.AffirmPrepareAuthResult.Status;
 import com.google.gson.JsonObject;
@@ -31,7 +33,15 @@ import static com.affirm.android.AffirmTracker.TrackingLevel.INFO;
 
 final class ConnectedAccounts {
 
-    enum DecorateReason { DECORATED, MISSING_VERIFIER, ERROR }
+    enum DecorateReason { DECORATED, MISSING_VERIFIER, ALREADY_CONSUMED, ERROR }
+
+    interface TrackingSender {
+        void send(@NonNull TrackingEvent event, @NonNull JsonObject data);
+    }
+
+    @VisibleForTesting
+    static TrackingSender trackingSender =
+            (event, data) -> AffirmTracker.track(event, INFO, data);
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -61,7 +71,7 @@ final class ConnectedAccounts {
         final AffirmPrepareAuthResult result = challenge != null
                 ? AffirmPrepareAuthResult.create(Status.PENDING, challenge)
                 : AffirmPrepareAuthResult.create(Status.UNAVAILABLE, null);
-        AffirmTracker.track(CONNECTED_ACCOUNTS_PREPARE_AUTH, INFO,
+        trackingSender.send(CONNECTED_ACCOUNTS_PREPARE_AUTH,
                 prepareAuthTrackingData(result.status()));
         callback.onPrepareAuthResult(result);
     }
@@ -87,13 +97,17 @@ final class ConnectedAccounts {
     @NonNull
     static String decorateRedirectUrl(@NonNull String redirectUrl, @Nullable String sessionCode,
                                       @Nullable String codeVerifier) {
-        if (sessionCode == null) {
+        if (TextUtils.isEmpty(sessionCode)) {
             return redirectUrl;
         }
         final Decoration decoration = decorate(redirectUrl, sessionCode, codeVerifier);
-        AffirmTracker.track(CONNECTED_ACCOUNTS_CHECKOUT_DECORATED, INFO,
-                decorateTrackingData(decoration.reason, redirectUrl));
+        trackDecoration(decoration.reason, redirectUrl);
         return decoration.url;
+    }
+
+    static void trackDecoration(@NonNull DecorateReason reason, @NonNull String redirectUrl) {
+        trackingSender.send(CONNECTED_ACCOUNTS_CHECKOUT_DECORATED,
+                decorateTrackingData(reason, redirectUrl));
     }
 
     @VisibleForTesting

@@ -30,6 +30,7 @@ import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_MONEY;
 import static com.affirm.android.AffirmConstants.CHECKOUT_RECEIVE_REASON_CODES;
+import static com.affirm.android.AffirmConstants.CHECKOUT_SESSION_CODE;
 import static com.affirm.android.AffirmConstants.CONFIRM_CB_URL;
 import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.NEW_FLOW;
@@ -64,9 +65,10 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
                                            @Nullable String caas,
                                            @Nullable Money money,
                                            int cardAuthWindow,
-                                           boolean newFlow) {
+                                           boolean newFlow,
+                                           @Nullable String sessionCode) {
         return newInstance(activity.getSupportFragmentManager(), containerViewId, checkout,
-                receiveReasonCodes, caas, money, cardAuthWindow, newFlow);
+                receiveReasonCodes, caas, money, cardAuthWindow, newFlow, sessionCode);
     }
 
     static VcnCheckoutFragment newInstance(@NonNull Fragment fragment,
@@ -76,9 +78,10 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
                                            @Nullable String caas,
                                            @Nullable Money money,
                                            int cardAuthWindow,
-                                           boolean newFlow) {
+                                           boolean newFlow,
+                                           @Nullable String sessionCode) {
         return newInstance(fragment.getChildFragmentManager(), containerViewId, checkout,
-                receiveReasonCodes, caas, money, cardAuthWindow, newFlow);
+                receiveReasonCodes, caas, money, cardAuthWindow, newFlow, sessionCode);
     }
 
     private static VcnCheckoutFragment newInstance(@NonNull FragmentManager fragmentManager,
@@ -88,7 +91,8 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
                                                    @Nullable String caas,
                                                    @Nullable Money money,
                                                    int cardAuthWindow,
-                                                   boolean newFlow) {
+                                                   boolean newFlow,
+                                                   @Nullable String sessionCode) {
         if (fragmentManager.findFragmentByTag(TAG) != null) {
             return (VcnCheckoutFragment) fragmentManager.findFragmentByTag(TAG);
         }
@@ -101,6 +105,7 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
         bundle.putSerializable(CHECKOUT_MONEY, money);
         bundle.putInt(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
         bundle.putBoolean(NEW_FLOW, newFlow);
+        bundle.putString(CHECKOUT_SESSION_CODE, sessionCode);
         fragment.setArguments(bundle);
 
         addFragment(fragmentManager, containerViewId, fragment, TAG);
@@ -142,15 +147,16 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
             @Override
             public void onSuccess(@NonNull CheckoutResponse response) {
                 AffirmTracker.track(VCN_CHECKOUT_CREATION_SUCCESS, INFO, null);
-                final String html = initialHtml(response);
-                final Uri uri = Uri.parse(response.redirectUrl());
+                final String redirectUrl = connectedAccountsRedirectUrl(response.redirectUrl());
+                final String html = initialHtml(redirectUrl);
+                final Uri uri = Uri.parse(redirectUrl);
                 webView.loadDataWithBaseURL(HTTPS_PROTOCOL + uri.getHost(), html,
                         TEXT_HTML, UTF_8, null);
             }
         };
     }
 
-    private String initialHtml(@NonNull CheckoutResponse response) {
+    private String initialHtml(@NonNull String redirectUrl) {
         String html;
         InputStream ins = null;
         try {
@@ -164,8 +170,8 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
 
         final HashMap<String, String> map = new HashMap<>();
 
-        map.put(URL, response.redirectUrl());
-        map.put(URL2, response.redirectUrl());
+        map.put(URL, redirectUrl);
+        map.put(URL2, redirectUrl);
         map.put(CONFIRM_CB_URL, AFFIRM_CHECKOUT_CONFIRMATION_URL);
         map.put(CANCELLED_CB_URL, AFFIRM_CHECKOUT_CANCELLATION_URL);
         return AffirmUtils.replacePlaceholders(html, map);

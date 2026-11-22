@@ -61,6 +61,35 @@ public class CheckoutFactory {
                 .build();
     }
 
+    public static Map<String, Item> expressItems() {
+        final Item item = Item.builder()
+                .setDisplayName("Great Deal Wheel")
+                .setImageUrl("http://www.image.com/111")
+                .setQty(1)
+                .setSku("wheel")
+                .setUnitPrice(BigDecimal.valueOf(1000.0))
+                .setUrl("http://merchant.com/great_deal_wheel")
+                .build();
+
+        final Map<String, Item> items = new HashMap<>();
+        items.put("wheel", item);
+        return items;
+    }
+
+    public static Map<String, String> expressMetadata() {
+        final Map<String, String> metadata = new HashMap<>();
+        metadata.put("subtotal", "100000");
+        return metadata;
+    }
+
+    public static Checkout createExpress() {
+        return Checkout.createExpressCheckout(
+                expressItems(),
+                "order-123",
+                "https://merchant.com/shipping-and-totals",
+                expressMetadata());
+    }
+
     public static Checkout createWithoutMetadata() {
         final Item item = Item.builder()
                 .setDisplayName("Great Deal Wheel")

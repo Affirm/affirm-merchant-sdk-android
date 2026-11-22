@@ -845,6 +845,7 @@ public final class Affirm {
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow, useVCN);
         if (useVCN) {
+            requireNotExpress(checkout);
             AffirmTracker.track(VCN_CHECKOUT_CREATION_CLICK, INFO, trackInfo);
             startVcnCheckout(activity, checkout, caas, null, false, cardAuthWindow);
         } else {
@@ -870,6 +871,7 @@ public final class Affirm {
         AffirmUtils.requireNonNull(checkout, "checkout cannot be null");
         JsonObject trackInfo = createTrackingCheckout(checkout, caas, cardAuthWindow, useVCN);
         if (useVCN) {
+            requireNotExpress(checkout);
             AffirmTracker.track(VCN_CHECKOUT_CREATION_CLICK, INFO, trackInfo);
             VcnCheckoutActivity.startActivity(fragment, vcnCheckoutRequest, checkout, caas,
                     null, cardAuthWindow, false);
@@ -938,6 +940,7 @@ public final class Affirm {
                                                int cardAuthWindow) {
         AffirmUtils.requireNonNull(activity);
         AffirmUtils.requireNonNull(checkout);
+        requireNotExpress(checkout);
         startLoanAmount(activity, checkout, caas, cardAuthWindow);
     }
 
@@ -955,6 +958,7 @@ public final class Affirm {
                                                int cardAuthWindow) {
         AffirmUtils.requireNonNull(fragment);
         AffirmUtils.requireNonNull(checkout);
+        requireNotExpress(checkout);
         startLoanAmount(fragment, checkout, caas, cardAuthWindow);
     }
 
@@ -1037,6 +1041,12 @@ public final class Affirm {
                 cardAuthWindow, newFlow);
     }
 
+    private static void requireNotExpress(@NonNull Checkout checkout) {
+        if (checkout.checkoutMode() == Checkout.CheckoutMode.EXPRESS) {
+            throw new IllegalArgumentException("Express Checkout does not support VCN checkout");
+        }
+    }
+
     /**
      * Use a `AffirmFragment` to start checkout flow/ vcn checkout flow. And in you host activity,
      * you need implements CheckoutCallbacks / VcnCheckoutCallbacks
@@ -1056,6 +1066,7 @@ public final class Affirm {
                                                int cardAuthWindow,
                                                boolean useVCN) {
         if (useVCN) {
+            requireNotExpress(checkout);
             return VcnCheckoutFragment.newInstance(activity,
                     containerViewId, checkout, receiveReasonCodes, caas, null,
                     cardAuthWindow, false);
@@ -1084,6 +1095,7 @@ public final class Affirm {
                                                int cardAuthWindow,
                                                boolean useVCN) {
         if (useVCN) {
+            requireNotExpress(checkout);
             return VcnCheckoutFragment.newInstance(fragment,
                     containerViewId, checkout, receiveReasonCodes, caas, null,
                     cardAuthWindow, false);

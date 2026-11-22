@@ -4,11 +4,14 @@ import android.os.Parcelable;
 
 import com.affirm.android.AffirmUtils;
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -16,8 +19,47 @@ import androidx.annotation.Nullable;
 
 @AutoValue
 public abstract class Checkout implements Parcelable {
+
+    public enum CheckoutMode {
+        STANDARD,
+        EXPRESS
+    }
+
     public static Builder builder() {
-        return new AutoValue_Checkout.Builder();
+        return new AutoValue_Checkout.Builder().setCheckoutMode(CheckoutMode.STANDARD);
+    }
+
+    /**
+     * Creates an Express Checkout. Affirm collects the shipping address and calls
+     * {@code shippingAndTotalsCallbackUrl} for shipping options, tax and the final total.
+     * <p>
+     * Express Checkout does not support VCN: starting it with {@code useVCN} or
+     * {@code startNewVcnCheckoutFlow} throws {@link IllegalArgumentException}.
+     *
+     * @param items                        the items being purchased
+     * @param orderId                      your unique identifier for the order
+     * @param shippingAndTotalsCallbackUrl your Shipping &amp; Totals HTTP endpoint
+     * @param metadata                     must contain "subtotal" in integer cents as a string,
+     *                                     e.g. "20000"
+     * @throws IllegalStateException if {@code items}, {@code orderId},
+     *                               {@code shippingAndTotalsCallbackUrl} or
+     *                               {@code metadata["subtotal"]} is empty
+     */
+    public static Checkout createExpressCheckout(
+            @NonNull Map<String, Item> items,
+            @NonNull String orderId,
+            @NonNull String shippingAndTotalsCallbackUrl,
+            @NonNull Map<String, String> metadata) {
+        return builder()
+                .setCheckoutMode(CheckoutMode.EXPRESS)
+                .setItems(items)
+                .setOrderId(orderId)
+                .setShippingAndTotalsCallbackUrl(shippingAndTotalsCallbackUrl)
+                .setMetadata(metadata)
+                .setTotal(BigDecimal.ZERO)
+                .setShippingAmount(BigDecimal.ZERO)
+                .setTaxAmount(BigDecimal.ZERO)
+                .build();
     }
 
     public static TypeAdapter<Checkout> typeAdapter(Gson gson) {
@@ -78,6 +120,40 @@ public abstract class Checkout implements Parcelable {
     @SerializedName("financing_program")
     public abstract String financingProgram();
 
+    @NonNull
+    public abstract CheckoutMode checkoutMode();
+
+    // Merchant-hosted Shipping & Totals endpoint. Required for Express Checkout.
+    @Nullable
+    @SerializedName("merchant_shipping_and_totals_callback_url")
+    public abstract String shippingAndTotalsCallbackUrl();
+
+    private void requireExpressFields() {
+        final Map<String, String> metadata = metadata();
+        final List<String> missing = new ArrayList<>();
+        if (isEmpty(orderId())) {
+            missing.add("orderId");
+        }
+        if (isEmpty(shippingAndTotalsCallbackUrl())) {
+            missing.add("shippingAndTotalsCallbackUrl");
+        }
+        if (items().isEmpty()) {
+            missing.add("items");
+        }
+        if (metadata == null || isEmpty(metadata.get("subtotal"))) {
+            missing.add("metadata[\"subtotal\"]");
+        }
+        if (!missing.isEmpty()) {
+            throw new IllegalStateException("Express Checkout requires "
+                    + Joiner.on(", ").join(missing));
+        }
+    }
+
+    // Not TextUtils: merchants build checkouts in JVM unit tests, where Android APIs throw.
+    private static boolean isEmpty(@Nullable String value) {
+        return value == null || value.isEmpty();
+    }
+
     @AutoValue.Builder
     public abstract static class Builder {
         /**
@@ -115,6 +191,12 @@ public abstract class Checkout implements Parcelable {
 
         public abstract Builder setFinancingProgram(String value);
 
+        public abstract Builder setCheckoutMode(CheckoutMode value);
+
+        abstract CheckoutMode checkoutMode();
+
+        public abstract Builder setShippingAndTotalsCallbackUrl(String value);
+
         abstract Checkout autoBuild();
 
         public Builder setShipping(Shipping value) {
@@ -145,7 +227,9 @@ public abstract class Checkout implements Parcelable {
         }
 
         public Checkout build() {
-            if (sendShippingAddresses && shipping == null) {
+            // Express Checkout collects the shipping address inside Affirm.
+            if (sendShippingAddresses && shipping == null
+                    && checkoutMode() != CheckoutMode.EXPRESS) {
                 throw new NullPointerException("Null shipping");
             }
             if (billing != null
@@ -155,7 +239,11 @@ public abstract class Checkout implements Parcelable {
                     && billing.email() == null) {
                 setBillingAddress(null);
             }
-            return autoBuild();
+            Checkout checkout = autoBuild();
+            if (checkout.checkoutMode() == CheckoutMode.EXPRESS) {
+                checkout.requireExpressFields();
+            }
+            return checkout;
         }
     }
 }

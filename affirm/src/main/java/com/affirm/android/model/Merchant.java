@@ -60,6 +60,10 @@ public abstract class Merchant implements Parcelable {
     @SerializedName("card_auth_window")
     public abstract Integer cardAuthWindow();
 
+    @Nullable
+    @SerializedName("merchant_shipping_and_totals_callback_url")
+    public abstract String shippingAndTotalsCallbackUrl();
+
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder setPublicApiKey(String value);
@@ -75,6 +79,8 @@ public abstract class Merchant implements Parcelable {
         public abstract Builder setCaas(String value);
 
         public abstract Builder setCardAuthWindow(Integer value);
+
+        public abstract Builder setShippingAndTotalsCallbackUrl(String value);
 
         public abstract Merchant build();
     }

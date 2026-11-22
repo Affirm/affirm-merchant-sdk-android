@@ -49,6 +49,7 @@ public final class AffirmConstants {
     static final String TRACKER_UK_URL = "tracker.uk.affirm.com";
 
     static final String CHECKOUT_PATH = "/api/v2/checkout/";
+    static final String CHECKOUT_BFF_PATH = "/api/checkout-bff/v1/create-checkout";
     static final String TRACKER_PATH = "/collect";
     static final String PREQUAL_PATH = "/apps/prequal";
     static final String PREQUAL_PUBLIC_API_KEY = "public_api_key";
@@ -129,9 +130,20 @@ public final class AffirmConstants {
     static final String API_VERSION_VALUE = "v2";
 
     static final String MERCHANT = "merchant";
-    static final String METADATA = "metadata";
     static final String CHECKOUT = "checkout";
+    static final String IS_EXPRESS_CHECKOUT = "is_express_checkout";
+    static final String COUNTRY_CODE_KEY = "country_code";
+
+    // Keys of the Gson-serialized Checkout; must match its serialized names.
+    static final String METADATA = "metadata";
     static final String TOTAL = "total";
+    static final String SHIPPING = "shipping";
+    static final String SHIPPING_AMOUNT = "shipping_amount";
+    static final String TAX_AMOUNT = "tax_amount";
+    // checkoutMode() has no @SerializedName, so Gson uses the method name.
+    static final String CHECKOUT_MODE = "checkoutMode";
+    static final String SHIPPING_AND_TOTALS_CALLBACK_URL =
+            "merchant_shipping_and_totals_callback_url";
 
     static final String INVALID_CHECKOUT_MESSAGE = "Checkout status is in an invalid state.";
     static final String AFFIRM_NOT_INITIALIZED_MESSAGE = "Affirm has not been initialized";

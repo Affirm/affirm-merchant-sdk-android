@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 
 public class AffirmTrackerTest {
@@ -60,6 +61,23 @@ public class AffirmTrackerTest {
 
         assertEquals("CAPTURED", data.get("merchant_key").getAsString());
         assertEquals("production", data.get("environment").getAsString());
+    }
+
+    @Test
+    public void testTrackingCheckoutOmitsStandardMode() {
+        JsonObject data = AffirmTracker.createTrackingCheckout(CheckoutFactory.create(), null,
+                -1, false);
+
+        assertFalse(data.getAsJsonObject("checkout").has("checkoutMode"));
+    }
+
+    @Test
+    public void testTrackingCheckoutKeepsExpressMode() {
+        JsonObject data = AffirmTracker.createTrackingCheckout(CheckoutFactory.createExpress(),
+                null, -1, false);
+
+        assertEquals("EXPRESS",
+                data.getAsJsonObject("checkout").get("checkoutMode").getAsString());
     }
 
     @NonNull

@@ -9,8 +9,10 @@ import com.affirm.android.exception.AffirmException;
 import com.affirm.android.exception.InvalidRequestException;
 import com.affirm.android.exception.PermissionException;
 import com.affirm.android.model.AffirmError;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +32,11 @@ import static com.affirm.android.AffirmConstants.HTTPS_PROTOCOL;
 import static com.affirm.android.AffirmConstants.X_AFFIRM_REQUEST_ID;
 
 public final class AffirmHttpClient {
+
+    private static final String BFF_ERROR = "error";
+    private static final String BFF_ERROR_CODE = "errorCode";
+    private static final String ERROR_CODE = "code";
+    private static final String ERROR_MESSAGE = "message";
 
     private final OkHttpClient okHttpClient;
 
@@ -94,23 +101,47 @@ public final class AffirmHttpClient {
             Response response,
             ResponseBody responseBody
     ) {
-        if (responseBody != null && responseBody.contentLength() > 0) {
+        // Not contentLength(): it is -1 for chunked and transparently gunzipped bodies.
+        if (responseBody != null) {
             try {
                 final AffirmError affirmError = AffirmPlugins.get()
                         .gson()
-                        .fromJson(responseBody.string(), AffirmError.class);
-
-                return handleAPIError(
-                        affirmError,
-                        response.code(),
-                        response.headers().get(X_AFFIRM_REQUEST_ID)
-                );
-            } catch (JsonSyntaxException | JsonIOException | IOException e) {
+                        .fromJson(normalizeErrorBody(responseBody.string()), AffirmError.class);
+                if (affirmError != null) {
+                    return handleAPIError(
+                            affirmError,
+                            response.code(),
+                            response.headers().get(X_AFFIRM_REQUEST_ID)
+                    );
+                }
+            } catch (JsonParseException | IOException e) {
                 return new APIException("Some error occurred while parsing the error response", e);
             }
         }
 
         return new APIException("Error getting exception from response", null);
+    }
+
+    // checkout-bff nests its error as {"error": {"errorCode": ..., "message": ...}}.
+    @VisibleForTesting
+    static JsonElement normalizeErrorBody(@NonNull String body) {
+        final JsonElement root = new JsonParser().parse(body);
+        if (!root.isJsonObject()) {
+            return root;
+        }
+        final JsonObject flat = root.getAsJsonObject();
+        final JsonElement error = flat.get(BFF_ERROR);
+        if (error == null || !error.isJsonObject()
+                || !error.getAsJsonObject().has(BFF_ERROR_CODE)) {
+            return root;
+        }
+        final JsonObject bffError = error.getAsJsonObject();
+        flat.remove(BFF_ERROR);
+        flat.add(ERROR_CODE, bffError.get(BFF_ERROR_CODE));
+        if (bffError.has(ERROR_MESSAGE)) {
+            flat.add(ERROR_MESSAGE, bffError.get(ERROR_MESSAGE));
+        }
+        return flat;
     }
 
     Call getCallForRequest(@Nullable OkHttpClient client, @NonNull AffirmHttpRequest request) {

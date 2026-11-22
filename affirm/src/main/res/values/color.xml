@@ -22,4 +22,8 @@
     <color name="affirm_transparent30">#44000000</color>
 
     <color name="affirm_blueberry">#063B56</color>
+
+    <color name="affirm_checkout_button_bg">#000049</color>
+    <color name="affirm_checkout_button_text">#F7F7F8</color>
+    <color name="affirm_checkout_button_light_text">#0C0C14</color>
 </resources>

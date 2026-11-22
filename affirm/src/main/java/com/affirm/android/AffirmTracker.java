@@ -31,6 +31,7 @@ final class AffirmTracker {
     }
 
     enum TrackingEvent {
+        CHECKOUT_BUTTON_CLICKED("Checkout button clicked"),
         CHECKOUT_CREATION_FAIL("Checkout creation failed"),
         CHECKOUT_CREATION_SUCCESS("Checkout creation success"),
         CHECKOUT_WEBVIEW_CLICK("Checkout webView click"),
@@ -71,10 +72,16 @@ final class AffirmTracker {
         }
     }
 
+    interface Sender {
+        void send(@NonNull JsonObject trackingData);
+    }
+
+    @VisibleForTesting
+    static Sender sender = trackingData -> new TrackerRequest(trackingData).create();
+
     static void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
                       @Nullable JsonObject data) {
-        final JsonObject trackingData = addTrackingData(event.mName, data, level);
-        new TrackerRequest(trackingData).create();
+        sender.send(addTrackingData(event.mName, data, level));
     }
 
     @VisibleForTesting

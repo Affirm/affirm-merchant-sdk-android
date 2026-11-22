@@ -19,6 +19,40 @@
         <attr name="android:gravity" />
     </declare-styleable>
 
+    <!-- Enum values are the ordinals of PromoPageType and the AffirmCheckoutButton* enums. -->
+    <declare-styleable name="AffirmCheckoutButton">
+        <attr name="affirmPageType" format="enum">
+            <enum name="banner" value="0" />
+            <enum name="cart" value="1" />
+            <enum name="category" value="2" />
+            <enum name="homepage" value="3" />
+            <enum name="landing" value="4" />
+            <enum name="payment" value="5" />
+            <enum name="product" value="6" />
+            <enum name="search" value="7" />
+        </attr>
+        <attr name="affirmButtonSize" format="enum">
+            <enum name="small" value="0" />
+            <enum name="medium" value="1" />
+            <enum name="large" value="2" />
+        </attr>
+        <attr name="affirmButtonTheme" format="enum">
+            <enum name="dark" value="0" />
+            <enum name="light" value="1" />
+        </attr>
+        <attr name="affirmButtonShape" format="enum">
+            <enum name="sharp" value="0" />
+            <enum name="pill" value="1" />
+            <enum name="rounded" value="2" />
+        </attr>
+        <attr name="affirmButtonText" format="enum">
+            <enum name="buyNow" value="0" />
+            <enum name="checkout" value="1" />
+            <enum name="logoOnly" value="2" />
+        </attr>
+        <attr name="affirmFullWidth" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="FixedAspectRatioFrameLayout">
         <attr name="aspectRatioWidth" format="integer" />
         <attr name="aspectRatioHeight" format="integer" />

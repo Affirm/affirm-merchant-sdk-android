@@ -39,6 +39,10 @@
             android:name=".RenderMigrationActivity"
             android:label="@string/render_demo" />
 
+        <activity
+            android:name=".ExpressCheckoutActivity"
+            android:label="@string/express_demo" />
+
     </application>
 
 </manifest>

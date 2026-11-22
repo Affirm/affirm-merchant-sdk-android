@@ -7,4 +7,5 @@
     <color name="renderDemoGray">#8E8E93</color>
     <color name="renderDemoIndigo">#5856D6</color>
     <color name="renderDemoLog">#0F000000</color>
+    <color name="expressDemoPreview">#E5E5EA</color>
 </resources>

@@ -36,6 +36,21 @@
     <string name="render_demo_color_gray">Gray</string>
     <string name="render_demo_color_indigo">Indigo</string>
     <string name="render_demo_color_black">Black</string>
+    <string name="express_demo">Express Checkout</string>
+    <string name="express_demo_merchant">Merchant</string>
+    <string name="express_demo_public_key">Express-enabled US public key</string>
+    <string name="express_demo_callback_url">Shipping &amp; Totals callback URL</string>
+    <string name="express_demo_merchant_note">Prefilled from affirm.qa.express=PUBLIC_KEY:CALLBACK_URL in local.properties. Starting a checkout sets the SDK to this key, USA and en_US; they stay set after leaving.</string>
+    <string name="express_demo_public_key_missing">Enter a public key</string>
+    <string name="express_demo_xml">From XML</string>
+    <string name="express_demo_code">From code, styled by the toggles below</string>
+    <string name="express_demo_full_width">Full width</string>
+    <string name="express_demo_buttons_note">Both buttons start an express checkout. They are disabled until it returns.</string>
+    <string name="express_demo_result_idle">Tap a button to start an express checkout.</string>
+    <string name="express_demo_started">Starting express checkout…</string>
+    <string name="express_demo_success">Succeeded. Checkout token: %s</string>
+    <string name="express_demo_cancelled">Cancelled</string>
+    <string name="express_demo_error">Error: %s</string>
     <string name="render_demo_native_api_note">Native API. Shown as HTML when the flag is on, with this font, size and color. Falls back to native text if the HTML fails.</string>
 </resources>
 

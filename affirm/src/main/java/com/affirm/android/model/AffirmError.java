@@ -1,5 +1,7 @@
 package com.affirm.android.model;
 
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -11,7 +13,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 @AutoValue
-public abstract class AffirmError {
+public abstract class AffirmError implements Parcelable {
     @Nullable
     public abstract String message();
 
@@ -30,6 +32,9 @@ public abstract class AffirmError {
 
     @Nullable
     public abstract String type();
+
+    @Nullable
+    public abstract AffirmErrorUi ui();
 
     public static TypeAdapter<AffirmError> typeAdapter(Gson gson) {
         return new AutoValue_AffirmError.GsonTypeAdapter(gson);

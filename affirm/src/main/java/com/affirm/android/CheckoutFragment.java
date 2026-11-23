@@ -109,7 +109,8 @@ public final class CheckoutFragment extends CheckoutBaseFragment
                         createTrackingException(exception));
                 removeFragment(TAG);
                 if (listener != null) {
-                    listener.onAffirmCheckoutError(exception.toString());
+                    listener.onAffirmCheckoutError(CheckoutErrors.messageFrom(exception),
+                            CheckoutErrors.affirmErrorFrom(exception));
                 }
             }
 
@@ -126,7 +127,8 @@ public final class CheckoutFragment extends CheckoutBaseFragment
         AffirmTracker.track(CHECKOUT_WEBVIEW_FAIL, ERROR, createTrackingException(error));
         removeFragment(TAG);
         if (listener != null) {
-            listener.onAffirmCheckoutError(error.toString());
+            listener.onAffirmCheckoutError(CheckoutErrors.messageFrom(error),
+                    CheckoutErrors.affirmErrorFrom(error));
         }
     }
 

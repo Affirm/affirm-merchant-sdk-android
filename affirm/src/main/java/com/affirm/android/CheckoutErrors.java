@@ -32,6 +32,11 @@ final class CheckoutErrors {
             if (ui != null && !Strings.isNullOrEmpty(ui.main())) {
                 return ui.main();
             }
+
+            // checkout-bff errors carry only a code.
+            if (!Strings.isNullOrEmpty(affirmError.code())) {
+                return affirmError.code();
+            }
         }
 
         return exception.toString();

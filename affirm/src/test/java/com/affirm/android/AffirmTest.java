@@ -157,6 +157,17 @@ public class AffirmTest {
     }
 
     @Test
+    public void checkoutErrorMessage_FallsBackToCodeForCheckoutBffError() {
+        AffirmError affirmError = gson.fromJson(
+                "{\"code\":\"RPC_ERROR_CREATE_CHECKOUT_PUBLIC_API_KEY_INVALID\"}", AffirmError.class);
+        InvalidRequestException cause = invalidRequestException(affirmError);
+        APIException wrapper = new APIException(cause.getMessage(), cause);
+
+        assertEquals("RPC_ERROR_CREATE_CHECKOUT_PUBLIC_API_KEY_INVALID",
+                CheckoutErrors.messageFrom(wrapper));
+    }
+
+    @Test
     public void checkoutError_UsesStructuredDetailsFromWrappedCause() {
         AffirmError affirmError = gson.fromJson(affirmErrorWithUiJson, AffirmError.class);
         InvalidRequestException cause = invalidRequestException(affirmError);
@@ -186,5 +197,16 @@ public class AffirmTest {
                 affirmError,
                 null
         );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void startVcnCheckout_RejectsExpress() {
+        Affirm.startCheckout(Mockito.mock(Activity.class), CheckoutFactory.createExpress(), true);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void startNewVcnCheckoutFlow_RejectsExpress() {
+        Affirm.startNewVcnCheckoutFlow(Mockito.mock(Activity.class),
+                CheckoutFactory.createExpress(), null, -1);
     }
 }

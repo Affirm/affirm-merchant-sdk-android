@@ -21,6 +21,8 @@ import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.affirm.android.AffirmConstants.CHECKOUT_MODE;
+
 final class AffirmTracker {
 
     private static final AtomicInteger localLogCounter = new AtomicInteger();
@@ -150,6 +152,9 @@ final class AffirmTracker {
                                              boolean useVCN) {
         final JsonObject checkoutJson = new JsonParser().parse(
                 AffirmPlugins.get().gson().toJson(checkout)).getAsJsonObject();
+        if (checkout.checkoutMode() == Checkout.CheckoutMode.STANDARD) {
+            checkoutJson.remove(CHECKOUT_MODE);
+        }
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("checkout", checkoutJson);
         jsonObject.addProperty("caas", caas);

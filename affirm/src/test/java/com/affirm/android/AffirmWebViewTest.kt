@@ -24,6 +24,21 @@ class AffirmWebViewTest {
     }
 
     @Test
+    fun userAgentKeepsTheSdkVersionMarker() {
+        val webView = AffirmWebView(context)
+
+        assertThat(webView.settings.userAgentString)
+            .startsWith("Affirm-SDK:Android-" + BuildConfig.VERSION_NAME + " ")
+    }
+
+    @Test
+    fun mediaPlaybackStillRequiresAUserGestureByDefault() {
+        val webView = AffirmWebView(context)
+
+        assertThat(webView.settings.mediaPlaybackRequiresUserGesture).isTrue()
+    }
+
+    @Test
     fun destroyWebViewKeepsTheHttpCache() {
         val parent = FrameLayout(context)
         val webView = AffirmWebView(context)

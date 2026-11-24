@@ -20,6 +20,7 @@ import static com.affirm.android.AffirmConstants.CHECKOUT_CAAS_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_CARD_AUTH_WINDOW;
 import static com.affirm.android.AffirmConstants.CHECKOUT_EXTRA;
 import static com.affirm.android.AffirmConstants.CHECKOUT_MONEY;
+import static com.affirm.android.AffirmConstants.CHECKOUT_SESSION_CODE;
 import static com.affirm.android.AffirmConstants.NEW_FLOW;
 
 public class VcnCheckoutActivity extends CheckoutBaseActivity
@@ -28,23 +29,25 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
     static void startActivity(@NonNull Activity activity, int requestCode,
                               @NonNull Checkout checkout, @Nullable String caas,
                               @Nullable Money money, int cardAuthWindow,
-                              boolean newFlow) {
-        Intent intent = buildIntent(activity, checkout, caas, money, cardAuthWindow, newFlow);
+                              boolean newFlow, @Nullable String sessionCode) {
+        Intent intent = buildIntent(activity, checkout, caas, money, cardAuthWindow, newFlow,
+                sessionCode);
         startForResult(activity, intent, requestCode);
     }
 
     static void startActivity(@NonNull Fragment fragment, int requestCode,
                               @NonNull Checkout checkout, @Nullable String caas,
-                              @Nullable Money money, int cardAuthWindow, boolean newFlow) {
+                              @Nullable Money money, int cardAuthWindow, boolean newFlow,
+                              @Nullable String sessionCode) {
         Intent intent = buildIntent(fragment.requireActivity(), checkout, caas, money,
-                cardAuthWindow, newFlow);
+                cardAuthWindow, newFlow, sessionCode);
         startForResult(fragment, intent, requestCode);
     }
 
     private static Intent buildIntent(
             @NonNull Activity originalActivity,
             @NonNull Checkout checkout, @Nullable String caas, @Nullable Money money,
-            int cardAuthWindow, boolean newFlow) {
+            int cardAuthWindow, boolean newFlow, @Nullable String sessionCode) {
 
         final Intent intent = new Intent(originalActivity, VcnCheckoutActivity.class);
         intent.putExtra(CHECKOUT_EXTRA, checkout);
@@ -52,6 +55,7 @@ public class VcnCheckoutActivity extends CheckoutBaseActivity
         intent.putExtra(CHECKOUT_MONEY, money);
         intent.putExtra(NEW_FLOW, newFlow);
         intent.putExtra(CHECKOUT_CARD_AUTH_WINDOW, cardAuthWindow);
+        intent.putExtra(CHECKOUT_SESSION_CODE, sessionCode);
         return intent;
     }
 

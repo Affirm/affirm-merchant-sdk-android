@@ -105,7 +105,7 @@ public class LoanAmountActivity extends AppCompatActivity {
             Money money = loanAmountEditText.getRaw();
             if (!money.isZero()) {
                 Affirm.startVcnCheckout(this, checkout, caas, money, true,
-                        cardAuthWindow);
+                        cardAuthWindow, null);
                 return true;
             }
         }

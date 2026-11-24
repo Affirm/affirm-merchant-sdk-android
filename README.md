@@ -147,6 +147,76 @@ Once the checkout has been successfully confirmed by the user, the AffirmCheckou
 
 Note - For VCN Checkout, all actions should be done using your existing payment gateway and debit card processor using the virtual card number returned after a successful checkout.
 
+### Express Checkout
+
+With [Express Checkout](https://docs.affirm.com/developers/docs/express-checkout), Affirm collects the customer's shipping address, then gets the shipping options, tax and total from your Shipping & Totals endpoint. Before using it, set up that endpoint as described in the Express Checkout integration guide and ask Affirm to enable Express Checkout for your merchant.
+
+- Express Checkout is only available in the US, in USD.
+- It does not support VCN: call `startCheckout` with `useVCN` set to `false`. The VCN checkout methods throw `IllegalArgumentException` for an Express checkout.
+
+Create the checkout with `Checkout.createExpressCheckout`, passing the subtotal of the items in cents, as a string, in `metadata`:
+
+```java
+final Map<String, String> metadata = new HashMap<>();
+metadata.put("subtotal", "100000");
+
+final Checkout checkout = Checkout.createExpressCheckout(items, "order id",
+        "https://merchant.com/shipping-and-totals", metadata);
+
+Affirm.startCheckout(this, checkout, false);
+```
+
+- It throws `IllegalStateException` when the order id, the Shipping & Totals URL, the items or the subtotal are missing.
+- The result comes back through `CheckoutCallbacks`, as for any other checkout.
+- To set other checkout fields, use `Checkout.builder()` with `setCheckoutMode(Checkout.CheckoutMode.EXPRESS)` and `setShippingAndTotalsCallbackUrl(...)`. The builder still requires the total, shipping and tax amounts; set them to `BigDecimal.ZERO`, they are not sent.
+
+#### Checkout button
+
+`AffirmCheckoutButton` is a pre-styled Affirm checkout button. Add it in XML:
+
+```xml
+<com.affirm.android.AffirmCheckoutButton
+    android:id="@+id/affirm_checkout_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:affirmPageType="product"
+    app:affirmButtonSize="medium"
+    app:affirmButtonTheme="dark"
+    app:affirmButtonShape="pill"
+    app:affirmButtonText="buyNow"
+    app:affirmFullWidth="false" />
+```
+
+or in code:
+
+```java
+final AffirmCheckoutButton button = new AffirmCheckoutButton(context);
+button.setPageType(PromoPageType.PRODUCT);
+button.setSize(AffirmCheckoutButtonSize.LARGE);
+button.setTheme(AffirmCheckoutButtonTheme.LIGHT);
+button.setShape(AffirmCheckoutButtonShape.ROUNDED);
+button.setButtonText(AffirmCheckoutButtonTextType.CHECKOUT);
+button.setFullWidth(true);
+```
+
+| Attribute | Values |
+| --- | --- |
+| `affirmPageType` | `banner`, `cart`, `category`, `homepage`, `landing`, `payment`, `product`, `search`; sent with the button's click tracking, as in Affirm.js |
+| `affirmButtonSize` | `small`, `medium` (default), `large`; also sets the height (48dp, 48dp and 64dp), so `layout_height` is ignored |
+| `affirmButtonTheme` | `dark` (default), `light` |
+| `affirmButtonShape` | `sharp`, `pill` (default), `rounded` |
+| `affirmButtonText` | `buyNow` (default), `checkout`, `logoOnly` |
+| `affirmFullWidth` | `true` to fill the width of the parent, `false` (default) to fit the content |
+
+The button does not start checkout: set an `OnClickListener` that calls `startCheckout`. It does not disable itself either; disable it when starting checkout and enable it again in `CheckoutCallbacks`:
+
+```java
+button.setOnClickListener(v -> {
+    button.setEnabled(false);
+    Affirm.startCheckout(this, checkout, false);
+});
+```
+
 ## Promotional Messaging
 
 Affirm promotional messaging components—payment messaging and educational modals—show customers how they can use Affirm to finance their purchases. Promos consist of promotional messaging, which appears directly in your app, and a modal, which which offers users an ability to prequalify.

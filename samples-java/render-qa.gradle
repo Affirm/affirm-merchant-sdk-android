@@ -1,4 +1,5 @@
-// The Affirm environment of the sample app, and the renderQa task that runs RenderQaTest.
+// The Affirm environment of the sample app, the Express Checkout demo merchant, and the renderQa
+// task that runs RenderQaTest.
 
 def localProperties = new Properties()
 if (rootProject.file('local.properties').exists()) {
@@ -13,6 +14,18 @@ if (!(affirmEnvironment in ['SANDBOX', 'PRODUCTION'])) {
     throw new GradleException("affirmEnvironment must be sandbox or production, not $affirmEnvironment")
 }
 android.defaultConfig.buildConfigField "String", "AFFIRM_ENVIRONMENT", "\"$affirmEnvironment\""
+
+// publicKey:shippingAndTotalsCallbackUrl of a US merchant enabled for Express Checkout, e.g.
+// affirm.qa.express=PUBLIC_KEY:https://merchant.com/shipping-and-totals
+// A blank value counts as unset.
+def qaExpressValue = (project.findProperty('qaExpress') ?: localProperties.getProperty('affirm.qa.express'))
+        ?.toString()?.trim()
+def qaExpress = qaExpressValue ? qaExpressValue.split(':', 2) : null
+if (qaExpress && qaExpress.length != 2) {
+    throw new GradleException('affirm.qa.express must be PUBLIC_KEY:CALLBACK_URL')
+}
+android.defaultConfig.buildConfigField "String", "EXPRESS_PUBLIC_KEY", "\"${qaExpress ? qaExpress[0] : ''}\""
+android.defaultConfig.buildConfigField "String", "EXPRESS_CALLBACK_URL", "\"${qaExpress ? qaExpress[1] : ''}\""
 
 // Cases are publicKey:amount:html|native[:USA|GBR|CAN], comma separated; the country defaults to
 // USA. Keep production keys in local.properties.

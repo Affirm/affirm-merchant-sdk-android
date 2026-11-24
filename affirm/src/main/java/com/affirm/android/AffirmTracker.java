@@ -46,7 +46,9 @@ final class AffirmTracker {
         SITE_WEBVIEW_FAIL("Site webView failed"),
         NETWORK_ERROR("network error"),
         PROMO_RENDER_MODE("Promo_render_mode"),
-        PROMO_RENDER_RESULT("Promo_render_result");
+        PROMO_RENDER_RESULT("Promo_render_result"),
+        CONNECTED_ACCOUNTS_PREPARE_AUTH("Connected accounts prepare auth"),
+        CONNECTED_ACCOUNTS_CHECKOUT_DECORATED("Connected accounts checkout decorated");
 
         private final String mName;
 
@@ -71,8 +73,12 @@ final class AffirmTracker {
 
     static void track(@NonNull TrackingEvent event, @NonNull TrackingLevel level,
                       @Nullable JsonObject data) {
-        final JsonObject trackingData = addTrackingData(event.mName, data, level);
-        new TrackerRequest(trackingData).create();
+        try {
+            final JsonObject trackingData = addTrackingData(event.mName, data, level);
+            new TrackerRequest(trackingData).create();
+        } catch (RuntimeException e) {
+            AffirmLog.w("Failed to track " + event.mName, e);
+        }
     }
 
     @VisibleForTesting

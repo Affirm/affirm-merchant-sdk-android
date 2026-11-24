@@ -150,6 +150,15 @@
             android:layout_marginTop="16dp"
             android:text="@string/render_demo" />
 
+        <Button
+            android:id="@+id/connectedAccounts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/renderDemo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="@string/connected_accounts" />
+
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="wrap_content"

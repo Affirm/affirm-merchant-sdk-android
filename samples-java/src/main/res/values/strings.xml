@@ -36,6 +36,27 @@
     <string name="render_demo_color_gray">Gray</string>
     <string name="render_demo_color_indigo">Indigo</string>
     <string name="render_demo_color_black">Black</string>
+    <string name="connected_accounts">Connected Accounts</string>
+    <string name="connected_accounts_note">The mock merchant server returns fake session codes that Affirm rejects, so checkout still asks the customer to sign in. To test acceleration, choose Manual and paste a real session code. The SDK adds session_code and code_verifier to the first checkout load; see the URL in chrome://inspect. Checkout uses USD and a US address.</string>
+    <string name="connected_accounts_public_key">Merchant public key</string>
+    <string name="connected_accounts_public_key_hint">A US sandbox merchant enabled for Connected Accounts</string>
+    <string name="connected_accounts_public_key_default" translatable="false">Y8CQXFF044903JC0</string>
+    <string name="connected_accounts_public_key_missing">Enter a public key</string>
+    <string name="connected_accounts_customer">Account linking ID</string>
+    <string name="connected_accounts_id_hint">Your stable customer ID</string>
+    <string name="connected_accounts_id_default" translatable="false">demo_customer_1</string>
+    <string name="connected_accounts_id_missing">Enter an account linking ID</string>
+    <string name="connected_accounts_backend">Mock merchant server</string>
+    <string name="connected_accounts_backend_linked">Linked: returns a session code</string>
+    <string name="connected_accounts_backend_not_linked">Not linked: no refresh token</string>
+    <string name="connected_accounts_backend_token_rejected">Token rejected: Affirm returned 401</string>
+    <string name="connected_accounts_backend_manual">Manual: paste a session code from your server</string>
+    <string name="connected_accounts_manual_note">Get a code challenge and have your server exchange it for a session code (POST /api/pba/v1/oauth/session). Paste the code and start checkout within 60 seconds. The session code only works with this challenge, and only once.</string>
+    <string name="connected_accounts_challenge_empty">No code challenge yet</string>
+    <string name="connected_accounts_get_challenge">Get code challenge</string>
+    <string name="connected_accounts_session_code_hint">Session code</string>
+    <string name="connected_accounts_session_code_missing">Paste the session code your server created from this code challenge</string>
+    <string name="connected_accounts_log">Steps and SDK log</string>
     <string name="render_demo_native_api_note">Native API. Shown as HTML when the flag is on, with this font, size and color. Falls back to native text if the HTML fails.</string>
 </resources>
 

@@ -37,5 +37,27 @@
     <string name="render_demo_color_indigo">Indigo</string>
     <string name="render_demo_color_black">Black</string>
     <string name="render_demo_native_api_note">Native API. Shown as HTML when the flag is on, with this font, size and color. Falls back to native text if the HTML fails.</string>
+    <string name="camera_demo">Checkout camera and microphone</string>
+    <string name="camera_demo_permissions">Permissions</string>
+    <string name="camera_demo_permissions_note">This app declares both permissions in its manifest; the SDK does not declare them. To test a denial again, revoke them in the app settings.</string>
+    <string name="camera_demo_app_settings">App settings</string>
+    <string name="camera_demo_permission_line">%1$s: %2$s</string>
+    <string name="camera_demo_granted">granted</string>
+    <string name="camera_demo_not_granted">not granted</string>
+    <string name="camera_demo_environment">Environment: %s. Use a UK public key; the SDK only grants the camera on UK checkout.</string>
+    <string name="camera_demo_started">Started %s</string>
+    <string name="camera_demo_success">Success, token: %s</string>
+    <string name="camera_demo_vcn_success">VCN success, card ending %s</string>
+    <string name="camera_demo_cancelled">Cancelled</string>
+    <string name="camera_demo_vcn_cancelled_reason">VCN cancelled: %s</string>
+    <string name="camera_demo_error">Error: %s</string>
+    <string name="camera_demo_failed">Could not start checkout: %s</string>
+    <string name="camera_demo_entrust_header">Entrust demo</string>
+    <string name="camera_demo_entrust_note">Starts a checkout in the SDK\'s checkout activity, then opens the Entrust (Onfido) demo in its WebView once checkout has loaded, until checkout itself asks for the camera. The document step asks for the camera; the motion step also asks for the microphone.</string>
+    <string name="camera_demo_entrust">Open the Entrust demo</string>
+    <string name="camera_demo_entrust_waiting">Waiting for checkout to load, then opening the Entrust demo</string>
+    <string name="camera_demo_entrust_loaded">Opened %s in the checkout WebView</string>
+    <string name="camera_demo_entrust_timeout">Checkout did not load within 30 s</string>
+    <string name="camera_demo_log">SDK log since the last checkout</string>
 </resources>
 

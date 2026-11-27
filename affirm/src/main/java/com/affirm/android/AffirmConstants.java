@@ -67,6 +67,7 @@ public final class AffirmConstants {
     static final String HTTPS_PROTOCOL = "https://";
     static final String HTTP_PROTOCOL = "http://";
     static final String HTTP = "http";
+    static final String HTTPS = "https";
     static final String X_AFFIRM_REQUEST_ID = "X-Affirm-Request-Id";
     static final String CONTENT_TYPE = "application/json; charset=utf-8";
     static final String TEXT_HTML = "text/html";

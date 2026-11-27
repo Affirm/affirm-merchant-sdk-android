@@ -141,6 +141,26 @@ Affirm.startCheckout(this, checkout, false);
 
     `error.ui()` holds copy that is safe to show the customer, and is only present for the errors
     Affirm provides it for, such as an invalid shipping address, so keep the `message()` fallback.
+
+### Checkout camera and microphone
+
+If you offer Affirm in the UK, checkout may ask for the camera and microphone to verify the customer's identity; merchants outside the UK can skip this section. The SDK handles the WebView request and the Android permission prompt, but the SDK manifest does not declare the permissions, so add them to your **app** `AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+<uses-feature android:name="android.hardware.camera" android:required="false" />
+<uses-feature android:name="android.hardware.microphone" android:required="false" />
+```
+
+`android:required="false"` keeps Google Play from hiding your app on devices without a camera or microphone.
+
+- If a permission is not declared, Android denies it without a prompt, the verification page receives `NotAllowedError` and checkout stays open. With logging enabled, the SDK logs a warning that lists the missing permissions.
+- If you embed checkout with `CheckoutFragment` or `VcnCheckoutFragment` and your Activity overrides `onRequestPermissionsResult`, call `super.onRequestPermissionsResult(...)`; otherwise the SDK never receives the result and the camera request stays pending.
+- Update the Data safety form in the Google Play Console to cover the camera and microphone.
+
 ### Charge authorization
 
 Once the checkout has been successfully confirmed by the user, the AffirmCheckoutDelegate object will receive a checkout token. This token should be forwarded to your server, which should then use the token to authorize a charge on the user's account. For more details about the server integration, see our [API documentation](https://docs.affirm.com/Integrate_Affirm/Direct_API#3._Authorize_the_charge).

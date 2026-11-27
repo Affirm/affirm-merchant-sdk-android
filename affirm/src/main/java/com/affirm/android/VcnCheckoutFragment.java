@@ -3,10 +3,12 @@ package com.affirm.android;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.webkit.WebView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -142,12 +144,16 @@ public final class VcnCheckoutFragment extends CheckoutBaseFragment
             @Override
             public void onSuccess(@NonNull CheckoutResponse response) {
                 AffirmTracker.track(VCN_CHECKOUT_CREATION_SUCCESS, INFO, null);
-                final String html = initialHtml(response);
-                final Uri uri = Uri.parse(response.redirectUrl());
-                webView.loadDataWithBaseURL(HTTPS_PROTOCOL + uri.getHost(), html,
-                        TEXT_HTML, UTF_8, null);
+                loadCheckoutHtml(webView, response.redirectUrl(), initialHtml(response));
             }
         };
+    }
+
+    @VisibleForTesting
+    static void loadCheckoutHtml(@NonNull WebView webView, @NonNull String redirectUrl,
+                                 @NonNull String html) {
+        final String baseUrl = HTTPS_PROTOCOL + Uri.parse(redirectUrl).getHost();
+        webView.loadDataWithBaseURL(baseUrl, html, TEXT_HTML, UTF_8, baseUrl);
     }
 
     private String initialHtml(@NonNull CheckoutResponse response) {

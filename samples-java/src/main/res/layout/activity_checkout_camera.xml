@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:layout_marginTop="0dp"
+            android:text="@string/camera_demo_permissions" />
+
+        <TextView
+            style="@style/RenderDemoNote"
+            android:text="@string/camera_demo_permissions_note" />
+
+        <TextView
+            android:id="@+id/permission_status"
+            style="@style/RenderDemoStatus"
+            android:fontFamily="monospace" />
+
+        <Button
+            android:id="@+id/app_settings"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/camera_demo_app_settings" />
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:text="@string/render_demo_merchant" />
+
+        <TextView
+            android:id="@+id/environment"
+            style="@style/RenderDemoNote" />
+
+        <EditText
+            android:id="@+id/public_key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="monospace"
+            android:hint="@string/render_demo_public_key"
+            android:importantForAutofill="no"
+            android:inputType="textCapCharacters|textNoSuggestions"
+            android:maxLines="1"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/checkout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/checkout" />
+
+            <Button
+                android:id="@+id/vcn_checkout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/vcn_checkout" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/RenderDemoHeader"
+            android:text="@string/camera_demo_entrust_header" />
+
+        <TextView
+            style="@style/RenderDemoNote"
+            android:text="@string/camera_demo_entrust_note" />
+        <Button
+            android:id="@+id/entrust_demo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/camera_demo_entrust" />
+
+        <TextView
+            android:id="@+id/result"
+            style="@style/RenderDemoStatus" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/camera_demo_log"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/copy_log"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/render_demo_copy" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/renderDemoLog"
+            android:fontFamily="monospace"
+            android:padding="8dp"
+            android:textIsSelectable="true"
+            android:textSize="12sp" />
+    </LinearLayout>
+</ScrollView>
